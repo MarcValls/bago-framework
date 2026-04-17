@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+{% block title %}{{ info.name }} — BAGO Viewer{% endblock %}
+{% block breadcrumb %}<a href="/">Packs</a> / <strong style="color:var(--text);">{{ info.name }}</strong>{% endblock %}
+
+{% block content %}
+
+{# ── Header ───────────────────────────────────────────────────────────── #}
+<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:8px;">
+  <div>
+    <h1>{{ info.name }}</h1>
+    <p style="margin-top:6px;font-size:.9rem;">
+      v{{ info.version }}
+      {% if info.updated_at %}&nbsp;·&nbsp;Último cambio: <strong style="color:var(--text);">{{ info.updated_at[:10] }}</strong>{% endif %}
+      &nbsp;·&nbsp;<code style="font-size:.8rem;color:var(--muted);">{{ info.path }}</code>
+    </p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+    {% if info.health == 'stable' %}
+      <span class="badge badge-go" style="font-size:.9rem;"><span class="dot"></span>Estable</span>
+    {% elif info.health == 'unstable' %}
+      <span class="badge badge-ko" style="font-size:.9rem;"><span class="dot"></span>Inestable</span>
+    {% else %}
+      <span class="badge badge-unknown" style="font-size:.9rem;"><span class="dot"></span>{{ info.health }}</span>
+    {% endif %}
+    <a href="/validate?path={{ info.path | urlencode }}" class="btn btn-primary">▶ Ejecutar validadores</a>
+    {% if info.has_report %}
+    <a href="/pack-report?path={{ info.path | urlencode }}" target="_blank" class="btn btn-go">📊 Ver informe completo</a>
+    {% endif %}
+  </div>
+</div>
+
+{% if info.notes %}
+<div class="panel" style="margin-top:16px;border-left:3px solid var(--accent2);">
+  <p style="font-size:.88rem;color:var(--text);line-height:1.6;">{{ info.notes }}</p>
+</div>
+{% endif %}
+
+{# ── Validadores ──────────────────────────────────────────────────────── #}
+<div class="section-header">
+  <h2 style="margin:0;">Validación</h2>
+  {% if not run_validators %}
+    <a href="/validate?path={{ info.path | urlencode }}" class="btn btn-secondary" style="font-size:.85rem;">Ejecutar ahora</a>
+  {% endif %}
+</div>
+
+{% if run_validators and validators %}
+<div class="panel">
+  {% for key, v in validators.items() %}
+  <div class="validator-row">
+    <div class="validator-name">
+      {% if v.go %}
+        <span class="badge badge-go"><span class="dot"></span>GO</span>
+      {% elif v.go == false %}
+        <span class="badge badge-ko"><span class="dot"></span>KO</span>
+      {% else %}
+        <span class="badge badge-unknown"><span class="dot"></span>N/A</span>
+      {% endif %}
+    </div>
+    <div style="flex:1;">
+      <div style="font-size:.85rem;font-weight:600;margin-bottom:4px;color:var(--muted);">{{ v.label }}</div>
+      <pre style="margin:0;">{{ v.output }}</pre>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="panel" style="display:flex;gap:16px;flex-wrap:wrap;">
+  {% set lv = info.last_validation %}
+  {% for key in ['manifest', 'state', 'pack'] %}
+    {% set val = lv.get(key, '?') if lv else '?' %}
+    <div style="flex:1;min-width:140px;">
+      <div style="font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">{{ key }}</div>
+      {% if val == 'GO' %}
+        <span class="badge badge-go" style="font-size:1rem;padding:6px 16px;"><span class="dot"></span>GO</span>
+      {% elif val == 'KO' %}
+        <span class="badge badge-ko" style="font-size:1rem;padding:6px 16px;"><span class="dot"></span>KO</span>
+      {% else %}
+        <span class="badge badge-unknown" style="font-size:1rem;padding:6px 16px;"><span class="dot"></span>?</span>
+      {% endif %}
+      <div style="font-size:.78rem;color:var(--muted);margin-top:6px;">último guardado</div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{# ── Inventario ───────────────────────────────────────────────────────── #}
+<h2>Inventario de esfuerzo</h2>
+<div class="grid cards-3">
+
+  {% set metrics = [
+    ('Sesiones', 'sessions', '🗂'),
+    ('Cambios sistémicos', 'changes', '🔧'),
+    ('Evidencias', 'evidences', '📋'),
+  ] %}
+
+  {% for label, key, icon in metrics %}
+    {% set declared = info.inventory_declared.get(key, '?') %}
+    {% set real = info.inventory_real.get(key, 0) %}
+    <div class="card">
+      <div class="card-title">{{ icon }} {{ label }}</div>
+      <div class="card-value">{{ real }}</div>
+      <div class="card-sub">
+        {% if declared != '?' %}
+          {% if real == declared %}
+            <span class="diff-ok">✓ {{ declared }} declarados</span>
+          {% else %}
+            <span class="diff-warn">⚠ {{ declared }} declarados · {{ real }} reales</span>
+          {% endif %}
+        {% else %}
+          Sin declaración
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+
+</div>
+
+{# ── Sprints ──────────────────────────────────────────────────────────── #}
+{% if info.sprint_status %}
+<h2>Progreso de Sprints</h2>
+<div class="panel">
+  {% set sprints = info.sprint_status.items() | list %}
+  {% set total = sprints | length %}
+  {% set done_count = sprints | selectattr('1', 'equalto', 'DONE') | list | length %}
+  {% set pct = (done_count / total * 100) | round(0) | int if total > 0 else 0 %}
+
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+    <div style="flex:1;">
+      <div class="progress-bar" style="height:12px;">
+        <div class="progress-fill fill-done" style="width:{{ pct }}%;"></div>
+      </div>
+    </div>
+    <div style="font-size:1.2rem;font-weight:800;color:var(--accent);min-width:60px;text-align:right;">
+      {{ done_count }}/{{ total }}
+    </div>
+    <div style="color:var(--muted);font-size:.88rem;">completados</div>
+  </div>
+
+  {% for sprint_id, status in sprints %}
+  <div class="progress-row">
+    <span class="sprint-label">{{ sprint_id }}</span>
+    <div class="progress-bar">
+      {% if status == 'DONE' %}
+        <div class="progress-fill fill-done" style="width:100%;"></div>
+      {% else %}
+        <div class="progress-fill fill-pending" style="width:20%;opacity:.4;"></div>
+      {% endif %}
+    </div>
+    <span class="sprint-status">
+      {% if status == 'DONE' %}
+        <span class="done-text">✓ DONE</span>
+      {% else %}
+        <span class="pending-text">⏳ {{ status }}</span>
+      {% endif %}
+    </span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{# ── Tipos de tarea ───────────────────────────────────────────────────── #}
+{% if info.task_type_counts %}
+<div class="grid cards-2" style="margin-top:36px;gap:14px;">
+
+  <div>
+    <h2 style="margin-top:0;">Tipos de tarea</h2>
+    <div class="panel" style="margin-top:0;">
+      {% set total_tasks = info.task_type_counts.values() | sum %}
+      {% for task_type, count in info.task_type_counts.items() | sort(attribute='1', reverse=True) %}
+        {% set pct = (count / total_tasks * 100) | round(0) | int if total_tasks > 0 else 0 %}
+        <div class="progress-row" style="margin:8px 0;">
+          <span style="min-width:170px;font-size:.85rem;color:var(--text);">{{ task_type }}</span>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:{{ pct }}%;background:var(--accent2);"></div>
+          </div>
+          <span style="min-width:40px;text-align:right;font-size:.85rem;font-weight:600;">{{ count }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if info.role_counts %}
+  <div>
+    <h2 style="margin-top:0;">Roles activados</h2>
+    <div class="panel" style="margin-top:0;">
+      {% set max_role = info.role_counts.values() | max %}
+      {% for role, count in info.role_counts.items() %}
+        {% set pct = (count / max_role * 100) | round(0) | int if max_role > 0 else 0 %}
+        <div class="progress-row" style="margin:8px 0;">
+          <span style="min-width:170px;font-size:.82rem;color:var(--muted);">{{ role }}</span>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:{{ pct }}%;background:var(--accent);"></div>
+          </div>
+          <span style="min-width:40px;text-align:right;font-size:.85rem;font-weight:600;">{{ count }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endif %}
+
+{# ── Últimas sesiones ─────────────────────────────────────────────────── #}
+{% if info.sessions %}
+<h2>Últimas sesiones</h2>
+<div class="panel" style="padding:0;overflow:hidden;">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Tipo</th>
+        <th>Roles</th>
+        <th>Estado</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in info.sessions[-10:] | reverse %}
+      <tr>
+        <td><code style="font-size:.8rem;color:var(--accent2);">{{ s.get('session_id', '?') }}</code></td>
+        <td><span class="tag" style="font-size:.75rem;">{{ s.get('task_type', '?') }}</span></td>
+        <td style="font-size:.8rem;color:var(--muted);">
+          {{ s.get('roles_activated', []) | join(', ') | truncate(40) }}
+        </td>
+        <td>
+          {% if s.get('status') == 'closed' %}
+            <span class="badge badge-go" style="font-size:.75rem;padding:2px 8px;">closed</span>
+          {% else %}
+            <span class="badge badge-unknown" style="font-size:.75rem;padding:2px 8px;">{{ s.get('status', '?') }}</span>
+          {% endif %}
+        </td>
+        <td style="font-size:.82rem;color:var(--muted);">{{ s.get('created_at', '')[:10] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{# ── Informe de evolución ─────────────────────────────────────────────── #}
+{% if info.has_report %}
+<div class="section-header">
+  <h2 style="margin:0;">Informe de evolución</h2>
+</div>
+<div class="panel" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+  <div>
+    <div style="font-size:.88rem;color:var(--muted);">
+      Generado: <strong style="color:var(--text);">{{ info.report_mtime or 'desconocido' }}</strong>
+      {% if info.report_stale == true %}
+        &nbsp;<span class="badge badge-warn" style="font-size:.75rem;">desactualizado</span>
+      {% elif info.report_stale == false %}
+        &nbsp;<span class="badge badge-go" style="font-size:.75rem;">al día</span>
+      {% endif %}
+    </div>
+    <div style="font-size:.82rem;color:var(--muted);margin-top:4px;">
+      Incluye gráficas de actividad, mezcla de trabajo, crecimiento del corpus y ventanas autónomas.
+    </div>
+  </div>
+  <a href="/pack-report?path={{ info.path | urlencode }}" target="_blank" class="btn btn-go">
+    📊 Abrir informe completo
+  </a>
+</div>
+{% else %}
+<h2>Informe de evolución</h2>
+<div class="panel">
+  <p>No hay informe generado para este pack. Ejecuta <code>python3 tools/generate_bago_evolution_report.py</code> desde el directorio del pack para crearlo.</p>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}BAGO Viewer — Packs{% endblock %}
+
+{% block content %}
+<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:32px;">
+  <div>
+    <h1 style="margin-bottom:10px;">Packs <span style="color:var(--accent2)">.bago</span></h1>
+    <p>Packs encontrados en <code style="color:var(--accent2);">~/Desktop</code> y <code style="color:var(--accent2);">~/Documents</code>.</p>
+  </div>
+  <a href="/pick-folder" class="btn btn-primary" style="font-size:1rem;padding:12px 24px;">
+    📁 Elegir carpeta…
+  </a>
+</div>
+
+{% if error == 'invalid_pack' %}
+<div class="panel" style="border-left:3px solid var(--warn);margin-bottom:24px;">
+  <p style="color:var(--warn);font-weight:600;">No se encontró un pack .bago válido en la carpeta seleccionada.</p>
+  <p style="font-size:.88rem;margin-top:4px;">
+    Carpeta elegida: <code>{{ chosen }}</code><br>
+    Asegúrate de seleccionar la carpeta <code>.bago</code> directamente, o el proyecto que la contiene.
+  </p>
+</div>
+{% endif %}
+
+{% if packs %}
+<div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
+  {% for p in packs %}
+  <a href="/pack?path={{ p.path | urlencode }}" style="text-decoration:none;">
+  <div class="pack-card">
+    <div class="pack-card-header">
+      <div>
+        <div class="pack-name">{{ p.name }}</div>
+        <div class="pack-meta">
+          v{{ p.version }}
+          {% if p.updated_at %}&nbsp;·&nbsp;{{ p.updated_at[:10] }}{% endif %}
+        </div>
+      </div>
+      {% if p.health == 'stable' %}
+        <span class="badge badge-go"><span class="dot"></span>Estable</span>
+      {% elif p.health == 'unknown' %}
+        <span class="badge badge-unknown"><span class="dot"></span>Desconocido</span>
+      {% else %}
+        <span class="badge badge-warn"><span class="dot"></span>{{ p.health }}</span>
+      {% endif %}
+    </div>
+
+    {% if p.last_validation %}
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;">
+      {% for key in ['manifest','state','pack'] %}
+        {% set val = p.last_validation.get(key, '?') %}
+        {% if val == 'GO' %}
+          <span class="badge badge-go" style="font-size:.74rem;">{{ key }} GO</span>
+        {% elif val == 'KO' %}
+          <span class="badge badge-ko" style="font-size:.74rem;">{{ key }} KO</span>
+        {% else %}
+          <span class="badge badge-unknown" style="font-size:.74rem;">{{ key }} ?</span>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="pack-footer">
+      {% set inv = p.inventory_declared %}
+      {% if inv %}
+        <span class="tag">{{ inv.get('sessions', '?') }} sesiones</span>
+        <span class="tag">{{ inv.get('changes', '?') }} cambios</span>
+        <span class="tag">{{ inv.get('evidences', '?') }} evidencias</span>
+      {% endif %}
+      {% if p.has_report %}
+        <span class="tag" style="background:rgba(34,197,94,.1);color:#4ade80;border-color:rgba(34,197,94,.2);">📊 Informe</span>
+      {% endif %}
+    </div>
+  </div>
+  </a>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="panel" style="text-align:center;padding:48px 24px;">
+  <p style="font-size:1.1rem;color:var(--muted);">No se encontraron packs <code>.bago</code> en Desktop ni Documents.</p>
+  <p style="margin-top:8px;">Asegúrate de que los packs contienen un archivo <code>pack.json</code>.</p>
+</div>
+{% endif %}
+
+<!-- Añadir pack manualmente -->
+<div style="margin-top:48px;">
+  <h2>Añadir pack manualmente</h2>
+  <form method="get" action="/pack" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
+    <input name="path" type="text" placeholder="/ruta/al/proyecto/.bago"
+      style="flex:1;min-width:280px;padding:10px 14px;border-radius:10px;background:var(--card);
+             border:1px solid var(--line);color:var(--text);font-size:.92rem;outline:none;" />
+    <button type="submit" class="btn btn-primary">Abrir pack</button>
+  </form>
+</div>
+{% endblock %}
