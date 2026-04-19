@@ -2,3 +2,11 @@ __pycache__/
 *.pyc
 .DS_Store
 .env
+
+# ZIPs de distribución (no versionar artefactos de empaquetado)
+cleanversion/*.zip
+BAGO_*_tester_*.zip
+
+# Script de sesión temporal
+_finish_session.sh
+.bago/state/global_state.backup.json
