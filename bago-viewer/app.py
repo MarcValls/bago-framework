@@ -76,11 +76,13 @@ def _load_sessions(bago: Path) -> list[dict]:
     sdir = bago / "state" / "sessions"
     if not sdir.is_dir():
         return sessions
-    for f in sorted(sdir.glob("*.json")):
+    for f in sdir.glob("*.json"):
         try:
             sessions.append(json.loads(f.read_text(encoding="utf-8")))
         except Exception:
             pass
+    # Orden cronológico real (no por nombre de archivo)
+    sessions.sort(key=lambda s: s.get("created_at", ""))
     return sessions
 
 
@@ -139,7 +141,6 @@ def read_pack_info(bago: Path) -> dict:
         mtime_ts = html_report.stat().st_mtime
         mtime_dt = datetime.fromtimestamp(mtime_ts, tz=timezone.utc)
         info["report_mtime"] = mtime_dt.strftime("%Y-%m-%d %H:%M UTC")
-        # Compare with global_state updated_at
         if info["updated_at"]:
             try:
                 state_ts = info["updated_at"].replace("Z", "+00:00")
@@ -148,7 +149,131 @@ def read_pack_info(bago: Path) -> dict:
             except Exception:
                 info["report_stale"] = None
 
+    info["evolution"] = compute_evolution(sessions)
     return info
+
+
+def _dim(value: float, max_val: float) -> float:
+    """Normaliza un valor a escala 0–10."""
+    if max_val == 0:
+        return 0.0
+    return round(min(value / max_val * 10, 10), 1)
+
+
+def compute_evolution(sessions: list[dict]) -> dict | None:
+    """Calcula radar data (inicio vs ahora) y señales de evolución.
+
+    Dimensiones — todas orientadas a "más = mejor":
+      1. Diversidad    → tipos de tarea únicos / total en el pack
+      2. Protocolo     → % sesiones cerradas formalmente (status=closed)
+      3. Alcance       → workflows únicos usados / total en el pack
+      4. Foco          → inverso de roles medios por sesión (menos roles = más foco)
+      5. Producción    → artefactos medios por sesión (output tangible)
+      6. Rigor         → decisiones medias por sesión (gobierno de calidad)
+    """
+    if len(sessions) < 4:
+        return None
+
+    mid = len(sessions) // 2
+    early = sessions[:mid]
+    late = sessions[mid:]
+
+    # Denominadores adaptativos: basados en lo que realmente existe en el pack
+    all_types = {s.get("task_type", "") for s in sessions} - {""}
+    all_wfs   = {s.get("selected_workflow", "") for s in sessions} - {""}
+    max_types = max(len(all_types), 1)
+    max_wfs   = max(len(all_wfs), 1)
+
+    # Max producción/rigor: el pico real del pack (no un techo arbitrario)
+    all_arts = [len(s.get("artifacts", [])) for s in sessions]
+    all_decs = [len(s.get("decisions", [])) for s in sessions]
+    max_art  = max(max(all_arts), 1)
+    max_dec  = max(max(all_decs), 1)
+    MAX_ROLES = 8  # máx roles plausibles en una sesión bien orquestada
+
+    def _score(group: list[dict]) -> dict:
+        n = len(group)
+
+        # 1. Diversidad (tipos únicos en el período / total del pack)
+        types_used = len({s.get("task_type", "") for s in group} - {""})
+        diversidad = _dim(types_used, max_types)
+
+        # 2. Protocolo (% cerradas — señal de disciplina de cierre)
+        closed = sum(1 for s in group if s.get("status") == "closed")
+        protocolo = _dim(closed, n)
+
+        # 3. Alcance (workflows únicos / total usados en el pack)
+        wfs = len({s.get("selected_workflow", "") for s in group} - {""})
+        alcance = _dim(wfs, max_wfs)
+
+        # 4. Foco (sesiones más focalizadas = menos roles medios = mejor)
+        avg_roles = sum(len(s.get("roles_activated", [])) for s in group) / n
+        foco = round(max(0.0, 10.0 - _dim(avg_roles, MAX_ROLES)), 1)
+
+        # 5. Producción (artefactos medios / pico real del pack)
+        avg_art = sum(len(s.get("artifacts", [])) for s in group) / n
+        produccion = _dim(avg_art, max_art)
+
+        # 6. Rigor (decisiones medias / pico real del pack)
+        avg_dec = sum(len(s.get("decisions", [])) for s in group) / n
+        rigor = _dim(avg_dec, max_dec)
+
+        return {
+            "diversidad": diversidad,
+            "protocolo": protocolo,
+            "alcance": alcance,
+            "foco": foco,
+            "produccion": produccion,
+            "rigor": rigor,
+        }
+
+    e = _score(early)
+    l = _score(late)
+
+    labels = ["Diversidad\ntareas", "Protocolo\ncierre", "Alcance\nworkflows",
+              "Foco\nsesión", "Producción\nartefactos", "Rigor\ndecisiones"]
+    keys   = ["diversidad", "protocolo", "alcance", "foco", "produccion", "rigor"]
+    icons  = ["🔀", "✅", "🛠", "🎯", "📦", "⚖️"]
+
+    signals = []
+    for key, label, icon in zip(keys, labels, icons):
+        diff = round(l[key] - e[key], 1)
+        signals.append({
+            "key": key,
+            "label": label.replace("\n", " "),
+            "icon": icon,
+            "before": e[key],
+            "now": l[key],
+            "diff": diff,
+            "trend": "up" if diff > 0.3 else ("down" if diff < -0.3 else "flat"),
+        })
+
+    # Serie temporal: un punto por sesión para el line chart
+    timeline = []
+    for i, s in enumerate(sessions):
+        roles_n = len(s.get("roles_activated", []))
+        foco_val = round(max(0.0, 10.0 - _dim(roles_n, MAX_ROLES)), 1)
+        timeline.append({
+            "index": i + 1,
+            "label": s.get("session_id", f"#{i+1}"),
+            "date":  s.get("created_at", "")[:10],
+            "type":  s.get("task_type", "?"),
+            "closed": 1 if s.get("status") == "closed" else 0,
+            "arts":  len(s.get("artifacts", [])),
+            "decs":  len(s.get("decisions", [])),
+            "roles": roles_n,
+            "foco":  foco_val,
+        })
+
+    return {
+        "labels":      labels,
+        "early":       [e[k] for k in keys],
+        "late":        [l[k] for k in keys],
+        "signals":     signals,
+        "timeline":    timeline,
+        "early_count": len(early),
+        "late_count":  len(late),
+    }
 
 
 def run_validators(bago: Path) -> dict[str, dict]:
@@ -167,6 +292,7 @@ def run_validators(bago: Path) -> dict[str, dict]:
             proc = subprocess.run(
                 [sys.executable, str(vpath)],
                 capture_output=True, text=True, timeout=30,
+                stdin=subprocess.DEVNULL,
                 cwd=str(bago.parent),
             )
             output = (proc.stdout + proc.stderr).strip()
@@ -212,6 +338,7 @@ def pick_folder():
                 '"Selecciona la carpeta .bago o el proyecto que la contiene")',
             ],
             capture_output=True, text=True, timeout=120,
+            stdin=subprocess.DEVNULL,
         )
         path = result.stdout.strip()
         if not path:

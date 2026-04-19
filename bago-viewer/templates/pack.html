@@ -4,71 +4,51 @@
 
 {% block content %}
 
-{# ── Header ───────────────────────────────────────────────────────────── #}
+{# ── Header ── #}
 <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:8px;">
   <div>
     <h1>{{ info.name }}</h1>
     <p style="margin-top:6px;font-size:.9rem;">
       v{{ info.version }}
       {% if info.updated_at %}&nbsp;·&nbsp;Último cambio: <strong style="color:var(--text);">{{ info.updated_at[:10] }}</strong>{% endif %}
-      &nbsp;·&nbsp;<code style="font-size:.8rem;color:var(--muted);">{{ info.path }}</code>
     </p>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
     {% if info.health == 'stable' %}
       <span class="badge badge-go" style="font-size:.9rem;"><span class="dot"></span>Estable</span>
-    {% elif info.health == 'unstable' %}
-      <span class="badge badge-ko" style="font-size:.9rem;"><span class="dot"></span>Inestable</span>
     {% else %}
-      <span class="badge badge-unknown" style="font-size:.9rem;"><span class="dot"></span>{{ info.health }}</span>
+      <span class="badge badge-warn" style="font-size:.9rem;"><span class="dot"></span>{{ info.health }}</span>
     {% endif %}
     <a href="/validate?path={{ info.path | urlencode }}" class="btn btn-primary">▶ Ejecutar validadores</a>
     {% if info.has_report %}
-    <a href="/pack-report?path={{ info.path | urlencode }}" target="_blank" class="btn btn-go">📊 Ver informe completo</a>
+    <a href="/pack-report?path={{ info.path | urlencode }}" target="_blank" class="btn btn-secondary">📊 Informe raw</a>
     {% endif %}
   </div>
 </div>
 
-{% if info.notes %}
-<div class="panel" style="margin-top:16px;border-left:3px solid var(--accent2);">
-  <p style="font-size:.88rem;color:var(--text);line-height:1.6;">{{ info.notes }}</p>
-</div>
-{% endif %}
-
-{# ── Validadores ──────────────────────────────────────────────────────── #}
-<div class="section-header">
-  <h2 style="margin:0;">Validación</h2>
-  {% if not run_validators %}
-    <a href="/validate?path={{ info.path | urlencode }}" class="btn btn-secondary" style="font-size:.85rem;">Ejecutar ahora</a>
-  {% endif %}
-</div>
-
+{# ── Validación ── #}
 {% if run_validators and validators %}
-<div class="panel">
+<div class="panel" style="margin-top:14px;display:flex;gap:24px;flex-wrap:wrap;">
   {% for key, v in validators.items() %}
-  <div class="validator-row">
-    <div class="validator-name">
-      {% if v.go %}
-        <span class="badge badge-go"><span class="dot"></span>GO</span>
-      {% elif v.go == false %}
-        <span class="badge badge-ko"><span class="dot"></span>KO</span>
-      {% else %}
-        <span class="badge badge-unknown"><span class="dot"></span>N/A</span>
-      {% endif %}
-    </div>
-    <div style="flex:1;">
-      <div style="font-size:.85rem;font-weight:600;margin-bottom:4px;color:var(--muted);">{{ v.label }}</div>
-      <pre style="margin:0;">{{ v.output }}</pre>
-    </div>
+  <div style="flex:1;min-width:140px;">
+    <div style="font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">{{ v.label }}</div>
+    {% if v.go %}
+      <span class="badge badge-go" style="font-size:1rem;padding:6px 16px;"><span class="dot"></span>GO</span>
+    {% elif v.go == false %}
+      <span class="badge badge-ko" style="font-size:1rem;padding:6px 16px;"><span class="dot"></span>KO</span>
+    {% else %}
+      <span class="badge badge-unknown" style="font-size:1rem;padding:6px 16px;"><span class="dot"></span>N/A</span>
+    {% endif %}
+    <pre style="margin-top:8px;font-size:.75rem;">{{ v.output }}</pre>
   </div>
   {% endfor %}
 </div>
 {% else %}
-<div class="panel" style="display:flex;gap:16px;flex-wrap:wrap;">
+<div class="panel" style="margin-top:14px;display:flex;gap:24px;flex-wrap:wrap;">
   {% set lv = info.last_validation %}
   {% for key in ['manifest', 'state', 'pack'] %}
     {% set val = lv.get(key, '?') if lv else '?' %}
-    <div style="flex:1;min-width:140px;">
+    <div style="flex:1;min-width:120px;">
       <div style="font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">{{ key }}</div>
       {% if val == 'GO' %}
         <span class="badge badge-go" style="font-size:1rem;padding:6px 16px;"><span class="dot"></span>GO</span>
@@ -77,23 +57,303 @@
       {% else %}
         <span class="badge badge-unknown" style="font-size:1rem;padding:6px 16px;"><span class="dot"></span>?</span>
       {% endif %}
-      <div style="font-size:.78rem;color:var(--muted);margin-top:6px;">último guardado</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:4px;">último guardado</div>
     </div>
   {% endfor %}
 </div>
 {% endif %}
 
-{# ── Inventario ───────────────────────────────────────────────────────── #}
-<h2>Inventario de esfuerzo</h2>
+{# ── RADAR DE EVOLUCIÓN ── #}
+{% if info.evolution %}
+{% set ev = info.evolution %}
+<h2 style="margin-top:42px;">Radar de evolución</h2>
+<p style="margin-top:-8px;font-size:.88rem;">
+  <span style="color:#38bdf8;font-weight:600;">Azul = primeras {{ ev.early_count }} sesiones</span>
+  &nbsp;·&nbsp;
+  <span style="color:#4ade80;font-weight:600;">Verde = últimas {{ ev.late_count }} sesiones</span>
+  &nbsp;·&nbsp; Área más grande = más maduro
+</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;align-items:start;">
+
+  {# Radar chart #}
+  <div class="panel" style="padding:20px;display:flex;align-items:center;justify-content:center;">
+    <canvas id="radarChart" style="max-width:420px;max-height:420px;"></canvas>
+  </div>
+
+  {# Señales de evolución #}
+  <div class="panel" style="padding:20px;">
+    <h3 style="color:var(--accent2);margin-bottom:16px;font-size:.95rem;text-transform:uppercase;letter-spacing:.06em;">Señales de cambio</h3>
+    {% for sig in ev.signals %}
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(51,65,85,.4);">
+      <span style="font-size:1.2rem;min-width:28px;">{{ sig.icon }}</span>
+      <div style="flex:1;">
+        <div style="font-size:.88rem;font-weight:600;margin-bottom:4px;">{{ sig.label }}</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:.8rem;color:var(--muted);">{{ sig.before }}/10</span>
+          <span style="color:var(--muted);">→</span>
+          <span style="font-size:.9rem;font-weight:700;color:var(--text);">{{ sig.now }}/10</span>
+          {% if sig.trend == 'up' %}
+            <span style="background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);padding:1px 8px;border-radius:999px;font-size:.78rem;font-weight:700;">▲ +{{ sig.diff }}</span>
+          {% elif sig.trend == 'down' %}
+            <span style="background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3);padding:1px 8px;border-radius:999px;font-size:.78rem;font-weight:700;">▼ {{ sig.diff }}</span>
+          {% else %}
+            <span style="background:rgba(100,116,139,.15);color:#94a3b8;border:1px solid rgba(100,116,139,.3);padding:1px 8px;border-radius:999px;font-size:.78rem;font-weight:700;">= {{ sig.diff }}</span>
+          {% endif %}
+        </div>
+      </div>
+      {# mini bar #}
+      <div style="width:80px;">
+        <div style="background:var(--line);border-radius:4px;height:6px;margin-bottom:3px;overflow:hidden;">
+          <div style="background:#38bdf8;width:{{ sig.before * 10 }}%;height:100%;border-radius:4px;"></div>
+        </div>
+        <div style="background:var(--line);border-radius:4px;height:6px;overflow:hidden;">
+          <div style="background:#4ade80;width:{{ sig.now * 10 }}%;height:100%;border-radius:4px;"></div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<script>
+(function() {
+  const labels = {{ ev.labels | tojson }};
+  const early  = {{ ev.early | tojson }};
+  const late   = {{ ev.late | tojson }};
+
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Inicio',
+          data: early,
+          backgroundColor: 'rgba(56,189,248,0.15)',
+          borderColor: 'rgba(56,189,248,0.9)',
+          pointBackgroundColor: 'rgba(56,189,248,1)',
+          pointRadius: 4,
+          borderWidth: 2,
+        },
+        {
+          label: 'Ahora',
+          data: late,
+          backgroundColor: 'rgba(74,222,128,0.18)',
+          borderColor: 'rgba(74,222,128,0.95)',
+          pointBackgroundColor: 'rgba(74,222,128,1)',
+          pointRadius: 4,
+          borderWidth: 2,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        r: {
+          min: 0, max: 10,
+          ticks: { stepSize: 2, color: '#64748b', font: { size: 10 } },
+          grid: { color: 'rgba(51,65,85,0.6)' },
+          angleLines: { color: 'rgba(51,65,85,0.6)' },
+          pointLabels: { color: '#94a3b8', font: { size: 11 } },
+        }
+      },
+      plugins: {
+        legend: {
+          labels: { color: '#e2e8f0', font: { size: 12 }, padding: 16 }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.raw}/10`
+          }
+        }
+      }
+    }
+  });
+})();
+</script>
+{% endif %}
+
+{# ── Timeline de evolución sesión a sesión ── #}
+{% if info.evolution and info.evolution.timeline | length >= 4 %}
+<h2>Evolución sesión a sesión</h2>
+<p style="margin-top:-8px;font-size:.88rem;">Cada punto = una sesión en orden cronológico. La línea vertical separa inicio / ahora.</p>
+<div class="panel">
+  <canvas id="timelineChart" style="max-height:280px;"></canvas>
+</div>
+<script>
+(function() {
+  const tl   = {{ info.evolution.timeline | tojson }};
+  const mid  = {{ info.evolution.early_count }};
+  const xLabels = tl.map(s => `#${s.index} ${s.date}`);
+
+  const ctx = document.getElementById('timelineChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: xLabels,
+      datasets: [
+        {
+          label: 'Artefactos',
+          data: tl.map(s => s.arts),
+          borderColor: 'rgba(56,189,248,0.9)',
+          backgroundColor: 'rgba(56,189,248,0.06)',
+          fill: false, tension: 0.3, pointRadius: 4,
+          yAxisID: 'yLeft',
+        },
+        {
+          label: 'Foco (inverso roles)',
+          data: tl.map(s => s.foco),
+          borderColor: 'rgba(74,222,128,0.9)',
+          backgroundColor: 'rgba(74,222,128,0.06)',
+          fill: false, tension: 0.3, pointRadius: 4,
+          yAxisID: 'yRight',
+        },
+        {
+          label: 'Decisiones',
+          data: tl.map(s => s.decs),
+          borderColor: 'rgba(251,191,36,0.85)',
+          backgroundColor: 'rgba(251,191,36,0.06)',
+          fill: false, tension: 0.3, pointRadius: 4,
+          borderDash: [4,3],
+          yAxisID: 'yLeft',
+        },
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: '#e2e8f0', font: { size: 12 } } },
+        tooltip: {
+          callbacks: {
+            afterTitle: (items) => {
+              const s = tl[items[0].dataIndex];
+              return `tipo: ${s.type}  |  roles: ${s.roles}`;
+            }
+          }
+        },
+        annotation: {
+          annotations: {
+            midLine: {
+              type: 'line',
+              xMin: mid - 0.5, xMax: mid - 0.5,
+              borderColor: 'rgba(148,163,184,0.5)',
+              borderWidth: 2,
+              borderDash: [6, 4],
+              label: {
+                content: 'inicio / ahora',
+                display: true,
+                color: '#94a3b8',
+                font: { size: 10 },
+                position: 'start',
+              }
+            }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#64748b', font: { size: 10 }, maxRotation: 45 }, grid: { color: 'rgba(51,65,85,.3)' } },
+        yLeft:  { position: 'left',  min: 0, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,.4)' }, title: { display: true, text: 'Artefactos / Decisiones', color: '#64748b', font: { size: 10 } } },
+        yRight: { position: 'right', min: 0, max: 10, ticks: { color: '#94a3b8' }, grid: { display: false }, title: { display: true, text: 'Foco (0–10)', color: '#64748b', font: { size: 10 } } },
+      }
+    }
+  });
+})();
+</script>
+{% endif %}
+
+{# ── GLOSARIO DE MÉTRICAS ── #}
+{% if info.evolution %}
+<details style="margin-top:32px;">
+  <summary style="cursor:pointer;font-size:1rem;font-weight:700;color:var(--accent2);padding:14px 18px;background:var(--card);border:1px solid var(--line);border-radius:10px;list-style:none;display:flex;align-items:center;gap:8px;">
+    <span>📖</span> ¿Qué significan estas métricas?
+    <span style="margin-left:auto;font-size:.8rem;color:var(--muted);font-weight:400;">clic para expandir</span>
+  </summary>
+  <div style="background:var(--card);border:1px solid var(--line);border-top:none;border-radius:0 0 10px 10px;padding:20px 24px;">
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:18px;">
+      El radar compara las <strong style="color:#38bdf8;">primeras {{ ev.early_count }} sesiones</strong> del pack
+      con las <strong style="color:#4ade80;">últimas {{ ev.late_count }}</strong>.
+      Cada dimensión va de <strong>0</strong> (inmaduro) a <strong>10</strong> (consolidado).
+      Un área verde más grande que la azul indica evolución positiva del pack.
+    </p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+      <div style="padding:14px 16px;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);border-radius:8px;">
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:6px;">🔀 Diversidad tareas</div>
+        <div style="font-size:.82rem;color:var(--muted);line-height:1.5;">
+          Cuántos <em>tipos distintos</em> de tarea se han ejecutado (bootstrap, análisis, bug fix, sprint…)
+          respecto al total real del pack. Valor alto = el pack es versátil y se usa para tareas variadas.
+          Un pack que solo hace bootstraps o solo sprints puntúa bajo aquí.
+        </div>
+      </div>
+
+      <div style="padding:14px 16px;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);border-radius:8px;">
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:6px;">✅ Protocolo cierre</div>
+        <div style="font-size:.82rem;color:var(--muted);line-height:1.5;">
+          Porcentaje de sesiones con <em>status: closed</em>. Mide disciplina operativa:
+          las sesiones abiertas o bloqueadas sin cerrar indican trabajo inacabado o deuda de estado.
+          10/10 = todas las sesiones del grupo están formalmente cerradas.
+        </div>
+      </div>
+
+      <div style="padding:14px 16px;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);border-radius:8px;">
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:6px;">🎯 Alcance workflows</div>
+        <div style="font-size:.82rem;color:var(--muted);line-height:1.5;">
+          Número de <em>workflows distintos</em> utilizados respecto al total disponible en el pack.
+          Valor alto = se aprovechan más capacidades del sistema.
+          Un pack que solo usa W1 siempre puntúa bajo; uno que usa W1, W2, W3, W5… puntúa alto.
+        </div>
+      </div>
+
+      <div style="padding:14px 16px;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);border-radius:8px;">
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:6px;">🎯 Foco sesión</div>
+        <div style="font-size:.82rem;color:var(--muted);line-height:1.5;">
+          <em>Inverso</em> del número medio de roles activos por sesión.
+          Más foco = menos roles por sesión = sesiones más especializadas.
+          Una sesión con 1–2 roles puntúa alto; una que activa todos los roles a la vez puntúa bajo.
+          Señal de madurez: las sesiones se vuelven más quirúrgicas con el tiempo.
+        </div>
+      </div>
+
+      <div style="padding:14px 16px;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);border-radius:8px;">
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:6px;">📦 Producción artefactos</div>
+        <div style="font-size:.82rem;color:var(--muted);line-height:1.5;">
+          Número medio de <em>artefactos generados por sesión</em> respecto al pico histórico del pack.
+          Mide productividad tangible: documentos creados, archivos modificados, paquetes generados.
+          Una bajada puede indicar sesiones más cortas o más exploratorias (no necesariamente malo).
+        </div>
+      </div>
+
+      <div style="padding:14px 16px;background:rgba(56,189,248,.07);border:1px solid rgba(56,189,248,.2);border-radius:8px;">
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:6px;">⚖️ Rigor decisiones</div>
+        <div style="font-size:.82rem;color:var(--muted);line-height:1.5;">
+          Número medio de <em>decisiones registradas por sesión</em> respecto al pico del pack.
+          Mide si cada sesión deja rastro de razonamiento. Un valor alto y estable indica
+          que el equipo documenta consistentemente el porqué de cada cambio.
+          Una bajada puede señalar sesiones ejecutivas sin contexto registrado.
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:18px;padding:12px 16px;background:rgba(100,116,139,.08);border-radius:8px;font-size:.82rem;color:var(--muted);">
+      <strong style="color:var(--text);">Cómo leer las señales:</strong>
+      <span style="color:#4ade80;">▲</span> mejora respecto a las primeras sesiones ·
+      <span style="color:#f87171;">▼</span> retroceso ·
+      <span style="color:#94a3b8;">= 0.0</span> sin cambio.
+      Los iconos indican intensidad: ✅ excelente · 🛠 en construcción · 🎯 objetivo alcanzado · ⚖️ estable.
+    </div>
+  </div>
+</details>
+{% endif %}
+
+{# ── Inventario ── #}
+<h2>Inventario</h2>
 <div class="grid cards-3">
-
-  {% set metrics = [
-    ('Sesiones', 'sessions', '🗂'),
-    ('Cambios sistémicos', 'changes', '🔧'),
-    ('Evidencias', 'evidences', '📋'),
-  ] %}
-
-  {% for label, key, icon in metrics %}
+  {% for label, key, icon in [('Sesiones','sessions','🗂'), ('Cambios sistémicos','changes','🔧'), ('Evidencias','evidences','📋')] %}
     {% set declared = info.inventory_declared.get(key, '?') %}
     {% set real = info.inventory_real.get(key, 0) %}
     <div class="card">
@@ -101,170 +361,65 @@
       <div class="card-value">{{ real }}</div>
       <div class="card-sub">
         {% if declared != '?' %}
-          {% if real == declared %}
-            <span class="diff-ok">✓ {{ declared }} declarados</span>
-          {% else %}
-            <span class="diff-warn">⚠ {{ declared }} declarados · {{ real }} reales</span>
-          {% endif %}
-        {% else %}
-          Sin declaración
+          {% if real == declared %}<span class="diff-ok">✓ {{ declared }} declarados</span>
+          {% else %}<span class="diff-warn">⚠ {{ declared }} decl. · {{ real }} reales</span>{% endif %}
         {% endif %}
       </div>
     </div>
   {% endfor %}
-
 </div>
 
-{# ── Sprints ──────────────────────────────────────────────────────────── #}
+{# ── Sprints ── #}
 {% if info.sprint_status %}
-<h2>Progreso de Sprints</h2>
+<h2>Sprints</h2>
 <div class="panel">
   {% set sprints = info.sprint_status.items() | list %}
   {% set total = sprints | length %}
   {% set done_count = sprints | selectattr('1', 'equalto', 'DONE') | list | length %}
   {% set pct = (done_count / total * 100) | round(0) | int if total > 0 else 0 %}
-
-  <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-    <div style="flex:1;">
-      <div class="progress-bar" style="height:12px;">
-        <div class="progress-fill fill-done" style="width:{{ pct }}%;"></div>
-      </div>
-    </div>
-    <div style="font-size:1.2rem;font-weight:800;color:var(--accent);min-width:60px;text-align:right;">
-      {{ done_count }}/{{ total }}
-    </div>
-    <div style="color:var(--muted);font-size:.88rem;">completados</div>
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;">
+    <div style="flex:1;"><div class="progress-bar" style="height:10px;"><div class="progress-fill fill-done" style="width:{{ pct }}%;"></div></div></div>
+    <div style="font-size:1.3rem;font-weight:800;color:var(--accent);">{{ done_count }}/{{ total }}</div>
   </div>
-
   {% for sprint_id, status in sprints %}
   <div class="progress-row">
     <span class="sprint-label">{{ sprint_id }}</span>
     <div class="progress-bar">
-      {% if status == 'DONE' %}
-        <div class="progress-fill fill-done" style="width:100%;"></div>
-      {% else %}
-        <div class="progress-fill fill-pending" style="width:20%;opacity:.4;"></div>
-      {% endif %}
+      {% if status == 'DONE' %}<div class="progress-fill fill-done" style="width:100%;"></div>
+      {% else %}<div class="progress-fill" style="width:15%;background:var(--line);"></div>{% endif %}
     </div>
     <span class="sprint-status">
-      {% if status == 'DONE' %}
-        <span class="done-text">✓ DONE</span>
-      {% else %}
-        <span class="pending-text">⏳ {{ status }}</span>
-      {% endif %}
+      {% if status == 'DONE' %}<span class="done-text">✓ DONE</span>
+      {% else %}<span class="pending-text">⏳ {{ status }}</span>{% endif %}
     </span>
   </div>
   {% endfor %}
 </div>
 {% endif %}
 
-{# ── Tipos de tarea ───────────────────────────────────────────────────── #}
-{% if info.task_type_counts %}
-<div class="grid cards-2" style="margin-top:36px;gap:14px;">
-
-  <div>
-    <h2 style="margin-top:0;">Tipos de tarea</h2>
-    <div class="panel" style="margin-top:0;">
-      {% set total_tasks = info.task_type_counts.values() | sum %}
-      {% for task_type, count in info.task_type_counts.items() | sort(attribute='1', reverse=True) %}
-        {% set pct = (count / total_tasks * 100) | round(0) | int if total_tasks > 0 else 0 %}
-        <div class="progress-row" style="margin:8px 0;">
-          <span style="min-width:170px;font-size:.85rem;color:var(--text);">{{ task_type }}</span>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:{{ pct }}%;background:var(--accent2);"></div>
-          </div>
-          <span style="min-width:40px;text-align:right;font-size:.85rem;font-weight:600;">{{ count }}</span>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-
-  {% if info.role_counts %}
-  <div>
-    <h2 style="margin-top:0;">Roles activados</h2>
-    <div class="panel" style="margin-top:0;">
-      {% set max_role = info.role_counts.values() | max %}
-      {% for role, count in info.role_counts.items() %}
-        {% set pct = (count / max_role * 100) | round(0) | int if max_role > 0 else 0 %}
-        <div class="progress-row" style="margin:8px 0;">
-          <span style="min-width:170px;font-size:.82rem;color:var(--muted);">{{ role }}</span>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width:{{ pct }}%;background:var(--accent);"></div>
-          </div>
-          <span style="min-width:40px;text-align:right;font-size:.85rem;font-weight:600;">{{ count }}</span>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-  {% endif %}
-
-</div>
-{% endif %}
-
-{# ── Últimas sesiones ─────────────────────────────────────────────────── #}
+{# ── Últimas sesiones ── #}
 {% if info.sessions %}
 <h2>Últimas sesiones</h2>
 <div class="panel" style="padding:0;overflow:hidden;">
   <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Tipo</th>
-        <th>Roles</th>
-        <th>Estado</th>
-        <th>Fecha</th>
-      </tr>
-    </thead>
+    <thead><tr><th>ID</th><th>Tipo</th><th>Estado</th><th>Fecha</th></tr></thead>
     <tbody>
-      {% for s in info.sessions[-10:] | reverse %}
+      {% for s in info.sessions[-8:] | reverse %}
       <tr>
-        <td><code style="font-size:.8rem;color:var(--accent2);">{{ s.get('session_id', '?') }}</code></td>
-        <td><span class="tag" style="font-size:.75rem;">{{ s.get('task_type', '?') }}</span></td>
-        <td style="font-size:.8rem;color:var(--muted);">
-          {{ s.get('roles_activated', []) | join(', ') | truncate(40) }}
-        </td>
+        <td><code style="font-size:.78rem;color:var(--accent2);">{{ s.get('session_id','?') }}</code></td>
+        <td><span class="tag" style="font-size:.75rem;">{{ s.get('task_type','?') }}</span></td>
         <td>
           {% if s.get('status') == 'closed' %}
-            <span class="badge badge-go" style="font-size:.75rem;padding:2px 8px;">closed</span>
+            <span class="badge badge-go" style="font-size:.72rem;padding:2px 8px;">closed</span>
           {% else %}
-            <span class="badge badge-unknown" style="font-size:.75rem;padding:2px 8px;">{{ s.get('status', '?') }}</span>
+            <span class="badge badge-unknown" style="font-size:.72rem;padding:2px 8px;">{{ s.get('status','?') }}</span>
           {% endif %}
         </td>
-        <td style="font-size:.82rem;color:var(--muted);">{{ s.get('created_at', '')[:10] }}</td>
+        <td style="font-size:.82rem;color:var(--muted);">{{ s.get('created_at','')[:10] }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
-</div>
-{% endif %}
-
-{# ── Informe de evolución ─────────────────────────────────────────────── #}
-{% if info.has_report %}
-<div class="section-header">
-  <h2 style="margin:0;">Informe de evolución</h2>
-</div>
-<div class="panel" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-  <div>
-    <div style="font-size:.88rem;color:var(--muted);">
-      Generado: <strong style="color:var(--text);">{{ info.report_mtime or 'desconocido' }}</strong>
-      {% if info.report_stale == true %}
-        &nbsp;<span class="badge badge-warn" style="font-size:.75rem;">desactualizado</span>
-      {% elif info.report_stale == false %}
-        &nbsp;<span class="badge badge-go" style="font-size:.75rem;">al día</span>
-      {% endif %}
-    </div>
-    <div style="font-size:.82rem;color:var(--muted);margin-top:4px;">
-      Incluye gráficas de actividad, mezcla de trabajo, crecimiento del corpus y ventanas autónomas.
-    </div>
-  </div>
-  <a href="/pack-report?path={{ info.path | urlencode }}" target="_blank" class="btn btn-go">
-    📊 Abrir informe completo
-  </a>
-</div>
-{% else %}
-<h2>Informe de evolución</h2>
-<div class="panel">
-  <p>No hay informe generado para este pack. Ejecuta <code>python3 tools/generate_bago_evolution_report.py</code> desde el directorio del pack para crearlo.</p>
 </div>
 {% endif %}
 
