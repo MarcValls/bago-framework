@@ -1,0 +1,20 @@
+{
+  "change_id": "BAGO-CHG-040",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-001 SES-2: sistema de producción máxima de artefactos",
+  "motivation": "La métrica Producción artefactos estaba en 4.0/10. SES-2 introduce artifact_counter.py para medición automática, GUIA_ARTEFACTOS.md con estrategias y 3 plantillas (system_change, analysis, sprint) para reducir fricción y escalar la producción.",
+  "status": "applied",
+  "affected_components": [
+    "tools/artifact_counter.py",
+    "docs/operation/GUIA_ARTEFACTOS.md",
+    "docs/operation/templates/tpl_system_change.md",
+    "docs/operation/templates/tpl_analysis.md",
+    "docs/operation/templates/tpl_sprint.md",
+    "workflows/W7_FOCO_SESION.md"
+  ],
+  "related_evidence": "BAGO-EVD-041",
+  "created_at": "2026-04-18T12:35:00Z",
+  "updated_at": "2026-04-18T12:35:00Z",
+  "author": "role_architect"
+}

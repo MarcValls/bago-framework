@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-030",
+  "type": "closure",
+  "related_to": ["BAGO-CHG-030", "SES-INS-2026-04-14-001"],
+  "summary": "Ecosistema de instaladores cross-platform completado y organizado en dist/ con estructura por plataforma y README en cada carpeta.",
+  "details": "Se instaló NSIS 3.11 en macOS 13 vía botella Sonoma y se compiló BAGO_installer_windows.exe (747KB). Todos los instaladores se reorganizaron en dist/: macos/.pkg, unix/.sh, windows/.exe+.ps1+.zip, source/.nsi. Cada carpeta contiene README con instrucciones de uso. bago-make-installer.sh actualizado para generar directamente en dist/. pack.json y CHECKSUMS actualizados. Validación final: GO manifest / GO state / GO pack.",
+  "status": "recorded",
+  "recorded_at": "2026-04-14T02:44:00Z"
+}

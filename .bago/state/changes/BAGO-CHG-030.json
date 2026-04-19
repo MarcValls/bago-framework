@@ -1,0 +1,35 @@
+{
+  "change_id": "BAGO-CHG-030",
+  "title": "Ecosistema de instaladores cross-platform y reorganización en dist/",
+  "type": "architecture",
+  "severity": "minor",
+  "status": "validated",
+  "normalized_status": "validated",
+  "motivation": "Completar el ecosistema de distribución de BAGO AMTEC con instaladores nativos para todas las plataformas, organizados en una estructura dist/ coherente y documentada con README por carpeta.",
+  "scope": [
+    "dist/macos/BAGO_installer.pkg",
+    "dist/macos/README.md",
+    "dist/unix/BAGO_installer.sh",
+    "dist/unix/README.md",
+    "dist/windows/BAGO_installer_windows.exe",
+    "dist/windows/BAGO_installer_windows.ps1",
+    "dist/windows/BAGO_installer_windows.zip",
+    "dist/windows/README.md",
+    "dist/source/BAGO_installer.nsi",
+    "dist/source/README.md",
+    "bago-make-installer.sh",
+    ".bago/pack.json",
+    ".bago/CHECKSUMS.sha256"
+  ],
+  "impacts": [
+    "instalador nativo .exe Windows compilado con NSIS 3.11 (747KB, asistente gráfico 4 páginas)",
+    "instaladores organizados por plataforma en dist/macos, dist/unix, dist/windows, dist/source",
+    "cada carpeta dist/ documentada con README propio",
+    "bago-make-installer.sh regenera todo en dist/ automáticamente",
+    "raíz del proyecto limpia de artefactos de distribución"
+  ],
+  "requires_migration": false,
+  "validation_result": "GO",
+  "created_at": "2026-04-14T02:44:00Z",
+  "updated_at": "2026-04-14T02:44:00Z"
+}

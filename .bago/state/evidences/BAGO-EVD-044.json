@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-044",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-043",
+    "SES-OFF-2026-04-18-001"
+  ],
+  "summary": "OFF Ronda 1 cerrada: 1 útil, 3 roles, sin preflight. Resultado esperado para grupo de control.",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T13:15:00Z",
+  "details": "OFF Ronda 1 cerrada. Sin preflight. 3 roles activados (role_architect, role_auditor, role_organizer). 1 artefacto útil: NOTAS_SESION_LIBRE.md — nota genérica de bajo valor sin objetivo concreto."
+}

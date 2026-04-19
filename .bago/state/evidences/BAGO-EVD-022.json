@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-022",
+  "type": "decision",
+  "related_to": ["BAGO-CHG-022", "SES-HYB-2026-04-11-001"],
+  "summary": "La comparación real entre flat y línea canónica previa confirmó que flat era mejor en repo-first, prompting y pedagogía; la 2.2 absorbe esas fortalezas sin romper el canon.",
+  "details": "Se partió de la línea canónica previa final auditada y se reintrodujeron agentes de bootstrap, fábrica de prompts, mapa del sistema, glosario, ejemplos y un onboarding menos centrado en auditoría.",
+  "status": "recorded",
+  "recorded_at": "2026-04-11T14:00:00Z"
+}

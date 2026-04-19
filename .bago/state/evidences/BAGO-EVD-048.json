@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-048",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-047",
+    "SES-OFF-2026-04-18-003"
+  ],
+  "summary": "OFF R3 cerrada: 1 útil, 4 roles, sin preflight, 0 decisiones.",
+  "details": "Sesión libre sin objetivo concreto. Produce NOTAS_DOCUMENTACION.md con observaciones genéricas sobre lo que podría mejorar, sin plan ni criterio de completitud. 4 roles activados por inercia. Sin decisiones documentadas.",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T13:39:00Z"
+}

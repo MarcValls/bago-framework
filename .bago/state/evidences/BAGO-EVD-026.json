@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-026",
+  "type": "validation",
+  "related_to": ["BAGO-CHG-026", "SES-ROLE-2026-04-13-001"],
+  "summary": "Los roles de supervisión dejaron de vivir bajo gobierno y el árbol de roles quedó alineado con las familias declaradas.",
+  "details": "Se movieron AUDITOR_CANONICO y VERTICE a roles/supervision, se actualizaron referencias documentales mínimas y el paquete completo volvió a validar en verde tras regenerar TREE y CHECKSUMS.",
+  "status": "recorded",
+  "recorded_at": "2026-04-13T16:21:33Z"
+}

@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-MIG-001",
+  "type": "migration_trace",
+  "related_to": ["BAGO-CHG-021"],
+  "summary": "Migración fiel de la v1 original a estructuras línea canónica previa sin pérdida del original.",
+  "details": "Se tradujeron 3 sesiones y 5 cambios desde markdown v1 a JSON estructurado, manteniendo source_path y preservando copias del material original.",
+  "status": "recorded",
+  "recorded_at": "2026-04-11T12:30:00Z"
+}

@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-001",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-002",
+    "SES-HARVEST-2026-04-19-002"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-19-002",
+  "details": "Decisión: no se donde has explorado y que archivos | Descarte: No se que has explorado | Próximo paso: Analizar el repo | Ficheros afectados: (exploración sin artefactos de fichero)",
+  "status": "recorded",
+  "recorded_at": "2026-04-19T11:08:31.831293+00:00"
+}

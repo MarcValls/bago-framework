@@ -1,0 +1,11 @@
+{
+  "evidence_id": "BAGO-EVD-055",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-054"
+  ],
+  "summary": "ESCENARIO-003 diseñado: cosecha contextual con disparador semántico.",
+  "details": "Escenario de 4 fases: F1 tools (context_detector + cosecha.py + W9), F2 integración dashboard, F3 3 cosechas reales, F4 evaluación. Hipótesis: disparador por contexto > disparador temporal. Target: >=2 decisiones/harvest, >=2.5 útiles/harvest, <=5min por cosecha. Origen: conclusiones E001+E002 (modo OFF produce 0 decisiones aunque haya valor cognitivo).",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T14:01:00Z"
+}

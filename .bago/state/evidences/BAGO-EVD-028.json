@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-028",
+  "type": "decision",
+  "related_to": ["BAGO-CHG-028", "SES-PERF-2026-04-14-001"],
+  "summary": "La documentación operativa ya refleja los runs importantes recientes de GitHub Models y los presets recomendados tras introducir backoff, rate limit global y reporte endurecido.",
+  "details": "tools/perf/README.md incorpora el run inestable 10x30 sin limitador, la batería comparativa con global_rate_limit_rps de 0.5, 0.8 y 1.0, y un comando base recomendado. docs/DECISIONES.md fija como decisión canónica que github_models debe operarse con backoff, limitador global opcional y reporte endurecido.",
+  "status": "recorded",
+  "recorded_at": "2026-04-14T00:36:00Z"
+}

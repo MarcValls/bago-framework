@@ -1,0 +1,35 @@
+{
+  "bago_version": "2.4-v2rc",
+  "canon_version": "2.4-v2rc",
+  "system_health": "stable",
+  "active_session_id": null,
+  "active_task_type": null,
+  "active_roles": [],
+  "open_changes": [],
+  "active_scenarios": [],
+  "active_workflows": [],
+  "history_migration_status": "clean_start",
+  "updated_at": "2026-04-18T16:11:54.000000+00:00",
+  "v2_status": "completed",
+  "notes": "",
+  "last_completed_session_id": null,
+  "last_completed_task_type": null,
+  "last_completed_workflow": null,
+  "last_completed_roles": [],
+  "last_completed_change_id": null,
+  "last_completed_evidence_id": null,
+  "inventory": {
+    "sessions": 0,
+    "changes": 0,
+    "evidences": 0
+  },
+  "last_validation": {
+    "pack": "GO",
+    "state": "GO",
+    "manifest": "GO",
+    "recorded_at": "2026-04-18T16:11:54.000000+00:00"
+  },
+  "baseline_code": "clean_start_20260418_161154",
+  "baseline_status": "active_clean_core",
+  "sprint_status": {}
+}

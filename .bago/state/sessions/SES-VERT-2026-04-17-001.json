@@ -1,0 +1,41 @@
+{
+  "session_id": "SES-VERT-2026-04-17-001",
+  "task_type": "system_change",
+  "selected_workflow": "workflow_system_change",
+  "roles_activated": ["role_vertice"],
+  "user_goal": "Intervención Vértice evolutivo: reconciliar inventario, normalizar identidad del rol, separar capas de estado y endurecer validaciones.",
+  "status": "closed",
+  "created_at": "2026-04-17T15:44:49Z",
+  "updated_at": "2026-04-17T15:44:49Z",
+  "summary": "Intervención Vértice completada. Inventario reconciliado, identidad del rol normalizada a role_vertice, capas de estado separadas formalmente, validaciones endurecidas. Todos los validadores en GO.",
+  "artifacts": [
+    "state/sessions/SES-VERT-2026-04-17-001.json",
+    "state/evidences/BAGO-EVD-036.json",
+    "state/evidences/BAGO-EVD-037.json",
+    "state/evidences/BAGO-EVD-038.json",
+    "state/changes/BAGO-CHG-036.json",
+    "state/changes/BAGO-CHG-037.json",
+    "state/global_state.json",
+    "state/ESTADO_BAGO_ACTUAL.md",
+    "state/repo_context.json",
+    "roles/supervision/VERTICE.md",
+    "pack.json",
+    "core/supervision/VERTICE.md",
+    "core/06_MATRIZ_DE_ACTIVACION.md",
+    "core/orchestrator/ROUTER_DE_ROLES.md",
+    "core/03_ESTADO_BAGO.md",
+    "tools/validate_state.py",
+    "tools/validate_manifest.py",
+    "tools/repo_context_guard.py",
+    "TREE.txt",
+    "CHECKSUMS.sha256"
+  ],
+  "decisions": [
+    "No crear registros retroactivos de Sprint 3; corregir punteros para que apunten a lo que existe.",
+    "Usar role_vertice como único id operativo del rol; deprecar GUIA_VERTICE y role_structural_reviewer como alias históricos.",
+    "Separar formalmente la capa de estado del pack de la capa de estado del repo externo.",
+    "global_state.json es fuente canónica; ESTADO_BAGO_ACTUAL.md es snapshot legible del pack; repo_context.json es solo puntero externo."
+  ],
+  "related_change": "BAGO-CHG-036",
+  "related_evidence": "BAGO-EVD-038"
+}

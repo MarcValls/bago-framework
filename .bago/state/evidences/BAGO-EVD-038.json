@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-038",
+  "type": "validation",
+  "related_to": ["SES-VERT-2026-04-17-001", "BAGO-CHG-037"],
+  "summary": "Validaciones endurecidas: validate_state.py ahora bloquea si review_role es irresolvible o si ESTADO_BAGO_ACTUAL.md describe como activo un sprint ya DONE.",
+  "details": "Se añadieron dos checks a validate_state.py: (1) review_role en pack.json debe resolver a un rol declarado con ese id en roles/ — fallo si no existe o si el id cambió sin actualizar pack.json; (2) la sección 'Objetivo actual' de ESTADO_BAGO_ACTUAL.md no debe mencionar un sprint que sprint_status marque como DONE. Se añadió también check de review_role como string no vacío en validate_manifest.py. Se protegió repo_context_guard.py para preservar campos 'role' y 'note' en sincronizaciones futuras.",
+  "status": "recorded",
+  "recorded_at": "2026-04-17T15:44:49Z"
+}

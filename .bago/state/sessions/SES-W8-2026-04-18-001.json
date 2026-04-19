@@ -1,0 +1,32 @@
+{
+  "session_id": "SES-W8-2026-04-18-001",
+  "task_type": "analysis",
+  "selected_workflow": "w8_exploracion",
+  "roles_activated": ["role_auditor"],
+  "user_goal": "Exploración aplicada completa de MECANOGRAFIA.html: diagnóstico de estado, bugs, limitaciones pedagógicas e ideas de mejora priorizadas.",
+  "status": "closed",
+  "bago_mode": "on",
+  "created_at": "2026-04-18T20:00:00Z",
+  "updated_at": "2026-04-18T20:30:00Z",
+  "target_file": "cleanversion/BAGO_2.4-v2rc_clean_20260418_161154/MECANOGRAFIA.html",
+  "target_file_lines": 543,
+  "artifacts_planned": ["state/evaluations/EVAL-MECANOGRAFIA-W8-001.md"],
+  "artifacts": ["state/evaluations/EVAL-MECANOGRAFIA-W8-001.md"],
+  "decisions": [
+    "Bugs double-fire (handleChar, líneas 415-440) y WPM-pausa (línea 322) son prioridad 1 — afectan correctness de métricas.",
+    "L9 silabas debe filtrar solo por pool acumulado L1-L8, no por cons/voc globales.",
+    "Vocabulario de 15 palabras es el gap de contenido más fácil de resolver (alta prioridad, bajo esfuerzo).",
+    "Mejora ambiciosa identificada: sistema de texto fluido con análisis de errores por tecla y dificultad adaptativa."
+  ],
+  "bugs_found": [
+    "Bug A: double-fire handleChar en Firefox/mobile (líneas 415-440)",
+    "Bug B: WPM cuenta tiempo de pausa (línea 322)",
+    "Bug C: modo palabras no fuerza vocab (líneas 494-499 + 284-288)"
+  ],
+  "top3_quick_wins": [
+    "Fix double-fire guard ~10 líneas",
+    "Ampliar vocabulario 15→80 palabras + fix modo palabras ~20 líneas",
+    "Fix WPM pausa + WPM récord en header ~15 líneas"
+  ],
+  "summary": "SES-W8-001. Exploración completa MECANOGRAFIA.html 543 líneas. 3 bugs críticos, 10 limitaciones, 23 ideas priorizadas en 5 categorías, top-3 quick wins, 1 mejora ambiciosa (texto fluido adaptativo). 4 decisiones. 1 artefacto: EVAL-MECANOGRAFIA-W8-001.md."
+}

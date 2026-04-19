@@ -1,0 +1,2 @@
+timestamp_utc,agent,iteration,ok,error,latency_ms,input_tokens,output_tokens,total_tokens
+2026-04-13T21:02:25.877485+00:00,AGENTE_01_INTEGRADOR_REPO,1,True,,770,677,418,1095

@@ -1,0 +1,27 @@
+{
+  "started_at_utc": "2026-04-13T21:44:18.772825+00:00",
+  "ended_at_utc": "2026-04-13T21:44:30.958621+00:00",
+  "duration_s": 12.186,
+  "simulate": false,
+  "model": "openai/gpt-4.1",
+  "agents": 1,
+  "iterations_per_agent": 1,
+  "total_requests": 1,
+  "ok_requests": 1,
+  "error_requests": 0,
+  "error_rate": 0.0,
+  "throughput_rps": 0.082,
+  "latency_ms_avg": 11577,
+  "latency_ms_p50": 11577,
+  "latency_ms_p95": 11577,
+  "latency_ms_p99": 11577,
+  "by_agent": {
+    "AGENTE_01_INTEGRADOR_REPO": {
+      "requests": 1,
+      "ok": 1,
+      "errors": 0,
+      "latency_ms_avg": 11577,
+      "latency_ms_p95": 11577
+    }
+  }
+}

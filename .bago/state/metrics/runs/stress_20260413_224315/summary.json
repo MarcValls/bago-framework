@@ -1,0 +1,90 @@
+{
+  "started_at_utc": "2026-04-13T20:43:15.544083+00:00",
+  "ended_at_utc": "2026-04-13T20:43:51.529783+00:00",
+  "duration_s": 35.986,
+  "simulate": true,
+  "model": "gpt-5.4-mini",
+  "agents": 10,
+  "iterations_per_agent": 30,
+  "total_requests": 300,
+  "ok_requests": 291,
+  "error_requests": 9,
+  "error_rate": 0.03,
+  "throughput_rps": 8.337,
+  "latency_ms_avg": 976.66,
+  "latency_ms_p50": 993.0,
+  "latency_ms_p95": 1552.05,
+  "latency_ms_p99": 1592.1,
+  "by_agent": {
+    "AGENTE_03_REVISOR_SEGURIDAD": {
+      "requests": 30,
+      "ok": 27,
+      "errors": 3,
+      "latency_ms_avg": 1018.2,
+      "latency_ms_p95": 1540.4
+    },
+    "AGENTE_06_ORQUESTADOR_CENTRAL": {
+      "requests": 30,
+      "ok": 30,
+      "errors": 0,
+      "latency_ms_avg": 1099.1,
+      "latency_ms_p95": 1560.55
+    },
+    "AGENTE_07_ANALISTA": {
+      "requests": 30,
+      "ok": 28,
+      "errors": 2,
+      "latency_ms_avg": 791.97,
+      "latency_ms_p95": 1512.0
+    },
+    "AGENTE_02_REVISOR_PERFORMANCE": {
+      "requests": 30,
+      "ok": 30,
+      "errors": 0,
+      "latency_ms_avg": 927.5,
+      "latency_ms_p95": 1446.35
+    },
+    "AGENTE_10_ORGANIZADOR": {
+      "requests": 30,
+      "ok": 29,
+      "errors": 1,
+      "latency_ms_avg": 1053,
+      "latency_ms_p95": 1582.45
+    },
+    "AGENTE_01_INTEGRADOR_REPO": {
+      "requests": 30,
+      "ok": 29,
+      "errors": 1,
+      "latency_ms_avg": 943.5,
+      "latency_ms_p95": 1518.0
+    },
+    "AGENTE_04_REVISOR_UX": {
+      "requests": 30,
+      "ok": 30,
+      "errors": 0,
+      "latency_ms_avg": 975.3,
+      "latency_ms_p95": 1567.4
+    },
+    "AGENTE_09_GENERADOR": {
+      "requests": 30,
+      "ok": 30,
+      "errors": 0,
+      "latency_ms_avg": 1009.93,
+      "latency_ms_p95": 1499.3
+    },
+    "AGENTE_05_MAESTRO_BAGO": {
+      "requests": 30,
+      "ok": 29,
+      "errors": 1,
+      "latency_ms_avg": 1046.07,
+      "latency_ms_p95": 1591.55
+    },
+    "AGENTE_08_ARQUITECTO": {
+      "requests": 30,
+      "ok": 29,
+      "errors": 1,
+      "latency_ms_avg": 902,
+      "latency_ms_p95": 1482.95
+    }
+  }
+}

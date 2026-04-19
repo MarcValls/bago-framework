@@ -1,0 +1,25 @@
+{
+  "session_id": "SES-EVAL-2026-04-15-001",
+  "task_type": "system_change",
+  "selected_workflow": "workflow_system_change",
+  "roles_activated": ["role_architect", "role_organizer", "role_validator"],
+  "user_goal": "Incorporar plantilla de evaluación brutal de BAGO como artefacto operativo auditable.",
+  "status": "closed",
+  "created_at": "2026-04-15T00:05:54Z",
+  "updated_at": "2026-04-15T00:05:54Z",
+  "decisions": [
+    "Registrar la plantilla en templates/ para reutilización directa en evaluaciones comparativas.",
+    "Enlazar la plantilla desde GUIA_DE_AUDITORIA para descubrimiento operativo.",
+    "Mantener el cambio como documental-operativo sin modificar decisiones congeladas del canon."
+  ],
+  "artifacts": [
+    ".bago/templates/plantilla_evaluacion_brutal.md",
+    ".bago/docs/operation/GUIA_DE_AUDITORIA.md",
+    ".bago/state/changes/BAGO-CHG-033.json",
+    ".bago/state/evidences/BAGO-EVD-033.json",
+    ".bago/state/sessions/SES-EVAL-2026-04-15-001.json",
+    ".bago/state/global_state.json"
+  ],
+  "related_change": "BAGO-CHG-033",
+  "related_evidence": "BAGO-EVD-033"
+}

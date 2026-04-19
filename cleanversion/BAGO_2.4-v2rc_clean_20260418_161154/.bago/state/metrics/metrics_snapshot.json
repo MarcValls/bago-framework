@@ -1,0 +1,40 @@
+{
+  "snapshot_at": "2026-04-19T12:19:05.315054+00:00",
+  "bago_version": "2.4-v2rc",
+  "totals": {
+    "sessions": 3,
+    "changes": 3,
+    "evidences": 2
+  },
+  "session_breakdown": {
+    "execution": 1,
+    "harvest": 2
+  },
+  "change_breakdown": {
+    "feature": 1,
+    "governance": 1,
+    "system_change": 1
+  },
+  "last_session": {
+    "id": "SES-EXECUTION-2026-04-19-003",
+    "task_type": "execution",
+    "workflow": "w3_ejecucion",
+    "status": "closed",
+    "todos_done": 11,
+    "todos_total": 11,
+    "completion_rate": 1.0,
+    "artifacts_modified": ["MECANOGRAFIA.html"],
+    "file_lines_after": 890
+  },
+  "productivity": {
+    "todos_resolved_last_session": 11,
+    "features_delivered_last_session": 8,
+    "bugs_fixed_last_session": 3,
+    "vocab_words_added": {
+      "ES": 75,
+      "CA": 65
+    }
+  },
+  "system_health": "stable",
+  "notes": "Primera sesión de ejecución de código real tras baseline. MECANOGRAFIA.html funcional con Runner mode."
+}

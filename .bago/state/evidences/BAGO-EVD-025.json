@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-025",
+  "type": "validation",
+  "related_to": ["BAGO-CHG-025", "SES-HARD-2026-04-13-001"],
+  "summary": "El estado nativo de BAGO quedó mejor indexado y con validación estructural cruzada sin romper la baseline material.",
+  "details": "Se ampliaron los esquemas de global_state, session, change y evidence; validate_state.py pasó a comprobar enums, campos obligatorios, inventario y referencias cruzadas; tras regenerar TREE y CHECKSUMS el paquete volvió a validar completamente en verde.",
+  "status": "recorded",
+  "recorded_at": "2026-04-13T15:44:03Z"
+}

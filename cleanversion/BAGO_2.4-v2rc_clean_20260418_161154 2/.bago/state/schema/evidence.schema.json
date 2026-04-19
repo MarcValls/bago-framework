@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BAGO Evidence",
+  "type": "object",
+  "required": ["evidence_id", "type", "related_to", "summary", "details", "status", "recorded_at"],
+  "properties": {
+    "evidence_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "decision",
+        "validation",
+        "incident",
+        "closure",
+        "handoff",
+        "measurement",
+        "migration_trace"
+      ]
+    },
+    "related_to": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "summary": {
+      "type": "string"
+    },
+    "details": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["recorded"]
+    },
+    "recorded_at": {
+      "type": "string"
+    }
+  }
+}

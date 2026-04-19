@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-021",
+  "type": "validation",
+  "related_to": ["BAGO-CHG-021", "SES-CORR-2026-04-11-001"],
+  "summary": "El pack corregido resuelve el manifiesto desde su ubicación real y preserva materialmente el historial v1.",
+  "details": "Se migraron sesiones y cambios reales desde la .bago original, se preservaron copias del origen y se densificaron los auxiliares operativos. TREE y CHECKSUMS se regenerarán al final del proceso.",
+  "status": "recorded",
+  "recorded_at": "2026-04-11T12:30:00Z"
+}

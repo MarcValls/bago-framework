@@ -1,0 +1,18 @@
+{
+  "change_id": "BAGO-CHG-037",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Separación formal de capas de estado: pack vs. repo externo",
+  "motivation": "ESTADO_BAGO_ACTUAL.md describía el Sprint 2 del repo externo como objetivo activo del pack, mientras global_state.json ya reflejaba Sprint 3 completado. repo_context.json actuaba como contenedor implícito de progreso. Se establece la separación formal de capas: global_state.json (canónica), ESTADO_BAGO_ACTUAL.md (snapshot legible del pack), repo_context.json (puntero externo). Se documenta la regla de no-contaminación en core/03_ESTADO_BAGO.md y se protege repo_context_guard.py para preservar metadatos de separación en sincronizaciones futuras.",
+  "status": "applied",
+  "affected_components": [
+    "core/03_ESTADO_BAGO.md",
+    "state/ESTADO_BAGO_ACTUAL.md",
+    "state/repo_context.json",
+    "tools/repo_context_guard.py"
+  ],
+  "related_evidence": "BAGO-EVD-036",
+  "created_at": "2026-04-17T15:44:49Z",
+  "updated_at": "2026-04-17T15:44:49Z",
+  "author": "role_vertice"
+}

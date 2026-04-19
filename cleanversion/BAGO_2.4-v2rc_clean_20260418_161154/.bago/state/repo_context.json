@@ -1,0 +1,9 @@
+{
+  "bago_host_root": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/cleanversion/BAGO_2.4-v2rc_clean_20260418_161154",
+  "note": "Ejecuta `python3 bago` para sincronizar este fichero al directorio actual.",
+  "recorded_at": "2026-04-19T11:14:55+00:00",
+  "repo_fingerprint": "f68886238e12df94eb90f2695ad3cccbf49ea3a78885eab13713fc874fa9ae35",
+  "repo_root": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA",
+  "role": "external_repo_pointer",
+  "working_mode": "external"
+}

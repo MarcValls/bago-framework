@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-042",
+  "type": "closure",
+  "related_to": ["BAGO-CHG-041", "SES-W7-2026-04-18-003"],
+  "summary": "SES-3 ESCENARIO-001 completada. ESCENARIO-002 creado con protocolo completo, W0 registrado y competition_report.py funcional.",
+  "details": "competition_report.py verificado: filtra solo sesiones ESCENARIO-002, muestra baseline W7 histórico (4.5 útiles, 2.0 roles). 4 artefactos útiles, 2 roles, preflight GO.",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T13:05:00Z"
+}

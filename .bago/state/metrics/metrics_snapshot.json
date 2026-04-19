@@ -1,0 +1,126 @@
+{
+  "captured_at": "2026-04-18T13:41:00Z",
+  "pack_version": "2.3-clean",
+  "pack_integrity": {
+    "manifest_validation": "GO",
+    "state_validation": "GO",
+    "pack_validation": "GO",
+    "last_check": "2026-04-18T13:40:00Z"
+  },
+  "inventory": {
+    "sessions": 30,
+    "changes": 28,
+    "evidences": 30
+  },
+  "sessions": {
+    "total": 19,
+    "by_task_type": {
+      "analysis": 3,
+      "system_change": 12,
+      "project_bootstrap": 2,
+      "execution": 1,
+      "repository_audit": 1
+    },
+    "by_workflow": {
+      "w7_foco_sesion": 6,
+      "w0_free_session": 3,
+      "workflow_system_change": 5,
+      "workflow_bootstrap_repo_first": 2,
+      "workflow_execution": 1,
+      "workflow_analysis": 2
+    },
+    "by_bago_mode": {
+      "on": 16,
+      "off": 3
+    }
+  },
+  "production": {
+    "avg_useful_artifacts_per_session": 4.74,
+    "avg_roles_per_session": 2.53,
+    "avg_decisions_per_session": 3.0,
+    "by_task_type": {
+      "analysis": {
+        "n": 3,
+        "useful_per_ses": 2.3,
+        "roles_per_ses": 3.0,
+        "decisions_per_ses": 2.3
+      },
+      "system_change": {
+        "n": 12,
+        "useful_per_ses": 5.8,
+        "roles_per_ses": 2.4,
+        "decisions_per_ses": 2.9
+      },
+      "project_bootstrap": {
+        "n": 2,
+        "useful_per_ses": 7.0,
+        "roles_per_ses": 3.0,
+        "decisions_per_ses": 3.5
+      },
+      "execution": {
+        "n": 1,
+        "useful_per_ses": 0.0,
+        "roles_per_ses": 2.0,
+        "decisions_per_ses": 4.0
+      },
+      "repository_audit": {
+        "n": 1,
+        "useful_per_ses": 0.0,
+        "roles_per_ses": 2.0,
+        "decisions_per_ses": 4.0
+      }
+    },
+    "by_workflow": {
+      "w7_foco_sesion": {
+        "n": 6,
+        "useful_per_ses": 3.5,
+        "roles_per_ses": 2.0,
+        "decisions_per_ses": 3.5
+      },
+      "w0_free_session": {
+        "n": 3,
+        "useful_per_ses": 1.0,
+        "roles_per_ses": 3.7,
+        "decisions_per_ses": 0.0
+      },
+      "workflow_system_change": {
+        "n": 5,
+        "useful_per_ses": 9.8,
+        "roles_per_ses": 2.4,
+        "decisions_per_ses": 3.4
+      },
+      "workflow_bootstrap_repo_first": {
+        "n": 2,
+        "useful_per_ses": 7.0,
+        "roles_per_ses": 3.0,
+        "decisions_per_ses": 3.5
+      },
+      "workflow_execution": {
+        "n": 1,
+        "useful_per_ses": 0.0,
+        "roles_per_ses": 2.0,
+        "decisions_per_ses": 4.0
+      },
+      "workflow_analysis": {
+        "n": 2,
+        "useful_per_ses": 1.5,
+        "roles_per_ses": 2.5,
+        "decisions_per_ses": 4.0
+      }
+    }
+  },
+  "escenario_002": {
+    "on": {
+      "n": 16,
+      "useful_per_ses": 5.44,
+      "roles_per_ses": 2.31,
+      "decisions_per_ses": 3.56
+    },
+    "off": {
+      "n": 3,
+      "useful_per_ses": 1.0,
+      "roles_per_ses": 3.67,
+      "decisions_per_ses": 0.0
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-043",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-042",
+    "SES-ON-2026-04-18-001"
+  ],
+  "summary": "ON Ronda 1 cerrada: 2 útiles, 2 roles, GO preflight.",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T13:15:00Z",
+  "details": "ON Ronda 1 cerrada. Preflight GO. 2 roles activados (role_architect, role_executor). 2 artefactos útiles: session_stats.py con stats por tipo/workflow/rol/tendencia y WORKFLOWS_INDEX.md actualizado con W0."
+}

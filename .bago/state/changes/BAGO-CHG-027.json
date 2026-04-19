@@ -1,0 +1,27 @@
+{
+  "change_id": "BAGO-CHG-027",
+  "title": "Validación automática de coherencia entre family declarada y carpeta física de roles",
+  "type": "governance",
+  "severity": "minor",
+  "status": "validated",
+  "normalized_status": "validated",
+  "motivation": "Evitar deriva futura entre la taxonomía lógica de roles y su ubicación física en el árbol, haciendo que el pack falle si ambas se desalinean.",
+  "scope": [
+    "tools/validate_pack.py",
+    "state/global_state.json",
+    "state/changes/BAGO-CHG-027.json",
+    "state/evidences/BAGO-EVD-027.json",
+    "state/sessions/SES-ROLE-2026-04-13-002.json",
+    "TREE.txt",
+    "CHECKSUMS.sha256"
+  ],
+  "impacts": [
+    "más rigor taxonómico",
+    "detección temprana de mezcla entre familias de roles",
+    "mejor soporte para automatización de CLI y tooling"
+  ],
+  "requires_migration": false,
+  "validation_result": "GO",
+  "created_at": "2026-04-13T17:27:31Z",
+  "updated_at": "2026-04-13T17:27:31Z"
+}

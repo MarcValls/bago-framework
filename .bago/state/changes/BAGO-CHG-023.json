@@ -1,0 +1,30 @@
+{
+  "change_id": "BAGO-CHG-023",
+  "title": "Consolidación 2.2.1 del híbrido: integración repo-first en el núcleo",
+  "type": "architecture",
+  "severity": "minor",
+  "status": "validated",
+  "normalized_status": "validated",
+  "motivation": "Eliminar la sensación de injerto entre la capa híbrida y el núcleo canónico, cerrando la versión 2.2.1 como release coherente.",
+  "scope": [
+    "pack.json",
+    "README.md",
+    "AGENT_START.md",
+    "docs/operation/INSTALACION.md",
+    "core/workflows/workflow_bootstrap_repo_first.md",
+    "core/canon/REGLAS_DE_ACTIVACION.md",
+    "core/orchestrator/*",
+    "state/global_state.json",
+    "tools/*"
+  ],
+  "impacts": [
+    "identidad de versión",
+    "integración repo-first",
+    "autocontención de .bago",
+    "validación más estricta"
+  ],
+  "requires_migration": false,
+  "validation_result": "GO",
+  "created_at": "2026-04-11T15:00:00Z",
+  "updated_at": "2026-04-11T15:00:00Z"
+}

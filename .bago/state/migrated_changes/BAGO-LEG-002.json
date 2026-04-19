@@ -1,0 +1,21 @@
+{
+  "change_id": "BAGO-LEG-002",
+  "legacy_date": "2026-04-09",
+  "source_path": "state/cambios/2026-04-09__BAGO-CHG-002__arranque-repo-real-tpv.md",
+  "source_format": "markdown_change_v1",
+  "title": "2026-04-09__BAGO-CHG-002__arranque-repo-real-tpv",
+  "type": "historical_migration",
+  "severity": "minor",
+  "status": "approved",
+  "motivation": "Ejecutar `AGENT_START` sobre un repositorio real y no sobre la base abstracta de fundación.",
+  "legacy_previous_state": "`ESTADO_BAGO_ACTUAL.md` seguía describiendo bootstrap genérico de V1 y no reflejaba el contexto real de `TPV_Contabilidad 2`.",
+  "legacy_applied_change": "sincronización del estado vivo con el contexto real (rama activa, riesgos, pendientes y siguiente paso operativo), más registro explícito del criterio de integración selectiva de ramas conflictivas.",
+  "legacy_impact_expected": "continuidad de sesión sin reconstrucción manual, menor deriva entre documentación BAGO y ejecución técnica del repo, y mejor gobernanza para próximos bloques de trabajo.",
+  "legacy_risks": "coexistencia de múltiples cambios no commiteados puede dificultar trazabilidad fina si no se atomizan commits.",
+  "summary": "Ejecutar `AGENT_START` sobre un repositorio real y no sobre la base abstracta de fundación.",
+  "raw_markdown_preserved": true,
+  "legacy_status": "aceptado",
+  "normalized_status": "approved",
+  "created_at": "2026-04-11T13:10:00Z",
+  "updated_at": "2026-04-11T13:10:00Z"
+}

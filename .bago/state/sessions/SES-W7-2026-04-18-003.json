@@ -1,0 +1,41 @@
+{
+  "session_id": "SES-W7-2026-04-18-003",
+  "task_type": "system_change",
+  "selected_workflow": "w7_foco_sesion",
+  "roles_activated": [
+    "role_architect",
+    "role_validator"
+  ],
+  "user_goal": "Crear ESCENARIO-002 competición .bago/on vs .bago/off con protocolo de medición y herramienta de comparación — para que al finalizar 10 sesiones (5+5) el sistema pueda calcular el delta de valor aportado por BAGO",
+  "status": "closed",
+  "created_at": "2026-04-18T12:57:00Z",
+  "updated_at": "2026-04-18T13:05:00Z",
+  "artifacts_planned": [
+    "state/scenarios/ESCENARIO-COMPETICION-BAGO.md",
+    "tools/competition_report.py",
+    "workflows/W0_FREE_SESSION.md",
+    "pack.json"
+  ],
+  "escenario": "ESCENARIO-001",
+  "ses_numero": 3,
+  "preflight_resultado": "GO",
+  "roles_plan": 2,
+  "artefactos_plan": 4,
+  "artifacts": [
+    "state/scenarios/ESCENARIO-COMPETICION-BAGO.md",
+    "tools/competition_report.py",
+    "workflows/W0_FREE_SESSION.md",
+    "pack.json",
+    "state/sessions/SES-W7-2026-04-18-003.json",
+    "state/changes/BAGO-CHG-041.json",
+    "state/evidences/BAGO-EVD-042.json"
+  ],
+  "artefactos_utiles_entregados": 4,
+  "decisions": [
+    "ESCENARIO-002 filtra solo sesiones con escenario=\"ESCENARIO-002\" para evitar contaminar el experimento con sesiones históricas.",
+    "W0_FREE_SESSION registrado en pack.json como workflow válido para que las sesiones off pasen validate_state.",
+    "competition_report.py soporta --baseline para ver el histórico W7 pre-experimento como referencia.",
+    "El veredicto usa Δ > 0.5 como umbral de significancia para evitar declarar ganador con diferencias marginales."
+  ],
+  "summary": "SES-3 ESCENARIO-001/002. ESCENARIO-002 creado: protocolo competición on/off, W0, competition_report.py con baseline W7=4.5 útiles y 2.0 roles/sesión."
+}

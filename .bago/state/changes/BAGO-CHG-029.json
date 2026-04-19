@@ -1,0 +1,39 @@
+{
+  "change_id": "BAGO-CHG-029",
+  "title": "Corte de revisión canónica y oficialización de BAGO AMTEC 2.2.2",
+  "type": "governance",
+  "severity": "major",
+  "status": "validated",
+  "normalized_status": "validated",
+  "motivation": "Formalizar como nueva baseline oficial los endurecimientos acumulados sobre validación, taxonomía, tooling de performance, documentación y trazabilidad que ya exceden una simple corrección menor sobre la 2.2.1.",
+  "scope": [
+    "pack.json",
+    "README.md",
+    "AGENT_START.md",
+    "START_AGENT.md",
+    "docs/MAPA_DEL_SISTEMA.md",
+    "docs/DECISIONES.md",
+    "docs/operation/GUIA_DE_USO.md",
+    "docs/operation/INSTALACION.md",
+    "docs/governance/ACTA_OFICIAL_BASELINE_BAGO_AMTEC_V2_2_2_OFICIAL.md",
+    "docs/architecture/BAGO_V2_2_2_ARQUITECTURA.md",
+    "roles/",
+    "tools/perf/README.md",
+    "tools/perf/stress_bago_agents.py",
+    "state/global_state.json",
+    "state/changes/BAGO-CHG-029.json",
+    "state/evidences/BAGO-EVD-029.json",
+    "state/sessions/SES-REL-2026-04-14-001.json",
+    "TREE.txt",
+    "CHECKSUMS.sha256"
+  ],
+  "impacts": [
+    "nueva baseline oficial 2.2.2",
+    "identidad de versión actualizada en artefactos vivos",
+    "2.2.1 preservada como antecedente histórico congelado"
+  ],
+  "requires_migration": false,
+  "validation_result": "GO",
+  "created_at": "2026-04-14T00:50:00Z",
+  "updated_at": "2026-04-14T00:50:00Z"
+}

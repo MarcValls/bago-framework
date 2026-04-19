@@ -1,0 +1,26 @@
+{
+  "change_id": "BAGO-CHG-MIG-001",
+  "title": "Normalización final de la migración histórica v1 -> línea canónica previa",
+  "type": "migration",
+  "severity": "minor",
+  "status": "validated",
+  "normalized_status": "validated",
+  "motivation": "Cerrar la inconsistencia entre el estado global, el workflow de migración histórica y el registro de cambios.",
+  "scope": [
+    "pack.json",
+    "state/global_state.json",
+    "state/migrated_changes/*.json",
+    "tools/validate_state.py",
+    "tools/validate_manifest.py",
+    "tools/validate_pack.py"
+  ],
+  "impacts": [
+    "coherencia canónica",
+    "validación más estricta",
+    "normalización de estados históricos"
+  ],
+  "requires_migration": false,
+  "validation_result": "GO",
+  "created_at": "2026-04-11T13:10:00Z",
+  "updated_at": "2026-04-11T13:10:00Z"
+}

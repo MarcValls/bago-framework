@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-023",
+  "type": "validation",
+  "related_to": ["BAGO-CHG-023", "SES-CON-2026-04-11-001"],
+  "summary": "La 2.2.1 deja de operar como injerto y pasa a integrar repo-first, bootstrap y prompting dentro del núcleo canónico.",
+  "details": "Se saneó identidad de versión, se añadió workflow oficial de bootstrap repo-first, se integró en reglas/orquestación/router/matriz, se volvió a hacer .bago autocontenida y se endurecieron los validadores.",
+  "status": "recorded",
+  "recorded_at": "2026-04-11T15:00:00Z"
+}

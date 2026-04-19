@@ -1,0 +1,28 @@
+{
+  "change_id": "BAGO-CHG-024",
+  "title": "Oficialización de BAGO AMTEC V2.2.1 como baseline de referencia",
+  "type": "governance",
+  "severity": "minor",
+  "status": "validated",
+  "normalized_status": "validated",
+  "motivation": "Congelar una baseline única y estable para comparaciones futuras, auditoría y control de regresiones.",
+  "scope": [
+    "pack.json",
+    "state/global_state.json",
+    "docs/governance/ACTA_OFICIAL_BASELINE_BAGO_AMTEC_V2_2_1_OFICIAL.md",
+    "state/sessions/SES-OFC-2026-04-11-001.json",
+    "state/changes/BAGO-CHG-024.json",
+    "state/evidences/BAGO-EVD-024.json",
+    "TREE.txt",
+    "CHECKSUMS.sha256"
+  ],
+  "impacts": [
+    "baseline oficial congelada",
+    "trazabilidad formal de referencia",
+    "sanidad de identidad de versión"
+  ],
+  "requires_migration": false,
+  "validation_result": "GO",
+  "created_at": "2026-04-11T18:00:00Z",
+  "updated_at": "2026-04-11T18:00:00Z"
+}

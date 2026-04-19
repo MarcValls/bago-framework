@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-031",
+  "type": "closure",
+  "related_to": ["BAGO-CHG-031"],
+  "summary": "Correcciones aplicadas y verificadas en ambos documentos institucionales BAGO",
+  "details": "1. Renombrado ' MANUAL INSTITUCIONAL DEL SISTEMA BAGO.md' → eliminado espacio inicial. 2. Añadido control documental (código BAGO-DF-001, versión v1.0, fecha, propietario, estado) al inicio del Documento Formal. 3. Cambiado 'Base canónica inicial' → 'v1.0 · 13/04/2026'. 4. Normalizado heading # → ## en secciones 27, 28, 29, 30 del Documento Formal. 5. Actualizada referencia cruzada en el Manual con código BAGO-DF-001. 6. Ambos documentos registrados en el sistema de cambios BAGO AMTEC.",
+  "status": "recorded",
+  "recorded_at": "2026-04-14T02:57:38Z"
+}

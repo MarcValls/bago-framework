@@ -1,0 +1,25 @@
+{
+  "change_id": "BAGO-CHG-021",
+  "title": "Corrección del pack línea canónica previa según auditoría crítica",
+  "type": "architecture",
+  "severity": "major",
+  "status": "validated",
+  "motivation": "Resolver hallazgos críticos sobre manifiesto, árbol final, fidelidad de migración y densidad operativa.",
+  "scope": [
+    "pack.json",
+    "TREE.txt",
+    "CHECKSUMS.sha256",
+    "state/migrated_sessions",
+    "state/migrated_changes",
+    "docs/migration",
+    "prompts",
+    "templates",
+    "tools"
+  ],
+  "impacts": ["mejor resolubilidad", "más fidelidad histórica", "más verificabilidad"],
+  "requires_migration": true,
+  "validation_result": "GO",
+  "created_at": "2026-04-11T12:30:00Z",
+  "updated_at": "2026-04-11T12:30:00Z",
+  "normalized_status": "validated"
+}

@@ -1,0 +1,34 @@
+{
+  "session_id": "SES-ON-2026-04-18-001",
+  "task_type": "system_change",
+  "selected_workflow": "w7_foco_sesion",
+  "roles_activated": [
+    "role_architect",
+    "role_executor"
+  ],
+  "user_goal": "Crear tools/session_stats.py con resumen estadístico por tipo de tarea — para que cualquier operador vea en 1 comando el estado productivo histórico del pack",
+  "status": "closed",
+  "bago_mode": "on",
+  "escenario": "ESCENARIO-002",
+  "ronda": 1,
+  "created_at": "2026-04-18T13:11:00Z",
+  "updated_at": "2026-04-18T13:15:00Z",
+  "artifacts_planned": [
+    "tools/session_stats.py",
+    "docs/operation/WORKFLOWS_INDEX_UPDATE.md",
+    "workflows/WORKFLOWS_INDEX.md"
+  ],
+  "preflight_resultado": "GO",
+  "artifacts": [
+    "tools/session_stats.py",
+    "workflows/WORKFLOWS_INDEX.md",
+    "state/sessions/SES-ON-2026-04-18-001.json",
+    "state/changes/BAGO-CHG-042.json",
+    "state/evidences/BAGO-EVD-043.json"
+  ],
+  "decisions": [
+    "session_stats.py muestra tendencia primeras-vs-últimas 5 sesiones cuando hay >=10 sesiones.",
+    "WORKFLOWS_INDEX actualizado con W0 marcado explícitamente como solo-ESCENARIO-002."
+  ],
+  "summary": "ON Ronda 1. session_stats.py + WORKFLOWS_INDEX actualizado. 2 útiles, 2 roles, preflight GO."
+}

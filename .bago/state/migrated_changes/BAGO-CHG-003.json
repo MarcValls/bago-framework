@@ -1,0 +1,21 @@
+{
+  "change_id": "BAGO-CHG-003",
+  "legacy_date": "2026-04-10",
+  "source_path": "state/cambios/2026-04-10__BAGO-CHG-003__cierre-sprint-1b-compras-y-cierre-worktrees-swarm.md",
+  "source_format": "markdown_change_v1",
+  "title": "2026-04-10__BAGO-CHG-003__cierre-sprint-1b-compras-y-cierre-worktrees-swarm",
+  "type": "historical_migration",
+  "severity": "major",
+  "status": "approved",
+  "motivation": "Se ejecutó el cierre técnico de Sprint 1b de Compras sobre la rama `codex/full-app-base`, corrigiendo la desalineación entre frontend y backend de `purchaseOrders`, validando gates del sprint y cerrando los worktrees del swarm `compras-mvp-sprint-1a`.",
+  "legacy_previous_state": "",
+  "legacy_applied_change": "1. El modal de Compras deja de depender de un shape frontend ad hoc y consume el contrato real de `purchaseOrders`.\n2. El selector de proveedores reutiliza el catálogo local de `entities` en vez de requerir una API nueva de suppliers para el sprint.\n3. Los documentos de Sprint 1a con referencias temporales a “mañana 9 abril” pasan a histórico/contextual.\n4. El cierre del swarm se ejecuta sobre worktrees limpios; las ramas permanecen existentes a la espera de la decisión de consolidación/borrado.",
+  "legacy_impact_expected": "",
+  "legacy_risks": "",
+  "summary": "Se ejecutó el cierre técnico de Sprint 1b de Compras sobre la rama `codex/full-app-base`, corrigiendo la desalineación entre frontend y backend de `purchaseOrders`, validando gates del sprint y cerrando los worktrees del swarm `compras-mvp-sprint-1a`.",
+  "raw_markdown_preserved": true,
+  "legacy_status": "aceptado",
+  "normalized_status": "approved",
+  "created_at": "2026-04-11T13:10:00Z",
+  "updated_at": "2026-04-11T13:10:00Z"
+}

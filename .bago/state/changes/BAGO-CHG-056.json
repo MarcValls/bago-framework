@@ -1,0 +1,19 @@
+{
+  "change_id": "BAGO-CHG-056",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Cosecha contextual W9: Elegimos disparador por densidad de señal cognitiva: umbral ",
+  "motivation": "Formalizar exploración libre. Decisión: Elegimos disparador por densidad de señal cognitiva: umbral 2 señales de peso alto activa la cosecha. Descarte: Descartamos disparador temporal fijo porque interrumpe el flujo antes de que el pensamiento madure.",
+  "status": "applied",
+  "affected_components": [
+    "bago-viewer/app.py",
+    "bago-viewer/start.sh",
+    "bago-viewer/templates/base.html",
+    "bago-viewer/templates/pack.html",
+    ".bago/"
+  ],
+  "related_evidence": "BAGO-EVD-057",
+  "created_at": "2026-04-18T14:19:19.517412+00:00",
+  "updated_at": "2026-04-18T14:19:19.517412+00:00",
+  "author": "role_auditor"
+}

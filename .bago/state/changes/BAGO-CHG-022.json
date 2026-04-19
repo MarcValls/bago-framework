@@ -1,0 +1,32 @@
+{
+  "change_id": "BAGO-CHG-022",
+  "title": "Síntesis híbrida v2.2: canon fuerte + repo-first + fábrica de prompts + pedagogía estructural",
+  "type": "architecture",
+  "severity": "minor",
+  "status": "validated",
+  "normalized_status": "validated",
+  "motivation": "Recuperar la operatividad humana del enfoque flat sin renunciar al rigor y a la auditabilidad logrados en línea canónica previa.",
+  "scope": [
+    "README.md",
+    "AGENT_START.md",
+    "core/00_CEREBRO_BAGO.md",
+    "core/01_PLANTILLA_PROMPT.md",
+    "core/02_FABRICA_PROMPTS.md",
+    "agents/*",
+    "prompts/*",
+    "docs/MAPA_DEL_SISTEMA.md",
+    "docs/GLOSARIO.md",
+    "examples/*",
+    "README_INSTALACION.md"
+  ],
+  "impacts": [
+    "mejor onboarding",
+    "mejor bootstrap sobre repositorios",
+    "mejor componibilidad de prompts",
+    "mejor documentación pedagógica"
+  ],
+  "requires_migration": false,
+  "validation_result": "GO",
+  "created_at": "2026-04-11T14:00:00Z",
+  "updated_at": "2026-04-11T14:00:00Z"
+}

@@ -1,0 +1,28 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='980' height='420' viewBox='0 0 980 420'>
+<style>
+text { font-family: Menlo, Consolas, monospace; fill: #0f172a; }
+.axis { stroke: #64748b; stroke-width: 1; }
+.grid { stroke: #cbd5e1; stroke-width: 1; stroke-dasharray: 3 3; }
+.title { font-size: 16px; font-weight: 700; }
+.label { font-size: 11px; }
+</style>
+<rect x='0' y='0' width='980' height='420' fill='#f8fafc'/>
+<text x='20' y='26' class='title'>Throughput por segundo</text>
+<line x1='70' y1='365.00' x2='950' y2='365.00' class='grid' />
+<text x='8' y='369.00' class='label'>0.0</text>
+<line x1='70' y1='303.00' x2='950' y2='303.00' class='grid' />
+<text x='8' y='307.00' class='label'>0.6</text>
+<line x1='70' y1='241.00' x2='950' y2='241.00' class='grid' />
+<text x='8' y='245.00' class='label'>1.2</text>
+<line x1='70' y1='179.00' x2='950' y2='179.00' class='grid' />
+<text x='8' y='183.00' class='label'>1.8</text>
+<line x1='70' y1='117.00' x2='950' y2='117.00' class='grid' />
+<text x='8' y='121.00' class='label'>2.4</text>
+<line x1='70' y1='55.00' x2='950' y2='55.00' class='grid' />
+<text x='8' y='59.00' class='label'>3.0</text>
+<line x1='70' y1='365' x2='950' y2='365' class='axis' />
+<line x1='70' y1='55' x2='70' y2='365' class='axis' />
+<path d=' M 70.00 55.00 L 510.00 158.33 L 950.00 261.67' fill='none' stroke='#1d4ed8' stroke-width='2.5' />
+<text x='490' y='405' text-anchor='middle' class='label'>segundos desde inicio</text>
+<text x='14' y='47' class='label'>req/s</text>
+</svg>

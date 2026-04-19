@@ -1,0 +1,44 @@
+{
+  "bago_version": "2.4-v2rc",
+  "canon_version": "2.4-v2rc",
+  "system_health": "stable",
+  "active_session_id": null,
+  "active_task_type": null,
+  "active_roles": [],
+  "open_changes": [],
+  "active_scenarios": [],
+  "active_workflows": [],
+  "history_migration_status": "completed_with_preserved_legacy",
+  "updated_at": "2026-04-18T20:30:00.000000+00:00",
+  "v2_status": "in_progress",
+  "notes": "ESCENARIO-003 activo: cosecha contextual. E001 y E002 cerrados.",
+  "last_completed_session_id": "SES-W8-2026-04-18-001",
+  "last_completed_task_type": "analysis",
+  "last_completed_workflow": "w8_exploracion",
+  "last_completed_roles": [
+    "role_auditor"
+  ],
+  "last_completed_change_id": "BAGO-CHG-058",
+  "last_completed_evidence_id": "BAGO-EVD-059",
+  "inventory": {
+    "sessions": 40,
+    "changes": 39,
+    "evidences": 42
+  },
+  "last_validation": {
+    "pack": "GO",
+    "state": "GO",
+    "manifest": "GO"
+  },
+  "baseline_code": "baseline_bago_2_3_clean",
+  "baseline_status": "active_clean_core",
+  "sprint_status": {
+    "sprint_1a": "DONE",
+    "sprint_1b": "DONE",
+    "sprint_1c": "DONE",
+    "sprint_1d": "DONE",
+    "sprint_2": "DONE",
+    "sprint_3": "DONE",
+    "sprint_4": "DONE"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "change_id": "BAGO-CHG-035",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Consolidación oficial limpia en directorio dedicado",
+  "motivation": "Publicar una carpeta de referencia limpia y portable del canon BAGO 2.3-clean sin contaminar el directorio de trabajo origen.",
+  "status": "validated",
+  "affected_components": [
+    "../BAGO_OFICIAL_LIMPIO_2_3_CLEAN/",
+    "state/global_state.json",
+    "state/sessions/SES-CONSOL-2026-04-15-001.json"
+  ],
+  "related_evidence": "BAGO-EVD-035",
+  "created_at": "2026-04-15T00:53:02Z",
+  "updated_at": "2026-04-15T00:53:02Z",
+  "author": "BAGO AMTEC"
+}

@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-050",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-049",
+    "SES-OFF-2026-04-18-004"
+  ],
+  "summary": "OFF R4 cerrada: 1 útil, 4 roles, sin preflight, 0 decisiones.",
+  "details": "Sin objetivo concreto definido, la sesión libre produce una nota de actualización sin contenido técnico real. 4 roles por inercia. Sin identificar qué actualizar ni cómo verificar que se hizo.",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T13:46:00Z"
+}

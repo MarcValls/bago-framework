@@ -1,0 +1,34 @@
+{
+  "session_id": "SES-HARVEST-2026-04-19-001",
+  "task_type": "harvest",
+  "selected_workflow": "w9_cosecha",
+  "roles_activated": [
+    "role_auditor"
+  ],
+  "user_goal": "Cosecha contextual: no se donde has explorado y que archivos",
+  "status": "closed",
+  "escenario": "ESCENARIO-003",
+  "created_at": "2026-04-19T11:03:17.894098+00:00",
+  "updated_at": "2026-04-19T11:03:17.894098+00:00",
+  "artifacts": [
+    "bago-viewer/app.py",
+    "bago-viewer/start.sh",
+    "bago-viewer/templates/base.html",
+    "bago-viewer/templates/pack.html",
+    "../../bago-viewer/app.py",
+    "../../bago-viewer/start.sh",
+    "../../bago-viewer/templates/base.html",
+    "../../bago-viewer/templates/pack.html",
+    "../../.bago/",
+    "../../Makefile",
+    "../../bago",
+    "../",
+    "../../docs/"
+  ],
+  "decisions": [
+    "DECISIÓN: no se donde has explorado y que archivos",
+    "DESCARTE: No se que has explorado"
+  ],
+  "next_step": "Analizar el repo",
+  "summary": "Harvest W9. Decisión: no se donde has explorado y que archivos. Próximo: Analizar el repo."
+}

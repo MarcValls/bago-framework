@@ -1,0 +1,29 @@
+{
+  "change_id": "BAGO-CHG-034",
+  "type": "governance",
+  "severity": "major",
+  "title": "Reconstrucción limpia del canon BAGO",
+  "motivation": "Reducir inflación documental y dejar un núcleo operativo más pequeño, duro y medible sin perder trazabilidad.",
+  "status": "validated",
+  "affected_components": [
+    "AGENT_START.md",
+    "README.md",
+    "pack.json",
+    "core/00_CEREBRO_BAGO.md",
+    "core/03_ESTADO_BAGO.md",
+    "core/04_CONTRATOS_DE_ROL.md",
+    "core/05_GOBERNANZA_DE_SESION.md",
+    "core/06_MATRIZ_DE_ACTIVACION.md",
+    "core/07_PROTOCOLO_DE_CAMBIO.md",
+    "state/ESTADO_BAGO_ACTUAL.md",
+    "state/cambios/README.md",
+    "agents/",
+    "workflows/",
+    "docs/BAGO_CANON.md",
+    "docs/PLANTILLA_EVALUACION_BRUTAL_BAGO.md"
+  ],
+  "related_evidence": "BAGO-EVD-034",
+  "created_at": "2026-04-15T00:37:24Z",
+  "updated_at": "2026-04-15T00:37:24Z",
+  "author": "BAGO AMTEC"
+}

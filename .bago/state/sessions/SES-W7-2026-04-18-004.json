@@ -1,0 +1,35 @@
+{
+  "session_id": "SES-W7-2026-04-18-004",
+  "task_type": "system_change",
+  "selected_workflow": "w7_foco_sesion",
+  "roles_activated": [
+    "role_architect",
+    "role_organizer"
+  ],
+  "user_goal": "Crear W8_EXPLORACION.md (W7-lite para sesiones sin objetivo concreto) y tpl_exploration.md. Registrar en pack.json y WORKFLOWS_INDEX. Objetivo: tener una alternativa ligera a W0 con algo de estructura mínima.",
+  "status": "closed",
+  "bago_mode": "on",
+  "escenario": "ESCENARIO-001",
+  "ronda": 4,
+  "created_at": "2026-04-18T13:55:00Z",
+  "updated_at": "2026-04-18T13:58:00Z",
+  "artifacts_planned": [
+    "workflows/W8_EXPLORACION.md",
+    "docs/operation/templates/tpl_exploration.md",
+    "workflows/WORKFLOWS_INDEX.md",
+    "pack.json"
+  ],
+  "preflight_resultado": "GO",
+  "artifacts": [
+    "workflows/W8_EXPLORACION.md",
+    "docs/operation/templates/tpl_exploration.md",
+    "workflows/WORKFLOWS_INDEX.md",
+    "pack.json"
+  ],
+  "decisions": [
+    "W8 cubre el hueco entre W7 (objetivo concreto) y W0 (libre total). Requisito mínimo: preflight + 1 útil + 1 decisión. Workflow recomendado cuando el operador quiere explorar sin objetivo predefinido.",
+    "tpl_exploration.md declara área de exploración y pregunta de disparo — dos preguntas que W0 no fuerza y que orientan el trabajo.",
+    "Regla: si el gap encontrado es grande → abrir W7 nueva en lugar de ampliar la sesión W8 actual."
+  ],
+  "summary": "SES-4 ESCENARIO-001. 4 útiles (W8+tpl_exploration+WORKFLOWS_INDEX+pack.json), 2 roles, preflight GO, 3 decisiones."
+}

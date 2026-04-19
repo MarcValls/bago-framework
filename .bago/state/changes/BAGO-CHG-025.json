@@ -1,0 +1,28 @@
+{
+  "change_id": "BAGO-CHG-025",
+  "title": "Endurecimiento estructural del estado nativo y de sus validaciones",
+  "type": "governance",
+  "severity": "minor",
+  "status": "validated",
+  "normalized_status": "validated",
+  "motivation": "Reducir la confianza excesiva en convención informal dentro de state/, reforzando el índice global, los esquemas JSON y la validación cruzada entre sesiones, cambios y evidencias.",
+  "scope": [
+    "state/global_state.json",
+    "state/schema/global_state.schema.json",
+    "state/schema/session_state.schema.json",
+    "state/schema/change.schema.json",
+    "state/schema/evidence.schema.json",
+    "tools/validate_state.py",
+    "TREE.txt",
+    "CHECKSUMS.sha256"
+  ],
+  "impacts": [
+    "mayor observabilidad del estado global",
+    "validación estructural más estricta",
+    "mejor trazabilidad entre sesiones, cambios y evidencias"
+  ],
+  "requires_migration": false,
+  "validation_result": "GO",
+  "created_at": "2026-04-13T15:44:03Z",
+  "updated_at": "2026-04-13T15:44:03Z"
+}

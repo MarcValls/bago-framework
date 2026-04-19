@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-037",
+  "type": "validation",
+  "related_to": ["SES-VERT-2026-04-17-001", "BAGO-CHG-036"],
+  "summary": "Identidad del rol Vértice normalizada a role_vertice en todos los archivos del pack.",
+  "details": "Se unificó la identidad del rol Vértice bajo el id canónico 'role_vertice' en los siguientes archivos: roles/supervision/VERTICE.md (id cambiado de role_structural_reviewer), pack.json (review_role cambiado de GUIA_VERTICE), core/supervision/VERTICE.md (id canonico añadido), core/06_MATRIZ_DE_ACTIVACION.md (referencia cambiada de GUIA_VERTICE), core/orchestrator/ROUTER_DE_ROLES.md (referencia Vértice → role_vertice). Alias históricos documentados como deprecados en roles/supervision/VERTICE.md.",
+  "status": "recorded",
+  "recorded_at": "2026-04-17T15:44:49Z"
+}

@@ -1,0 +1,18 @@
+{
+  "change_id": "BAGO-CHG-052",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-001 SES-4: W8_EXPLORACION workflow + plantilla exploración",
+  "motivation": "EVAL-ESCENARIO002-FINAL recomendó crear W7-lite para sesiones exploratorias en lugar de usar W0. Se implementa como W8 con preflight mínimo y requisito de ≥1 útil y ≥1 decisión.",
+  "status": "applied",
+  "affected_components": [
+    "workflows/W8_EXPLORACION.md",
+    "docs/operation/templates/tpl_exploration.md",
+    "workflows/WORKFLOWS_INDEX.md",
+    "pack.json"
+  ],
+  "related_evidence": "BAGO-EVD-053",
+  "created_at": "2026-04-18T13:58:00Z",
+  "updated_at": "2026-04-18T13:58:00Z",
+  "author": "role_architect"
+}

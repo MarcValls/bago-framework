@@ -1,0 +1,36 @@
+{
+  "session_id": "SES-ON-2026-04-18-004",
+  "task_type": "execution",
+  "selected_workflow": "w7_foco_sesion",
+  "roles_activated": [
+    "role_auditor",
+    "role_organizer"
+  ],
+  "user_goal": "Actualizar metrics_snapshot.json e INFORME_EFICACIA_WORKFLOWS.md con datos reales de las 19 sesiones cerradas actuales (incluyendo ESCENARIO-002). Los dos están stale desde antes de R2.",
+  "status": "closed",
+  "bago_mode": "on",
+  "escenario": "ESCENARIO-002",
+  "ronda": 4,
+  "created_at": "2026-04-18T13:40:00Z",
+  "updated_at": "2026-04-18T13:43:00Z",
+  "artifacts_planned": [
+    "state/metrics/metrics_snapshot.json",
+    "docs/analysis/INFORME_EFICACIA_WORKFLOWS.md",
+    "state/evaluations/EVAL-WORKFLOWS-002.md"
+  ],
+  "preflight_resultado": "GO",
+  "artifacts": [
+    "state/metrics/metrics_snapshot.json",
+    "docs/analysis/INFORME_EFICACIA_WORKFLOWS.md",
+    "state/evaluations/EVAL-WORKFLOWS-002.md",
+    "state/sessions/SES-ON-2026-04-18-004.json",
+    "state/changes/BAGO-CHG-048.json",
+    "state/evidences/BAGO-EVD-049.json"
+  ],
+  "decisions": [
+    "metrics_snapshot actualizado a 19 sesiones. ON promedio sube a 2.75, OFF estable en 1.0 — brecha consistente.",
+    "INFORME actualizado con nueva sección métricas ESCENARIO-002 R4 y tabla comparativa ON/OFF.",
+    "EVAL-002 registra que la bajada de w7 (3.8→3.5) es por scope de rondas, no deterioro del workflow."
+  ],
+  "summary": "ON Ronda 4. 3 útiles (metrics_snapshot+informe+eval), 2 roles, preflight GO, 3 decisiones."
+}

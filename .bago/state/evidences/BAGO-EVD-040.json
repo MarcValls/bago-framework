@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-040",
+  "type": "closure",
+  "related_to": ["BAGO-CHG-039", "SES-W7-2026-04-18-001"],
+  "summary": "SES-1 ESCENARIO-001 completada: session_preflight.py creado y verificado GO/KO.",
+  "details": "Sesión SES-W7-2026-04-18-001 ejecutada con W7_FOCO_SESION. 2 roles (role_architect + role_validator), 3 artefactos útiles (session_preflight.py, AGENT_START.md, W7_FOCO_SESION.md). Preflight propio resultado: GO. El script valida correctamente caso GO (3 útiles, 2 roles, objetivo con verbo+done) y caso KO (0 útiles de protocolo, 4 roles, objetivo corto). AGENT_START.md y W7 actualizados para referenciar el preflight.",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T12:25:00Z"
+}

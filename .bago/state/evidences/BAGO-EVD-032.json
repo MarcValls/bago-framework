@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-032",
+  "type": "validation",
+  "related_to": ["BAGO-CHG-032"],
+  "summary": "bago-deploy.zip probado en directorio limpio: GO manifest / GO state / GO pack",
+  "details": "ZIP de 279KB. Contiene .bago/ (estado limpio, sin historial del proyecto origen), bago.sh (entry point desde terminal) y README.md. Test: unzip en /tmp/bago-test-final + bash bago.sh → GO manifest / GO state / GO pack. Estado: stable. Instrucción de uso: unzip bago-deploy.zip && bash bago.sh, luego .bago/ desde Copilot.",
+  "status": "recorded",
+  "recorded_at": "2026-04-14T03:32:00Z"
+}

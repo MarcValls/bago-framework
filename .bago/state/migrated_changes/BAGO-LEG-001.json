@@ -1,0 +1,21 @@
+{
+  "change_id": "BAGO-LEG-001",
+  "legacy_date": "2026-04-09",
+  "source_path": "state/cambios/2026-04-09__BAGO-CHG-001__fundacion-v1.md",
+  "source_format": "markdown_change_v1",
+  "title": "2026-04-09__BAGO-CHG-001__fundacion-v1",
+  "type": "historical_migration",
+  "severity": "minor",
+  "status": "approved",
+  "motivation": "Necesidad de evolucionar V.0 a una base más gobernable y trazable.",
+  "legacy_previous_state": "V.0 funcionaba como kit documental operativo pero sin manifiesto canónico ni separación fuerte entre modelo y estado vivo.",
+  "legacy_applied_change": "creación de BAGO AMTEC V1 base con `pack.json`, estado vivo en `state/`, matriz de activación, gobernanza y protocolo de trazabilidad.",
+  "legacy_impact_expected": "arranque más consistente, menos ambigüedad entre sesiones y mejor capacidad de revisión.",
+  "legacy_risks": "incremento documental inicial y necesidad de validación práctica en repositorio real.",
+  "summary": "Necesidad de evolucionar V.0 a una base más gobernable y trazable.",
+  "raw_markdown_preserved": true,
+  "legacy_status": "aceptado",
+  "normalized_status": "approved",
+  "created_at": "2026-04-11T13:10:00Z",
+  "updated_at": "2026-04-11T13:10:00Z"
+}

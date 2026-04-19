@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-057",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-056",
+    "SES-HARVEST-2026-04-18-001"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-18-001",
+  "details": "Decisión: Elegimos disparador por densidad de señal cognitiva: umbral 2 señales de peso alto activa la cosecha | Descarte: Descartamos disparador temporal fijo porque interrumpe el flujo antes de que el pensamiento madure | Próximo paso: Ejecutar F3: 3 cosechas reales para validar H1 H2 H3 del ESCENARIO-003 | Ficheros afectados: bago-viewer/app.py, bago-viewer/start.sh, bago-viewer/templates/base.html",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T14:19:19.517412+00:00"
+}

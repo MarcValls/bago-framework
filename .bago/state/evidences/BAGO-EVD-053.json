@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-053",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-052",
+    "SES-W7-2026-04-18-004"
+  ],
+  "summary": "SES-4 E001 cerrada: 4 útiles, 2 roles, GO preflight, 3 decisiones.",
+  "details": "W8_EXPLORACION.md creado: 5 pasos (preflight, área, explorar, ≥1 útil, cierre). Tabla comparativa W7/W8/W0 incluida. tpl_exploration.md con área de exploración y pregunta disparadora. WORKFLOWS_INDEX y pack.json actualizados. 4 artefactos útiles.",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T13:58:00Z"
+}

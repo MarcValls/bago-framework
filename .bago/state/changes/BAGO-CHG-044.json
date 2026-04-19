@@ -1,0 +1,17 @@
+{
+  "change_id": "BAGO-CHG-044",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-002 ON Ronda 2: informe eficacia workflows + evaluación",
+  "motivation": "Análisis de 15 sesiones para rankear workflows por producción útil y foco. Resultado: w7 es más predecible, workflow_system_change más productivo en bruto.",
+  "status": "applied",
+  "affected_components": [
+    "docs/analysis/INFORME_EFICACIA_WORKFLOWS.md",
+    "state/evaluations/EVAL-WORKFLOWS-001.md",
+    "state/metrics/metrics_snapshot.json"
+  ],
+  "related_evidence": "BAGO-EVD-045",
+  "created_at": "2026-04-18T13:20:00Z",
+  "updated_at": "2026-04-18T13:20:00Z",
+  "author": "role_auditor"
+}

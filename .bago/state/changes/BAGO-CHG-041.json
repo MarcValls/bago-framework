@@ -1,0 +1,18 @@
+{
+  "change_id": "BAGO-CHG-041",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-002: competición .bago/on vs .bago/off — protocolo, W0 y herramienta de comparación",
+  "motivation": "Crear experimento controlado para medir cuánto valor aporta el protocolo BAGO frente a trabajo libre. Incluye W0_FREE_SESSION, ESCENARIO-COMPETICION-BAGO.md y competition_report.py.",
+  "status": "applied",
+  "affected_components": [
+    "state/scenarios/ESCENARIO-COMPETICION-BAGO.md",
+    "tools/competition_report.py",
+    "workflows/W0_FREE_SESSION.md",
+    "pack.json"
+  ],
+  "related_evidence": "BAGO-EVD-042",
+  "created_at": "2026-04-18T13:05:00Z",
+  "updated_at": "2026-04-18T13:05:00Z",
+  "author": "role_architect"
+}

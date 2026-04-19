@@ -1,0 +1,27 @@
+{
+  "session_id": "SES-CONSOL-2026-04-15-001",
+  "task_type": "system_change",
+  "selected_workflow": "workflow_system_change",
+  "roles_activated": ["role_architect", "role_organizer", "role_validator"],
+  "user_goal": "Consolidar el BAGO oficial limpio en un directorio nuevo.",
+  "status": "closed",
+  "created_at": "2026-04-15T00:53:02Z",
+  "updated_at": "2026-04-15T00:53:02Z",
+  "summary": "Se creó un directorio de consolidación oficial limpio con .bago validado y artefactos operativos de distribución.",
+  "artifacts": [
+    "../BAGO_OFICIAL_LIMPIO_2_3_CLEAN/",
+    "../BAGO_OFICIAL_LIMPIO_2_3_CLEAN/.bago/",
+    "../BAGO_OFICIAL_LIMPIO_2_3_CLEAN/dist/",
+    "../BAGO_OFICIAL_LIMPIO_2_3_CLEAN/bago-install.sh",
+    "../BAGO_OFICIAL_LIMPIO_2_3_CLEAN/bago-install.bat",
+    "../BAGO_OFICIAL_LIMPIO_2_3_CLEAN/bago-setup.sh",
+    "../BAGO_OFICIAL_LIMPIO_2_3_CLEAN/bago-setup.bat"
+  ],
+  "decisions": [
+    "Consolidar en directorio hermano para no alterar el baseline fuente.",
+    "Copiar núcleo .bago validado y scripts de instalación/distribución.",
+    "Excluir ruido no operativo del consolidado (.codex, zips históricos, .DS_Store)."
+  ],
+  "related_change": "BAGO-CHG-035",
+  "related_evidence": "BAGO-EVD-035"
+}

@@ -1,0 +1,16 @@
+{
+  "change_id": "BAGO-CHG-033",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Alta de plantilla de evaluación brutal y enlace en guía de auditoría",
+  "motivation": "Estandarizar una evaluación dura, medible y comparable del valor operativo de BAGO en repositorios reales.",
+  "status": "validated",
+  "affected_components": [
+    "templates/plantilla_evaluacion_brutal.md",
+    "docs/operation/GUIA_DE_AUDITORIA.md"
+  ],
+  "related_evidence": "BAGO-EVD-033",
+  "created_at": "2026-04-15T00:05:54Z",
+  "updated_at": "2026-04-15T00:05:54Z",
+  "author": "BAGO AMTEC V2.2.2"
+}

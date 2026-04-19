@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Tutor de Mecanografía — ES / CA</title>
+  <style>
+    :root{
+      --bg:#0b0f14; --panel:#121821; --ink:#e6f0ff; --muted:#91a3c2;
+      --ok:#28c76f; --bad:#ff4d4f; --accent:#5ec2ff; --accent2:#a78bfa;
+      --l5:#ef476f; --l4:#f78c6b; --l3:#ffd166; --l2:#06d6a0; --r2:#118ab2; --r3:#73a1ff; --r4:#a78bfa; --r5:#c084fc;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:radial-gradient(1200px 700px at 10% -10%, #162033 0%, transparent 60%),
+                 radial-gradient(1000px 600px at 110% 20%, #1a1f33 0%, transparent 60%),
+                 var(--bg);
+      color:var(--ink); font:16px/1.35 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,"Noto Sans","Helvetica Neue",Arial;
+      display:flex; align-items:center; justify-content:center; padding:18px;
+    }
+    .app{
+      width:min(1100px, 100%); background:linear-gradient(180deg,#121826cc,#0e141dcc);
+      backdrop-filter: blur(8px); border:1px solid #203048; border-radius:18px; padding:18px;
+      box-shadow: 0 20px 60px #0008, inset 0 0 0 1px #203048;
+    }
+    header{display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between}
+    .title{font-weight:800; letter-spacing:.3px}
+    .title span{color:var(--accent)}
+    .row{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+    .stat{background:linear-gradient(180deg,#1a2232,#101826); padding:8px 10px; border-radius:10px; border:1px solid #223448; min-width:110px}
+    .stat b{display:block; font-size:1.1rem}
+    .btn{
+      border:1px solid #2a3b55; background:linear-gradient(180deg,#1a2538,#132033);
+      color:var(--ink); padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:700;
+    }
+    .btn.primary{border-color:#2e5b86; background:linear-gradient(180deg,#1f3d5e,#17324d)}
+    .btn:disabled{opacity:.5; cursor:not-allowed}
+    .select,.checkbox{
+      background:linear-gradient(180deg,#131c2b,#0f1724); border:1px solid #213248; border-radius:10px; padding:8px 10px; color:var(--ink)
+    }
+    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:16px; margin-top:14px}
+    .card{background:linear-gradient(180deg,#0d131d,#0b121c); border:1px solid #213248; border-radius:16px; padding:14px}
+    .kbd{display:grid; gap:6px; user-select:none}
+    .rowk{display:flex; gap:6px; justify-content:center}
+    .key{
+      min-width:36px; height:42px; padding:6px 8px; border-radius:8px; text-transform:uppercase;
+      display:flex; align-items:center; justify-content:center; font-weight:800; letter-spacing:.5px;
+      border:1px solid #25364d; background:#0f1724; color:#d8e6ff; position:relative;
+      transition:transform .05s ease, box-shadow .05s ease, filter .12s;
+    }
+    .key[data-f="l5"]{background:linear-gradient(180deg,#2a0f17,#18090d); box-shadow: inset 0 0 0 1px #4c1826; color:#ffd7de}
+    .key[data-f="l4"]{background:linear-gradient(180deg,#2b1607,#181005); box-shadow: inset 0 0 0 1px #5a2a0f; color:#ffe3d1}
+    .key[data-f="l3"]{background:linear-gradient(180deg,#2b2505,#181502); box-shadow: inset 0 0 0 1px #5a4b07; color:#fff3c2}
+    .key[data-f="l2"]{background:linear-gradient(180deg,#06251e,#041912); box-shadow: inset 0 0 0 1px #0a4a3a; color:#d7fff2}
+    .key[data-f="r2"]{background:linear-gradient(180deg,#0b1f2b,#081520); box-shadow: inset 0 0 0 1px #18425a; color:#d6f1ff}
+    .key[data-f="r3"]{background:linear-gradient(180deg,#0c1630,#070f21); box-shadow: inset 0 0 0 1px #1b2a62; color:#dfe7ff}
+    .key[data-f="r4"]{background:linear-gradient(180deg,#1b1450,#120d38); box-shadow: inset 0 0 0 1px #2e2386; color:#efe9ff}
+    .key[data-f="r5"]{background:linear-gradient(180deg,#2a0f3b,#1b0a27); box-shadow: inset 0 0 0 1px #4e1a74; color:#f3e6ff}
+    .key.space{min-width:40%; height:48px; font-size:.8rem; color:#cfd8e3; background:linear-gradient(180deg,#0f1724,#0b121c); border-style:dashed}
+    .key.active{outline:3px solid #5ec2ff; filter:brightness(1.2)}
+    .key.good{box-shadow:0 0 0 2px #28c76f, 0 0 18px #28c76f44}
+    .key.bad{box-shadow:0 0 0 2px #ff4d4f, 0 0 18px #ff4d4f44}
+    .legend{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px}
+    .chip{padding:6px 10px; border-radius:999px; border:1px solid #223448; background:#101a29; font-size:.9rem}
+    .chip i{display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; position:relative; top:1px}
+    .chip .l5{background:var(--l5)} .chip .l4{background:var(--l4)} .chip .l3{background:var(--l3)} .chip .l2{background:var(--l2)}
+    .chip .r2{background:var(--r2)} .chip .r3{background:var(--r3)} .chip .r4{background:var(--r4)} .chip .r5{background:var(--r5)}
+    .target{ text-align:center; font-size: clamp(28px, 6vw, 56px); font-weight:900; letter-spacing:.6px; line-height:1.1; user-select:none;
+      text-shadow:0 2px 0 #000, 0 8px 24px #0009; min-height:68px }
+    .helper{color:var(--muted); text-align:center; margin-top:4px}
+    .meter{height:6px; background:#102030; border-radius:999px; overflow:hidden}
+    .meter>i{display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .2s}
+    .list{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
+    .badge{padding:3px 8px; border:1px solid #2a3b55; border-radius:999px; background:#101a29}
+    canvas#fx{position:absolute; inset:0; pointer-events:none}
+    .dim{filter:saturate(.7) brightness(.95)}
+    .hidden-input{position:absolute; opacity:0; pointer-events:none; height:0; width:0}
+
+    /* ===== Text Runner ===== */
+    .runner{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:0;
+      min-height:68px;padding:6px 4px;font-size:clamp(20px,2.8vw,30px);font-weight:800;
+      letter-spacing:2px;line-height:1.5;user-select:none;text-shadow:0 1px 0 #000;}
+    .ch{display:inline;color:var(--muted);}
+    .ch.cur{color:var(--ink);}
+    .ch.cur::after{content:'';display:inline-block;width:2px;height:.9em;background:var(--accent);
+      margin-left:1px;animation:blink .65s steps(2,start) infinite;vertical-align:text-bottom;}
+    @keyframes blink{to{opacity:0}}
+    .ch.ok{color:var(--ok);}
+    .ch.err{color:var(--bad);text-decoration:underline;text-decoration-style:wavy;}
+    .ch.sp{display:inline-block;min-width:.4em;}
+    /* ===== Heatmap ===== */
+    .key[data-heat="mid"]{box-shadow:inset 0 0 0 1px #f7a935,0 0 10px #f7a93544 !important;}
+    .key[data-heat="high"]{box-shadow:inset 0 0 0 2px #ff4d4f,0 0 14px #ff4d4f55 !important;}
+    /* ===== Results overlay ===== */
+    .ovl{display:none;position:absolute;inset:0;background:#070b10ee;border-radius:16px;
+      z-index:10;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+    .ovl.show{display:flex;}
+    .ovl-box{background:var(--panel);border:1px solid #2a3b55;border-radius:16px;
+      padding:22px 30px;text-align:center;min-width:230px;}
+    .ovl-box h3{margin:0 0 10px;color:var(--accent);font-size:1.25rem;}
+    .ovl-big{font-size:2.4rem;font-weight:900;}
+    .ovl-sub{color:var(--muted);font-size:.88rem;margin:3px 0 10px;}
+    .err-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:6px;}
+    .err-chip{padding:3px 10px;border-radius:8px;border:1px solid #ff4d4f55;
+      background:#1a0d0e;color:#ff8080;font-weight:700;}
+    /* ===== Lesson intro overlay ===== */
+    .intro{display:none;position:absolute;inset:0;background:#070b10f0;border-radius:16px;
+      z-index:15;align-items:center;justify-content:center;padding:16px;}
+    .intro.show{display:flex;}
+    .intro-box{background:var(--panel);border:1px solid #2a3b55;border-radius:16px;
+      padding:24px 28px;max-width:420px;width:100%;text-align:center;}
+    .intro-num{font-size:.8rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+    .intro-name{font-size:1.3rem;font-weight:900;color:var(--ink);margin-bottom:10px;}
+    .intro-desc{color:var(--muted);font-size:.9rem;line-height:1.55;margin-bottom:16px;text-align:left;}
+    .intro-keys{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;}
+    .intro-key{padding:4px 10px;border-radius:8px;border:1px solid #2a3b55;background:#0d1520;
+      font-weight:800;font-size:1rem;color:var(--accent);}
+    .intro-btns{display:flex;gap:8px;justify-content:center;}
+    .cdown{display:none;position:absolute;inset:0;background:#070b10cc;border-radius:16px;
+      z-index:20;align-items:center;justify-content:center;}
+    .cdown.show{display:flex;}
+    .cdown-num{font-size:clamp(64px,14vw,120px);font-weight:900;color:var(--accent);
+      animation:cdpop .38s cubic-bezier(.17,.67,.4,1.4) both;line-height:1;}
+    @keyframes cdpop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+    .cdown-go{color:var(--ok);font-size:clamp(40px,9vw,80px);}
+    /* auto-advance countdown ring */
+    .ovl-timer{font-size:.8rem;color:var(--muted);margin-top:2px;}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="title">Tutor de <span>Mecanografía</span> · ES / CA</div>
+      <div class="row">
+        <div class="stat"><small>Lección</small><b id="lessonName">L1 · F y J</b></div>
+        <div class="stat"><small>Progreso</small><b><span id="done">0</span>/<span id="goal">20</span></b></div>
+        <div class="stat"><small>Precisión</small><b id="acc">100%</b></div>
+        <div class="stat"><small>Ritmo</small><b id="wpm">0 WPM</b></div>
+      </div>
+    </header>
+
+    <div class="row" style="margin-top:8px">
+      <button class="btn primary" id="startBtn">Iniciar</button>
+      <button class="btn" id="pauseBtn" disabled>Pausa</button>
+      <button class="btn" id="resetBtn" disabled>Reiniciar</button>
+      <button class="btn" id="nextBtn" disabled>Siguiente</button>
+      <select class="select" id="mode">
+        <option value="tutor">Modo Tutor (paso a paso)</option>
+        <option value="practica">Práctica libre</option>
+        <option value="palabras">Mini-juego de palabras</option>
+        <option value="runner">Runner 🏃 (texto continuo)</option>
+      </select>
+      <select class="select" id="lesson"></select>
+      <label class="checkbox"><input type="checkbox" id="slow" checked> Modo lento</label>
+      <label class="checkbox"><input type="checkbox" id="showFinger" checked> Mostrar dedo</label>
+      <label class="checkbox"><input type="checkbox" id="ignoreAccents" checked> Ignorar acentos</label>
+      <label class="checkbox"><input type="checkbox" id="sounds" checked> Sonidos</label>
+      <select class="select" id="lang">
+        <option value="es" selected>Español</option>
+        <option value="ca">Català/Valencià</option>
+      </select>
+      <span class="badge">Récord L: <b id="best">0%</b></span>
+      <span class="badge">Rec WPM: <b id="best-wpm">0</b></span>
+    </div>
+
+    <div class="grid">
+      <div class="card" id="leftPane" style="position:relative">
+        <div class="target" id="target">Coloca los índices en <b>F</b> y <b>J</b>. Pulsa Iniciar.</div>
+        <div class="helper" id="hint">Dedo: Índice izquierdo → F · Índice derecho → J</div>
+        <div class="meter" style="margin:10px 0"><i id="meterBar"></i></div>
+        <div class="list" id="recent"></div>
+        <div class="intro" id="intro">
+          <div class="intro-box">
+            <div class="intro-num" id="intro-num">Lección 1 de 10</div>
+            <div class="intro-name" id="intro-name">L1 · F y J</div>
+            <div class="intro-desc" id="intro-desc"></div>
+            <div class="intro-keys" id="intro-keys"></div>
+            <div class="intro-btns">
+              <button class="btn primary" id="intro-start">▶ Empezar</button>
+              <button class="btn" id="intro-skip">Siguiente lección →</button>
+            </div>
+          </div>
+        </div>
+        <div class="cdown" id="cdown"><span class="cdown-num" id="cdown-num">3</span></div>
+        <div class="ovl" id="ovl">
+          <div class="ovl-box">
+            <h3>🎯 Texto completado</h3>
+            <div class="ovl-big" id="ovl-wpm">0 WPM</div>
+            <div class="ovl-sub" id="ovl-acc">Precisión: 100%</div>
+            <div class="err-chips" id="ovl-errs"></div>
+            <button class="btn primary" style="margin-top:14px;width:100%" id="ovl-next">Siguiente texto →</button>
+            <div class="ovl-timer" id="ovl-timer">Siguiente en 3…</div>
+          </div>
+        </div>
+        <input id="ghost" class="hidden-input" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <canvas id="fx"></canvas>
+      </div>
+
+      <div class="card">
+        <div class="kbd" id="kbd"></div>
+        <div class="legend">
+          <span class="chip"><i class="l5"></i>Meñique L</span>
+          <span class="chip"><i class="l4"></i>Anular L</span>
+          <span class="chip"><i class="l3"></i>Medio L</span>
+          <span class="chip"><i class="l2"></i>Índice L</span>
+          <span class="chip"><i class="r2"></i>Índice R</span>
+          <span class="chip"><i class="r3"></i>Medio R</span>
+          <span class="chip"><i class="r4"></i>Anular R</span>
+          <span class="chip"><i class="r5"></i>Meñique R</span>
+          <span class="chip">Pulgar → espacio</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Utilidades =====
+    const $ = id => document.getElementById(id);
+    const now = ()=>performance.now();
+    let _lastHandledAt = 0;
+    let _saveEmTimer = null;
+    const saveErrorMapDebounced=()=>{ clearTimeout(_saveEmTimer); _saveEmTimer=setTimeout(saveErrorMap,800); };
+    const rnd = (a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+    const escapeHtml = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+    // Normalización: ignora tildes si está activado, pero conserva 'ç' como distinta.
+    function normChar(ch){
+      if(!ch) return '';
+      ch = ch.toLowerCase();
+      if(ch==='ç') return 'ç';
+      if($('ignoreAccents').checked){
+        return ch.normalize('NFD').replace(/\p{Diacritic}/gu,'');
+      }
+      return ch;
+    }
+
+    // ===== Audio (sin archivos) =====
+    let AC; try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch{ AC=null; }
+    const beep=(f=520,d=0.05,type='triangle',v=0.08)=>{
+      if(!AC || !$('sounds').checked) return;
+      const o=AC.createOscillator(), g=AC.createGain();
+      o.type=type; o.frequency.value=f; g.gain.value=v; o.connect(g); g.connect(AC.destination);
+      o.start(); g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime+d); o.stop(AC.currentTime+d);
+    };
+
+    // ===== Config por idioma =====
+    const layoutES=[['q','w','e','r','t','y','u','i','o','p'],
+                    ['a','s','d','f','g','h','j','k','l','ñ'],
+                    ['z','x','c','v','b','n','m',',','.'],
+                    [' ']];
+    const layoutCA=[['q','w','e','r','t','y','u','i','o','p'],
+                    ['a','s','d','f','g','h','j','k','l','ç'],
+                    ['z','x','c','v','b','n','m',',','.'],
+                    [' ']];
+
+        const lessonsES=[
+      {id:'L1', name:'L1 · F y J', goal:20, pool:['f','j'], tip:'Índice izq → F · índice der → J',
+        desc:'Las teclas de referencia. Tus índices descansan en F (izquierda) y J (derecha). Practica hasta que el retorno sea instintivo. Meta: {goal} pulsaciones correctas.'},
+      {id:'L2', name:'L2 · Fila base izquierda', goal:24, pool:['a','s','d','f'], tip:'Vuelve a ASDF',
+        desc:'Meñique→A, anular→S, medio→D, índice→F. Las cuatro teclas clave de la mano izquierda. No mires el teclado y vuelve siempre a la posición base.'},
+      {id:'L3', name:'L3 · Fila base derecha', goal:24, pool:['j','k','l','ñ'], tip:'Vuelve a JKLÑ',
+        desc:'Índice→J, medio→K, anular→L, meñique→Ñ. La fila base de la mano derecha. Combinada con L2 cubrirás toda la fila central del teclado.'},
+      {id:'L4', name:'L4 · Fila base completa', goal:28, pool:['a','s','d','f','j','k','l','ñ'], tip:'No mires el teclado',
+        desc:'Ambas manos en la fila central: ASDF + JKLÑ. Los índices vuelven siempre a F y J. Es el ejercicio más importante del curso.'},
+      {id:'L5', name:'L5 · Fila superior izquierda', goal:26, pool:['q','w','e','r','t'], tip:'Sube desde ASDF',
+        desc:'Q-W-E-R-T con la mano izquierda. Estira los dedos hacia arriba desde ASDF y regresa a la posición base después de cada pulsación.'},
+      {id:'L6', name:'L6 · Fila superior derecha', goal:26, pool:['y','u','i','o','p'], tip:'Sube desde JKLÑ',
+        desc:'Y-U-I-O-P con la mano derecha. Índice→Y/U, medio→I, anular→O, meñique→P. Estira desde JKLÑ y regresa.'},
+      {id:'L7', name:'L7 · Fila inferior izquierda', goal:26, pool:['z','x','c','v','b'], tip:'Baja desde ASDF',
+        desc:'Z-X-C-V-B con la mano izquierda. Los dedos bajan desde ASDF. Es la fila más incómoda; practica el retorno a la posición base con cuidado.'},
+      {id:'L8', name:'L8 · Fila inferior derecha', goal:26, pool:['n','m',',','.'], tip:'Baja desde JKLÑ',
+        desc:'N-M-,-. con la mano derecha más puntuación básica. Índice→N, medio→M, anular→coma, meñique→punto.'},
+      {id:'L9', name:'L9 · Sílabas', goal:22, type:'syl', tip:'Combina letras aprendidas',
+        desc:'Practica combinaciones consonante+vocal. Entrena la transición fluida entre teclas de distintas filas y manos sin pauses entre letras.'},
+      {id:'L10',name:'L10 · Palabras', goal:20, type:'words', tip:'Palabras frecuentes',
+        desc:'Escribe palabras reales del español cotidiano. El objetivo es encadenar letras con fluidez sin pensar en teclas individuales.'}
+    ];
+        const lessonsCA=[
+      {id:'L1', name:'L1 · F i J', goal:20, pool:['f','j'], tip:'Índex esq → F · índex dre → J',
+        desc:'Les tecles de referència. Els índexs han de reposar sempre a F (esquerra) i J (dreta). Practica fins que el retorn sigui instintiu.'},
+      {id:'L2', name:'L2 · Línia base esquerra', goal:24, pool:['a','s','d','f'], tip:'Torna a ASDF',
+        desc:'Dit petit→A, anular→S, mig→D, índex→F. Les quatre tecles de la mà esquerra a la fila central. No miris el teclat.'},
+      {id:'L3', name:'L3 · Línia base dreta', goal:24, pool:['j','k','l','ç'], tip:'Torna a JKLÇ',
+        desc:'Índex→J, mig→K, anular→L, dit petit→Ç. La fila base de la mà dreta. Combinada amb L2 cobrirà tota la fila central del teclat.'},
+      {id:'L4', name:'L4 · Línia base completa', goal:28, pool:['a','s','d','f','j','k','l','ç'], tip:'No miris el teclat',
+        desc:"Totes dues mans a la fila central: ASDF + JKLÇ. Ambdós índexs tornen sempre a F i J. És l'exercici més important del curs."},
+      {id:'L5', name:'L5 · Línia superior esquerra', goal:26, pool:['q','w','e','r','t'], tip:"Puja des d'ASDF",
+        desc:"Q-W-E-R-T amb la mà esquerra. Estira els dits cap amunt des d'ASDF i torna a la posició base després de cada pulsació."},
+      {id:'L6', name:'L6 · Línia superior dreta', goal:26, pool:['y','u','i','o','p'], tip:'Puja des de JKLÇ',
+        desc:'Y-U-I-O-P amb la mà dreta. Índex→Y/U, mig→I, anular→O, dit petit→P. Estira des de JKLÇ i torna.'},
+      {id:'L7', name:'L7 · Línia inferior esquerra', goal:26, pool:['z','x','c','v','b'], tip:"Baixa des d'ASDF",
+        desc:"Z-X-C-V-B amb la mà esquerra. Els dits baixen des d'ASDF. Practica el retorn a la posició base amb cura."},
+      {id:'L8', name:'L8 · Línia inferior dreta', goal:26, pool:['n','m',',','.'], tip:'Baixa des de JKLÇ',
+        desc:'N-M-,-. amb la mà dreta i puntuació bàsica. Índex→N, mig→M, anular→coma, dit petit→punt.'},
+      {id:'L9', name:'L9 · Sí·labes', goal:22, type:'syl', tip:'Combina lletres apreses',
+        desc:'Practica combinacions consonant+vocal (síl·labes). Entrena la transició fluida entre tecles de files i mans diferents.'},
+      {id:'L10',name:'L10 · Paraules', goal:20, type:'words', tip:'Paraules freqüents',
+        desc:"Escriu paraules reals del català quotidià. L'objectiu és encadenar lletres amb fluïdesa sense pensar en tecles individuals."}
+    ];
+
+    // Palabras frecuentes (~90 ES / ~80 CA)
+    const wordsES=['hola','casa','mano','sala','loma','nube','taza','pelo','mesa','soda',
+      'faro','luna','pino','cola','lana','boca','lago','roca','dama','vino',
+      'toro','ramo','pila','alma','cabo','bola','polo','lobo','modo','foto',
+      'sopa','lima','papa','cara','cura','masa','pasa','tela','vela','malo',
+      'palo','dato','nota','bota','rota','nada','cada','boda','moda','solo',
+      'piso','beso','paso','caso','vaso','peso','cama','rama','coma','campo',
+      'verde','negro','norte','costa','playa','fuego','cielo','papel','perro',
+      'gato','raton','salsa','canal','cable','tabla','sabor','favor','color',
+      'dolor','calor','valor','labor','solar','lunar','moral','coral','local','vocal'];
+    const wordsCA=['hola','casa','nen','dona','cel','nina','cami','taula','gat','gos',
+      'pera','raim','bici','cola','peix','sol','mar','foc','bosc','roca',
+      'home','mare','pare','fill','porta','poma','verd','blau','groc','negre',
+      'blanc','gran','petit','alt','baix','parc','carrer','costa','camp','bola',
+      'sala','pela','tela','mola','pala','cala','bala','cova','nova','soca',
+      'foca','toca','pesca','mosca','marca','finca','barca','grapa','plana','brama',
+      'pruna','nata','menta','herba','pedra','terra','serra','riera','duna','sorra',
+      'lluna','llac','llop','llum','flor','floc','clau','clot','brot','grup'];
+
+    // Dedo por tecla (común). r5 para Ñ y Ç.
+    const FINGER_NAMES=['Meñique L','Anular L','Medio L','Índice L','Índice R','Medio R','Anular R','Meñique R','Pulgar'];
+    const FINGER_CODE =['l5','l4','l3','l2','r2','r3','r4','r5','sp'];
+    function makeFingerMap(lang){
+      const base={'q':0,'a':0,'z':0,'w':1,'s':1,'x':1,'e':2,'d':2,'c':2,'r':3,'t':3,'f':3,'g':3,'v':3,'b':3,'y':4,'u':4,'h':4,'j':4,'n':4,'m':4,'i':5,'k':5,',':5,'o':6,'l':6,'.':6,'p':7,' ':8};
+      if(lang==='es') base['ñ']=7;
+      if(lang==='ca') base['ç']=7;
+      return base;
+    }
+
+    // ===== Estado global =====
+    let lang='es';
+    let lessons=[...lessonsES];
+    let vocab=[...wordsES];
+    let fingerMap=makeFingerMap(lang);
+    let layout=[...layoutES];
+
+    // ===== Teclado visual =====
+    const keyEls=new Map(); const kbd=$('kbd');
+    function buildKeyboard(){
+      keyEls.clear();
+      kbd.innerHTML='';
+      layout.forEach(row=>{
+        const r=document.createElement('div'); r.className='rowk';
+        row.forEach(k=>{
+          const d=document.createElement('div'); d.className='key'+(k===' ' ? ' space':'' ); d.textContent=k===' '?'espacio':k;
+          const f=fingerMap[k]; if(f!=null && f<8) d.dataset.f=FINGER_CODE[f]; if(k===' ') d.dataset.f='sp';
+          keyEls.set(k,d); r.appendChild(d);
+        });
+        kbd.appendChild(r);
+      });
+    }
+
+    // ===== Lecciones / UI =====
+    const lessonSel=$('lesson');
+    function fillLessons(){
+      lessonSel.innerHTML='';
+      lessons.forEach(L=>{ const o=document.createElement('option'); o.value=L.id; o.textContent=L.name; lessonSel.appendChild(o); });
+    }
+
+    // ===== Estado de sesión =====
+    const state={
+      running:false, paused:false, mode:'tutor',
+      lessonIdx:0, goal:lessons[0].goal, done:0,
+      correct:0, total:0, startTime:0,
+      text:'', cursor:0, textErrors:0,
+      pausedMs:0, pauseStart:0,
+      cooldownUntil:0, lastAcc:0
+    };
+    // ===== errorMap + runnerSpans =====
+    let errorMap={};
+    let runnerSpans=[];
+    function loadErrorMap(){ try{ return JSON.parse(localStorage.getItem('bago_em_'+lang)||'{}'); }catch{ return {}; } }
+    function saveErrorMap(){ localStorage.setItem('bago_em_'+lang, JSON.stringify(errorMap)); }
+    errorMap=loadErrorMap();
+
+    const els={
+      start:$('startBtn'), pause:$('pauseBtn'), reset:$('resetBtn'), next:$('nextBtn'), mode:$('mode'),
+      lessonName:$('lessonName'), goal:$('goal'), done:$('done'), acc:$('acc'), wpm:$('wpm'), hint:$('hint'),
+      target:$('target'), meter:$('meterBar'), recent:$('recent'), best:$('best'), bestWpm:$('best-wpm'),
+      ghost:$('ghost'), fx:$('fx'), left:$('leftPane'), ovl:$('ovl'), ovlWpm:$('ovl-wpm'),
+      ovlAcc:$('ovl-acc'), ovlErrs:$('ovl-errs'), ovlTimer:$('ovl-timer'),
+      cdown:$('cdown'), cdownNum:$('cdown-num'),
+      intro:$('intro'), introNum:$('intro-num'), introName:$('intro-name'),
+      introDesc:$('intro-desc'), introKeys:$('intro-keys')
+    };
+
+    // Récords por lección e idioma
+    function bestKey(){ return 'tutor_best_'+lang; }
+    function getBestMap(){ return JSON.parse(localStorage.getItem(bestKey())||'{}'); }
+    function setBestMap(m){ localStorage.setItem(bestKey(), JSON.stringify(m)); }
+    function bestWpmKey(){ return 'tutor_bestwpm_'+lang; }
+    function getBestWpm(){ return parseInt(localStorage.getItem(bestWpmKey())||'0',10); }
+    function saveBestWpm(wpm){ if(wpm>getBestWpm()){ localStorage.setItem(bestWpmKey(),wpm); } }
+    function updateBestLabel(){
+      const map=getBestMap(); const id=lessons[state.lessonIdx].id; const v=map[id]??0;
+      els.best.textContent=v.toFixed(0)+'%';
+      const bw=getBestWpm(); if(els.bestWpm) els.bestWpm.textContent=bw;
+    }
+    function canAdvance(){
+      const map=getBestMap(); const id=lessons[state.lessonIdx].id; const best=map[id]||0;
+      return state.lastAcc>=65 || best>=65;
+    }
+
+    // ===== Objetivos =====
+    const cons=['s','d','f','g','h','j','k','l','n','m','r','t','p','b','c','v','q','w','e','i','o','u','y'];
+    const voc =['a','e','i','o','u'];
+    const makeSyllable = ()=> cons[rnd(0,cons.length-1)] + voc[rnd(0,voc.length-1)];
+    function allowedPool(){
+      const L=lessons[state.lessonIdx];
+      if(L.type==='syl') return Array.from(new Set(cons.concat(voc)));
+      if(L.type==='words') return [];
+      return L.pool;
+    }
+    function pickTarget(){
+      const L=lessons[state.lessonIdx];
+      if(L.type==='syl')   return makeSyllable();
+      if(L.type==='words') return vocab[rnd(0,vocab.length-1)];
+      const p=allowedPool(); return p[rnd(0,p.length-1)];
+    }
+
+    // ===== Render =====
+    function setTarget(s){
+      state.target=s;
+      els.target.innerHTML=`<span>${escapeHtml(s)}</span>`;
+      highlightKey(s);
+      showFingerHint(s);
+      els.ghost.value='';
+    }
+    function highlightKey(ch){
+      keyEls.forEach(k=>k.classList.remove('active'));
+      const key=keyEls.get(ch===' ' ? ' ' : ch[0]);
+      if(key) key.classList.add('active');
+    }
+    function showFingerHint(s){
+      const ch=s===' ' ? ' ' : s[0];
+      const f=fingerMap[ch];
+      if($('showFinger').checked && f!=null){
+        const name=f===8?'Pulgar':FINGER_NAMES[f];
+        els.hint.textContent=(lang==='ca'?'Dit: ':'Dedo: ')+name;
+      } else {
+        els.hint.textContent=lessons[state.lessonIdx].tip||'';
+      }
+    }
+    function updateStats(){
+      els.done.textContent=state.done;
+      els.goal.textContent=state.goal;
+      const acc=state.total?Math.round(100*state.correct/state.total):100;
+      state.lastAcc=acc;
+      els.acc.textContent=acc+'%';
+      const pausedMin=(state.pausedMs+(state.paused&&state.pauseStart?(now()-state.pauseStart):0))/60000;
+      const elapsedMin=Math.max(1/60,(now()-state.startTime-pausedMin*60000)/60000);
+      const wpm=Math.round((state.correct/5)/elapsedMin);
+      els.wpm.textContent=`${wpm} WPM`;
+      els.meter.style.width=Math.min(100,(state.done/state.goal)*100)+'%';
+    }
+
+    // ===== FX =====
+    const ctx=els.fx.getContext('2d');
+    function resizeCanvas(){ els.fx.width=els.left.clientWidth; els.fx.height=els.left.clientHeight; }
+    new ResizeObserver(resizeCanvas).observe(els.left);
+    function confetti(n=28){
+      resizeCanvas();
+      const parts=[];
+      for(let i=0;i<n;i++){
+        parts.push({x:rnd(0,els.fx.width),y:rnd(els.fx.height-20,els.fx.height-4),vx:(Math.random()-.5)*2,vy:-Math.random()*3-1,r:rnd(2,4),life:rnd(30,60)});
+      }
+      (function draw(){
+        ctx.clearRect(0,0,els.fx.width,els.fx.height);
+        parts.forEach(p=>{
+          ctx.globalAlpha=Math.max(0,p.life/60);
+          ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fillStyle='white'; ctx.fill();
+          p.x+=p.vx; p.y+=p.vy; p.vy+=0.05; p.life--;
+        });
+        for(let i=parts.length-1;i>=0;i--) if(parts[i].life<=0) parts.splice(i,1);
+        if(parts.length) requestAnimationFrame(draw);
+      })();
+    }
+    function banner(text,color="#fff"){
+      const b=document.createElement('div');
+      Object.assign(b.style,{position:'absolute',top:'10px',left:'50%',transform:'translateX(-50%)',padding:'6px 12px',border:'1px solid #2a3b55',borderRadius:'999px',background:'#101a29',color,fontWeight:'800',zIndex:2});
+      b.textContent=text; els.left.appendChild(b); setTimeout(()=>b.remove(),1400);
+    }
+
+    // ===== Countdown + auto-advance =====
+    let _cdTimer=null, _aaTimer=null;
+    function showIntro(idx){
+      clearTimeout(_aaTimer);
+      const L=lessons[idx];
+      const total=lessons.length;
+      const iLabel=lang==='ca'?'Lliçó':'Lección';
+      const deLabel=lang==='ca'?'de':'de';
+      els.introNum.textContent=`${iLabel} ${idx+1} ${deLabel} ${total}`;
+      els.introName.textContent=L.name;
+      els.introDesc.textContent=L.desc||(L.tip||'');
+      els.introKeys.innerHTML='';
+      const keys=L.pool||(L.type==='words'?[]:null);
+      if(keys){ keys.forEach(k=>{ const sp=document.createElement('span'); sp.className='intro-key'; sp.textContent=k.toUpperCase(); els.introKeys.appendChild(sp); }); }
+      const skipBtn=$('intro-skip');
+      if(idx>=lessons.length-1){ skipBtn.style.display='none'; } else { skipBtn.style.display=''; }
+      els.intro.classList.add('show');
+      state.running=false;
+    }
+    function closeIntro(){
+      els.intro.classList.remove('show');
+    }
+        function showCountdown(cb){
+      clearTimeout(_cdTimer);
+      const nums=[3,2,1,'¡Ya!'];
+      let i=0;
+      els.cdown.classList.add('show');
+      els.cdownNum.className='cdown-num'+(nums[0]==='¡Ya!'?' cdown-go':'');
+      els.cdownNum.textContent=nums[0];
+      beep([880,660,550,1100][0]??880,0.07,'triangle',0.1);
+      function tick(){
+        i++;
+        if(i>=nums.length){ els.cdown.classList.remove('show'); cb(); return; }
+        // force reflow to restart animation
+        els.cdownNum.className=''; void els.cdownNum.offsetWidth;
+        els.cdownNum.className='cdown-num'+(nums[i]==='¡Ya!'?' cdown-go':'');
+        els.cdownNum.textContent=nums[i];
+        beep([880,660,550,1100][i]??880,0.07,'triangle',0.1);
+        _cdTimer=setTimeout(tick,700);
+      }
+      _cdTimer=setTimeout(tick,700);
+    }
+    function startAutoAdvance(sec=3){
+      clearTimeout(_aaTimer);
+      let n=sec;
+      els.ovlTimer.textContent='Siguiente en '+n+'…';
+      function tick(){
+        n--;
+        if(n<=0){ closeResults(); nextText(); els.ghost.focus(); return; }
+        els.ovlTimer.textContent='Siguiente en '+n+'…';
+        _aaTimer=setTimeout(tick,1000);
+      }
+      _aaTimer=setTimeout(tick,1000);
+    }
+
+    // ===== Control principal =====
+    function start(){
+      state.mode=$('mode').value;
+      state.lessonIdx=Math.max(0,lessons.findIndex(l=>l.id===lessonSel.value));
+      showIntro(state.lessonIdx);
+    }
+    function _doStart(){
+      const L=lessons[state.lessonIdx];
+      state.goal=L.goal; state.done=0; state.correct=0; state.total=0; state.lastAcc=0;
+      state.pausedMs=0; state.pauseStart=0; state.cursor=0; state.textErrors=0;
+      state.running=false; state.paused=false;
+      els.lessonName.textContent=L.name;
+      els.left.classList.remove('dim');
+      els.start.disabled=true; els.pause.disabled=false; els.reset.disabled=false; els.next.disabled=true;
+      if(AC && AC.state==='suspended') AC.resume();
+      state.startTime=0;
+      showCountdown(()=>{
+        state.startTime=now();
+        state.running=true;
+        if(state.mode==='runner'){ nextText(); }
+        else { nextPrompt(); }
+        els.ghost.focus();
+      });
+    }
+    function resetLesson(){
+      if(state.running) end('reiniciada');
+      clearTimeout(_cdTimer); clearTimeout(_aaTimer);
+      els.start.disabled=true; els.pause.disabled=false; els.next.disabled=true;
+      state.done=0; state.correct=0; state.total=0; state.lastAcc=0;
+      state.pausedMs=0; state.pauseStart=0; state.cursor=0; state.textErrors=0;
+      els.left.classList.remove('dim');
+      state.startTime=0;
+      state.running=false;
+      showCountdown(()=>{
+        state.startTime=now();
+        state.running=true;
+        if(state.mode==='runner'){ nextText(); }
+        else { nextPrompt(); }
+        els.ghost.focus();
+      });
+    }
+    function pause(){
+      if(!state.running) return;
+      state.paused=!state.paused;
+      els.pause.textContent=state.paused?'Reanudar':'Pausa';
+      if(state.paused){
+        state.pauseStart=now();
+      } else {
+        if(state.pauseStart) state.pausedMs+=now()-state.pauseStart;
+        state.pauseStart=0;
+        if(state.mode!=='runner') nextPrompt();
+      }
+    }
+    function end(reason='fin'){
+      state.running=false;
+      closeResults();
+      if(state.pauseStart){ state.pausedMs+=now()-state.pauseStart; state.pauseStart=0; }
+      els.start.disabled=false; els.pause.disabled=true; els.pause.textContent='Pausa'; els.left.classList.add('dim');
+      const acc=state.total?Math.round(100*state.correct/state.total):100;
+      state.lastAcc=acc;
+      const pausedMin=state.pausedMs/60000;
+      const elapsedMin=Math.max(1/60,(now()-state.startTime)/60000-pausedMin);
+      const wpm=Math.round((state.correct/5)/elapsedMin);
+      saveBestWpm(wpm); updateBestLabel();
+      const map=getBestMap(); const id=lessons[state.lessonIdx].id;
+      map[id]=Math.max(map[id]||0,acc); setBestMap(map); updateBestLabel();
+      els.target.innerHTML=`<span style="font-size:clamp(22px,5vw,40px);font-weight:900">Lección ${reason}. Precisión: ${acc}%</span>`;
+      if(canAdvance() && reason==='completada'){
+        const isLast=state.lessonIdx>=lessons.length-1;
+        els.next.disabled=false;
+        confetti(40);
+        if(isLast){
+          banner(lang==='ca'?'🏆 Has completat totes les lliçons!':'🏆 ¡Has completado todas las lecciones!','#7ee787');
+        } else {
+          let n=3;
+          const msg=()=>lang==='ca'?`Següent nivell en ${n}…`:`Siguiente nivel en ${n}…`;
+          banner(msg(),'#7ee787');
+          clearTimeout(_aaTimer);
+          _aaTimer=setTimeout(function tick(){
+            n--;
+            if(n<=0){ gotoNextLesson(); return; }
+            banner(msg(),'#7ee787');
+            _aaTimer=setTimeout(tick,1000);
+          },1000);
+        }
+      } else if(canAdvance()){
+        els.next.disabled=false;
+        banner(lang==='ca'?'Pots continuar':'Puedes pasar a la siguiente','#7ee787');
+      } else {
+        els.next.disabled=true;
+        banner(lang==='ca'?'Cal ≥ 65% per continuar':'Necesitas ≥ 65% para continuar','#ffb703');
+      }
+    }
+    function nextPrompt(){
+      state.running=true;
+      const minGap=$('slow').checked?700:120;
+      state.cooldownUntil=now()+minGap;
+      setTarget(pickTarget());
+      updateStats();
+    }
+    function gotoNextLesson(){
+      if(!canAdvance()){ banner(lang==='ca'?'Blocat: ≥ 65%':'Bloqueado: ≥ 65% requerido','#ff4d4f'); return; }
+      const idx=state.lessonIdx;
+      if(idx>=lessons.length-1){ banner(lang==='ca'?'No hi ha més lliçons':'No hay más lecciones','#ffb703'); return; }
+      state.lessonIdx=idx+1;
+      lessonSel.selectedIndex=state.lessonIdx;
+      showIntro(state.lessonIdx);
+    }
+
+    // ===== Runner functions =====
+    function buildWeightedPool(){
+      const L=lessons[state.lessonIdx];
+      if(L.type==='words') return null;
+      let base=L.type==='syl'? Array.from(new Set(cons.concat(voc))) : (L.pool||[]);
+      const out=[];
+      base.forEach(ch=>{
+        const em=errorMap[ch]; const errRate=em&&em.total>5?em.errors/em.total:0;
+        const w=errRate>0.30?3:1;
+        for(let i=0;i<w;i++) out.push(ch);
+      });
+      return out.length?out:base;
+    }
+    function generateText(len=36){
+      const L=lessons[state.lessonIdx];
+      if(L.type==='words'||state.mode==='palabras'){
+        let s=''; const v=vocab;
+        while(s.length<len){ s+=(s?' ':'')+v[rnd(0,v.length-1)]; }
+        return s.slice(0,len);
+      }
+      const pool=buildWeightedPool();
+      let s='';
+      if(L.type==='syl'){
+        while(s.length<len){ const sy=makeSyllable(); s+=(s?' ':'')+sy; }
+      } else {
+        while(s.length<len){
+          const wl=rnd(2,4); let w='';
+          for(let i=0;i<wl;i++) w+=pool[rnd(0,pool.length-1)];
+          s+=(s?' ':'')+w;
+        }
+      }
+      return s.slice(0,len);
+    }
+    function renderRunner(text){
+      state.text=text; state.cursor=0; state.textErrors=0;
+      const html=Array.from(text).map((c,i)=>{
+        const cls='ch'+(i===0?' cur':'')+(c===' '?' sp':'');
+        return `<span class="${cls}">${c===' '?'&nbsp;':escapeHtml(c)}</span>`;
+      }).join('');
+      els.target.innerHTML='<div class="runner">'+html+'</div>';
+      runnerSpans=Array.from(els.target.querySelectorAll('.ch'));
+    }
+    function nextText(){
+      closeResults();
+      renderRunner(generateText());
+      els.ghost.value='';
+      updateStats();
+    }
+    function updateHeatmap(){
+      keyEls.forEach((el,ch)=>{
+        const em=errorMap[ch]; if(!em||em.total<3){el.removeAttribute('data-heat');return;}
+        const r=em.errors/em.total;
+        if(r>0.5) el.setAttribute('data-heat','high');
+        else if(r>0.25) el.setAttribute('data-heat','mid');
+        else el.removeAttribute('data-heat');
+      });
+    }
+    function showResults(){
+      const pausedMin=state.pausedMs/60000;
+      const elapsedMin=Math.max(1/60,(now()-state.startTime)/60000-pausedMin);
+      const wpm=Math.round((state.correct/5)/elapsedMin);
+      const acc=state.total?Math.round(100*state.correct/state.total):100;
+      els.ovlWpm.textContent=wpm+' WPM';
+      els.ovlAcc.textContent='Precisión: '+acc+'%';
+      const sorted=Object.entries(errorMap)
+        .filter(([,v])=>v.total>2)
+        .sort((a,b)=>(b[1].errors/b[1].total)-(a[1].errors/a[1].total))
+        .slice(0,3);
+      els.ovlErrs.innerHTML=sorted.map(([ch,v])=>`<span class="err-chip">${ch} (${Math.round(100*v.errors/v.total)}%)</span>`).join('');
+      els.ovl.classList.add('show');
+      startAutoAdvance(3);
+    }
+    function closeResults(){
+      clearTimeout(_aaTimer);
+      if(els.ovl) els.ovl.classList.remove('show');
+    }
+
+    // ===== Entrada robusta (ñ/ç/acentos) =====
+    // beforeinput trae el carácter final compuesto; keydown es fallback.
+    els.ghost.addEventListener('beforeinput', ev=>{
+      if(!state.running || state.paused) return;
+      const data = ev.data;
+      if(!data) return;
+      ev.preventDefault();
+      handleChar(data);
+    });
+    document.addEventListener('keydown', e=>{
+      if(e.key==='Escape'){ e.preventDefault(); pause(); return; }
+      if(document.activeElement!==els.ghost) els.ghost.focus();
+      if(!state.running || state.paused) return;
+      if(e.ctrlKey||e.metaKey||e.altKey) return;
+      if(e.key.length===1 || e.key===' '){
+        e.preventDefault();
+        handleChar(e.key);
+      }
+    });
+
+    function handleChar(raw){
+      // Guard double-fire: ignore events within 20ms of the last handled one
+      const t=now(); if(t-_lastHandledAt<10) return; _lastHandledAt=t;
+
+      if(state.mode==='runner'){
+        const k=normChar(raw);
+        const ch=state.text[state.cursor]||'';
+        const expected=normChar(ch);
+        state.total++;
+        // update errorMap
+        if(!errorMap[ch]) errorMap[ch]={total:0,errors:0};
+        errorMap[ch].total++;
+        if(k===expected && expected){
+          runnerSpans[state.cursor]?.classList.replace('cur','ok');
+          state.correct++; state.done++;
+          beep(660,0.04,'triangle',0.08);
+          pushRecent(ch,true); flashKey(ch,true);
+          state.cursor++;
+          if(state.done>=state.goal){ saveErrorMap(); updateHeatmap(); end('completada'); return; }
+          if(state.cursor>=state.text.length){ saveErrorMap(); updateHeatmap(); showResults(); }
+          else {
+            runnerSpans[state.cursor]?.classList.add('cur');
+          }
+        } else {
+          runnerSpans[state.cursor]?.classList.add('err');
+          errorMap[ch].errors++;
+          beep(160,0.06,'sawtooth',0.08);
+          pushRecent(ch,false); flashKey(raw,false);
+          state.textErrors++;
+        }
+        updateStats(); saveErrorMapDebounced();
+        return;
+      }
+
+      const L=lessons[state.lessonIdx];
+      const k = normChar(raw);
+      const expected = normChar(state.target[0]);
+
+      if(state.mode==='tutor' && L.type!=='words' && L.type!=='syl'){
+        const pool = allowedPool().map(normChar);
+        if(!pool.includes(k)){ flashKey(raw,false); beep(140,0.08,'square'); return; }
+      }
+
+      state.total++;
+      if(k===expected && expected){
+        flashKey(state.target[0],true);
+        state.correct++; beep(660,0.04,'triangle',0.08);
+        pushRecent(state.target[0],true);
+        if(state.target.length>1){
+          setTarget(state.target.slice(1));
+        } else {
+          state.done++;
+          if(state.done>=state.goal){ end('completada'); return; }
+          if($('slow').checked){
+            const gap=Math.max(0,state.cooldownUntil-now());
+            if(gap>4) setTimeout(nextPrompt,gap); else nextPrompt();
+          } else {
+            nextPrompt();
+          }
+        }
+      } else {
+        flashKey(raw,false);
+        pushRecent(state.target[0],false);
+        beep(160,0.06,'sawtooth',0.08);
+      }
+      updateStats();
+    }
+
+    function pushRecent(ch,ok){
+      const tag=document.createElement('span');
+      tag.className='badge';
+      tag.style.borderColor=ok?'#28c76f':'#ff4d4f';
+      tag.textContent=ch===' ' ? '⎵' : ch;
+      $('recent').prepend(tag);
+      while($('recent').children.length>18) $('recent').lastChild.remove();
+    }
+    function flashKey(k,ok){
+      const key=keyEls.get((k===' ')?' ':k.toLowerCase());
+      if(!key) return;
+      key.classList.add(ok?'good':'bad');
+      setTimeout(()=>key.classList.remove('good','bad'),120);
+    }
+
+    // ===== Botones =====
+    $('startBtn').onclick=()=>start();
+    $('intro-start').onclick=()=>{ closeIntro(); _doStart(); };
+    $('intro-skip').onclick=()=>{
+      const next=state.lessonIdx+1;
+      if(next<lessons.length){ state.lessonIdx=next; lessonSel.selectedIndex=next; showIntro(next); }
+    };
+    $('pauseBtn').onclick=()=>pause();
+    $('nextBtn').onclick=()=>{ clearTimeout(_aaTimer); gotoNextLesson(); };
+    $('resetBtn').onclick=()=>{ clearTimeout(_aaTimer); resetLesson(); };
+    $('mode').onchange=()=>{
+      if(state.running) end('finalizada');
+      const m=$('mode').value;
+      $('lesson').disabled=(m!=='tutor');
+      $('nextBtn').disabled=true;
+      els.ghost.focus();
+    };
+    $('ignoreAccents').onchange=()=>{ /* afecta a comparación futura */ };
+
+    // Cambio de lección
+    $('lesson').onchange=()=>{
+      if(state.running) end('cambiada');
+      const idx=lessons.findIndex(l=>l.id===lessonSel.value);
+      state.lessonIdx=idx>=0?idx:0;
+      const L=lessons[state.lessonIdx];
+      state.goal=L.goal;
+      els.lessonName.textContent=L.name;
+      els.hint.textContent=L.tip||'';
+      $('nextBtn').disabled=true;
+      updateBestLabel();
+    };
+
+    // Cambio de idioma
+    $('lang').onchange=()=>{
+      lang = $('lang').value;
+      lessons = (lang==='ca') ? lessonsCA : lessonsES;
+      vocab   = (lang==='ca') ? wordsCA   : wordsES;
+      fingerMap = makeFingerMap(lang);
+      layout = (lang==='ca') ? layoutCA : layoutES;
+      errorMap = loadErrorMap();
+      fillLessons();
+      buildKeyboard();
+      lessonSel.value=lessons[0].id;
+      state.lessonIdx=0; state.goal=lessons[0].goal;
+      els.lessonName.textContent=lessons[0].name;
+      els.hint.textContent=lessons[0].tip||'';
+      updateBestLabel();
+      banner(lang==='ca'?'Idioma: Català/Valencià':'Idioma: Español','#7ee787');
+    };
+    $('ovl-next').onclick=()=>{ clearTimeout(_aaTimer); closeResults(); nextText(); els.ghost.focus(); };
+
+    // ===== Inicialización =====
+    fillLessons();
+    buildKeyboard();
+    lessonSel.value=lessons[0].id;
+    els.lessonName.textContent=lessons[0].name;
+    els.hint.textContent=lessons[0].tip;
+    updateBestLabel();
+    resizeCanvas();
+  </script>
+</body>
+</html>

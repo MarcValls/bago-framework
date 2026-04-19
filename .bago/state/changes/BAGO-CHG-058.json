@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-058",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Cosecha contextual W9: Decidimos que cosecha.py debe usar type:governance para CHG ",
+  "motivation": "Formalizar exploración libre. Decisión: Decidimos que cosecha.py debe usar type:governance para CHG y que validate_state.py necesita harvest como task_type valido. Descarte: Descartamos continuar sin fix porque toda sesion harvest habria fallado la validacion del pack, haciendo F3 inutil.",
+  "status": "applied",
+  "affected_components": [
+    "(exploración sin artefactos de fichero)"
+  ],
+  "related_evidence": "BAGO-EVD-059",
+  "created_at": "2026-04-18T14:19:38.137038+00:00",
+  "updated_at": "2026-04-18T14:19:38.137038+00:00",
+  "author": "role_auditor"
+}

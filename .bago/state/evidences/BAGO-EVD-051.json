@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-051",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-050",
+    "SES-ON-2026-04-18-005"
+  ],
+  "summary": "ON R5 cerrada: 4 útiles, 2 roles, GO preflight, 4 decisiones.",
+  "details": "pack_dashboard.py probado: muestra GO/KO, inventario, producción últimas 5 sesiones y marcador ESCENARIO-002 en una pantalla. EVAL-ESCENARIO002-FINAL documenta veredicto formal Δ=+2.0 con interpretación y recomendaciones. GUIA_OPERADOR actualizada con referencia al dashboard.",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T13:50:00Z"
+}

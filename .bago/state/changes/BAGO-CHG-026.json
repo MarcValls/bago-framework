@@ -1,0 +1,31 @@
+{
+  "change_id": "BAGO-CHG-026",
+  "title": "Realineación física de roles de supervisión fuera de gobierno",
+  "type": "governance",
+  "severity": "minor",
+  "status": "validated",
+  "normalized_status": "validated",
+  "motivation": "Alinear la ubicación física de los roles con la familia declarada, separando supervisión de gobierno también en el árbol de roles.",
+  "scope": [
+    "roles/gobierno/AUDITOR_CANONICO.md",
+    "roles/gobierno/VERTICE.md",
+    "roles/supervision/AUDITOR_CANONICO.md",
+    "roles/supervision/VERTICE.md",
+    "docs/migration/MAPA_EQUIVALENCIAS_COMPLETO.md",
+    "state/global_state.json",
+    "state/changes/BAGO-CHG-026.json",
+    "state/evidences/BAGO-EVD-026.json",
+    "state/sessions/SES-ROLE-2026-04-13-001.json",
+    "TREE.txt",
+    "CHECKSUMS.sha256"
+  ],
+  "impacts": [
+    "taxonomía física más coherente",
+    "mejor separación entre gobierno y supervisión",
+    "menor ambigüedad para CLI, validadores y navegación humana"
+  ],
+  "requires_migration": false,
+  "validation_result": "GO",
+  "created_at": "2026-04-13T16:21:33Z",
+  "updated_at": "2026-04-13T16:21:33Z"
+}

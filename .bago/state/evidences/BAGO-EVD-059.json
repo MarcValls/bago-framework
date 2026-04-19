@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-059",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-058",
+    "SES-HARVEST-2026-04-18-003"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-18-003",
+  "details": "Decisión: Decidimos que cosecha.py debe usar type:governance para CHG y que validate_state.py necesita harvest como task_type valido | Descarte: Descartamos continuar sin fix porque toda sesion harvest habria fallado la validacion del pack, haciendo F3 inutil | Próximo paso: Ejecutar F4: crear EVAL-ESCENARIO003-FINAL con veredicto sobre H1 H2 H3 y comparativa harvest vs OFF | Ficheros afectados: (exploración sin artefactos de fichero)",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T14:19:38.137038+00:00"
+}

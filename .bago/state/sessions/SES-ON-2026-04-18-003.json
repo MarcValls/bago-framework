@@ -1,0 +1,36 @@
+{
+  "session_id": "SES-ON-2026-04-18-003",
+  "task_type": "system_change",
+  "selected_workflow": "w7_foco_sesion",
+  "roles_activated": [
+    "role_architect",
+    "role_organizer"
+  ],
+  "user_goal": "Crear documentación operativa esencial que falta: guía del operador (bootstrap + comandos clave + árbol de decisión de sesión) y troubleshooting de errores frecuentes. Objetivo: cualquier operador pueda arrancar y cerrar sesiones sin depender de memoria.",
+  "status": "closed",
+  "bago_mode": "on",
+  "escenario": "ESCENARIO-002",
+  "ronda": 3,
+  "created_at": "2026-04-18T13:31:00Z",
+  "updated_at": "2026-04-18T13:36:00Z",
+  "artifacts_planned": [
+    "docs/operation/GUIA_OPERADOR.md",
+    "docs/operation/TROUBLESHOOTING.md",
+    "docs/governance/PROTOCOLO_CIERRE_SESION.md"
+  ],
+  "preflight_resultado": "GO",
+  "artifacts": [
+    "docs/operation/GUIA_OPERADOR.md",
+    "docs/operation/TROUBLESHOOTING.md",
+    "docs/governance/PROTOCOLO_CIERRE_SESION.md",
+    "state/sessions/SES-ON-2026-04-18-003.json",
+    "state/changes/BAGO-CHG-046.json",
+    "state/evidences/BAGO-EVD-047.json"
+  ],
+  "decisions": [
+    "GUIA_OPERADOR centraliza bootstrap + árbol de decisión + comandos clave. Reduce tiempo de arranque de sesión.",
+    "TROUBLESHOOTING cubre los 7 errores más frecuentes con diagnóstico y fix en copy-paste.",
+    "PROTOCOLO_CIERRE_SESION formaliza el checklist de 6 pasos como documento de referencia independiente de W7."
+  ],
+  "summary": "ON Ronda 3. 3 útiles (GUIA_OPERADOR + TROUBLESHOOTING + PROTOCOLO_CIERRE), 2 roles, preflight GO, 3 decisiones."
+}

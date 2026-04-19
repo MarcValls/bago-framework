@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-033",
+  "type": "closure",
+  "related_to": ["BAGO-CHG-033"],
+  "summary": "Plantilla de evaluación brutal incorporada y conectada a la guía de auditoría.",
+  "details": "Se creó templates/plantilla_evaluacion_brutal.md con estructura completa W1-W7, scorecard y anexos anti-sesgo. Se añadió referencia explícita en docs/operation/GUIA_DE_AUDITORIA.md para uso operativo directo.",
+  "status": "recorded",
+  "recorded_at": "2026-04-15T00:05:54Z"
+}

@@ -1,0 +1,17 @@
+{
+  "change_id": "BAGO-CHG-048",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-002 ON Ronda 4: actualización metrics_snapshot e informe workflows con datos 19 sesiones",
+  "motivation": "metrics_snapshot y INFORME_EFICACIA_WORKFLOWS estaban stale desde R2. Se actualizan con 19 sesiones cerradas reales.",
+  "status": "applied",
+  "affected_components": [
+    "state/metrics/metrics_snapshot.json",
+    "docs/analysis/INFORME_EFICACIA_WORKFLOWS.md",
+    "state/evaluations/EVAL-WORKFLOWS-002.md"
+  ],
+  "related_evidence": "BAGO-EVD-049",
+  "created_at": "2026-04-18T13:43:00Z",
+  "updated_at": "2026-04-18T13:43:00Z",
+  "author": "role_auditor"
+}

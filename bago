@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+"""
+bago — script de activación BAGO
+Muestra banner + gestiona comandos rápidos.
+
+Uso:
+  ./bago                    → banner + estado
+  ./bago dashboard          → pack_dashboard.py
+  ./bago ideas              → emit_ideas.py
+  ./bago cosecha            → cosecha.py
+  ./bago detector           → context_detector.py
+  ./bago validate           → validate_pack.py
+  ./bago dashboard --full   → dashboard extendido
+  ./bago health             → health_score.py
+  ./bago audit              → audit_v2.py
+  ./bago workflow           → workflow_selector.py (interactivo)
+  ./bago stale              → stale_detector.py
+  ./bago v2                 → v2_close_checklist.py
+
+Instalar como alias global:
+  echo 'alias bago="python3 $(pwd)/bago"' >> ~/.zshrc
+"""
+
+import subprocess, sys
+from pathlib import Path
+
+BAGO_ROOT = Path(__file__).resolve().parent / ".bago"
+TOOLS     = BAGO_ROOT / "tools"
+
+COMMANDS = {
+    "dashboard": ["python3", str(TOOLS / "pack_dashboard.py")],
+    "ideas":     ["python3", str(TOOLS / "emit_ideas.py")],
+    "cosecha":   ["python3", str(TOOLS / "cosecha.py")],
+    "detector":  ["python3", str(TOOLS / "context_detector.py")],
+    "validate":  ["python3", str(TOOLS / "validate_pack.py")],
+    "health":    ["python3", str(TOOLS / "health_score.py")],
+    "audit":     ["python3", str(TOOLS / "audit_v2.py")],
+    "workflow":  ["python3", str(TOOLS / "workflow_selector.py")],
+    "stale":     ["python3", str(TOOLS / "stale_detector.py")],
+    "v2":        ["python3", str(TOOLS / "v2_close_checklist.py")],
+}
+
+def main():
+    args = sys.argv[1:]
+
+    # Sin argumentos → banner completo
+    if not args:
+        subprocess.run(
+            ["python3", str(TOOLS / "bago_banner.py")],
+            cwd=str(BAGO_ROOT.parent)
+        )
+        return
+
+    cmd = args[0].lower()
+    rest = args[1:]
+
+    if cmd in COMMANDS:
+        subprocess.run(COMMANDS[cmd] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd in ("help", "--help", "-h"):
+        subprocess.run(
+            ["python3", str(TOOLS / "bago_banner.py"), "--mini"],
+            cwd=str(BAGO_ROOT.parent)
+        )
+        print("  Comandos disponibles:")
+        for k in COMMANDS:
+            print(f"    bago {k}")
+        print()
+    else:
+        print(f"  Comando desconocido: '{cmd}'")
+        print("  Usa: bago help")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
+

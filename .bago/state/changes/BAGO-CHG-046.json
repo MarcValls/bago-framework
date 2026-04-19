@@ -1,0 +1,17 @@
+{
+  "change_id": "BAGO-CHG-046",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-002 ON Ronda 3: documentación operativa esencial del pack",
+  "motivation": "Falta documentación operativa consolidada. Operadores deben inferir proceso por memoria. Se crea GUIA_OPERADOR (bootstrap+árbol de decisión), TROUBLESHOOTING (7 errores frecuentes) y PROTOCOLO_CIERRE_SESION (checklist formal 6 pasos).",
+  "status": "applied",
+  "affected_components": [
+    "docs/operation/GUIA_OPERADOR.md",
+    "docs/operation/TROUBLESHOOTING.md",
+    "docs/governance/PROTOCOLO_CIERRE_SESION.md"
+  ],
+  "related_evidence": "BAGO-EVD-047",
+  "created_at": "2026-04-18T13:36:00Z",
+  "updated_at": "2026-04-18T13:36:00Z",
+  "author": "role_architect"
+}

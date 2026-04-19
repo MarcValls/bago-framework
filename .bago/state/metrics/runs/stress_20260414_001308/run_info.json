@@ -1,0 +1,14 @@
+{
+  "run_dir": "/Users/INTELIA_Manager/Desktop/BAGO.V4.PLANO/WORCK01/BAGO_AMTEC_V2_2_2_OFICIAL_utf8/.bago/state/metrics/runs/stress_20260414_001308",
+  "simulate": false,
+  "provider": "github_models",
+  "model": "openai/gpt-4.1",
+  "agents": 3,
+  "iterations": 20,
+  "global_rate_limit_rps": 0.5,
+  "generated_files": [
+    "/Users/INTELIA_Manager/Desktop/BAGO.V4.PLANO/WORCK01/BAGO_AMTEC_V2_2_2_OFICIAL_utf8/.bago/state/metrics/runs/stress_20260414_001308/results.csv",
+    "/Users/INTELIA_Manager/Desktop/BAGO.V4.PLANO/WORCK01/BAGO_AMTEC_V2_2_2_OFICIAL_utf8/.bago/state/metrics/runs/stress_20260414_001308/agent_timeline.csv",
+    "/Users/INTELIA_Manager/Desktop/BAGO.V4.PLANO/WORCK01/BAGO_AMTEC_V2_2_2_OFICIAL_utf8/.bago/state/metrics/runs/stress_20260414_001308/summary.json"
+  ]
+}

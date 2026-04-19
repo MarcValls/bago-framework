@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-056",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-055",
+    "SES-E003-2026-04-18-001"
+  ],
+  "summary": "F1 ESCENARIO-003 completada: 4 artefactos útiles, 2 roles, 3 decisiones.",
+  "details": "context_detector.py: detecta señales técnicas (ficheros sin CHG, commits huérfanos) + cognitivas (keywords de pensamiento maduro, comparaciones, descartes). cosecha.py: 3 preguntas interactivas, genera sesión harvest cerrada + CHG + EVD + actualiza global_state. W9_COSECHA.md: protocolo formal, diferencias W7/W8/W9, reglas. tpl_harvest.md: plantilla manual.",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T14:10:00Z"
+}

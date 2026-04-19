@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-027",
+  "type": "validation",
+  "related_to": ["BAGO-CHG-027", "SES-ROLE-2026-04-13-002"],
+  "summary": "El pack ahora falla si un rol declara una family distinta de la carpeta física en la que vive.",
+  "details": "validate_pack.py pasó a comparar el campo family de cada rol con su directorio físico bajo roles/, usando el mapa gobierno=government, produccion=production, supervision=supervision y especialistas=specialist.",
+  "status": "recorded",
+  "recorded_at": "2026-04-13T17:27:31Z"
+}

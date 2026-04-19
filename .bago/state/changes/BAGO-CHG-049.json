@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-049",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-002 OFF Ronda 4: sesión libre ejecutar/actualizar sin objetivo concreto",
+  "motivation": "Sesión de control grupo off. Sin objetivo definido, intenta actualizar algo del pack.",
+  "status": "applied",
+  "affected_components": [
+    "docs/operation/NOTAS_ACTUALIZACION.md"
+  ],
+  "related_evidence": "BAGO-EVD-050",
+  "created_at": "2026-04-18T13:46:00Z",
+  "updated_at": "2026-04-18T13:46:00Z",
+  "author": "role_architect"
+}

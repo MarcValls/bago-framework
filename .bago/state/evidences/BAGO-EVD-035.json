@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-035",
+  "type": "closure",
+  "related_to": ["BAGO-CHG-035", "SES-CONSOL-2026-04-15-001"],
+  "summary": "Directorio oficial limpio consolidado y validado.",
+  "details": "Se creó BAGO_OFICIAL_LIMPIO_2_3_CLEAN como copia operativa limpia con .bago + scripts de instalación + dist, y se verificó integridad GO manifest/state/pack.",
+  "status": "recorded",
+  "recorded_at": "2026-04-15T00:53:02Z"
+}

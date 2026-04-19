@@ -1,0 +1,21 @@
+{
+  "change_id": "BAGO-CHG-004",
+  "legacy_date": "2026-04-10",
+  "source_path": "state/cambios/2026-04-10__BAGO-CHG-004__sprint-1b1-estabilizacion-a11y-ok-performance-bloqueado.md",
+  "source_format": "markdown_change_v1",
+  "title": "2026-04-10__BAGO-CHG-004__sprint-1b1-estabilizacion-a11y-ok-performance-bloqueado",
+  "type": "historical_migration",
+  "severity": "major",
+  "status": "approved_with_conditions",
+  "motivation": "Se ejecutó el sprint de estabilización 1b.1 sobre `codex/full-app-base`. El frente de accesibilidad quedó cerrado para `login`, `dashboard` y `tpv`; la consolidación swarm/git quedó completada; y el rendimiento mejoró de forma relevante pero insuficiente para el umbral operativo del repo.",
+  "legacy_previous_state": "",
+  "legacy_applied_change": "1. `apps/web/index.html` deja de bloquear zoom, elimina el `importmap` sobrante y sustituye activos pesados de arranque por SVG/iconos ligeros.\n2. La capa visual compartida centraliza la remediación de contraste en `packages/app-core/src/styles/index.css`.\n3. `Card` soporta interacción visual sin semántica de botón para evitar `nested-interactive` cuando contiene controles internos.\n4. El runner Playwright de accesibilidad se endurece para esperar por shell/UI real en lugar de `networkidle`, y limita el alcance auditado a `login`, `dashboard` y `tpv`.\n5. Las ramas locales `swarm/compras-mvp-sprint-1a/*` se eliminan tras verificar que no contienen commits únicos frente a `codex/full-app-base`.",
+  "legacy_impact_expected": "",
+  "legacy_risks": "",
+  "summary": "Se ejecutó el sprint de estabilización 1b.1 sobre `codex/full-app-base`. El frente de accesibilidad quedó cerrado para `login`, `dashboard` y `tpv`; la consolidación swarm/git quedó completada; y el rendimiento mejoró de forma relevante pero insuficiente para el umbral operativo del repo.",
+  "raw_markdown_preserved": true,
+  "legacy_status": "aceptado con bloqueo residual",
+  "normalized_status": "approved_with_conditions",
+  "created_at": "2026-04-11T13:10:00Z",
+  "updated_at": "2026-04-11T13:10:00Z"
+}

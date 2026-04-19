@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-054",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-003: diseño cosecha contextual (standby activo + W9)",
+  "motivation": "Crear mecanismo de captura de valor para sesiones exploratorias. Disparador basado en densidad de contexto, no en tiempo. Protocolo 3-preguntas para formalizar decisiones y artefactos.",
+  "status": "applied",
+  "affected_components": [
+    "state/scenarios/ESCENARIO-003-COSECHA-CONTEXTUAL.md"
+  ],
+  "related_evidence": "BAGO-EVD-055",
+  "created_at": "2026-04-18T14:01:00Z",
+  "updated_at": "2026-04-18T14:01:00Z",
+  "author": "role_architect"
+}

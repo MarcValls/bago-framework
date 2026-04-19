@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-002",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Cosecha contextual W9: no se donde has explorado y que archivos",
+  "motivation": "Formalizar exploración libre. Decisión: no se donde has explorado y que archivos. Descarte: No se que has explorado.",
+  "status": "applied",
+  "affected_components": [
+    "(exploración sin artefactos de fichero)"
+  ],
+  "related_evidence": "BAGO-EVD-001",
+  "created_at": "2026-04-19T11:08:31.831293+00:00",
+  "updated_at": "2026-04-19T11:08:31.831293+00:00",
+  "author": "role_auditor"
+}

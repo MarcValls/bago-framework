@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-057",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Cosecha contextual W9: Decidimos que el dashboard debe integrarse con context_detec",
+  "motivation": "Formalizar exploración libre. Decisión: Decidimos que el dashboard debe integrarse con context_detector via importlib, mostrando veredicto y barra de score en tiempo real. Descarte: Descartamos llamada directa CLI a context_detector porque produce subprocess extra y complica captura del resultado estructurado.",
+  "status": "applied",
+  "affected_components": [
+    "(exploración sin artefactos de fichero)"
+  ],
+  "related_evidence": "BAGO-EVD-058",
+  "created_at": "2026-04-18T14:19:29.365080+00:00",
+  "updated_at": "2026-04-18T14:19:29.365080+00:00",
+  "author": "role_auditor"
+}

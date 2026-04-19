@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-045",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-002 OFF Ronda 2: sesión libre análisis sin estructura",
+  "motivation": "Grupo de control ESCENARIO-002 Ronda 2. Sin preflight, 4 roles, produce nota de observaciones genéricas de bajo valor.",
+  "status": "applied",
+  "affected_components": [
+    "docs/operation/OBSERVACIONES_PACK.md"
+  ],
+  "related_evidence": "BAGO-EVD-046",
+  "created_at": "2026-04-18T13:20:00Z",
+  "updated_at": "2026-04-18T13:20:00Z",
+  "author": "role_architect"
+}

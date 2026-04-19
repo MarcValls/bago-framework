@@ -1,0 +1,22 @@
+{
+  "session_id": "SES-EVAL-2026-04-15-002",
+  "task_type": "analysis",
+  "selected_workflow": "workflow_analysis",
+  "roles_activated": ["role_auditor", "role_validator", "role_organizer"],
+  "user_goal": "Iniciar EVALUACIÓN DE BAGO 01 con baseline explícito y métricas duras.",
+  "status": "closed",
+  "created_at": "2026-04-15T00:10:36Z",
+  "updated_at": "2026-04-18T11:31:00Z",
+  "summary": "Evaluación cerrada como obsoleta. Fue iniciada en BAGO 2.2.2 (AMTEC_V2_2_2) y pausada al priorizar la reconstrucción limpia 2.3-clean. Los bloques de medición W1/W2/W5 nunca se ejecutaron. La evaluación queda archivada en state/evaluations/BAGO-EVAL-01.md para referencia. Si se retoma, debe abrirse una nueva sesión sobre el pack 2.3-clean vigente.",
+  "artifacts": [
+    ".bago/state/evaluations/BAGO-EVAL-01.md",
+    ".bago/state/sessions/SES-EVAL-2026-04-15-002.json",
+    ".bago/state/global_state.json"
+  ],
+  "decisions": [
+    "Arranque en modo [B] Balanceado para fijar hipótesis, baseline y criterios de éxito antes de ejecutar mediciones.",
+    "Workflow inicial seleccionado: workflow_analysis.",
+    "La evaluación 01 se registra como artefacto operativo en state/evaluations.",
+    "Sesión pausada por priorización explícita de reconstrucción limpia del canon BAGO."
+  ]
+}

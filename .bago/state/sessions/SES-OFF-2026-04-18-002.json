@@ -1,0 +1,26 @@
+{
+  "session_id": "SES-OFF-2026-04-18-002",
+  "task_type": "analysis",
+  "selected_workflow": "w0_free_session",
+  "roles_activated": [
+    "role_auditor",
+    "role_architect",
+    "role_organizer",
+    "role_vertice"
+  ],
+  "user_goal": "revisar el pack y ver cómo está",
+  "status": "closed",
+  "bago_mode": "off",
+  "escenario": "ESCENARIO-002",
+  "ronda": 2,
+  "created_at": "2026-04-18T13:15:30Z",
+  "updated_at": "2026-04-18T13:20:00Z",
+  "artifacts": [
+    "docs/operation/OBSERVACIONES_PACK.md",
+    "state/sessions/SES-OFF-2026-04-18-002.json",
+    "state/changes/BAGO-CHG-045.json",
+    "state/evidences/BAGO-EVD-046.json"
+  ],
+  "decisions": [],
+  "summary": "OFF Ronda 2. 1 útil, 4 roles, sin preflight. Nota de observaciones genéricas sin análisis real."
+}

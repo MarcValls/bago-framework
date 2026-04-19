@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-024",
+  "type": "validation",
+  "related_to": ["BAGO-CHG-024", "SES-OFC-2026-04-11-001"],
+  "summary": "La baseline oficial 2.2.1 quedó congelada con validación íntegra y trazabilidad registrada.",
+  "details": "Se saneó la identidad de versión, se registró el acta oficial de baseline, se regeneraron árbol y checksums y el paquete completo volvió a validar en verde.",
+  "status": "recorded",
+  "recorded_at": "2026-04-11T18:00:00Z"
+}

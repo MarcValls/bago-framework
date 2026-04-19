@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-052",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-051",
+    "SES-OFF-2026-04-18-005"
+  ],
+  "summary": "OFF R5 cerrada: 1 útil, 4 roles, sin preflight, 0 decisiones.",
+  "details": "Última sesión del grupo OFF. Sin objetivo concreto, produce nota de mejoras generales sin valor accionable. Patrón consistente con R1-R4: siempre 1 útil, siempre 0 decisiones. 4 roles por inercia en todas las sesiones OFF.",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T13:53:00Z"
+}

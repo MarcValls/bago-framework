@@ -1,0 +1,37 @@
+{
+  "session_id": "SES-ON-2026-04-18-005",
+  "task_type": "system_change",
+  "selected_workflow": "w7_foco_sesion",
+  "roles_activated": [
+    "role_architect",
+    "role_executor"
+  ],
+  "user_goal": "Crear tools/pack_dashboard.py — un comando único que en 10 líneas muestre: GO/KO del pack, inventario, producción media, marcador ESCENARIO-002 y estado activo. El operador ejecuta esto antes de empezar cualquier sesión.",
+  "status": "closed",
+  "bago_mode": "on",
+  "escenario": "ESCENARIO-002",
+  "ronda": 5,
+  "created_at": "2026-04-18T13:47:00Z",
+  "updated_at": "2026-04-18T13:50:00Z",
+  "artifacts_planned": [
+    "tools/pack_dashboard.py",
+    "docs/operation/GUIA_OPERADOR.md (actualizar con referencia al dashboard)",
+    "state/evaluations/EVAL-ESCENARIO002-FINAL.md"
+  ],
+  "preflight_resultado": "GO",
+  "artifacts": [
+    "tools/pack_dashboard.py",
+    "docs/operation/GUIA_OPERADOR.md",
+    "state/evaluations/EVAL-ESCENARIO002-FINAL.md",
+    "state/sessions/SES-ON-2026-04-18-005.json",
+    "state/changes/BAGO-CHG-050.json",
+    "state/evidences/BAGO-EVD-051.json"
+  ],
+  "decisions": [
+    "pack_dashboard.py crea punto de entrada único para operadores. Muestra GO/KO, inventario, producción y marcador E002 en una pantalla.",
+    "EVAL-ESCENARIO002-FINAL documenta veredicto formal: Δ=+2.0 útiles, −1.8 roles, +3.0 decisiones.",
+    "Recomendación: mantener W7, reducir overhead cierre a ≤3min, revisar W7-lite para sesiones exploratorias.",
+    "GUIA_OPERADOR actualizada con referencia al dashboard como primer comando de diagnóstico."
+  ],
+  "summary": "ON Ronda 5. 4 útiles (pack_dashboard+GUIA_actualizada+EVAL-final+sesión), 2 roles, preflight GO, 4 decisiones."
+}

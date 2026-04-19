@@ -1,0 +1,38 @@
+{
+  "bago_version": "2.4-v2rc",
+  "canon_version": "2.4-v2rc",
+  "system_health": "stable",
+  "active_session_id": null,
+  "active_task_type": null,
+  "active_roles": [],
+  "open_changes": [],
+  "active_scenarios": [],
+  "active_workflows": [],
+  "history_migration_status": "clean_start",
+  "updated_at": "2026-04-19T12:19:05.315054+00:00",
+  "v2_status": "completed",
+  "notes": "SES-EXECUTION-2026-04-19-003 cerrada. MECANOGRAFIA.html: 8 mejoras entregadas, 11/11 todos done.",
+  "last_completed_session_id": "SES-EXECUTION-2026-04-19-003",
+  "last_completed_task_type": "execution",
+  "last_completed_workflow": "w3_ejecucion",
+  "last_completed_roles": [
+    "role_developer",
+    "role_auditor"
+  ],
+  "last_completed_change_id": "BAGO-CHG-003",
+  "last_completed_evidence_id": "BAGO-EVD-002",
+  "inventory": {
+    "sessions": 3,
+    "changes": 3,
+    "evidences": 2
+  },
+  "last_validation": {
+    "pack": "GO",
+    "state": "GO",
+    "manifest": "GO",
+    "recorded_at": "2026-04-18T16:11:54.000000+00:00"
+  },
+  "baseline_code": "clean_start_20260418_161154",
+  "baseline_status": "active_clean_core",
+  "sprint_status": {}
+}

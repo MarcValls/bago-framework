@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-036",
+  "type": "incident",
+  "related_to": ["SES-VERT-2026-04-17-001"],
+  "summary": "Desviación detectada: inventario declarado inconsistente con árbol real, referencias finales rotas e identidad del rol Vértice fragmentada.",
+  "details": "validate_state.py devuelve KO con 6 errores: (1) last_completed_session_id apunta a SES-SPRINT3-2026-04-17-001 (inexistente), (2) last_completed_change_id apunta a BAGO-CHG-037 (inexistente), (3) last_completed_evidence_id apunta a BAGO-EVD-037 (inexistente), (4) inventory.sessions mismatch 19!=17, (5) inventory.changes mismatch 18!=16, (6) inventory.evidences mismatch 19!=17. El rol Vértice opera con tres identidades distintas en distintos archivos: GUIA_VERTICE (pack.json + MATRIZ), role_vertice (trazas de sesión), role_structural_reviewer (roles/supervision/VERTICE.md). ESTADO_BAGO_ACTUAL.md narra Sprint 2 como objetivo activo mientras global_state.json refleja Sprint 3 como DONE.",
+  "status": "recorded",
+  "recorded_at": "2026-04-17T15:44:49Z"
+}

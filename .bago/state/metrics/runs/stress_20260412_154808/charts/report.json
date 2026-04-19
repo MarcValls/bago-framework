@@ -1,0 +1,99 @@
+{
+  "run_dir": "/Users/INTELIA_Manager/Desktop/BAGO.V4.PLANO/WORCK01/BAGO_AMTEC_V2_2_2_OFICIAL_utf8/.bago/state/metrics/runs/stress_20260412_154808",
+  "summary": {
+    "started_at_utc": "2026-04-12T13:48:08.984835+00:00",
+    "ended_at_utc": "2026-04-12T13:48:41.509115+00:00",
+    "duration_s": 32.524,
+    "simulate": true,
+    "model": "gpt-5.4-mini",
+    "agents": 10,
+    "iterations_per_agent": 30,
+    "total_requests": 300,
+    "ok_requests": 293,
+    "error_requests": 7,
+    "error_rate": 0.0233,
+    "throughput_rps": 9.224,
+    "latency_ms_avg": 908.89,
+    "latency_ms_p50": 931.5,
+    "latency_ms_p95": 1508.6,
+    "latency_ms_p99": 1592.05,
+    "by_agent": {
+      "AGENTE_03_REVISOR_SEGURIDAD": {
+        "requests": 30,
+        "ok": 30,
+        "errors": 0,
+        "latency_ms_avg": 938.93,
+        "latency_ms_p95": 1586.6
+      },
+      "AGENTE_02_REVISOR_PERFORMANCE": {
+        "requests": 30,
+        "ok": 28,
+        "errors": 2,
+        "latency_ms_avg": 830.47,
+        "latency_ms_p95": 1466.0
+      },
+      "AGENTE_04_REVISOR_UX": {
+        "requests": 30,
+        "ok": 29,
+        "errors": 1,
+        "latency_ms_avg": 956.7,
+        "latency_ms_p95": 1535.55
+      },
+      "AGENTE_06_MAESTRO_BAGO": {
+        "requests": 30,
+        "ok": 30,
+        "errors": 0,
+        "latency_ms_avg": 905.37,
+        "latency_ms_p95": 1406.75
+      },
+      "AGENTE_10_ARQUITECTO": {
+        "requests": 30,
+        "ok": 29,
+        "errors": 1,
+        "latency_ms_avg": 962.93,
+        "latency_ms_p95": 1499.45
+      },
+      "AGENTE_07_ORQUESTADOR_CENTRAL": {
+        "requests": 30,
+        "ok": 30,
+        "errors": 0,
+        "latency_ms_avg": 833.57,
+        "latency_ms_p95": 1467.15
+      },
+      "AGENTE_09_ANALISTA": {
+        "requests": 30,
+        "ok": 29,
+        "errors": 1,
+        "latency_ms_avg": 801.43,
+        "latency_ms_p95": 1474.05
+      },
+      "AGENTE_05_AUDITOR_CANONICO": {
+        "requests": 30,
+        "ok": 30,
+        "errors": 0,
+        "latency_ms_avg": 845.97,
+        "latency_ms_p95": 1287.1
+      },
+      "AGENTE_08_VERTICE": {
+        "requests": 30,
+        "ok": 30,
+        "errors": 0,
+        "latency_ms_avg": 1003.7,
+        "latency_ms_p95": 1522.3
+      },
+      "AGENTE_01_INTEGRADOR_REPO": {
+        "requests": 30,
+        "ok": 28,
+        "errors": 2,
+        "latency_ms_avg": 1009.87,
+        "latency_ms_p95": 1395.6
+      }
+    }
+  },
+  "charts": [
+    "/Users/INTELIA_Manager/Desktop/BAGO.V4.PLANO/WORCK01/BAGO_AMTEC_V2_2_2_OFICIAL_utf8/.bago/state/metrics/runs/stress_20260412_154808/charts/throughput.svg",
+    "/Users/INTELIA_Manager/Desktop/BAGO.V4.PLANO/WORCK01/BAGO_AMTEC_V2_2_2_OFICIAL_utf8/.bago/state/metrics/runs/stress_20260412_154808/charts/latency_p95_by_agent.svg",
+    "/Users/INTELIA_Manager/Desktop/BAGO.V4.PLANO/WORCK01/BAGO_AMTEC_V2_2_2_OFICIAL_utf8/.bago/state/metrics/runs/stress_20260412_154808/charts/errors_by_agent.svg",
+    "/Users/INTELIA_Manager/Desktop/BAGO.V4.PLANO/WORCK01/BAGO_AMTEC_V2_2_2_OFICIAL_utf8/.bago/state/metrics/runs/stress_20260412_154808/charts/cpu_avg_by_agent.svg"
+  ]
+}

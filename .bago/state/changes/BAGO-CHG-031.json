@@ -1,0 +1,16 @@
+{
+  "change_id": "BAGO-CHG-031",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Auditoría y corrección de documentos institucionales BAGO",
+  "motivation": "Los documentos institucionales BAGO-DF-001 y BAGO-MI-001 presentaban 6 defectos: espacio inicial en nombre de archivo, ausencia de control documental, versión ambigua, inconsistencia de niveles de heading, referencia cruzada sin código, y falta de registro en el sistema de cambios BAGO AMTEC.",
+  "status": "validated",
+  "affected_components": [
+    "WORCK01/DOCUMENTO_FORMAL_SISTEMA_BAGO.md",
+    "WORCK01/MANUAL INSTITUCIONAL DEL SISTEMA BAGO.md"
+  ],
+  "related_evidence": "BAGO-EVD-031",
+  "created_at": "2026-04-14T02:57:38Z",
+  "updated_at": "2026-04-14T02:57:38Z",
+  "author": "BAGO AMTEC V2.2.2"
+}

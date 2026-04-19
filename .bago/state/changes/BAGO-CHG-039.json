@@ -1,0 +1,17 @@
+{
+  "change_id": "BAGO-CHG-039",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-001 SES-1: session_preflight.py — validador W7 de reglas de sesión",
+  "motivation": "ESCENARIO-001 requiere que las sesiones productivas cumplan ≤2 roles y ≥3 artefactos útiles. session_preflight.py automatiza esta verificación con salida GO/KO y mensajes de corrección accionables.",
+  "status": "applied",
+  "affected_components": [
+    "tools/session_preflight.py",
+    "AGENT_START.md",
+    "workflows/W7_FOCO_SESION.md"
+  ],
+  "related_evidence": "BAGO-EVD-040",
+  "created_at": "2026-04-18T12:25:00Z",
+  "updated_at": "2026-04-18T12:25:00Z",
+  "author": "role_architect"
+}

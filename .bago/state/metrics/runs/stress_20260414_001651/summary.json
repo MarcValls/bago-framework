@@ -1,0 +1,41 @@
+{
+  "started_at_utc": "2026-04-13T22:16:51.769405+00:00",
+  "ended_at_utc": "2026-04-13T22:20:27.017665+00:00",
+  "duration_s": 215.248,
+  "simulate": false,
+  "model": "openai/gpt-4.1",
+  "agents": 3,
+  "iterations_per_agent": 20,
+  "total_requests": 60,
+  "ok_requests": 60,
+  "error_requests": 0,
+  "error_rate": 0.0,
+  "throughput_rps": 0.279,
+  "latency_ms_avg": 7873.25,
+  "latency_ms_p50": 6916.5,
+  "latency_ms_p95": 13102.25,
+  "latency_ms_p99": 13807.02,
+  "by_agent": {
+    "AGENTE_02_REVISOR_PERFORMANCE": {
+      "requests": 20,
+      "ok": 20,
+      "errors": 0,
+      "latency_ms_avg": 6508.65,
+      "latency_ms_p95": 8499.2
+    },
+    "AGENTE_03_REVISOR_SEGURIDAD": {
+      "requests": 20,
+      "ok": 20,
+      "errors": 0,
+      "latency_ms_avg": 6394.05,
+      "latency_ms_p95": 9455.95
+    },
+    "AGENTE_01_INTEGRADOR_REPO": {
+      "requests": 20,
+      "ok": 20,
+      "errors": 0,
+      "latency_ms_avg": 10717.05,
+      "latency_ms_p95": 13367.1
+    }
+  }
+}

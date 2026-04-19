@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-051",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-002 OFF Ronda 5: sesión libre mejora genérica sin objetivo",
+  "motivation": "Grupo de control R5. Sin objetivo concreto, produce nota de mejoras generales.",
+  "status": "applied",
+  "affected_components": [
+    "docs/operation/NOTAS_MEJORAS_GENERALES.md"
+  ],
+  "related_evidence": "BAGO-EVD-052",
+  "created_at": "2026-04-18T13:53:00Z",
+  "updated_at": "2026-04-18T13:53:00Z",
+  "author": "role_architect"
+}

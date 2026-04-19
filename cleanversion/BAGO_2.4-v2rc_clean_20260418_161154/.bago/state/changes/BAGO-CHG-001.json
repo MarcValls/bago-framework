@@ -1,0 +1,27 @@
+{
+  "change_id": "BAGO-CHG-001",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Cosecha contextual W9: no se donde has explorado y que archivos",
+  "motivation": "Formalizar exploración libre. Decisión: no se donde has explorado y que archivos. Descarte: No se que has explorado.",
+  "status": "applied",
+  "affected_components": [
+    "bago-viewer/app.py",
+    "bago-viewer/start.sh",
+    "bago-viewer/templates/base.html",
+    "bago-viewer/templates/pack.html",
+    "../../bago-viewer/app.py",
+    "../../bago-viewer/start.sh",
+    "../../bago-viewer/templates/base.html",
+    "../../bago-viewer/templates/pack.html",
+    "../../.bago/",
+    "../../Makefile",
+    "../../bago",
+    "../",
+    "../../docs/"
+  ],
+  "related_evidence": "BAGO-EVD-001",
+  "created_at": "2026-04-19T11:03:17.894098+00:00",
+  "updated_at": "2026-04-19T11:03:17.894098+00:00",
+  "author": "role_auditor"
+}

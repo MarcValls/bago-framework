@@ -1,0 +1,13 @@
+{
+  "change_id": "BAGO-CHG-032",
+  "type": "architecture",
+  "severity": "minor",
+  "title": "ZIP de despliegue rápido bago-deploy.zip",
+  "motivation": "Necesidad de poder instalar BAGO en cualquier repositorio descomprimiendo un único ZIP sin instaladores complejos. El ZIP incluye .bago/ con estado limpio, bago.sh y README. Pasa GO en los 3 validators.",
+  "status": "validated",
+  "affected_components": ["dist/deploy/bago-deploy.zip"],
+  "related_evidence": "BAGO-EVD-032",
+  "created_at": "2026-04-14T03:05:00Z",
+  "updated_at": "2026-04-14T03:32:00Z",
+  "author": "BAGO AMTEC V2.2.2"
+}

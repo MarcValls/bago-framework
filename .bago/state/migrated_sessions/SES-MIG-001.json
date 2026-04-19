@@ -1,0 +1,18 @@
+{
+  "session_id": "SES-MIG-001",
+  "legacy_session_id": "sesion_start_20260409_100650",
+  "source_path": "state/sesiones/2026-04-09__start__sesion_start_20260409_100650.md",
+  "source_format": "markdown_snapshot_v1",
+  "date": "2026-04-09",
+  "repository_scope": "TPV_Contabilidad 2",
+  "branch": "codex/full-app-base",
+  "uncommitted_changes": "61",
+  "legacy_pack": "BAGO AMTEC V1 v1.0.0",
+  "task_type": "project_bootstrap",
+  "selected_workflow": "workflow_analysis",
+  "roles_activated": ["role_master_bago", "role_orchestrator", "role_analyst"],
+  "status": "completed",
+  "summary": "- Precondiciones: OK\n- Carga canónica: OK\n- Objetivo actual: Arrancar BAGO AMTEC V1 sobre el repo real TPV y dejar el estado operativo sincronizado para continuar ejecución técnica sin deriva.\n- Modo predominante: [A] Adaptativo\n- Restricciones: no usar rutas sin prefijo `.bago/`; evitar activación de más de 3 roles; no mezclar decisiones congeladas con pendientes; mantener compatibilidad operativa con el monorepo TPV en estado de worktree sucio.",
+  "recommended_next_step": "- Ejecutar bloque adaptativo con alcance corto y registro de cambios en `.bago/state/`.",
+  "raw_markdown_preserved": true
+}

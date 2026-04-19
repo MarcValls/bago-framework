@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-045",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-044",
+    "SES-ON-2026-04-18-002"
+  ],
+  "summary": "ON Ronda 2 cerrada: 3 útiles, 2 roles, GO preflight.",
+  "details": "Informe de eficacia con ranking de 6 workflows. EVAL-WORKFLOWS-001 creada. metrics_snapshot actualizado. Decisiones: 3 documentadas con recomendaciones operativas.",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T13:20:00Z"
+}

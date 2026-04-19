@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-039",
+  "type": "closure",
+  "related_to": ["BAGO-CHG-038", "SES-S4-2026-04-18-001"],
+  "summary": "Sprint 4 · Consolidación completado: AUDITORIA_COHERENCIA.md, MANTENIMIENTO.md y paquete ZIP generados. sprint_4=DONE.",
+  "details": "Sprint 4 ejecutado en sesión SES-S4-2026-04-18-001. Artefactos entregados: (1) AUDITORIA_COHERENCIA.md — checklist de 8 bloques con comandos ejecutables y tabla GO/KO. (2) MANTENIMIENTO.md — guía operativa de ciclo de vida del pack. (3) BAGO_2_3_clean_sprint4_20260418_131747.zip (392K) — paquete limpio sin sandbox ni dist/. (4) global_state.json actualizado: sprint_4=DONE, inventario sessions=20 changes=19 evidences=21, last_completed=SES-S4-2026-04-18-001. TREE.txt y CHECKSUMS.sha256 regenerados. validate_pack.py = GO.",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T13:17:00Z"
+}

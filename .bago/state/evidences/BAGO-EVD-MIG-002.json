@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-MIG-002",
+  "type": "validation",
+  "related_to": ["BAGO-CHG-MIG-001"],
+  "summary": "La referencia a cambios abiertos y workflows activos quedó alineada con el manifiesto, el estado y la migración histórica.",
+  "details": "Se vació open_changes, se cerró active_session_id, se declaró workflow_history_migration en pack.json y se normalizaron los estados de los cambios migrados.",
+  "status": "recorded",
+  "recorded_at": "2026-04-11T13:10:00Z"
+}

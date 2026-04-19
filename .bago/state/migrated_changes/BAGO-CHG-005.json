@@ -1,0 +1,21 @@
+{
+  "change_id": "BAGO-CHG-005",
+  "legacy_date": "2026-04-11",
+  "source_path": "state/cambios/2026-04-11__BAGO-CHG-005__performance-web-lighthouse-90-y-a11y-recertificada.md",
+  "source_format": "markdown_change_v1",
+  "title": "2026-04-11__BAGO-CHG-005__performance-web-lighthouse-90-y-a11y-recertificada",
+  "type": "historical_migration",
+  "severity": "major",
+  "status": "unknown",
+  "motivation": "Se cerró el bloque corto y exclusivo de optimización de rendimiento web. El repo pasó de un estado bloqueado por Lighthouse Performance `54` a un estado validado con `Performance 90`, `Accessibility 100`, `Best Practices 96`, `LCP 1.2 s` y `TBT 420 ms` en `docs/status/perf-audit-latest.md`.",
+  "legacy_previous_state": "",
+  "legacy_applied_change": "1. Migración de Tailwind desde runtime (`tailwindcss-cdn.js`) a build-time con `postcss.config.cjs` y `tailwind.config.cjs`.\n2. Eliminación del coste de main thread asociado al bootstrap CSS runtime.\n3. Reparto de carga inicial mediante `React.lazy` en `App`, `AppMainContent` y `AppModals`, evitando importar pantallas/modales cerrados en el primer render.\n4. Ajuste de chunking en Vite para dejar de forzar un chunk global de `lucide-react`.\n5. Revalidación de accesibilidad tras la migración CSS y corrección final de contraste en tema claro.\n6. Parametrización del puerto del runner Playwright a11y mediante `PLAYWRIGHT_A11Y_PORT` para permitir validaciones limpias sin depender de un dev server previo en `4173`.",
+  "legacy_impact_expected": "",
+  "legacy_risks": "",
+  "summary": "Se cerró el bloque corto y exclusivo de optimización de rendimiento web. El repo pasó de un estado bloqueado por Lighthouse Performance `54` a un estado validado con `Performance 90`, `Accessibility 100`, `Best Practices 96`, `LCP 1.2 s` y `TBT 420 ms` en `docs/status/perf-audit-latest.md`.",
+  "raw_markdown_preserved": true,
+  "legacy_status": "unknown",
+  "normalized_status": "unknown",
+  "created_at": "2026-04-11T13:10:00Z",
+  "updated_at": "2026-04-11T13:10:00Z"
+}

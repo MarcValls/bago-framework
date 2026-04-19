@@ -1,0 +1,33 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='980' height='420' viewBox='0 0 980 420'>
+<style>
+text { font-family: Menlo, Consolas, monospace; fill: #0f172a; }
+.axis { stroke: #64748b; stroke-width: 1; }
+.grid { stroke: #cbd5e1; stroke-width: 1; stroke-dasharray: 3 3; }
+.title { font-size: 16px; font-weight: 700; }
+.label { font-size: 11px; }
+</style>
+<rect x='0' y='0' width='980' height='420' fill='#f8fafc'/>
+<text x='20' y='26' class='title'>P95 de latencia por agente</text>
+<line x1='70' y1='325.00' x2='950' y2='325.00' class='grid' />
+<text x='8' y='329.00' class='label'>0.0</text>
+<line x1='70' y1='271.00' x2='950' y2='271.00' class='grid' />
+<text x='8' y='275.00' class='label'>304.6</text>
+<line x1='70' y1='217.00' x2='950' y2='217.00' class='grid' />
+<text x='8' y='221.00' class='label'>609.2</text>
+<line x1='70' y1='163.00' x2='950' y2='163.00' class='grid' />
+<text x='8' y='167.00' class='label'>913.8</text>
+<line x1='70' y1='109.00' x2='950' y2='109.00' class='grid' />
+<text x='8' y='113.00' class='label'>1218.4</text>
+<line x1='70' y1='55.00' x2='950' y2='55.00' class='grid' />
+<text x='8' y='59.00' class='label'>1523.0</text>
+<rect x='136.00' y='55.00' width='308.00' height='270.00' fill='#0f766e' rx='3'/>
+<text x='290.00' y='340.00' text-anchor='middle' class='label'>AGENTE_01_INTEGRADOR_REPO</text>
+<text x='290.00' y='49.00' text-anchor='middle' class='label'>1523.0</text>
+<rect x='576.00' y='93.47' width='308.00' height='231.53' fill='#0f766e' rx='3'/>
+<text x='730.00' y='340.00' text-anchor='middle' class='label'>AGENTE_02_REVISOR_PERFORMANCE</text>
+<text x='730.00' y='87.47' text-anchor='middle' class='label'>1306.0</text>
+<line x1='70' y1='325' x2='950' y2='325' class='axis' />
+<line x1='70' y1='55' x2='70' y2='325' class='axis' />
+<text x='490' y='405' text-anchor='middle' class='label'>agentes</text>
+<text x='14' y='47' class='label'>ms</text>
+</svg>

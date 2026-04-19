@@ -1,0 +1,301 @@
+timestamp_utc,agent,iteration,ok,error,latency_ms,input_tokens,output_tokens,total_tokens
+2026-04-13T21:44:48.020255+00:00,AGENTE_10_ORGANIZADOR,1,True,,6030,,,817
+2026-04-13T21:44:48.213476+00:00,AGENTE_02_REVISOR_PERFORMANCE,1,True,,6228,,,910
+2026-04-13T21:44:48.413500+00:00,AGENTE_07_ANALISTA,1,True,,6314,,,905
+2026-04-13T21:44:48.682743+00:00,AGENTE_05_MAESTRO_BAGO,1,True,,6582,,,911
+2026-04-13T21:44:48.690773+00:00,AGENTE_04_REVISOR_UX,1,True,,6606,,,910
+2026-04-13T21:44:49.614139+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,1,True,,7534,,,912
+2026-04-13T21:44:49.679277+00:00,AGENTE_03_REVISOR_SEGURIDAD,1,True,,7595,,,847
+2026-04-13T21:44:49.726318+00:00,AGENTE_08_ARQUITECTO,1,True,,7489,,,910
+2026-04-13T21:44:51.701938+00:00,AGENTE_09_GENERADOR,1,True,,9602,,,856
+2026-04-13T21:44:53.467186+00:00,AGENTE_01_INTEGRADOR_REPO,1,True,,11478,,,910
+2026-04-13T21:44:54.379388+00:00,AGENTE_10_ORGANIZADOR,2,True,,6355,,,908
+2026-04-13T21:44:54.447698+00:00,AGENTE_05_MAESTRO_BAGO,2,True,,5755,,,911
+2026-04-13T21:44:54.527919+00:00,AGENTE_02_REVISOR_PERFORMANCE,2,True,,6312,,,880
+2026-04-13T21:44:54.808075+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,2,True,,5192,,,808
+2026-04-13T21:44:54.897527+00:00,AGENTE_07_ANALISTA,2,True,,6482,,,905
+2026-04-13T21:44:54.927266+00:00,AGENTE_02_REVISOR_PERFORMANCE,3,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",396,,,
+2026-04-13T21:44:54.983100+00:00,AGENTE_04_REVISOR_UX,2,True,,6287,,,910
+2026-04-13T21:44:55.106441+00:00,AGENTE_08_ARQUITECTO,2,True,,5378,,,910
+2026-04-13T21:44:55.433489+00:00,AGENTE_07_ANALISTA,3,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",534,,,
+2026-04-13T21:44:55.440827+00:00,AGENTE_02_REVISOR_PERFORMANCE,4,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",512,,,
+2026-04-13T21:44:55.464967+00:00,AGENTE_04_REVISOR_UX,3,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",480,,,
+2026-04-13T21:44:55.572921+00:00,AGENTE_08_ARQUITECTO,3,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",464,,,
+2026-04-13T21:44:55.842903+00:00,AGENTE_07_ANALISTA,4,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",405,,,
+2026-04-13T21:44:55.843912+00:00,AGENTE_02_REVISOR_PERFORMANCE,5,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",400,,,
+2026-04-13T21:44:55.866587+00:00,AGENTE_04_REVISOR_UX,4,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",399,,,
+2026-04-13T21:44:55.977636+00:00,AGENTE_08_ARQUITECTO,4,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",402,,,
+2026-04-13T21:44:56.062042+00:00,AGENTE_03_REVISOR_SEGURIDAD,2,True,,6381,,,912
+2026-04-13T21:44:56.254869+00:00,AGENTE_07_ANALISTA,5,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",410,,,
+2026-04-13T21:44:56.261819+00:00,AGENTE_04_REVISOR_UX,5,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",393,,,
+2026-04-13T21:44:56.414538+00:00,AGENTE_08_ARQUITECTO,5,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",435,,,
+2026-04-13T21:44:56.499346+00:00,AGENTE_03_REVISOR_SEGURIDAD,3,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",436,,,
+2026-04-13T21:44:56.677777+00:00,AGENTE_07_ANALISTA,6,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",420,,,
+2026-04-13T21:44:56.697376+00:00,AGENTE_04_REVISOR_UX,6,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",434,,,
+2026-04-13T21:44:56.848386+00:00,AGENTE_08_ARQUITECTO,6,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",430,,,
+2026-04-13T21:44:56.907970+00:00,AGENTE_03_REVISOR_SEGURIDAD,4,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",406,,,
+2026-04-13T21:44:57.205829+00:00,AGENTE_04_REVISOR_UX,7,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",507,,,
+2026-04-13T21:44:57.331618+00:00,AGENTE_08_ARQUITECTO,7,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",481,,,
+2026-04-13T21:44:57.448017+00:00,AGENTE_03_REVISOR_SEGURIDAD,5,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",538,,,
+2026-04-13T21:44:57.631216+00:00,AGENTE_04_REVISOR_UX,8,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",421,,,
+2026-04-13T21:44:57.771580+00:00,AGENTE_08_ARQUITECTO,8,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",438,,,
+2026-04-13T21:44:57.859683+00:00,AGENTE_03_REVISOR_SEGURIDAD,6,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",410,,,
+2026-04-13T21:44:58.184426+00:00,AGENTE_08_ARQUITECTO,9,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",409,,,
+2026-04-13T21:44:58.258942+00:00,AGENTE_03_REVISOR_SEGURIDAD,7,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",398,,,
+2026-04-13T21:44:58.577687+00:00,AGENTE_08_ARQUITECTO,10,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",392,,,
+2026-04-13T21:44:58.673996+00:00,AGENTE_03_REVISOR_SEGURIDAD,8,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",413,,,
+2026-04-13T21:44:58.931157+00:00,AGENTE_09_GENERADOR,2,True,,7226,,,904
+2026-04-13T21:44:59.005408+00:00,AGENTE_08_ARQUITECTO,11,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",425,,,
+2026-04-13T21:44:59.340602+00:00,AGENTE_09_GENERADOR,3,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",407,,,
+2026-04-13T21:44:59.356149+00:00,AGENTE_10_ORGANIZADOR,3,True,,4975,,,830
+2026-04-13T21:44:59.440046+00:00,AGENTE_08_ARQUITECTO,12,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",432,,,
+2026-04-13T21:44:59.771973+00:00,AGENTE_09_GENERADOR,4,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",430,,,
+2026-04-13T21:44:59.802768+00:00,AGENTE_10_ORGANIZADOR,4,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",445,,,
+2026-04-13T21:44:59.854927+00:00,AGENTE_08_ARQUITECTO,13,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",413,,,
+2026-04-13T21:45:00.287801+00:00,AGENTE_10_ORGANIZADOR,5,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",483,,,
+2026-04-13T21:45:00.292614+00:00,AGENTE_08_ARQUITECTO,14,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",435,,,
+2026-04-13T21:45:00.481697+00:00,AGENTE_05_MAESTRO_BAGO,3,True,,6032,,,911
+2026-04-13T21:45:00.764546+00:00,AGENTE_08_ARQUITECTO,15,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",465,,,
+2026-04-13T21:45:00.777877+00:00,AGENTE_10_ORGANIZADOR,6,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",488,,,
+2026-04-13T21:45:00.915635+00:00,AGENTE_05_MAESTRO_BAGO,4,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",432,,,
+2026-04-13T21:45:01.204825+00:00,AGENTE_10_ORGANIZADOR,7,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",424,,,
+2026-04-13T21:45:01.338573+00:00,AGENTE_05_MAESTRO_BAGO,5,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",421,,,
+2026-04-13T21:45:01.618970+00:00,AGENTE_10_ORGANIZADOR,8,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",408,,,
+2026-04-13T21:45:01.682668+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,3,True,,6873,,,888
+2026-04-13T21:45:01.738894+00:00,AGENTE_05_MAESTRO_BAGO,6,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",397,,,
+2026-04-13T21:45:01.846665+00:00,AGENTE_02_REVISOR_PERFORMANCE,6,True,,6001,,,907
+2026-04-13T21:45:02.067274+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,4,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",383,,,
+2026-04-13T21:45:02.144532+00:00,AGENTE_05_MAESTRO_BAGO,7,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",400,,,
+2026-04-13T21:45:02.245395+00:00,AGENTE_02_REVISOR_PERFORMANCE,7,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",397,,,
+2026-04-13T21:45:02.462638+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,5,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",393,,,
+2026-04-13T21:45:02.545463+00:00,AGENTE_05_MAESTRO_BAGO,8,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",398,,,
+2026-04-13T21:45:02.637902+00:00,AGENTE_02_REVISOR_PERFORMANCE,8,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",391,,,
+2026-04-13T21:45:02.862394+00:00,AGENTE_01_INTEGRADOR_REPO,2,True,,9393,,,910
+2026-04-13T21:45:02.868572+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,6,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",404,,,
+2026-04-13T21:45:02.932000+00:00,AGENTE_05_MAESTRO_BAGO,9,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",385,,,
+2026-04-13T21:45:03.264359+00:00,AGENTE_01_INTEGRADOR_REPO,3,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",400,,,
+2026-04-13T21:45:03.276165+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,7,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",404,,,
+2026-04-13T21:45:03.327725+00:00,AGENTE_05_MAESTRO_BAGO,10,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",394,,,
+2026-04-13T21:45:03.663493+00:00,AGENTE_01_INTEGRADOR_REPO,4,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",397,,,
+2026-04-13T21:45:03.683198+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,8,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",405,,,
+2026-04-13T21:45:03.727889+00:00,AGENTE_05_MAESTRO_BAGO,11,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",399,,,
+2026-04-13T21:45:04.095210+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,9,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",409,,,
+2026-04-13T21:45:04.157338+00:00,AGENTE_05_MAESTRO_BAGO,12,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",426,,,
+2026-04-13T21:45:04.226309+00:00,AGENTE_04_REVISOR_UX,9,True,,6589,,,834
+2026-04-13T21:45:04.238584+00:00,AGENTE_03_REVISOR_SEGURIDAD,9,True,,5563,,,856
+2026-04-13T21:45:04.370966+00:00,AGENTE_07_ANALISTA,7,True,,7690,,,905
+2026-04-13T21:45:04.501959+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,10,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",405,,,
+2026-04-13T21:45:04.562885+00:00,AGENTE_05_MAESTRO_BAGO,13,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",404,,,
+2026-04-13T21:45:04.634817+00:00,AGENTE_04_REVISOR_UX,10,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",407,,,
+2026-04-13T21:45:04.644300+00:00,AGENTE_03_REVISOR_SEGURIDAD,10,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",404,,,
+2026-04-13T21:45:04.788654+00:00,AGENTE_07_ANALISTA,8,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",416,,,
+2026-04-13T21:45:04.920987+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,11,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",417,,,
+2026-04-13T21:45:05.010660+00:00,AGENTE_05_MAESTRO_BAGO,14,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",443,,,
+2026-04-13T21:45:05.149590+00:00,AGENTE_03_REVISOR_SEGURIDAD,11,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",493,,,
+2026-04-13T21:45:05.223891+00:00,AGENTE_07_ANALISTA,9,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",432,,,
+2026-04-13T21:45:05.397503+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,12,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",474,,,
+2026-04-13T21:45:05.587747+00:00,AGENTE_05_MAESTRO_BAGO,15,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",575,,,
+2026-04-13T21:45:05.595059+00:00,AGENTE_03_REVISOR_SEGURIDAD,12,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",442,,,
+2026-04-13T21:45:05.625594+00:00,AGENTE_07_ANALISTA,10,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",399,,,
+2026-04-13T21:45:05.814731+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,13,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",416,,,
+2026-04-13T21:45:06.001956+00:00,AGENTE_03_REVISOR_SEGURIDAD,13,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",403,,,
+2026-04-13T21:45:06.069218+00:00,AGENTE_05_MAESTRO_BAGO,16,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",480,,,
+2026-04-13T21:45:06.242616+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,14,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",426,,,
+2026-04-13T21:45:06.449265+00:00,AGENTE_03_REVISOR_SEGURIDAD,14,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",436,,,
+2026-04-13T21:45:06.482459+00:00,AGENTE_05_MAESTRO_BAGO,17,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",408,,,
+2026-04-13T21:45:06.669307+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,15,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",417,,,
+2026-04-13T21:45:06.854422+00:00,AGENTE_03_REVISOR_SEGURIDAD,15,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",404,,,
+2026-04-13T21:45:06.867241+00:00,AGENTE_05_MAESTRO_BAGO,18,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",383,,,
+2026-04-13T21:45:07.269848+00:00,AGENTE_03_REVISOR_SEGURIDAD,16,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",414,,,
+2026-04-13T21:45:07.302164+00:00,AGENTE_05_MAESTRO_BAGO,19,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",433,,,
+2026-04-13T21:45:07.326152+00:00,AGENTE_08_ARQUITECTO,16,True,,6560,,,910
+2026-04-13T21:45:07.674499+00:00,AGENTE_03_REVISOR_SEGURIDAD,17,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",402,,,
+2026-04-13T21:45:07.703093+00:00,AGENTE_05_MAESTRO_BAGO,20,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",399,,,
+2026-04-13T21:45:07.736275+00:00,AGENTE_08_ARQUITECTO,17,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",404,,,
+2026-04-13T21:45:08.101375+00:00,AGENTE_05_MAESTRO_BAGO,21,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",397,,,
+2026-04-13T21:45:08.131754+00:00,AGENTE_08_ARQUITECTO,18,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",394,,,
+2026-04-13T21:45:08.493945+00:00,AGENTE_05_MAESTRO_BAGO,22,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",391,,,
+2026-04-13T21:45:08.541029+00:00,AGENTE_08_ARQUITECTO,19,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",407,,,
+2026-04-13T21:45:08.748213+00:00,AGENTE_10_ORGANIZADOR,9,True,,7128,,,908
+2026-04-13T21:45:08.931269+00:00,AGENTE_05_MAESTRO_BAGO,23,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",432,,,
+2026-04-13T21:45:08.946353+00:00,AGENTE_08_ARQUITECTO,20,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",401,,,
+2026-04-13T21:45:09.333913+00:00,AGENTE_05_MAESTRO_BAGO,24,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",400,,,
+2026-04-13T21:45:09.349298+00:00,AGENTE_08_ARQUITECTO,21,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",401,,,
+2026-04-13T21:45:09.752781+00:00,AGENTE_05_MAESTRO_BAGO,25,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",417,,,
+2026-04-13T21:45:09.761740+00:00,AGENTE_08_ARQUITECTO,22,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",409,,,
+2026-04-13T21:45:09.831549+00:00,AGENTE_02_REVISOR_PERFORMANCE,9,True,,7190,,,881
+2026-04-13T21:45:10.158182+00:00,AGENTE_05_MAESTRO_BAGO,26,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",402,,,
+2026-04-13T21:45:10.244262+00:00,AGENTE_02_REVISOR_PERFORMANCE,10,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",411,,,
+2026-04-13T21:45:10.560215+00:00,AGENTE_05_MAESTRO_BAGO,27,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",399,,,
+2026-04-13T21:45:10.630408+00:00,AGENTE_02_REVISOR_PERFORMANCE,11,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",384,,,
+2026-04-13T21:45:10.955119+00:00,AGENTE_05_MAESTRO_BAGO,28,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",393,,,
+2026-04-13T21:45:11.404713+00:00,AGENTE_05_MAESTRO_BAGO,29,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",448,,,
+2026-04-13T21:45:11.929254+00:00,AGENTE_04_REVISOR_UX,11,True,,7275,,,890
+2026-04-13T21:45:11.978213+00:00,AGENTE_07_ANALISTA,11,True,,6351,,,883
+2026-04-13T21:45:12.401966+00:00,AGENTE_04_REVISOR_UX,12,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",470,,,
+2026-04-13T21:45:12.423452+00:00,AGENTE_07_ANALISTA,12,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",443,,,
+2026-04-13T21:45:12.866792+00:00,AGENTE_04_REVISOR_UX,13,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",460,,,
+2026-04-13T21:45:12.866928+00:00,AGENTE_07_ANALISTA,13,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",441,,,
+2026-04-13T21:45:13.538819+00:00,AGENTE_03_REVISOR_SEGURIDAD,18,True,,5862,,,871
+2026-04-13T21:45:13.686995+00:00,AGENTE_01_INTEGRADOR_REPO,5,True,,10022,,,910
+2026-04-13T21:45:13.935564+00:00,AGENTE_03_REVISOR_SEGURIDAD,19,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",395,,,
+2026-04-13T21:45:14.169567+00:00,AGENTE_09_GENERADOR,5,True,,14396,,,904
+2026-04-13T21:45:14.331027+00:00,AGENTE_03_REVISOR_SEGURIDAD,20,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",394,,,
+2026-04-13T21:45:14.569464+00:00,AGENTE_09_GENERADOR,6,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",398,,,
+2026-04-13T21:45:14.749369+00:00,AGENTE_03_REVISOR_SEGURIDAD,21,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",417,,,
+2026-04-13T21:45:14.975293+00:00,AGENTE_09_GENERADOR,7,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",404,,,
+2026-04-13T21:45:15.135364+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,16,True,,8464,,,912
+2026-04-13T21:45:15.416875+00:00,AGENTE_09_GENERADOR,8,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",440,,,
+2026-04-13T21:45:15.615605+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,17,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",478,,,
+2026-04-13T21:45:15.818101+00:00,AGENTE_09_GENERADOR,9,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",400,,,
+2026-04-13T21:45:16.208600+00:00,AGENTE_09_GENERADOR,10,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",389,,,
+2026-04-13T21:45:16.609916+00:00,AGENTE_02_REVISOR_PERFORMANCE,12,True,,5978,,,847
+2026-04-13T21:45:16.859683+00:00,AGENTE_09_GENERADOR,11,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",649,,,
+2026-04-13T21:45:16.988237+00:00,AGENTE_10_ORGANIZADOR,10,True,,8239,,,878
+2026-04-13T21:45:17.258169+00:00,AGENTE_09_GENERADOR,12,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",397,,,
+2026-04-13T21:45:17.386336+00:00,AGENTE_10_ORGANIZADOR,11,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",396,,,
+2026-04-13T21:45:17.685661+00:00,AGENTE_08_ARQUITECTO,23,True,,7922,,,910
+2026-04-13T21:45:17.690795+00:00,AGENTE_09_GENERADOR,13,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",431,,,
+2026-04-13T21:45:17.772339+00:00,AGENTE_10_ORGANIZADOR,12,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",384,,,
+2026-04-13T21:45:17.827195+00:00,AGENTE_05_MAESTRO_BAGO,30,True,,6417,,,911
+2026-04-13T21:45:18.043576+00:00,AGENTE_04_REVISOR_UX,14,True,,5175,,,894
+2026-04-13T21:45:18.085857+00:00,AGENTE_08_ARQUITECTO,24,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",399,,,
+2026-04-13T21:45:18.163852+00:00,AGENTE_10_ORGANIZADOR,13,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",390,,,
+2026-04-13T21:45:18.437249+00:00,AGENTE_04_REVISOR_UX,15,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",392,,,
+2026-04-13T21:45:18.469695+00:00,AGENTE_08_ARQUITECTO,25,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",382,,,
+2026-04-13T21:45:18.549947+00:00,AGENTE_10_ORGANIZADOR,14,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",384,,,
+2026-04-13T21:45:18.825671+00:00,AGENTE_04_REVISOR_UX,16,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",387,,,
+2026-04-13T21:45:18.853163+00:00,AGENTE_08_ARQUITECTO,26,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",382,,,
+2026-04-13T21:45:18.944219+00:00,AGENTE_10_ORGANIZADOR,15,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",393,,,
+2026-04-13T21:45:19.248329+00:00,AGENTE_08_ARQUITECTO,27,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",393,,,
+2026-04-13T21:45:19.330758+00:00,AGENTE_10_ORGANIZADOR,16,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",385,,,
+2026-04-13T21:45:19.422442+00:00,AGENTE_07_ANALISTA,14,True,,6554,,,905
+2026-04-13T21:45:19.646819+00:00,AGENTE_08_ARQUITECTO,28,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",397,,,
+2026-04-13T21:45:19.758773+00:00,AGENTE_10_ORGANIZADOR,17,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",426,,,
+2026-04-13T21:45:19.840611+00:00,AGENTE_07_ANALISTA,15,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",416,,,
+2026-04-13T21:45:20.186626+00:00,AGENTE_10_ORGANIZADOR,18,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",426,,,
+2026-04-13T21:45:20.232540+00:00,AGENTE_07_ANALISTA,16,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",390,,,
+2026-04-13T21:45:20.575180+00:00,AGENTE_10_ORGANIZADOR,19,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",387,,,
+2026-04-13T21:45:20.647037+00:00,AGENTE_07_ANALISTA,17,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",412,,,
+2026-04-13T21:45:20.982465+00:00,AGENTE_10_ORGANIZADOR,20,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",405,,,
+2026-04-13T21:45:21.390836+00:00,AGENTE_10_ORGANIZADOR,21,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",407,,,
+2026-04-13T21:45:21.842559+00:00,AGENTE_10_ORGANIZADOR,22,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",450,,,
+2026-04-13T21:45:22.313104+00:00,AGENTE_03_REVISOR_SEGURIDAD,22,True,,7562,,,870
+2026-04-13T21:45:22.702172+00:00,AGENTE_03_REVISOR_SEGURIDAD,23,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",387,,,
+2026-04-13T21:45:23.442242+00:00,AGENTE_09_GENERADOR,14,True,,5750,,,887
+2026-04-13T21:45:23.588153+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,18,True,,7971,,,912
+2026-04-13T21:45:23.832467+00:00,AGENTE_09_GENERADOR,15,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",388,,,
+2026-04-13T21:45:23.984032+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,19,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",394,,,
+2026-04-13T21:45:24.259215+00:00,AGENTE_02_REVISOR_PERFORMANCE,13,True,,7648,,,869
+2026-04-13T21:45:24.360368+00:00,AGENTE_04_REVISOR_UX,17,True,,5533,,,910
+2026-04-13T21:45:24.375363+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,20,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",389,,,
+2026-04-13T21:45:24.679723+00:00,AGENTE_02_REVISOR_PERFORMANCE,14,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",419,,,
+2026-04-13T21:45:24.776013+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,21,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",398,,,
+2026-04-13T21:45:24.780079+00:00,AGENTE_04_REVISOR_UX,18,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",418,,,
+2026-04-13T21:45:24.990435+00:00,AGENTE_01_INTEGRADOR_REPO,6,True,,11302,,,910
+2026-04-13T21:45:25.221396+00:00,AGENTE_04_REVISOR_UX,19,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",439,,,
+2026-04-13T21:45:25.240720+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,22,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",463,,,
+2026-04-13T21:45:25.391340+00:00,AGENTE_01_INTEGRADOR_REPO,7,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",399,,,
+2026-04-13T21:45:25.651013+00:00,AGENTE_04_REVISOR_UX,20,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",428,,,
+2026-04-13T21:45:25.664815+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,23,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",422,,,
+2026-04-13T21:45:25.784745+00:00,AGENTE_01_INTEGRADOR_REPO,8,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",392,,,
+2026-04-13T21:45:26.173927+00:00,AGENTE_01_INTEGRADOR_REPO,9,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",387,,,
+2026-04-13T21:45:26.566106+00:00,AGENTE_01_INTEGRADOR_REPO,10,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",390,,,
+2026-04-13T21:45:27.226373+00:00,AGENTE_08_ARQUITECTO,29,True,,7578,,,910
+2026-04-13T21:45:27.792983+00:00,AGENTE_08_ARQUITECTO,30,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",565,,,
+2026-04-13T21:45:28.489960+00:00,AGENTE_03_REVISOR_SEGURIDAD,24,True,,5786,,,854
+2026-04-13T21:45:28.731192+00:00,AGENTE_07_ANALISTA,18,True,,8080,,,905
+2026-04-13T21:45:28.790497+00:00,AGENTE_10_ORGANIZADOR,23,True,,6946,,,908
+2026-04-13T21:45:29.195466+00:00,AGENTE_10_ORGANIZADOR,24,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",403,,,
+2026-04-13T21:45:29.580116+00:00,AGENTE_10_ORGANIZADOR,25,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",383,,,
+2026-04-13T21:45:29.596310+00:00,AGENTE_09_GENERADOR,16,True,,5762,,,904
+2026-04-13T21:45:30.009554+00:00,AGENTE_10_ORGANIZADOR,26,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",428,,,
+2026-04-13T21:45:30.400328+00:00,AGENTE_10_ORGANIZADOR,27,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",387,,,
+2026-04-13T21:45:30.810143+00:00,AGENTE_10_ORGANIZADOR,28,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",408,,,
+2026-04-13T21:45:31.157129+00:00,AGENTE_02_REVISOR_PERFORMANCE,15,True,,6476,,,864
+2026-04-13T21:45:31.616629+00:00,AGENTE_02_REVISOR_PERFORMANCE,16,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",458,,,
+2026-04-13T21:45:32.397771+00:00,AGENTE_04_REVISOR_UX,21,True,,6745,,,905
+2026-04-13T21:45:34.019535+00:00,AGENTE_03_REVISOR_SEGURIDAD,25,True,,5527,,,898
+2026-04-13T21:45:34.573193+00:00,AGENTE_09_GENERADOR,17,True,,4975,,,904
+2026-04-13T21:45:34.957091+00:00,AGENTE_09_GENERADOR,18,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",380,,,
+2026-04-13T21:45:35.366132+00:00,AGENTE_01_INTEGRADOR_REPO,11,True,,8798,,,872
+2026-04-13T21:45:35.396136+00:00,AGENTE_10_ORGANIZADOR,29,True,,4584,,,883
+2026-04-13T21:45:35.710055+00:00,AGENTE_07_ANALISTA,19,True,,6977,,,905
+2026-04-13T21:45:35.751930+00:00,AGENTE_01_INTEGRADOR_REPO,12,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",384,,,
+2026-04-13T21:45:35.811761+00:00,AGENTE_10_ORGANIZADOR,30,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",414,,,
+2026-04-13T21:45:36.138187+00:00,AGENTE_01_INTEGRADOR_REPO,13,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",385,,,
+2026-04-13T21:45:36.529297+00:00,AGENTE_01_INTEGRADOR_REPO,14,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",388,,,
+2026-04-13T21:45:36.915606+00:00,AGENTE_01_INTEGRADOR_REPO,15,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",385,,,
+2026-04-13T21:45:38.939313+00:00,AGENTE_03_REVISOR_SEGURIDAD,26,True,,4918,,,838
+2026-04-13T21:45:40.072533+00:00,AGENTE_04_REVISOR_UX,22,True,,7673,,,872
+2026-04-13T21:45:40.589331+00:00,AGENTE_09_GENERADOR,19,True,,5630,,,904
+2026-04-13T21:45:41.204430+00:00,AGENTE_07_ANALISTA,20,True,,5492,,,905
+2026-04-13T21:45:41.222688+00:00,AGENTE_02_REVISOR_PERFORMANCE,17,True,,9603,,,863
+2026-04-13T21:45:41.612854+00:00,AGENTE_02_REVISOR_PERFORMANCE,18,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",389,,,
+2026-04-13T21:45:42.010047+00:00,AGENTE_02_REVISOR_PERFORMANCE,19,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",395,,,
+2026-04-13T21:45:45.899420+00:00,AGENTE_03_REVISOR_SEGURIDAD,27,True,,6959,,,912
+2026-04-13T21:45:46.039690+00:00,AGENTE_01_INTEGRADOR_REPO,16,True,,9122,,,910
+2026-04-13T21:45:46.316359+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,24,True,,20649,,,912
+2026-04-13T21:45:46.920348+00:00,AGENTE_04_REVISOR_UX,23,True,,6846,,,910
+2026-04-13T21:45:47.061077+00:00,AGENTE_07_ANALISTA,21,True,,5855,,,877
+2026-04-13T21:45:47.832680+00:00,AGENTE_02_REVISOR_PERFORMANCE,20,True,,5821,,,910
+2026-04-13T21:45:51.016613+00:00,AGENTE_03_REVISOR_SEGURIDAD,28,True,,5116,,,788
+2026-04-13T21:45:52.041394+00:00,AGENTE_07_ANALISTA,22,True,,4977,,,905
+2026-04-13T21:45:53.063691+00:00,AGENTE_02_REVISOR_PERFORMANCE,21,True,,5229,,,886
+2026-04-13T21:45:53.477929+00:00,AGENTE_09_GENERADOR,20,True,,12887,,,904
+2026-04-13T21:45:53.480677+00:00,AGENTE_04_REVISOR_UX,24,True,,6559,,,851
+2026-04-13T21:45:54.089599+00:00,AGENTE_01_INTEGRADOR_REPO,17,True,,8048,,,910
+2026-04-13T21:45:56.750708+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,25,True,,10433,,,895
+2026-04-13T21:45:56.917302+00:00,AGENTE_07_ANALISTA,23,True,,4873,,,905
+2026-04-13T21:45:58.182880+00:00,AGENTE_02_REVISOR_PERFORMANCE,22,True,,5115,,,884
+2026-04-13T21:46:00.845895+00:00,AGENTE_09_GENERADOR,21,True,,7365,,,904
+2026-04-13T21:46:00.932499+00:00,AGENTE_04_REVISOR_UX,25,True,,7450,,,910
+2026-04-13T21:46:01.668090+00:00,AGENTE_07_ANALISTA,24,True,,4749,,,849
+2026-04-13T21:46:01.886743+00:00,AGENTE_03_REVISOR_SEGURIDAD,29,True,,10868,,,912
+2026-04-13T21:46:02.288976+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,26,True,,5537,,,912
+2026-04-13T21:46:02.895896+00:00,AGENTE_02_REVISOR_PERFORMANCE,23,True,,4711,,,910
+2026-04-13T21:46:06.172021+00:00,AGENTE_01_INTEGRADOR_REPO,18,True,,12081,,,910
+2026-04-13T21:46:07.401323+00:00,AGENTE_09_GENERADOR,22,True,,6554,,,904
+2026-04-13T21:46:07.525336+00:00,AGENTE_07_ANALISTA,25,True,,5855,,,905
+2026-04-13T21:46:07.561980+00:00,AGENTE_02_REVISOR_PERFORMANCE,24,True,,4664,,,910
+2026-04-13T21:46:08.699084+00:00,AGENTE_03_REVISOR_SEGURIDAD,30,True,,6810,,,836
+2026-04-13T21:46:09.223334+00:00,AGENTE_04_REVISOR_UX,26,True,,8289,,,910
+2026-04-13T21:46:10.164755+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,27,True,,7874,,,912
+2026-04-13T21:46:12.108383+00:00,AGENTE_02_REVISOR_PERFORMANCE,25,True,,4544,,,866
+2026-04-13T21:46:12.309398+00:00,AGENTE_09_GENERADOR,23,True,,4906,,,842
+2026-04-13T21:46:12.502874+00:00,AGENTE_07_ANALISTA,26,True,,4974,,,905
+2026-04-13T21:46:13.810735+00:00,AGENTE_01_INTEGRADOR_REPO,19,True,,7637,,,866
+2026-04-13T21:46:15.741260+00:00,AGENTE_04_REVISOR_UX,27,True,,6516,,,891
+2026-04-13T21:46:16.481353+00:00,AGENTE_07_ANALISTA,27,True,,3977,,,807
+2026-04-13T21:46:16.518715+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,28,True,,6352,,,912
+2026-04-13T21:46:16.978936+00:00,AGENTE_02_REVISOR_PERFORMANCE,26,True,,4869,,,910
+2026-04-13T21:46:17.559700+00:00,AGENTE_09_GENERADOR,24,True,,5249,,,904
+2026-04-13T21:46:17.948019+00:00,AGENTE_09_GENERADOR,25,False,"github_models_http_429: Too many requests. For more on scraping GitHub and how it may affect your rights, please review our Terms of Service (https://docs.github.com/en/site-policy/git",387,,,
+2026-04-13T21:46:21.123209+00:00,AGENTE_04_REVISOR_UX,28,True,,5374,,,910
+2026-04-13T21:46:21.142791+00:00,AGENTE_07_ANALISTA,28,True,,4660,,,876
+2026-04-13T21:46:22.028276+00:00,AGENTE_01_INTEGRADOR_REPO,20,True,,8216,,,910
+2026-04-13T21:46:23.328253+00:00,AGENTE_02_REVISOR_PERFORMANCE,27,True,,6347,,,881
+2026-04-13T21:46:23.686593+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,29,True,,7166,,,912
+2026-04-13T21:46:25.423310+00:00,AGENTE_07_ANALISTA,29,True,,4279,,,818
+2026-04-13T21:46:26.043116+00:00,AGENTE_09_GENERADOR,26,True,,8093,,,904
+2026-04-13T21:46:26.390139+00:00,AGENTE_04_REVISOR_UX,29,True,,5262,,,910
+2026-04-13T21:46:30.748888+00:00,AGENTE_02_REVISOR_PERFORMANCE,28,True,,7419,,,910
+2026-04-13T21:46:31.468167+00:00,AGENTE_06_ORQUESTADOR_CENTRAL,30,True,,7780,,,912
+2026-04-13T21:46:31.978668+00:00,AGENTE_04_REVISOR_UX,30,True,,5585,,,882
+2026-04-13T21:46:32.595264+00:00,AGENTE_09_GENERADOR,27,True,,6549,,,904
+2026-04-13T21:46:32.595447+00:00,AGENTE_07_ANALISTA,30,True,,7170,,,905
+2026-04-13T21:46:32.648486+00:00,AGENTE_01_INTEGRADOR_REPO,21,True,,10616,,,910
+2026-04-13T21:46:37.712827+00:00,AGENTE_02_REVISOR_PERFORMANCE,29,True,,6962,,,902
+2026-04-13T21:46:37.785001+00:00,AGENTE_09_GENERADOR,28,True,,5188,,,904
+2026-04-13T21:46:40.784593+00:00,AGENTE_01_INTEGRADOR_REPO,22,True,,8134,,,910
+2026-04-13T21:46:43.037320+00:00,AGENTE_09_GENERADOR,29,True,,5251,,,904
+2026-04-13T21:46:46.519849+00:00,AGENTE_02_REVISOR_PERFORMANCE,30,True,,8805,,,900
+2026-04-13T21:46:47.954122+00:00,AGENTE_01_INTEGRADOR_REPO,23,True,,7168,,,910
+2026-04-13T21:46:48.565923+00:00,AGENTE_09_GENERADOR,30,True,,5527,,,904
+2026-04-13T21:46:54.785388+00:00,AGENTE_01_INTEGRADOR_REPO,24,True,,6828,,,910
+2026-04-13T21:47:03.315311+00:00,AGENTE_01_INTEGRADOR_REPO,25,True,,8528,,,910
+2026-04-13T21:47:11.711236+00:00,AGENTE_01_INTEGRADOR_REPO,26,True,,8394,,,846
+2026-04-13T21:47:21.950948+00:00,AGENTE_01_INTEGRADOR_REPO,27,True,,10237,,,910
+2026-04-13T21:47:31.868283+00:00,AGENTE_01_INTEGRADOR_REPO,28,True,,9915,,,878
+2026-04-13T21:47:40.536088+00:00,AGENTE_01_INTEGRADOR_REPO,29,True,,8664,,,849
+2026-04-13T21:47:51.310850+00:00,AGENTE_01_INTEGRADOR_REPO,30,True,,10773,,,899

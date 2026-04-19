@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-058",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-057",
+    "SES-HARVEST-2026-04-18-002"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-18-002",
+  "details": "Decisión: Decidimos que el dashboard debe integrarse con context_detector via importlib, mostrando veredicto y barra de score en tiempo real | Descarte: Descartamos llamada directa CLI a context_detector porque produce subprocess extra y complica captura del resultado estructurado | Próximo paso: Arreglar el bug del doble output en pack_dashboard.py causado por codigo antiguo concatenado al nuevo | Ficheros afectados: (exploración sin artefactos de fichero)",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T14:19:29.365080+00:00"
+}

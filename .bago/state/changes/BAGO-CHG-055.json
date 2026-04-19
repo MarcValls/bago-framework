@@ -1,0 +1,20 @@
+{
+  "change_id": "BAGO-CHG-055",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-003 F1: context_detector + cosecha + W9 + tpl_harvest",
+  "motivation": "Implementar mecanismo de cosecha contextual. Detector de señales semánticas + protocolo 3-preguntas + workflow W9 formal.",
+  "status": "applied",
+  "affected_components": [
+    "tools/context_detector.py",
+    "tools/cosecha.py",
+    "workflows/W9_COSECHA.md",
+    "docs/operation/templates/tpl_harvest.md",
+    "pack.json",
+    "workflows/WORKFLOWS_INDEX.md"
+  ],
+  "related_evidence": "BAGO-EVD-056",
+  "created_at": "2026-04-18T14:10:00Z",
+  "updated_at": "2026-04-18T14:10:00Z",
+  "author": "role_architect"
+}

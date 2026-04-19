@@ -1,0 +1,9 @@
+{
+  "evidence_id": "BAGO-EVD-029",
+  "type": "closure",
+  "related_to": ["BAGO-CHG-029", "SES-REL-2026-04-14-001"],
+  "summary": "La revisión canónica 2.2.2 quedó formalizada con nueva acta oficial, nueva arquitectura de referencia y actualización de identidad en los artefactos vivos del sistema.",
+  "details": "pack.json, global_state y la documentación de entrada/uso ya referencian 2.2.2 como baseline oficial. Se añadieron ACTA_OFICIAL_BASELINE_BAGO_AMTEC_V2_2_2_OFICIAL.md y BAGO_V2_2_2_ARQUITECTURA.md, manteniendo la 2.2.1 como antecedente histórico. El corte se cerró con validación completa en verde.",
+  "status": "recorded",
+  "recorded_at": "2026-04-14T00:50:00Z"
+}

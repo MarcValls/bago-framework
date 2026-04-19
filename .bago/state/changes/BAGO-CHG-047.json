@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-047",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-002 OFF Ronda 3: notas sobre documentación sin estructura",
+  "motivation": "Sesión libre sin objetivo concreto. Intenta mejorar documentación pero sin plan ni entregables predefinidos.",
+  "status": "applied",
+  "affected_components": [
+    "docs/operation/NOTAS_DOCUMENTACION.md"
+  ],
+  "related_evidence": "BAGO-EVD-048",
+  "created_at": "2026-04-18T13:39:00Z",
+  "updated_at": "2026-04-18T13:39:00Z",
+  "author": "role_architect"
+}

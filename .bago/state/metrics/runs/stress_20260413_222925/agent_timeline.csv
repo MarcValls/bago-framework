@@ -1,0 +1,3 @@
+timestamp_utc,agent,status,iteration,completed,last_latency_ms,last_error,pid,pid_cpu_pct,pid_rss_kb,host_load_1m,host_load_5m,host_load_15m
+2026-04-13T20:29:27.340695+00:00,AGENTE_01_INTEGRADOR_REPO,running,1,0,0,,80993,16.2,21580,7.704,7.533,7.728
+2026-04-13T20:29:28.366272+00:00,AGENTE_01_INTEGRADOR_REPO,done,1,1,1051,,80993,0.0,0,7.704,7.533,7.728

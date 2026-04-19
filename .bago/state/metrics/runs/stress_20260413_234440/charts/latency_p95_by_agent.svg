@@ -1,0 +1,57 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='980' height='420' viewBox='0 0 980 420'>
+<style>
+text { font-family: Menlo, Consolas, monospace; fill: #0f172a; }
+.axis { stroke: #64748b; stroke-width: 1; }
+.grid { stroke: #cbd5e1; stroke-width: 1; stroke-dasharray: 3 3; }
+.title { font-size: 16px; font-weight: 700; }
+.label { font-size: 11px; }
+</style>
+<rect x='0' y='0' width='980' height='420' fill='#f8fafc'/>
+<text x='20' y='26' class='title'>P95 de latencia por agente</text>
+<line x1='70' y1='325.00' x2='950' y2='325.00' class='grid' />
+<text x='8' y='329.00' class='label'>0.0</text>
+<line x1='70' y1='271.00' x2='950' y2='271.00' class='grid' />
+<text x='8' y='275.00' class='label'>2577.4</text>
+<line x1='70' y1='217.00' x2='950' y2='217.00' class='grid' />
+<text x='8' y='221.00' class='label'>5154.8</text>
+<line x1='70' y1='163.00' x2='950' y2='163.00' class='grid' />
+<text x='8' y='167.00' class='label'>7732.2</text>
+<line x1='70' y1='109.00' x2='950' y2='109.00' class='grid' />
+<text x='8' y='113.00' class='label'>10309.6</text>
+<line x1='70' y1='55.00' x2='950' y2='55.00' class='grid' />
+<text x='8' y='59.00' class='label'>12887.0</text>
+<rect x='83.20' y='84.52' width='61.60' height='240.48' fill='#0f766e' rx='3'/>
+<text x='114.00' y='340.00' text-anchor='middle' class='label'>AGENTE_01_INTEGRADOR_REPO</text>
+<text x='114.00' y='78.52' text-anchor='middle' class='label'>11478.0</text>
+<rect x='171.20' y='140.52' width='61.60' height='184.48' fill='#0f766e' rx='3'/>
+<text x='202.00' y='340.00' text-anchor='middle' class='label'>AGENTE_02_REVISOR_PERFORMANCE</text>
+<text x='202.00' y='134.52' text-anchor='middle' class='label'>8805.0</text>
+<rect x='259.20' y='165.87' width='61.60' height='159.13' fill='#0f766e' rx='3'/>
+<text x='290.00' y='340.00' text-anchor='middle' class='label'>AGENTE_03_REVISOR_SEGURIDAD</text>
+<text x='290.00' y='159.87' text-anchor='middle' class='label'>7595.0</text>
+<rect x='347.20' y='164.24' width='61.60' height='160.76' fill='#0f766e' rx='3'/>
+<text x='378.00' y='340.00' text-anchor='middle' class='label'>AGENTE_04_REVISOR_UX</text>
+<text x='378.00' y='158.24' text-anchor='middle' class='label'>7673.0</text>
+<rect x='435.20' y='190.56' width='61.60' height='134.44' fill='#0f766e' rx='3'/>
+<text x='466.00' y='340.00' text-anchor='middle' class='label'>AGENTE_05_MAESTRO_BAGO</text>
+<text x='466.00' y='184.56' text-anchor='middle' class='label'>6417.0</text>
+<rect x='523.20' y='106.41' width='61.60' height='218.59' fill='#0f766e' rx='3'/>
+<text x='554.00' y='340.00' text-anchor='middle' class='label'>AGENTE_06_ORQUESTADOR_CENTRAL</text>
+<text x='554.00' y='100.41' text-anchor='middle' class='label'>10433.0</text>
+<rect x='611.20' y='163.88' width='61.60' height='161.12' fill='#0f766e' rx='3'/>
+<text x='642.00' y='340.00' text-anchor='middle' class='label'>AGENTE_07_ANALISTA</text>
+<text x='642.00' y='157.88' text-anchor='middle' class='label'>7690.0</text>
+<rect x='699.20' y='166.23' width='61.60' height='158.77' fill='#0f766e' rx='3'/>
+<text x='730.00' y='340.00' text-anchor='middle' class='label'>AGENTE_08_ARQUITECTO</text>
+<text x='730.00' y='160.23' text-anchor='middle' class='label'>7578.0</text>
+<rect x='787.20' y='55.00' width='61.60' height='270.00' fill='#0f766e' rx='3'/>
+<text x='818.00' y='340.00' text-anchor='middle' class='label'>AGENTE_09_GENERADOR</text>
+<text x='818.00' y='49.00' text-anchor='middle' class='label'>12887.0</text>
+<rect x='875.20' y='175.66' width='61.60' height='149.34' fill='#0f766e' rx='3'/>
+<text x='906.00' y='340.00' text-anchor='middle' class='label'>AGENTE_10_ORGANIZADOR</text>
+<text x='906.00' y='169.66' text-anchor='middle' class='label'>7128.0</text>
+<line x1='70' y1='325' x2='950' y2='325' class='axis' />
+<line x1='70' y1='55' x2='70' y2='325' class='axis' />
+<text x='490' y='405' text-anchor='middle' class='label'>agentes</text>
+<text x='14' y='47' class='label'>ms</text>
+</svg>

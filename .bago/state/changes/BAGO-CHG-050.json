@@ -1,0 +1,17 @@
+{
+  "change_id": "BAGO-CHG-050",
+  "type": "governance",
+  "severity": "minor",
+  "title": "ESCENARIO-002 ON Ronda 5: pack_dashboard.py + evaluación final del experimento",
+  "motivation": "R5 libre: crear herramienta de acceso rápido al estado del pack y cerrar el ESCENARIO-002 con evaluación formal.",
+  "status": "applied",
+  "affected_components": [
+    "tools/pack_dashboard.py",
+    "docs/operation/GUIA_OPERADOR.md",
+    "state/evaluations/EVAL-ESCENARIO002-FINAL.md"
+  ],
+  "related_evidence": "BAGO-EVD-051",
+  "created_at": "2026-04-18T13:50:00Z",
+  "updated_at": "2026-04-18T13:50:00Z",
+  "author": "role_architect"
+}

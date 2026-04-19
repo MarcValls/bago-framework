@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-047",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-046",
+    "SES-ON-2026-04-18-003"
+  ],
+  "summary": "ON R3 cerrada: 3 útiles, 2 roles, GO preflight.",
+  "details": "Creados GUIA_OPERADOR.md (7 secciones: bootstrap, árbol de decisión, apertura, cierre, comandos diagnóstico), TROUBLESHOOTING.md (7 errores frecuentes con fix en copy-paste), PROTOCOLO_CIERRE_SESION.md (checklist 6 pasos con código ejecutable). Total: 3 artefactos de alto valor reutilizable.",
+  "status": "recorded",
+  "recorded_at": "2026-04-18T13:36:00Z"
+}

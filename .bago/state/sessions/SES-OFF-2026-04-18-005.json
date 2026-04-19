@@ -1,0 +1,26 @@
+{
+  "session_id": "SES-OFF-2026-04-18-005",
+  "task_type": "system_change",
+  "selected_workflow": "w0_free_session",
+  "roles_activated": [
+    "role_architect",
+    "role_auditor",
+    "role_organizer",
+    "role_vertice"
+  ],
+  "user_goal": "mejorar lo que haga falta del pack",
+  "status": "closed",
+  "bago_mode": "off",
+  "escenario": "ESCENARIO-002",
+  "ronda": 5,
+  "created_at": "2026-04-18T13:51:00Z",
+  "updated_at": "2026-04-18T13:53:00Z",
+  "artifacts": [
+    "docs/operation/NOTAS_MEJORAS_GENERALES.md",
+    "state/sessions/SES-OFF-2026-04-18-005.json",
+    "state/changes/BAGO-CHG-051.json",
+    "state/evidences/BAGO-EVD-052.json"
+  ],
+  "decisions": [],
+  "summary": "OFF Ronda 5. 1 útil (nota genérica), 4 roles, sin preflight, 0 decisiones."
+}

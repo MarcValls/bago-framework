@@ -1,0 +1,28 @@
+{
+  "change_id": "BAGO-CHG-028",
+  "title": "Actualización documental de resultados recientes y presets operativos de performance",
+  "type": "governance",
+  "severity": "minor",
+  "status": "validated",
+  "normalized_status": "validated",
+  "motivation": "Dejar trazados en documentación canónica los hallazgos recientes de stress sobre GitHub Models, incluyendo el impacto del rate limiting, el backoff y los presets operativos recomendados.",
+  "scope": [
+    "tools/perf/README.md",
+    "docs/DECISIONES.md",
+    "state/global_state.json",
+    "state/changes/BAGO-CHG-028.json",
+    "state/evidences/BAGO-EVD-028.json",
+    "state/sessions/SES-PERF-2026-04-14-001.json",
+    "TREE.txt",
+    "CHECKSUMS.sha256"
+  ],
+  "impacts": [
+    "mayor trazabilidad operativa de performance",
+    "presets recomendados explícitos para github_models",
+    "menos ambigüedad al repetir pruebas de stress"
+  ],
+  "requires_migration": false,
+  "validation_result": "GO",
+  "created_at": "2026-04-14T00:36:00Z",
+  "updated_at": "2026-04-14T00:36:00Z"
+}

@@ -1,0 +1,29 @@
+{
+  "session_id": "SES-BTS-CAJAFISICA-2026-04-17-001",
+  "task_type": "project_bootstrap",
+  "selected_workflow": "workflow_bootstrap_repo_first",
+  "roles_activated": [
+    "role_architect",
+    "role_generator",
+    "role_organizer"
+  ],
+  "user_goal": "Bootstrap proyecto CAJAFISICA: bago-viewer web dashboard para medir y presentar packs .bago",
+  "summary": "Bootstrap completo de CAJAFISICA. Repo git inicializado. bago-viewer operativo en http://localhost:5050 con escaneo automático de packs, métricas de esfuerzo, validadores GO/KO y selector de carpeta nativo macOS.",
+  "status": "closed",
+  "artifacts": [
+    "bago-viewer/app.py",
+    "bago-viewer/templates/base.html",
+    "bago-viewer/templates/index.html",
+    "bago-viewer/templates/pack.html",
+    "bago-viewer/start.sh",
+    ".gitignore"
+  ],
+  "decisions": [
+    "Stack: Python + Flask (sin build step)",
+    "Escaneo BFS max_depth=3 con exclusión de carpetas pesadas",
+    "Selector de carpeta nativo vía osascript (Finder)",
+    "Informe HTML servido con paths SVG corregidos al vuelo"
+  ],
+  "created_at": "2026-04-17T21:14:34Z",
+  "updated_at": "2026-04-17T21:14:34Z"
+}

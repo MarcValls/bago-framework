@@ -1,0 +1,29 @@
+{
+  "change_id": "BAGO-CHG-003",
+  "type": "feature",
+  "severity": "major",
+  "title": "MECANOGRAFIA.html — 8 mejoras: bugfix jQuery + Runner mode + vocab x6 + UX countdown + auto-advance + latency + intro overlay",
+  "motivation": "El teclado virtual no respondía (selectores jQuery erróneos). Se aprovechó la sesión para añadir Modo Runner completo, expansión de vocabulario, cuenta atrás, auto-avance doble, reducción de latencia y overlay de introducción de lección.",
+  "status": "applied",
+  "affected_components": [
+    "MECANOGRAFIA.html"
+  ],
+  "changes_detail": [
+    "Bugfix: $('#...') → $('...') en 3 selectores de teclado virtual",
+    "Modo Runner: texto continuo, cursor span, errorMap, heatmap adaptativo",
+    "Vocabulario ES: 15 → 90 palabras",
+    "Vocabulario CA: 15 → 80 palabras",
+    "Cuenta atrás 3-2-1-¡Ya! pre-lección",
+    "Auto-avance siguiente texto en Runner (3s)",
+    "Auto-avance siguiente nivel al completar lección (3s)",
+    "Latencia reducida: sin setTimeout, debounce localStorage, sin transición CSS",
+    "Overlay intro lección: descripción + chips de teclas + botón 'Siguiente lección →'"
+  ],
+  "todos_resolved": 11,
+  "file_lines_after": 890,
+  "related_evidence": "BAGO-EVD-002",
+  "related_session": "SES-EXECUTION-2026-04-19-003",
+  "created_at": "2026-04-19T12:19:05.315054+00:00",
+  "updated_at": "2026-04-19T12:19:05.315054+00:00",
+  "author": "role_developer"
+}

@@ -1,0 +1,32 @@
+{
+  "session_id": "SES-INS-2026-04-14-001",
+  "user_goal": "Compilar instalador .exe nativo Windows con NSIS, organizar todos los instaladores en dist/ por plataforma y documentar cada carpeta con README",
+  "task_type": "execution",
+  "selected_workflow": "workflow_system_change",
+  "roles_activated": ["role_architect", "role_validator"],
+  "status": "completed",
+  "artifacts": [
+    "dist/macos/BAGO_installer.pkg",
+    "dist/macos/README.md",
+    "dist/unix/BAGO_installer.sh",
+    "dist/unix/README.md",
+    "dist/windows/BAGO_installer_windows.exe",
+    "dist/windows/BAGO_installer_windows.ps1",
+    "dist/windows/BAGO_installer_windows.zip",
+    "dist/windows/README.md",
+    "dist/source/BAGO_installer.nsi",
+    "dist/source/README.md",
+    "bago-make-installer.sh",
+    ".bago/pack.json",
+    ".bago/CHECKSUMS.sha256",
+    ".bago/state/global_state.json"
+  ],
+  "decisions": [
+    "Instalar NSIS en macOS 13 forzando la botella de Sonoma (cellar any_skip_relocation)",
+    "Usar File /r con glob pattern en NSIS (dir/*) en lugar de dir solo — incompatibilidad del port Unix",
+    "Organizar dist/ con subdirectorios macos/, unix/, windows/, source/",
+    "Excluir dist/ del payload tar/zip para evitar recursión en bago-make-installer.sh"
+  ],
+  "created_at": "2026-04-14T01:00:00Z",
+  "updated_at": "2026-04-14T02:44:00Z"
+}
