@@ -5,6 +5,8 @@ Muestra banner + gestiona comandos rápidos.
 
 Uso:
   ./bago                    → banner + estado
+  ./bago setup              → sincroniza repo_context + instala extensiones Copilot
+  ./bago extensions         → gestiona extensiones BAGO (.bago/extensions/)
   ./bago versions           → lista cleanversions disponibles
   ./bago dashboard          → pack_dashboard.py
   ./bago ideas              → emit_ideas.py
@@ -22,7 +24,7 @@ Instalar como alias global:
   echo 'alias bago="python3 $(pwd)/bago"' >> ~/.zshrc
 """
 
-import json, subprocess, sys
+import json, shutil, subprocess, sys
 from pathlib import Path
 
 BAGO_ROOT = Path(__file__).resolve().parent / ".bago"
@@ -40,6 +42,54 @@ COMMANDS = {
     "stale":     ["python3", str(TOOLS / "stale_detector.py")],
     "v2":        ["python3", str(TOOLS / "v2_close_checklist.py")],
 }
+
+# ── Extensiones Copilot CLI ────────────────────────────────────────────────────
+
+def _install_extensions(silent=False):
+    """Copia .bago/extensions/*/extension.mjs → .github/extensions/*/extension.mjs"""
+    src_base  = BAGO_ROOT / "extensions"
+    dest_base = BAGO_ROOT.parent / ".github" / "extensions"
+
+    if not src_base.exists():
+        if not silent:
+            print("  ℹ  No hay extensiones en .bago/extensions/")
+        return
+
+    installed = []
+    for ext_dir in sorted(src_base.iterdir()):
+        src_file = ext_dir / "extension.mjs"
+        if not src_file.exists():
+            continue
+        dest_dir  = dest_base / ext_dir.name
+        dest_file = dest_dir / "extension.mjs"
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(str(src_file), str(dest_file))
+        installed.append(ext_dir.name)
+
+    if installed and not silent:
+        for name in installed:
+            print(f"  🔌 Extensión instalada: {name}")
+    return installed
+
+def _cmd_extensions():
+    """Lista extensiones disponibles e instala si hay cambios."""
+    src_base = BAGO_ROOT / "extensions"
+    if not src_base.exists() or not any(src_base.iterdir()):
+        print("  No hay extensiones BAGO en .bago/extensions/")
+        return
+
+    print()
+    print("  ┌──────────────────────────────────────────────┐")
+    print("  │  BAGO · Extensiones Copilot CLI              │")
+    print("  └──────────────────────────────────────────────┘")
+    for ext_dir in sorted(src_base.iterdir()):
+        if (ext_dir / "extension.mjs").exists():
+            dest = BAGO_ROOT.parent / ".github" / "extensions" / ext_dir.name / "extension.mjs"
+            status = "✅ instalada" if dest.exists() else "⚠️  pendiente"
+            print(f"  🔌 {ext_dir.name:30s} {status}")
+    print()
+    print("  Reinstalar: bago setup")
+    print()
 
 def _cmd_versions():
     """Lista todas las cleanversions encontradas junto al script."""
@@ -98,8 +148,16 @@ def main():
     cmd = args[0].lower()
     rest = args[1:]
 
-    if cmd == "versions":
+    if cmd == "setup":
+        subprocess.run(
+            ["python3", str(TOOLS / "repo_context_guard.py"), "sync"],
+            cwd=str(BAGO_ROOT.parent)
+        )
+        _install_extensions()
+    elif cmd == "versions":
         _cmd_versions()
+    elif cmd == "extensions":
+        _cmd_extensions()
     elif cmd in COMMANDS:
         subprocess.run(COMMANDS[cmd] + rest, cwd=str(BAGO_ROOT.parent))
     elif cmd in ("help", "--help", "-h"):
@@ -108,6 +166,8 @@ def main():
             cwd=str(BAGO_ROOT.parent)
         )
         print("  Comandos disponibles:")
+        print("    bago setup")
+        print("    bago extensions")
         print("    bago versions")
         for k in COMMANDS:
             print(f"    bago {k}")
