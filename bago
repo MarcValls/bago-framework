@@ -5,6 +5,7 @@ Muestra banner + gestiona comandos rápidos.
 
 Uso:
   ./bago                    → banner + estado
+  ./bago versions           → lista cleanversions disponibles
   ./bago dashboard          → pack_dashboard.py
   ./bago ideas              → emit_ideas.py
   ./bago cosecha            → cosecha.py
@@ -21,7 +22,7 @@ Instalar como alias global:
   echo 'alias bago="python3 $(pwd)/bago"' >> ~/.zshrc
 """
 
-import subprocess, sys
+import json, subprocess, sys
 from pathlib import Path
 
 BAGO_ROOT = Path(__file__).resolve().parent / ".bago"
@@ -40,10 +41,53 @@ COMMANDS = {
     "v2":        ["python3", str(TOOLS / "v2_close_checklist.py")],
 }
 
+def _cmd_versions():
+    """Lista todas las cleanversions encontradas junto al script."""
+    cv_dir = Path(__file__).resolve().parent / "cleanversion"
+    if not cv_dir.exists():
+        print("  No se encontró directorio cleanversion/")
+        return
+
+    entries = sorted(d for d in cv_dir.iterdir() if d.is_dir() and not d.name.startswith('.'))
+    if not entries:
+        print("  No hay cleanversions.")
+        return
+
+    print()
+    print("  ┌─────────────────────────────────────────────────────────────┐")
+    print("  │  BAGO · Cleanversions disponibles                          │")
+    print("  └─────────────────────────────────────────────────────────────┘")
+
+    for d in entries:
+        info_file  = d / "VERSION_INFO.json"
+        state_file = d / ".bago" / "state" / "global_state.json"
+
+        info  = json.loads(info_file.read_text())  if info_file.exists()  else {}
+        state = json.loads(state_file.read_text()) if state_file.exists() else {}
+
+        chg_dir   = d / ".bago" / "state" / "changes"
+        chg_count = len(list(chg_dir.glob("BAGO-CHG-*.json"))) if chg_dir.exists() else 0
+
+        slug   = info.get("slug", d.name)
+        name   = info.get("display_name", "—")
+        desc   = info.get("description", "")
+        mode   = state.get("distribution_mode") or "—"
+        script = info.get("bago_script", "—")
+        notes  = info.get("notes", "")
+
+        print()
+        print(f"  📦 {slug}")
+        print(f"     {name}")
+        print(f"     {desc}")
+        print(f"     mode={mode} | CHG={chg_count} | bago={script}")
+        if notes:
+            print(f"     💡 {notes}")
+
+    print()
+
 def main():
     args = sys.argv[1:]
 
-    # Sin argumentos → banner completo
     if not args:
         subprocess.run(
             ["python3", str(TOOLS / "bago_banner.py")],
@@ -54,7 +98,9 @@ def main():
     cmd = args[0].lower()
     rest = args[1:]
 
-    if cmd in COMMANDS:
+    if cmd == "versions":
+        _cmd_versions()
+    elif cmd in COMMANDS:
         subprocess.run(COMMANDS[cmd] + rest, cwd=str(BAGO_ROOT.parent))
     elif cmd in ("help", "--help", "-h"):
         subprocess.run(
@@ -62,6 +108,7 @@ def main():
             cwd=str(BAGO_ROOT.parent)
         )
         print("  Comandos disponibles:")
+        print("    bago versions")
         for k in COMMANDS:
             print(f"    bago {k}")
         print()

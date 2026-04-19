@@ -1,0 +1,10 @@
+{
+  "slug": "v01-base-clean",
+  "display_name": "Base limpia original",
+  "description": "Pack 2.4-v2rc sin CHGs aplicados. Punto de partida puro para distribucion.",
+  "created_at": "2026-04-18T16:11:54",
+  "distribution_mode": null,
+  "chg_count": 0,
+  "bago_script": "v1",
+  "notes": "Plantilla de referencia original. No modificar."
+}
