@@ -22,6 +22,7 @@ Governance hardening and launcher UX fix applied on top of 2.5-stable. Fully bac
 - **PR #23** — `[2] Iniciar proyecto nuevo` shows numbered candidate directories; never defaults silently to framework dir; explicit `[s]` required if user picks framework itself
 - **PR #24** — Documentation updated: QUICKSTART, README, GETTING_STARTED, CHANGELOG
 - **PR #25** — `global_state.json` now ships with `"distribution_mode": "template_seed"` so fresh clones trigger the first-run prompt correctly
+- **PR #28** — Launcher UX v2: `[2] Actualizar` muestra banner BAGO + barra de progreso animada + `versión_anterior → versión_nueva`; `[3] Nuevo proyecto` (renombrado) pide nombre obligatorio antes del selector de directorio; arranque normal comprueba actualizaciones en `origin/master` y ofrece actualizar; nuevos helpers `_git_describe`, `_git_short_hash`, `_has_remote_updates`, `_startup_update_check`
 - **PR #26** — First-run menu redesigned: `[1] Seguir / [2] Actualizar (git pull) / [3] Iniciar proyecto / [4] Evolucionar`; update option shown only when git remote exists; `_git_remote_url()`, `_update_framework()`, `_pick_project_dir()` helpers added
 
 ---

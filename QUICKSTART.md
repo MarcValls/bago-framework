@@ -63,7 +63,21 @@ Cuando ejecutas `python3 bago` **sin argumentos**, BAGO detecta que está en mod
   ├─────────────────────────────────────────────────┤
   │  [1] Seguir con esta versión                    │
   │  [2] Actualizar framework  (git pull)           │
-  │  [3] Iniciar un proyecto nuevo                  │
+  │  [3] Nuevo proyecto                             │
+  │  [4] Evolucionar el framework BAGO              │
+  └─────────────────────────────────────────────────┘
+```
+
+Si BAGO detecta actualizaciones disponibles en GitHub, el menú las señala:
+```
+  ┌─────────────────────────────────────────────────┐
+  │  BAGO · Arranque del framework                  │
+  ├─────────────────────────────────────────────────┤
+  │  [!] Nueva version disponible en GitHub         │
+  ├─────────────────────────────────────────────────┤
+  │  [1] Seguir con esta versión                    │
+  │  [2] Actualizar framework  <- recomendado       │
+  │  [3] Nuevo proyecto                             │
   │  [4] Evolucionar el framework BAGO              │
   └─────────────────────────────────────────────────┘
 ```
@@ -74,7 +88,7 @@ Cuando ejecutas `python3 bago` **sin argumentos**, BAGO detecta que está en mod
   │  BAGO · Arranque del framework                  │
   ├─────────────────────────────────────────────────┤
   │  [1] Seguir con esta versión                    │
-  │  [2] Iniciar un proyecto nuevo                  │
+  │  [2] Nuevo proyecto                             │
   │  [3] Evolucionar el framework BAGO              │
   └─────────────────────────────────────────────────┘
 ```
@@ -84,23 +98,28 @@ Cuando ejecutas `python3 bago` **sin argumentos**, BAGO detecta que está en mod
 | Opción | Acción |
 |---|---|
 | `[1] Seguir con esta versión` | Continúa directamente — muestra el banner de BAGO |
-| `[2] Actualizar framework` | Ejecuta `git pull --ff-only` y actualiza el framework *(solo con remote)* |
-| `Iniciar un proyecto nuevo` | Muestra el selector de directorio y copia BAGO a tu proyecto |
+| `[2] Actualizar framework` | Muestra el banner, barra de progreso animada durante `git pull`, y al terminar muestra `versión_anterior → versión_nueva` *(solo con remote)* |
+| `[3] Nuevo proyecto` | Pide el nombre del proyecto (obligatorio), selector de directorio y copia BAGO al destino |
 | `Evolucionar el framework` | Activa modo desarrollo para contribuir a BAGO en sí mismo |
 
-Si eliges **Iniciar un proyecto nuevo**, BAGO muestra directorios candidatos — **nunca asume que el directorio del framework es tu proyecto**:
+Si eliges **Nuevo proyecto**, BAGO pide primero el nombre del proyecto (campo obligatorio) y luego muestra directorios candidatos para elegir dónde crearlo:
 
 ```
-  BAGO trabaja SOBRE tu proyecto, no dentro del framework.
-  ¿Dónde está (o estará) tu proyecto?
+  ─── Nuevo proyecto ─────────────────────────────────────
 
-  [1] /ruta/a/tu/proyecto          ← directorio actual del terminal
-  [2] /ruta/al/directorio/padre
-  [3] /ruta/dos/niveles/arriba
-  [M] Otra ruta (escribirla)
+  Nombre del proyecto: mi-app
+
+  ¿Dónde crear el proyecto?
+
+  [1] /ruta/actual/del/terminal/mi-app    ← directorio actual
+  [2] /ruta/al/directorio/padre/mi-app
+  [3] /ruta/dos/niveles/arriba/mi-app
+  [M] Otra ruta base (escribirla)
 ```
 
-BAGO copiará su pack al directorio elegido y lo dejará listo con `setup`.
+BAGO nunca asume que el directorio del framework es tu proyecto. El pack se copia a `parent_dir/nombre_proyecto` y se ejecuta `setup` automáticamente.
+
+> **Comprobación automática de actualizaciones:** En el arranque normal (`python3 bago` sin subcomandos, después del primer arranque), BAGO comprueba si hay nuevos commits en `origin/master` y pregunta `¿Actualizar ahora? [S/n]` si los detecta.
 
 > **Nota:** Los subcomandos `validate`, `health`, `audit`… funcionan directamente sin pasar por este menú.
 
@@ -480,3 +499,4 @@ python3 bago detector     → detector de drift
 ---
 
 *BAGO 2.5-stable · Manual de nuevo usuario · Abril 2026*
+
