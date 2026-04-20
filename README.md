@@ -1,6 +1,6 @@
 # BAGO — Structured AI Work Framework
 
-> **Version 2.5-stable** · 13 CLI commands · 30 tools · 10 operational workflows · Health 100/100
+> **Version 2.5-stable** · 13 CLI commands · 30 tools · 10 operational workflows · Clean-install state: `initializing`
 
 ---
 
@@ -54,7 +54,8 @@ BAGO has been built using BAGO itself. The following data was collected with `py
 
 **Growth from 2.3 → 2.5: +27.2%** — measured by weighted index (commands ×0.30, tools ×0.35, docs ×0.20, workflows ×0.15).
 
-> *Workflow count in the evolution table (12) includes all files in `.bago/workflows/`: 10 operational workflows + WORKFLOW_MAESTRO_BAGO + WORKFLOWS_INDEX.*
+> Workflow count in the evolution table (12) includes all files in `.bago/workflows/`: 10 operational workflows + `WORKFLOW_MAESTRO_BAGO.md` + `WORKFLOWS_INDEX.md`.
+> The evolution table is historical benchmark data. This public repository is distributed as a clean install, so runtime counters in `.bago/state/` start at zero.
 
 ### New in 2.5-stable
 
@@ -62,8 +63,6 @@ BAGO has been built using BAGO itself. The following data was collected with `py
 
 **New tools:**
 `audit_v2.py` · `dashboard_v2.py` · `efficiency_meter.py` · `health_score.py` · `reconcile_state.py` · `session_opener.py` · `show_task.py` · `stale_detector.py` · `v2_close_checklist.py` · `vertice_activator.py` · `workflow_selector.py`
-
-**Ideas implemented:** 9 registered improvements (tracked in `.bago/state/implemented_ideas.json`)
 
 ---
 
@@ -104,7 +103,8 @@ cd bago-framework
 # Verify the system
 python3 bago validate
 
-# Check health
+# Check current health status
+# On a clean install, the initial state is "initializing"
 python3 bago health
 ```
 
@@ -169,7 +169,7 @@ bago-framework/
 
 BAGO tracks its own growth. Every significant change is registered as a `BAGO-CHG` artifact with evidence. The `bago efficiency` command compares performance across versions.
 
-The system was built using itself across 40+ registered changes and 9 implemented ideas — demonstrating that BAGO can manage its own development lifecycle.
+The public snapshot is intentionally distributed as a clean install. Runtime counters and health history begin to accumulate once the framework is used in real sessions.
 
 ---
 
