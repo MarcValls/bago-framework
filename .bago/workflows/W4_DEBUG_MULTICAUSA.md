@@ -1,4 +1,4 @@
-# W4_DEBUG_MULTICAUSA
+# W4 · Debug Multicausa
 
 ## id
 

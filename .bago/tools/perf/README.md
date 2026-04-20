@@ -1,4 +1,4 @@
-# Stress de agentes BAGO (V2.2.2)
+# Stress de agentes BAGO (2.5-stable)
 
 ## 1) Ejecución de estrés
 

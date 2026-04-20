@@ -2,7 +2,7 @@
 
 ## Identidad
 
-- id: role_coordinator_bago
+- id: role_maestro_bago
 - family: government
 - version: 2.5-stable
 

@@ -1,8 +1,8 @@
-# PROMPT DE ACTIVACIÓN · COORDINADOR BAGO
+# PROMPT DE ACTIVACIÓN · MAESTRO_BAGO
 
 ## Finalidad
 
-Activar al Coordinador BAGO como interfaz integrada del sistema, no como sustituto de todas las demás capas.
+Activar al MAESTRO_BAGO como interfaz integrada del sistema, no como sustituto de todas las demás capas.
 
 ## Instrucción base
 

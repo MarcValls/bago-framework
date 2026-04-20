@@ -1,6 +1,6 @@
 # START_AGENT · Alias de compatibilidad
 
-`AGENT_START.md` es la entrada oficial de BAGO AMTEC V2.2.2.
+`AGENT_START.md` es la entrada oficial de BAGO 2.5-stable.
 
 Este archivo existe solo como alias de compatibilidad
 para evitar arranques rotos en instalaciones, hábitos
