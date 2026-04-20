@@ -71,5 +71,82 @@
   "max_active_roles": 3,
   "review_role": "role_vertice",
   "review_policy": "solo_con_evidencia",
-  "sensitive_changes_require_human_validation": true
+  "sensitive_changes_require_human_validation": true,
+  "commands": {
+    "sync": {
+      "script": "tools/sync_pack_metadata.py",
+      "type": "generative",
+      "produces": [
+        "TREE.txt",
+        "CHECKSUMS.sha256"
+      ]
+    },
+    "validate": {
+      "script": "tools/validate_pack.py",
+      "type": "verification",
+      "reads_only": true,
+      "description": "Verifica integridad del pack sin modificar archivos"
+    },
+    "audit": {
+      "script": "tools/audit_v2.py",
+      "type": "diagnostic",
+      "description": "Auditoría integral: sync + validate + health + vértice + workflow"
+    },
+    "health": {
+      "script": "tools/health_score.py",
+      "type": "diagnostic"
+    },
+    "stale": {
+      "script": "tools/stale_detector.py",
+      "type": "diagnostic"
+    },
+    "dashboard": {
+      "script": "tools/pack_dashboard.py",
+      "type": "reporting"
+    },
+    "efficiency": {
+      "script": "tools/efficiency_meter.py",
+      "type": "reporting"
+    },
+    "ideas": {
+      "script": "tools/emit_ideas.py",
+      "type": "reporting"
+    },
+    "workflow": {
+      "script": "tools/workflow_selector.py",
+      "type": "interactive"
+    },
+    "cosecha": {
+      "script": "tools/cosecha.py",
+      "type": "generative"
+    },
+    "detector": {
+      "script": "tools/context_detector.py",
+      "type": "diagnostic"
+    },
+    "task": {
+      "script": "tools/show_task.py",
+      "type": "reporting"
+    },
+    "stability": {
+      "script": "tools/stability_summary.py",
+      "type": "reporting"
+    },
+    "session": {
+      "script": "tools/session_opener.py",
+      "type": "interactive"
+    }
+  },
+  "canonical_files": [
+    "pack.json",
+    "AGENT_START.md",
+    "state/global_state.json",
+    "state/ESTADO_BAGO_ACTUAL.md",
+    "core/00_CEREBRO_BAGO.md"
+  ],
+  "generated_artifacts": [
+    "TREE.txt",
+    "CHECKSUMS.sha256",
+    "state/repo_context.json"
+  ]
 }
