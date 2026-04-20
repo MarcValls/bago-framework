@@ -1,4 +1,4 @@
-# DECISIONES · BAGO AMTEC V2.2.2 Revisión Canónica
+# DECISIONES · BAGO 2.5-stable
 
 ## DEC-001
 

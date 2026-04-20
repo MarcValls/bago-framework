@@ -1,4 +1,4 @@
-# MAPA DEL SISTEMA · BAGO AMTEC V2.2.2 Revisión Canónica
+# MAPA DEL SISTEMA · BAGO 2.5-stable
 
 ```text
 Usuario

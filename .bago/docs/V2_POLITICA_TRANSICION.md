@@ -1,6 +1,6 @@
 # BAGO V2 — Política de Transición de Workflows
 
-> Versión: V2.0 | Pack: 2.4-v2rc | Fecha: 2026-04-18
+> Versión: 2.5-stable | Fecha: 2026-04-20
 
 ---
 

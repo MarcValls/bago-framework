@@ -1,6 +1,6 @@
 # BAGO · Referencia Completa del Sistema
 
-> Versión: 2.4-v2rc · Fecha: 2026-04-19  
+> Versión: 2.5-stable · Fecha: 2026-04-20  
 > Documento de referencia integral — todas las capacidades, herramientas, workflows y patrones de uso.
 
 ---
