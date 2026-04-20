@@ -605,6 +605,7 @@ def _prompt_mode():
     """Menú de primera ejecución — universal, funciona para cualquier usuario."""
     remote = _git_remote_url()
     framework_dir = BAGO_ROOT.parent.resolve()
+    suggested = framework_dir.parent  # directorio que contiene el clone del framework
 
     # Comprobación silenciosa de actualizaciones
     updates_available = False
@@ -613,6 +614,11 @@ def _prompt_mode():
         updates_available = _has_remote_updates()
         print("\r" + " " * 35 + "\r", end="", flush=True)
 
+    # Preparar ruta corta para mostrar en el menú
+    sugg_str = str(suggested)
+    if len(sugg_str) > 44:
+        sugg_str = "..." + sugg_str[-41:]
+
     print()
     print("  ┌─────────────────────────────────────────────────┐")
     print("  │  BAGO Framework · Primera ejecución             │")
@@ -620,14 +626,14 @@ def _prompt_mode():
         print("  ├─────────────────────────────────────────────────┤")
         print("  │  [!] Nueva versión disponible en GitHub         │")
     print("  ├─────────────────────────────────────────────────┤")
-    print("  │  BAGO gobierna proyectos externos.               │")
-    print("  │  ¿Qué quieres hacer?                            │")
+    print(f"  │  Directorio del proyecto:                       │")
+    print(f"  │  {sugg_str:<47}│")
     print("  ├─────────────────────────────────────────────────┤")
-    print("  │  [1] Inicializar BAGO en un proyecto existente  │")
-    print("  │  [2] Crear un proyecto nuevo                    │")
+    print("  │  [1] Inicializar BAGO aquí  ← recomendado       │")
+    print("  │  [2] Crear nuevo proyecto aquí                  │")
     if remote:
         if updates_available:
-            print("  │  [3] Actualizar framework  <- recomendado       │")
+            print("  │  [3] Actualizar framework  ← nueva versión     │")
         else:
             print("  │  [3] Actualizar framework  (git pull)           │")
         print("  │  [4] Modo desarrollo del framework              │")
@@ -648,41 +654,37 @@ def _prompt_mode():
     _update_opt = "3" if remote else None
 
     if choice == "1":
-        # Proyecto existente — sugerir el directorio padre del framework
-        suggested = framework_dir.parent
+        # Proyecto existente — path ya mostrado en el menú, solo confirmar
+        dest = suggested
         print()
-        print(f"  Directorio sugerido (contiene el framework):")
-        print(f"  {suggested}")
+        print(f"  Inicializar BAGO en: {dest}")
         print()
-        print("  [S] Usar ese directorio")
-        print("  [O] Escribir otra ruta")
+        print("  [S/Enter] Confirmar    [N] Escribir otra ruta")
         print()
         try:
-            sel = input("  Elige [S/O]: ").strip().upper()
+            sel = input("  ").strip().upper()
         except (EOFError, KeyboardInterrupt):
             print(); sys.exit(0)
-        if sel == "O":
+        if sel == "N":
             try:
-                ruta = input("  Ruta del proyecto: ").strip()
+                ruta = input("  Ruta alternativa: ").strip()
             except (EOFError, KeyboardInterrupt):
                 print(); sys.exit(0)
             if not ruta:
                 print("  ⚠  Ruta vacía, cancelado.\n")
                 return "invalid"
             dest = Path(ruta).expanduser().resolve()
-        else:
-            dest = suggested
         if dest == framework_dir:
             print()
             print("  ⚠  Esa es la carpeta del propio framework BAGO.")
-            print("  Para desarrollar el framework usa la opción [D].")
+            print("  Para desarrollar el framework usa la opción [4].")
             print()
             return "invalid"
         return "done" if _scaffold_project(str(dest), is_existing=True) else "error"
 
     elif choice == "2":
-        # Proyecto nuevo — sugerir crear junto al framework (directorio padre)
-        suggested_parent = framework_dir.parent
+        # Proyecto nuevo — usar el mismo directorio padre (ya mostrado en menú)
+        suggested_parent = suggested
         print()
         name = ""
         while not name:
