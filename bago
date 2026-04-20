@@ -648,29 +648,41 @@ def _prompt_mode():
     _update_opt = "3" if remote else None
 
     if choice == "1":
-        # Proyecto existente — pedir ruta directamente
+        # Proyecto existente — sugerir el directorio padre del framework
+        suggested = framework_dir.parent
         print()
-        print("  Escribe la ruta al directorio de tu proyecto.")
-        print("  (puede ser absoluta o relativa al directorio actual)")
+        print(f"  Directorio sugerido (contiene el framework):")
+        print(f"  {suggested}")
+        print()
+        print("  [S] Usar ese directorio")
+        print("  [O] Escribir otra ruta")
         print()
         try:
-            ruta = input("  Ruta del proyecto: ").strip()
+            sel = input("  Elige [S/O]: ").strip().upper()
         except (EOFError, KeyboardInterrupt):
             print(); sys.exit(0)
-        if not ruta:
-            print("  ⚠  Ruta vacía, cancelado.\n")
-            return "invalid"
-        dest = Path(ruta).expanduser().resolve()
+        if sel == "O":
+            try:
+                ruta = input("  Ruta del proyecto: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print(); sys.exit(0)
+            if not ruta:
+                print("  ⚠  Ruta vacía, cancelado.\n")
+                return "invalid"
+            dest = Path(ruta).expanduser().resolve()
+        else:
+            dest = suggested
         if dest == framework_dir:
             print()
             print("  ⚠  Esa es la carpeta del propio framework BAGO.")
-            print("  Para desarrollar el framework usa la opción correspondiente.")
+            print("  Para desarrollar el framework usa la opción [D].")
             print()
             return "invalid"
         return "done" if _scaffold_project(str(dest), is_existing=True) else "error"
 
     elif choice == "2":
-        # Proyecto nuevo — pedir nombre y dónde crearlo
+        # Proyecto nuevo — sugerir crear junto al framework (directorio padre)
+        suggested_parent = framework_dir.parent
         print()
         name = ""
         while not name:
@@ -681,14 +693,22 @@ def _prompt_mode():
             if not name:
                 print("  ⚠  El nombre no puede estar vacío.")
         print()
-        print("  ¿Dónde crear el proyecto?")
-        print(f"  (Enter para crear junto al framework: {framework_dir.parent / name})")
+        print(f"  Se creará en: {suggested_parent / name}")
+        print("  [S] Confirmar")
+        print("  [O] Elegir otro directorio base")
         print()
         try:
-            base = input("  Directorio base [Enter = junto al framework]: ").strip()
+            sel = input("  Elige [S/O]: ").strip().upper()
         except (EOFError, KeyboardInterrupt):
             print(); sys.exit(0)
-        parent = Path(base).expanduser().resolve() if base else framework_dir.parent
+        if sel == "O":
+            try:
+                base = input("  Directorio base: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print(); sys.exit(0)
+            parent = Path(base).expanduser().resolve() if base else suggested_parent
+        else:
+            parent = suggested_parent
         dest = parent / name
         if dest == framework_dir:
             print("  ⚠  Ese nombre coincide con el directorio del framework.\n")
