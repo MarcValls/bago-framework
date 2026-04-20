@@ -207,61 +207,125 @@ def _candidate_dirs():
     return candidates
 
 
-# ── Prompt de arranque ─────────────────────────────────────────────────────────
+# ── Helpers de arranque ────────────────────────────────────────────────────────
 
-def _prompt_mode():
-    """Mostrado la primera vez que se ejecuta una cleanversion."""
-    print()
-    print("  ┌─────────────────────────────────────────────┐")
-    print("  │  BAGO · Primera ejecución                   │")
-    print("  ├─────────────────────────────────────────────┤")
-    print("  │  [1] Evolucionar el framework BAGO          │")
-    print("  │  [2] Iniciar un proyecto nuevo              │")
-    print("  └─────────────────────────────────────────────┘")
-    print()
-
+def _git_remote_url():
+    """Devuelve la URL del remote origin si existe, o None."""
     try:
-        choice = input("  Elige [1/2]: ").strip()
+        r = subprocess.run(
+            ["git", "remote", "get-url", "origin"],
+            cwd=str(BAGO_ROOT.parent),
+            capture_output=True, text=True
+        )
+        return r.stdout.strip() if r.returncode == 0 else None
+    except Exception:
+        return None
+
+
+def _update_framework():
+    """Ejecuta git pull --ff-only. Devuelve True si tuvo éxito."""
+    print("\n  🔄 Actualizando framework desde GitHub...\n")
+    r = subprocess.run(["git", "pull", "--ff-only"], cwd=str(BAGO_ROOT.parent))
+    if r.returncode == 0:
+        print("\n  ✅ Framework actualizado. Vuelve a ejecutar `python3 bago`.\n")
+        return True
+    else:
+        print("\n  ⚠  No se pudo actualizar automáticamente.")
+        print("     Ejecuta manualmente:  git pull origin master\n")
+        return False
+
+
+def _pick_project_dir():
+    """Muestra el selector de directorios para el proyecto nuevo.
+    Devuelve la ruta elegida (str) o None si el usuario cancela."""
+    candidates = _candidate_dirs()
+    print()
+    print("  BAGO trabaja SOBRE tu proyecto, no dentro del framework.")
+    print("  ¿Dónde está (o estará) tu proyecto?\n")
+    for i, d in enumerate(candidates, 1):
+        print(f"  [{i}] {d}")
+    print("  [M] Otra ruta (escribirla)")
+    print()
+    try:
+        sel = input("  Elige [1–{}/M]: ".format(len(candidates))).strip().upper()
     except (EOFError, KeyboardInterrupt):
         print()
         sys.exit(0)
 
+    if sel.isdigit() and 1 <= int(sel) <= len(candidates):
+        return str(candidates[int(sel) - 1])
+    elif sel == "M":
+        try:
+            return input("  Ruta del proyecto: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            sys.exit(0)
+    else:
+        print("\n  Opción no válida.\n")
+        return None
+
+
+# ── Prompt de arranque ─────────────────────────────────────────────────────────
+
+def _prompt_mode():
+    """Mostrado la primera vez que se ejecuta una cleanversion."""
+    remote = _git_remote_url()
+
+    print()
+    print("  ┌─────────────────────────────────────────────────┐")
+    print("  │  BAGO · Arranque del framework                  │")
+    print("  ├─────────────────────────────────────────────────┤")
+    print("  │  [1] Seguir con esta versión                    │")
+    if remote:
+        print("  │  [2] Actualizar framework  (git pull)           │")
+        print("  │  [3] Iniciar un proyecto nuevo                  │")
+        print("  │  [4] Evolucionar el framework BAGO              │")
+        max_opt = 4
+    else:
+        print("  │  [2] Iniciar un proyecto nuevo                  │")
+        print("  │  [3] Evolucionar el framework BAGO              │")
+        max_opt = 3
+    print("  └─────────────────────────────────────────────────┘")
+    print()
+
+    try:
+        choice = input(f"  Elige [1–{max_opt}]: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        sys.exit(0)
+
+    # Normalise: when no remote, shift [3]=evolucionar to slot [2] offset
+    if not remote and choice == "2":
+        choice = "_new_project"
+    elif not remote and choice == "3":
+        choice = "_evolve"
+    elif remote and choice == "3":
+        choice = "_new_project"
+    elif remote and choice == "4":
+        choice = "_evolve"
+
     if choice == "1":
+        _set_mode("framework_host")
+        print("\n  ✅ Continuando con la versión actual.\n")
+        return "banner"
+
+    elif choice == "2" and remote:
+        success = _update_framework()
+        return "done" if success else "error"
+
+    elif choice == "_new_project":
+        dest_input = _pick_project_dir()
+        if dest_input is None:
+            return "invalid"
+        return "done" if _scaffold_project(dest_input) else "error"
+
+    elif choice == "_evolve":
         _set_mode("framework_host")
         print("\n  ✅ Modo framework activado.\n")
         return "banner"
 
-    elif choice == "2":
-        candidates = _candidate_dirs()
-        print()
-        print("  BAGO trabaja SOBRE tu proyecto, no dentro del framework.")
-        print("  ¿Dónde está (o estará) tu proyecto?\n")
-        for i, d in enumerate(candidates, 1):
-            print(f"  [{i}] {d}")
-        print(f"  [M] Otra ruta (escribirla)")
-        print()
-        try:
-            sel = input("  Elige [1–{}/M]: ".format(len(candidates))).strip().upper()
-        except (EOFError, KeyboardInterrupt):
-            print()
-            sys.exit(0)
-
-        if sel.isdigit() and 1 <= int(sel) <= len(candidates):
-            dest_input = str(candidates[int(sel) - 1])
-        elif sel == "M":
-            try:
-                dest_input = input("  Ruta del proyecto: ").strip()
-            except (EOFError, KeyboardInterrupt):
-                print()
-                sys.exit(0)
-        else:
-            print("\n  Opción no válida.\n")
-            return "invalid"
-
-        return "done" if _scaffold_project(dest_input) else "error"
-
     else:
-        print("\n  Opción no válida. Usa 1 o 2.\n")
+        print(f"\n  Opción no válida. Usa 1–{max_opt}.\n")
         return "invalid"
 
 # ── bago versions ─────────────────────────────────────────────────────────────
