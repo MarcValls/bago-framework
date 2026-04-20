@@ -53,7 +53,8 @@
     "activation_rules": "core/06_MATRIZ_DE_ACTIVACION.md",
     "change_protocol": "core/07_PROTOCOLO_DE_CAMBIO.md",
     "session_governance": "core/05_GOBERNANZA_DE_SESION.md",
-    "official_baseline_act": "docs/governance/ACTA_OFICIAL_BASELINE_BAGO_AMTEC_V2_2_2_OFICIAL.md"
+    "official_baseline_act": "docs/governance/ACTA_OFICIAL_BASELINE_BAGO_AMTEC_V2_2_2_OFICIAL.md",
+    "validation_rule": "docs/governance/REGLA_INMUTABILIDAD_VALIDACION.md"
   },
   "docs": {
     "canon": "docs/BAGO_CANON.md",
@@ -135,6 +136,12 @@
     "session": {
       "script": "tools/session_opener.py",
       "type": "interactive"
+    },
+    "check": {
+      "script": "tools/check_validate_purity.py",
+      "type": "verification",
+      "reads_only": true,
+      "description": "Static purity check — no write ops in validate_* tools"
     }
   },
   "canonical_files": [

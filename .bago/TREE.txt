@@ -80,6 +80,7 @@ docs/governance/
 docs/governance/ACTA_OFICIAL_BASELINE_BAGO_AMTEC_V2_2_1_OFICIAL.md
 docs/governance/ACTA_OFICIAL_BASELINE_BAGO_AMTEC_V2_2_2_OFICIAL.md
 docs/governance/PROTOCOLO_CIERRE_SESION.md
+docs/governance/REGLA_INMUTABILIDAD_VALIDACION.md
 docs/migration/
 docs/migration/MAPA_EQUIVALENCIAS_COMPLETO.md
 docs/migration/MIGRACION_V1_A_V2_1_CORREGIDA.md
@@ -225,6 +226,7 @@ tools/__pycache__/context_detector.cpython-313.pyc
 tools/artifact_counter.py
 tools/audit_v2.py
 tools/bago_banner.py
+tools/check_validate_purity.py
 tools/competition_report.py
 tools/context_detector.py
 tools/cosecha.py
