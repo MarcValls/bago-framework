@@ -132,6 +132,11 @@ def main():
     else:
         semaforo = "🔴"
     detail4 = f"{semaforo} {score}/100"
+    # Annotate when score includes assumed dimension values (no closed sessions yet)
+    sessions_dir = ROOT / "state" / "sessions"
+    has_sessions = sessions_dir.exists() and any(sessions_dir.glob("*.json"))
+    if not has_sessions:
+        detail4 += "  *(clean install — workflow/decision dims assumed)"
     section(4, "HEALTH SCORE", "✅" if ok4 else "⚠️ ", detail4)
 
     # [5] VÉRTICE
