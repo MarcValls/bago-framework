@@ -602,8 +602,14 @@ def _startup_update_check():
 # ── Prompt de arranque ─────────────────────────────────────────────────────────
 
 def _prompt_mode():
-    """Mostrado la primera vez que se ejecuta una cleanversion."""
+    """Menú de primera ejecución: pregunta dónde quiere trabajar el usuario.
+
+    BAGO gobierna proyectos externos. Esta pantalla orienta al usuario
+    hacia un directorio de trabajo en lugar de quedarse dentro del
+    directorio del propio framework.
+    """
     remote = _git_remote_url()
+    framework_dir = BAGO_ROOT.parent
 
     # Comprobación silenciosa de actualizaciones disponibles
     updates_available = False
@@ -612,68 +618,173 @@ def _prompt_mode():
         updates_available = _has_remote_updates()
         print("\r" + " " * 35 + "\r", end="", flush=True)
 
+    # Directorios candidatos (padres del framework, excluyendo el framework mismo)
+    candidates = _candidate_dirs()
+
+    # Abreviación de ruta para mostrar
+    def _short(p):
+        try:
+            home = Path.home()
+            return "~/" + str(p.relative_to(home))
+        except ValueError:
+            return str(p)
+
+    fw_short = _short(framework_dir)
+
     print()
     print("  ┌─────────────────────────────────────────────────┐")
-    print("  │  BAGO · Arranque del framework                  │")
+    print("  │  BAGO Framework · Primera ejecución             │")
+    print("  ├─────────────────────────────────────────────────┤")
+    fw_line = f"  Framework en: {fw_short}"
+    print(f"  │  {fw_line:<47}│")
+    print("  │                                                 │")
+    print("  │  BAGO gobierna proyectos externos.              │")
     if updates_available:
         print("  ├─────────────────────────────────────────────────┤")
         print("  │  [!] Nueva version disponible en GitHub         │")
     print("  ├─────────────────────────────────────────────────┤")
-    print("  │  [1] Seguir con esta versión                    │")
+    print("  │  ¿Dónde quieres trabajar?                       │")
+    print("  ├─────────────────────────────────────────────────┤")
+
+    # Opciones numeradas: directorios candidatos
+    for i, d in enumerate(candidates, 1):
+        marker = "  <- recomendado" if i == 1 else ""
+        dline = f"  [{i}] {_short(d)}{marker}"
+        print(f"  │  {dline:<47}│")
+
+    n = len(candidates)
+    print(f"  │  [M] Escribir ruta manualmente                  │")
+    print("  ├─────────────────────────────────────────────────┤")
     if remote:
-        if updates_available:
-            print("  │  [2] Actualizar framework  <- recomendado       │")
-        else:
-            print("  │  [2] Actualizar framework  (git pull)           │")
-        print("  │  [3] Nuevo proyecto                             │")
-        print("  │  [4] Evolucionar el framework BAGO              │")
-        max_opt = 4
-    else:
-        print("  │  [2] Nuevo proyecto                             │")
-        print("  │  [3] Evolucionar el framework BAGO              │")
-        max_opt = 3
+        upd_label = "Actualizar framework  <- recomendado" if updates_available else "Actualizar framework  (git pull)"
+        print(f"  │  [U] {upd_label:<43}│")
+    print("  │  [D] Usar este directorio (dev del framework)   │")
     print("  └─────────────────────────────────────────────────┘")
     print()
 
+    valid = [str(i) for i in range(1, n + 1)] + ["M", "U", "D"] if remote else [str(i) for i in range(1, n + 1)] + ["M", "D"]
+    hint = f"1-{n}/M/U/D" if remote else f"1-{n}/M/D"
+
     try:
-        choice = input(f"  Elige [1-{max_opt}]: ").strip()
+        choice = input(f"  Elige [{hint}]: ").strip().upper()
     except (EOFError, KeyboardInterrupt):
         print()
         sys.exit(0)
 
-    # Normalizar opciones según si hay remote o no
-    if not remote and choice == "2":
-        choice = "_new_project"
-    elif not remote and choice == "3":
-        choice = "_evolve"
-    elif remote and choice == "3":
-        choice = "_new_project"
-    elif remote and choice == "4":
-        choice = "_evolve"
-
-    if choice == "1":
-        _set_mode("framework_host")
-        print("\n  ✅ Continuando con la versión actual.\n")
-        return "banner"
-
-    elif choice == "2" and remote:
-        success = _update_framework()
-        return "done" if success else "error"
-
-    elif choice == "_new_project":
-        dest_input, is_existing = _pick_project_dir()
+    # ── Directorio candidato ──────────────────────────────────────────────────
+    if choice.isdigit() and 1 <= int(choice) <= n:
+        base_dir = candidates[int(choice) - 1]
+        dest_input, is_existing = _pick_project_dir_in(base_dir)
         if dest_input is None:
             return "invalid"
         return "done" if _scaffold_project(dest_input, is_existing=is_existing) else "error"
 
-    elif choice == "_evolve":
+    # ── Ruta manual ───────────────────────────────────────────────────────────
+    elif choice == "M":
+        try:
+            ruta = input("  Ruta del directorio de trabajo: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print(); sys.exit(0)
+        if not ruta:
+            print("  ⚠  Ruta vacía, cancelado.\n")
+            return "invalid"
+        base_dir = Path(ruta).expanduser().resolve()
+        dest_input, is_existing = _pick_project_dir_in(base_dir)
+        if dest_input is None:
+            return "invalid"
+        return "done" if _scaffold_project(dest_input, is_existing=is_existing) else "error"
+
+    # ── Actualizar framework ──────────────────────────────────────────────────
+    elif choice == "U" and remote:
+        success = _update_framework()
+        return "done" if success else "error"
+
+    # ── Usar este directorio (desarrollo del framework) ───────────────────────
+    elif choice == "D":
+        print()
+        print("  ℹ  Modo desarrollo del framework BAGO.")
+        print("  Solo recomendado si vas a contribuir al propio framework.")
+        print()
+        try:
+            confirm = input("  ¿Confirmar? [s/N]: ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            print(); sys.exit(0)
+        if confirm != "s":
+            print("\n  Cancelado. Vuelve a ejecutar y elige un directorio de proyecto.\n")
+            return "invalid"
         _set_mode("framework_host")
-        print("\n  ✅ Modo framework activado.\n")
+        print("\n  ✅ Modo desarrollo del framework activado.\n")
         return "banner"
 
     else:
-        print(f"\n  Opción no válida. Usa 1-{max_opt}.\n")
+        print(f"\n  Opción no válida.\n")
         return "invalid"
+
+
+def _pick_project_dir_in(base_dir):
+    """Dado un directorio base, pregunta si crear proyecto nuevo o usar existente.
+    Devuelve (ruta, is_existing) o (None, False)."""
+    base = Path(base_dir)
+    print()
+    print(f"  Directorio seleccionado: {base}")
+    print()
+    print("  [1] Crear proyecto nuevo aquí")
+    print("  [2] Inicializar BAGO en un proyecto existente dentro de este directorio")
+    print("  [3] Inicializar BAGO en este directorio directamente")
+    print()
+    try:
+        sel = input("  Elige [1/2/3]: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print(); sys.exit(0)
+
+    if sel == "1":
+        # Nuevo proyecto: pedir nombre
+        name = ""
+        while not name:
+            try:
+                name = input("  Nombre del proyecto: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print(); sys.exit(0)
+            if not name:
+                print("  ⚠  El nombre no puede estar vacío.")
+        return str(base / name), False
+
+    elif sel == "2":
+        # Proyecto existente: listar subdirectorios del base
+        try:
+            subdirs = sorted([d for d in base.iterdir() if d.is_dir() and not d.name.startswith('.')], key=lambda x: x.name)
+        except Exception:
+            subdirs = []
+        if subdirs:
+            print()
+            for i, d in enumerate(subdirs[:8], 1):
+                print(f"  [{i}] {d.name}/")
+            print("  [M] Escribir ruta manualmente")
+            print()
+            try:
+                pick = input(f"  Elige [1-{min(8,len(subdirs))}/M]: ").strip().upper()
+            except (EOFError, KeyboardInterrupt):
+                print(); sys.exit(0)
+            if pick.isdigit() and 1 <= int(pick) <= min(8, len(subdirs)):
+                return str(subdirs[int(pick) - 1]), True
+            elif pick == "M":
+                try:
+                    ruta = input("  Ruta del proyecto: ").strip()
+                except (EOFError, KeyboardInterrupt):
+                    print(); sys.exit(0)
+                return (str(Path(ruta).expanduser().resolve()), True) if ruta else (None, False)
+        else:
+            try:
+                ruta = input("  Ruta del proyecto existente: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print(); sys.exit(0)
+            return (str(Path(ruta).expanduser().resolve()), True) if ruta else (None, False)
+
+    elif sel == "3":
+        # Usar el directorio base directamente
+        return str(base), True
+
+    return None, False
 
 # ── bago versions ─────────────────────────────────────────────────────────────
 
