@@ -89,6 +89,8 @@ BAGO ships with **10 operational workflows** (W0–W9) for different types of wo
 
 ## Quick Start
 
+> 📖 **New user?** See [QUICKSTART.md](QUICKSTART.md) for the full step-by-step guide in Spanish.
+
 ### Requirements
 - Python 3.9+
 - No external dependencies (standard library only for core)
