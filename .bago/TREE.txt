@@ -139,7 +139,6 @@ docs/operation/GUIA_DE_USO.md
 docs/operation/GUIA_OPERADOR.md
 docs/operation/INSTALACION.md
 docs/operation/MANTENIMIENTO.md
-docs/operation/MANUAL_NUEVO_USUARIO.md
 docs/operation/NOTAS_ACTUALIZACION.md
 docs/operation/NOTAS_DOCUMENTACION.md
 docs/operation/NOTAS_MEJORAS_GENERALES.md
