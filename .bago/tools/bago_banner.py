@@ -104,13 +104,10 @@ def _active_scenarios():
         return None
 
 def _working_mode():
+    """Lee distribution_mode de global_state.json para mostrar el modo real del framework."""
     try:
-        r = subprocess.run(
-            ["python3", str(TOOLS / "repo_context_guard.py"), "check"],
-            capture_output=True, text=True, cwd=str(BAGO_ROOT.parent)
-        )
-        data = json.loads(r.stdout)
-        return data.get("current", {}).get("working_mode", "self")
+        gs = json.loads((STATE / "global_state.json").read_text())
+        return gs.get("distribution_mode", "self")
     except Exception:
         return "?"
 
@@ -178,7 +175,14 @@ def print_banner(mini=False):
 
     # ── Estado ────────────────────────────────────────────────────────────────
     if pack_ok:
-        status_str = GREEN("✅ GO") + "  " + BOLD(f"v{version}") + "  ·  modo: " + (CYAN("self") if mode == "self" else YELLOW("external"))
+        _MODE_LABELS = {
+            "self":           ("self",       CYAN),
+            "framework_host": ("framework",  CYAN),
+            "project_active": ("proyecto",   CYAN),
+            "template_seed":  ("template",   YELLOW),
+        }
+        mode_label, mode_color = _MODE_LABELS.get(mode, (mode, YELLOW))
+        status_str = GREEN("✅ GO") + "  " + BOLD(f"v{version}") + "  ·  modo: " + mode_color(mode_label)
     else:
         status_str = RED("❌ KO") + "  " + DIM(reason)
     print(_box(INDENT + status_str))
