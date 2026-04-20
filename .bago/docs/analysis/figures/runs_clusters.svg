@@ -1,0 +1,36 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1180' height='420' viewBox='0 0 1180 420'>
+<style>
+text { font-family: Menlo, Consolas, monospace; fill: #0f172a; }
+.axis { stroke: #64748b; stroke-width: 1; }
+.grid { stroke: #cbd5e1; stroke-width: 1; stroke-dasharray: 3 3; }
+.title { font-size: 17px; font-weight: 700; }
+.label { font-size: 11px; }
+.small { font-size: 10px; }
+</style>
+<rect x='0' y='0' width='1180' height='420' fill='#f8fafc'/>
+<text x='20' y='26' class='title'>Ventanas de trabajo autónomo en metrics/runs</text>
+<line x1='145.00' y1='55' x2='145.00' y2='340' class='grid' />
+<text x='145.00' y='358' text-anchor='middle' class='small'>12/04 13:48</text>
+<line x1='346.00' y1='55' x2='346.00' y2='340' class='grid' />
+<text x='346.00' y='358' text-anchor='middle' class='small'>12/04 20:21</text>
+<line x1='547.00' y1='55' x2='547.00' y2='340' class='grid' />
+<text x='547.00' y='358' text-anchor='middle' class='small'>13/04 02:54</text>
+<line x1='748.00' y1='55' x2='748.00' y2='340' class='grid' />
+<text x='748.00' y='358' text-anchor='middle' class='small'>13/04 09:27</text>
+<line x1='949.00' y1='55' x2='949.00' y2='340' class='grid' />
+<text x='949.00' y='358' text-anchor='middle' class='small'>13/04 16:01</text>
+<line x1='1150.00' y1='55' x2='1150.00' y2='340' class='grid' />
+<text x='1150.00' y='358' text-anchor='middle' class='small'>13/04 22:34</text>
+<rect x='145.00' y='78.75' width='3.00' height='47.50' fill='#0f766e' rx='4'/>
+<text x='135' y='112.95' text-anchor='end' class='label'>bloque 1 | 2 corridas | 56.3 s | 500 req</text>
+<text x='149.00' y='74.75' class='small'>12/04 15:48</text>
+<rect x='1085.71' y='173.75' width='21.83' height='47.50' fill='#0f766e' rx='4'/>
+<text x='135' y='207.95' text-anchor='end' class='label'>bloque 2 | 7 corridas | 57.9 s | 605 req</text>
+<text x='1089.71' y='169.75' class='small'>13/04 22:28</text>
+<rect x='1124.41' y='268.75' width='25.59' height='47.50' fill='#0f766e' rx='4'/>
+<text x='135' y='302.95' text-anchor='end' class='label'>bloque 3 | 8 corridas | 928.9 s | 494 req</text>
+<text x='1128.41' y='264.75' class='small'>13/04 23:44</text>
+<line x1='145' y1='340' x2='1150' y2='340' class='axis' />
+<line x1='145' y1='55' x2='145' y2='340' class='axis' />
+<text x='590' y='408' text-anchor='middle' class='label'>tiempo</text>
+</svg>

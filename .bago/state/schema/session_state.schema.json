@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BAGO Session State",
+  "type": "object",
+  "required": [
+    "session_id",
+    "task_type",
+    "selected_workflow",
+    "roles_activated",
+    "status",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "session_id": {
+      "type": "string"
+    },
+    "legacy_session_id": {
+      "type": ["string", "null"]
+    },
+    "task_type": {
+      "type": "string",
+      "enum": [
+        "analysis",
+        "design",
+        "execution",
+        "validation",
+        "organization",
+        "system_change",
+        "project_bootstrap",
+        "repository_audit",
+        "history_migration"
+      ]
+    },
+    "selected_workflow": {
+      "type": "string"
+    },
+    "roles_activated": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "created",
+        "loaded",
+        "in_progress",
+        "blocked",
+        "awaiting_validation",
+        "completed",
+        "closed"
+      ]
+    },
+    "user_goal": {
+      "type": ["string", "null"]
+    },
+    "summary": {
+      "type": ["string", "null"]
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_path": {
+      "type": ["string", "null"]
+    },
+    "raw_markdown_preserved": {
+      "type": "boolean"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    }
+  }
+}

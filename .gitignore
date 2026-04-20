@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+
+# BAGO — session data (private)
+.bago/state/sessions/
+.bago/state/changes/
+.bago/state/evidences/
+!.bago/state/sessions/.gitkeep
+!.bago/state/changes/.gitkeep
+!.bago/state/evidences/.gitkeep
+
+# Distribution ZIPs
+.bago/dist/
+
+# Editor
+.vscode/
+.idea/
+*.swp

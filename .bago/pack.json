@@ -1,0 +1,75 @@
+{
+  "id": "bago_amtec",
+  "name": "BAGO",
+  "version": "2.5-stable",
+  "encoding": "UTF-8",
+  "manifest": "pack.json",
+  "description": "Sistema operativo de trabajo técnico para programación y generación compleja.",
+  "purpose": "Sistema operativo de trabajo técnico para programación y generación compleja",
+  "canonical_entry": ".bago/AGENT_START.md",
+  "state_file": ".bago/state/ESTADO_BAGO_ACTUAL.md",
+  "principles": [
+    "Balanceado",
+    "Adaptativo",
+    "Generativo",
+    "Organizativo"
+  ],
+  "entrypoints": {
+    "agent_start": "AGENT_START.md",
+    "master": "agents/MAESTRO_BAGO.md",
+    "copilot_ally": "agents/COPILOT_ALIADO_BAGO.md",
+    "global_state": "state/global_state.json",
+    "state_snapshot": "state/ESTADO_BAGO_ACTUAL.md",
+    "brain": "core/00_CEREBRO_BAGO.md"
+  },
+  "contracts": {
+    "role": "core/04_CONTRATOS_DE_ROL.md",
+    "workflow": "core/canon/CONTRATOS/contrato_workflow.md",
+    "change": "core/07_PROTOCOLO_DE_CAMBIO.md",
+    "evidence": "core/canon/CONTRATOS/contrato_evidencia.md",
+    "role_schema": "state/schema/role.schema.json",
+    "workflow_schema": "state/schema/workflow.schema.json"
+  },
+  "workflows": {
+    "analysis": "core/workflows/workflow_analisis.md",
+    "design": "core/workflows/workflow_diseno.md",
+    "execution": "core/workflows/workflow_ejecucion.md",
+    "validation": "core/workflows/workflow_validacion.md",
+    "system_change": "core/workflows/workflow_cambio_sistemico.md",
+    "history_migration": "core/workflows/workflow_migracion_historial.md",
+    "repo_bootstrap": "core/workflows/workflow_bootstrap_repo_first.md",
+    "w1_cold_start": "workflows/W1_COLD_START.md",
+    "w2_implementacion_controlada": "workflows/W2_IMPLEMENTACION_CONTROLADA.md",
+    "w3_refactor_sensible": "workflows/W3_REFACTOR_SENSIBLE.md",
+    "w4_debug_multicausa": "workflows/W4_DEBUG_MULTICAUSA.md",
+    "w5_cierre_continuidad": "workflows/W5_CIERRE_Y_CONTINUIDAD.md",
+    "w6_ideacion_aplicada": "workflows/W6_IDEACION_APLICADA.md",
+    "w7_foco_sesion": "workflows/W7_FOCO_SESION.md",
+    "w0_free_session": "workflows/W0_FREE_SESSION.md",
+    "w8_exploracion": "workflows/W8_EXPLORACION.md",
+    "w9_cosecha": "workflows/W9_COSECHA.md"
+  },
+  "governance": {
+    "activation_rules": "core/06_MATRIZ_DE_ACTIVACION.md",
+    "change_protocol": "core/07_PROTOCOLO_DE_CAMBIO.md",
+    "session_governance": "core/05_GOBERNANZA_DE_SESION.md",
+    "official_baseline_act": "docs/governance/ACTA_OFICIAL_BASELINE_BAGO_AMTEC_V2_2_2_OFICIAL.md"
+  },
+  "docs": {
+    "canon": "docs/BAGO_CANON.md",
+    "state": "core/03_ESTADO_BAGO.md",
+    "usage_guide": "docs/operation/GUIA_DE_USO.md",
+    "evaluation_template": "docs/PLANTILLA_EVALUACION_BRUTAL_BAGO.md"
+  },
+  "bootstrap": {
+    "installation_readme": "docs/operation/INSTALACION.md",
+    "project_bootstrap_prompt": "prompts/00_BOOTSTRAP_PROYECTO.md"
+  },
+  "default_roles": [
+    "MAESTRO_BAGO"
+  ],
+  "max_active_roles": 3,
+  "review_role": "role_vertice",
+  "review_policy": "solo_con_evidencia",
+  "sensitive_changes_require_human_validation": true
+}
