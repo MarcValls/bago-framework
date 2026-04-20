@@ -1,5 +1,6 @@
 {
   "bago_version": "2.5-stable",
+  "distribution_mode": "template_seed",
   "system_health": "initializing",
   "sprint_status": {
     "active_workflow": null,
