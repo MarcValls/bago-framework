@@ -103,7 +103,7 @@ for d in ['sessions','changes','evidences']:
 "
 ```
 
-Editar manualmente los valores en `global_state.json` para que coincidan. Luego regenerar TREE+CHECKSUMS y validar.
+Editar manualmente los valores en `global_state.json` para que coincidan. Luego ejecutar `bago sync` y validar.
 
 ---
 
@@ -143,7 +143,7 @@ echo "Paquete generado: BAGO_${VERSION}_${FECHA}.zip"
 
 | Señal | Acción |
 |---|---|
-| `validate_pack` = KO por CHECKSUMS | Regenerar TREE+CHECKSUMS |
+| `validate_pack` = KO por CHECKSUMS | Ejecutar `bago sync` y commitear |
 | `validate_state` = KO por inventario | Recontar y actualizar `global_state.json → inventory` |
 | Sesión en `open` desde hace > 24h | Cerrar o marcar como `blocked` con explicación |
 | `ESTADO_BAGO_ACTUAL.md` desactualizado (fecha > 7 días) | Actualizar tras la siguiente sesión con W5 |

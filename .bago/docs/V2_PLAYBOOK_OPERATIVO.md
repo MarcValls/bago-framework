@@ -91,15 +91,17 @@ python3 .bago/tools/workflow_selector.py --auto
 □ Archivo de sesión cerrado en state/sessions/
   con status: "closed" y closed_at
 
-□ TREE.txt + CHECKSUMS regenerados:
-  python3 .bago/tools/validate_pack.py  ← regenera automáticamente en V2
+□ TREE.txt + CHECKSUMS sincronizados:
+  python3 bago sync   ← regenera TREE+CHECKSUMS
+  python3 bago validate  ← verifica (solo lectura)
   → debe decir: GO pack
 ```
 
 ### Cierre rápido con script
 
 ```bash
-./bago validate      # regenera TREE+CHECKSUMS y valida
+./bago sync          # sincroniza TREE+CHECKSUMS
+./bago validate      # verifica integridad (solo lectura)
 ./bago stale         # verifica sin artefactos stale
 ```
 
@@ -174,10 +176,10 @@ python3 .bago/tools/v2_close_checklist.py      # checklist GO V2
 ## 7. Troubleshooting frecuente
 
 ### validate_pack → KO por TREE desactualizado
-```
-# En V2, validate_pack regenera TREE+CHECKSUMS automáticamente.
-# Si sigue fallando, investigar el error específico mostrado.
-python3 .bago/tools/validate_pack.py
+```bash
+# validate es solo lectura. Para sincronizar metadatos:
+python3 bago sync
+python3 bago validate
 ```
 
 ### Inventario desincronizado

@@ -16,8 +16,8 @@ KO
 
 | Mensaje | Causa | Solución |
 |---------|-------|----------|
-| `TREE.txt does not match` | Se añadió/eliminó un archivo sin regenerar | Regenerar TREE+CHECKSUMS (ver sección R) |
-| `checksum mismatch for X` | Se modificó un archivo sin regenerar | Regenerar TREE+CHECKSUMS |
+| `TREE.txt does not match` | Se añadió/eliminó un archivo sin sincronizar | Ejecutar `bago sync` y commitear (ver sección R) |
+| `checksum mismatch for X` | Se modificó un archivo sin sincronizar | Ejecutar `bago sync` |
 | `last_completed_task_type does not match` | `global_state.last_completed_task_type` no coincide con el `task_type` de la sesión referenciada | Actualizar `last_completed_task_type` en `global_state.json` |
 | `last_completed_workflow does not match` | Igual pero para `selected_workflow` | Actualizar `last_completed_workflow` en `global_state.json` |
 | `last_completed_roles does not match` | Roles no coinciden | Actualizar `last_completed_roles` en `global_state.json` |
@@ -29,20 +29,8 @@ KO
 ### Solución R — regenerar TREE+CHECKSUMS
 
 ```bash
-cd ~/Desktop/BAGO_CAJAFISICA   # siempre desde aquí
-
-python3 -c "
-from pathlib import Path; import hashlib
-root = Path('.bago')
-entries = sorted(str(p.relative_to(root))+('/' if p.is_dir() else '') for p in root.rglob('*'))
-(root/'TREE.txt').write_text('\n'.join(entries)+'\n')
-lines = []
-for p in sorted(root.rglob('*')):
-    if p.is_file() and p.name != 'CHECKSUMS.sha256':
-        lines.append(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(root)}')
-(root/'CHECKSUMS.sha256').write_text('\n'.join(lines)+'\n')
-"
-python3 .bago/tools/validate_pack.py
+python3 bago sync
+python3 bago validate
 ```
 
 ---
