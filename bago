@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 bago — script de activación BAGO
 Muestra banner + gestiona comandos rápidos.
@@ -602,10 +601,10 @@ def _startup_update_check():
 # ── Prompt de arranque ─────────────────────────────────────────────────────────
 
 def _prompt_mode():
-    """Menú de primera ejecución — universal, funciona para cualquier usuario."""
+    """Menú de primera ejecución — según documentación QUICKSTART."""
     remote = _git_remote_url()
     framework_dir = BAGO_ROOT.parent.resolve()
-    suggested = framework_dir.parent  # directorio que contiene el clone del framework
+    cwd = Path.cwd().resolve()
 
     # Comprobación silenciosa de actualizaciones
     updates_available = False
@@ -614,33 +613,32 @@ def _prompt_mode():
         updates_available = _has_remote_updates()
         print("\r" + " " * 35 + "\r", end="", flush=True)
 
-    # Preparar ruta corta para mostrar en el menú
-    sugg_str = str(suggested)
-    if len(sugg_str) > 44:
-        sugg_str = "..." + sugg_str[-41:]
-
     print()
     print("  ┌─────────────────────────────────────────────────┐")
-    print("  │  BAGO Framework · Primera ejecución             │")
+    print("  │  BAGO · Arranque del framework                  │")
     if updates_available:
         print("  ├─────────────────────────────────────────────────┤")
         print("  │  [!] Nueva versión disponible en GitHub         │")
     print("  ├─────────────────────────────────────────────────┤")
-    print(f"  │  Directorio del proyecto:                       │")
-    print(f"  │  {sugg_str:<47}│")
-    print("  ├─────────────────────────────────────────────────┤")
-    print("  │  [1] Inicializar BAGO aquí  ← recomendado       │")
-    print("  │  [2] Crear nuevo proyecto aquí                  │")
+    print("  │  [1] Seguir con esta versión                    │")
     if remote:
         if updates_available:
-            print("  │  [3] Actualizar framework  ← nueva versión     │")
+            print("  │  [2] Actualizar framework  ← recomendado       │")
         else:
-            print("  │  [3] Actualizar framework  (git pull)           │")
-        print("  │  [4] Modo desarrollo del framework              │")
+            print("  │  [2] Actualizar framework  (git pull)           │")
+        print("  │  [3] Nuevo proyecto                             │")
+        print("  │  [4] Evolucionar el framework BAGO              │")
         max_opt = 4
+        _update_opt = "2"
+        _new_opt = "3"
+        _evolve_opt = "4"
     else:
-        print("  │  [3] Modo desarrollo del framework              │")
+        print("  │  [2] Nuevo proyecto                             │")
+        print("  │  [3] Evolucionar el framework BAGO              │")
         max_opt = 3
+        _update_opt = None
+        _new_opt = "2"
+        _evolve_opt = "3"
     print("  └─────────────────────────────────────────────────┘")
     print()
 
@@ -650,41 +648,16 @@ def _prompt_mode():
         print()
         sys.exit(0)
 
-    _evolve_opt = "4" if remote else "3"
-    _update_opt = "3" if remote else None
-
     if choice == "1":
-        # Proyecto existente — path ya mostrado en el menú, solo confirmar
-        dest = suggested
-        print()
-        print(f"  Inicializar BAGO en: {dest}")
-        print()
-        print("  [S/Enter] Confirmar    [N] Escribir otra ruta")
-        print()
-        try:
-            sel = input("  ").strip().upper()
-        except (EOFError, KeyboardInterrupt):
-            print(); sys.exit(0)
-        if sel == "N":
-            try:
-                ruta = input("  Ruta alternativa: ").strip()
-            except (EOFError, KeyboardInterrupt):
-                print(); sys.exit(0)
-            if not ruta:
-                print("  ⚠  Ruta vacía, cancelado.\n")
-                return "invalid"
-            dest = Path(ruta).expanduser().resolve()
-        if dest == framework_dir:
-            print()
-            print("  ⚠  Esa es la carpeta del propio framework BAGO.")
-            print("  Para desarrollar el framework usa la opción [4].")
-            print()
-            return "invalid"
-        return "done" if _scaffold_project(str(dest), is_existing=True) else "error"
+        # Seguir con esta versión → mostrar banner
+        return "banner"
 
-    elif choice == "2":
-        # Proyecto nuevo — usar el mismo directorio padre (ya mostrado en menú)
-        suggested_parent = suggested
+    elif _update_opt and choice == _update_opt:
+        success = _update_framework()
+        return "done" if success else "error"
+
+    elif choice == _new_opt:
+        # Nuevo proyecto — pedir nombre y elegir directorio base
         print()
         name = ""
         while not name:
@@ -694,32 +667,54 @@ def _prompt_mode():
                 print(); sys.exit(0)
             if not name:
                 print("  ⚠  El nombre no puede estar vacío.")
+
+        # Candidatos derivados del CWD (directorio desde donde se ejecuta bago)
+        candidates = [cwd]
+        p = cwd
+        for _ in range(2):
+            parent = p.parent
+            if parent != p:
+                candidates.append(parent)
+                p = parent
+
         print()
-        print(f"  Se creará en: {suggested_parent / name}")
-        print("  [S] Confirmar")
-        print("  [O] Elegir otro directorio base")
+        print("  ¿Dónde crear el proyecto?")
+        print()
+        for i, base in enumerate(candidates, 1):
+            label = "  ← directorio actual" if i == 1 else ""
+            dest_str = str(base / name)
+            if len(dest_str) > 41:
+                dest_str = "..." + dest_str[-38:]
+            print(f"  [{i}] {dest_str}{label}")
+        print("  [M] Otra ruta base (escribirla)")
         print()
         try:
-            sel = input("  Elige [S/O]: ").strip().upper()
+            sel = input(f"  Elige [1-{len(candidates)}/M]: ").strip().upper()
         except (EOFError, KeyboardInterrupt):
             print(); sys.exit(0)
-        if sel == "O":
+
+        if sel == "M":
             try:
-                base = input("  Directorio base: ").strip()
+                base_str = input("  Directorio base: ").strip()
             except (EOFError, KeyboardInterrupt):
                 print(); sys.exit(0)
-            parent = Path(base).expanduser().resolve() if base else suggested_parent
+            parent = Path(base_str).expanduser().resolve() if base_str else cwd
+        elif sel.isdigit() and 1 <= int(sel) <= len(candidates):
+            parent = candidates[int(sel) - 1]
         else:
-            parent = suggested_parent
+            print(f"\n  Opción no válida.\n")
+            return "invalid"
+
         dest = parent / name
         if dest == framework_dir:
             print("  ⚠  Ese nombre coincide con el directorio del framework.\n")
             return "invalid"
-        return "done" if _scaffold_project(str(dest), is_existing=False) else "error"
 
-    elif choice == _update_opt and remote:
-        success = _update_framework()
-        return "done" if success else "error"
+        ok = _scaffold_project(str(dest), is_existing=dest.exists())
+        if ok and (dest / "bago").exists():
+            print()
+            subprocess.run(["python3", str(dest / "bago")], cwd=str(dest))
+        return "done" if ok else "error"
 
     elif choice == _evolve_opt:
         print()
@@ -795,7 +790,7 @@ def _prompt_project_menu():
     """Menú interactivo de trabajo que aparece tras el banner."""
     opts = [
         ("1", "Nueva sesión de trabajo",   "session"),
-        ("2", "Salud del proyecto",        "health"),
+        ("2", "Salud BAGO (health)",       "health"),
         ("3", "Ideas",                     "ideas"),
         ("4", "Dashboard",                 "dashboard"),
         ("5", "Stability check",           "stability"),
@@ -841,52 +836,19 @@ def _auto_sync(cwd=None):
 
 def main():
     args = sys.argv[1:]
-    cwd = Path.cwd().resolve()
-    framework_dir = BAGO_ROOT.parent.resolve()
-    # True cuando el usuario ejecuta desde fuera del directorio del framework
-    is_external = (cwd != framework_dir and
-                   not str(cwd).startswith(str(framework_dir) + os.sep))
 
     # Gestión del modo template_seed (primera ejecución)
     if not args and _is_template_seed():
         if sys.stdin.isatty():
-            if is_external:
-                # ── Uso normal: python3 bago-framework/bago desde el proyecto ──
-                cwd_display = str(cwd)
-                if len(cwd_display) > 47:
-                    cwd_display = "..." + cwd_display[-44:]
-                print()
-                print("  ┌─────────────────────────────────────────────────┐")
-                print("  │  BAGO Framework · Instalación                  │")
-                print("  ├─────────────────────────────────────────────────┤")
-                print(f"  │  {cwd_display:<47}│")
-                print("  └─────────────────────────────────────────────────┘")
-                print()
-                try:
-                    ok = input("  ¿Inicializar BAGO aquí? [S/n]: ").strip().lower()
-                except (EOFError, KeyboardInterrupt):
-                    print(); sys.exit(0)
-                if ok == "n":
-                    sys.exit(0)
-                result = _scaffold_project(str(cwd), is_existing=True)
-                if result and (cwd / "bago").exists():
-                    print()
-                    subprocess.run(["python3", str(cwd / "bago")], cwd=str(cwd))
-                sys.exit(0 if result else 1)
-            else:
-                # ── Uso avanzado: python3 ./bago desde dentro del framework ──
-                result = _prompt_mode()
-                if result in ("done", "error", "invalid"):
-                    sys.exit(1 if result == "error" else 0)
+            result = _prompt_mode()
+            if result in ("done", "error", "invalid"):
+                sys.exit(1 if result == "error" else 0)
+            # result == "banner" → continúa para mostrar banner + menú
         else:
             # Sin TTY (script, agente, pipe): avisar y salir
             print()
-            if is_external:
-                print(f"  ⚠  Ejecuta python3 bago-framework/bago en un terminal interactivo")
-                print(f"     desde tu directorio de proyecto para configurar BAGO.")
-            else:
-                print("  ⚠  BAGO está en modo template_seed (clon sin configurar).")
-                print("  Ejecuta  python3 bago  en un terminal interactivo para configurarlo.")
+            print("  ⚠  BAGO está en modo template_seed (clon sin configurar).")
+            print("  Ejecuta  python3 bago  en un terminal interactivo para configurarlo.")
             print()
             sys.exit(1)
 
