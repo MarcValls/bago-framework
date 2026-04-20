@@ -65,7 +65,7 @@ Con el alias instalado puedes escribir `bago health` en lugar de `python3 bago h
 
 ---
 
-## 3. Los 13 comandos CLI explicados
+## 3. Los 15 comandos CLI explicados
 
 ### Comandos de diagnóstico
 
@@ -82,13 +82,14 @@ python3 bago health
 ---
 
 #### `bago validate`
-Verifica la integridad del sistema: manifiesto, estado y checksums.
+Verifica la integridad del sistema: manifiesto, estado y checksums. **Solo lectura — no modifica ningún archivo.**
 
 ```bash
 python3 bago validate
 ```
 
 Ejecuta este comando **antes y después** de cada sesión de trabajo. Si algo está mal, lo indica aquí.
+Si los checksums están desactualizados, usa `bago sync` para regenerarlos.
 
 ---
 
@@ -217,6 +218,26 @@ Detecta si el contexto del repositorio ha cambiado desde la última sesión.
 
 ```bash
 python3 bago detector
+```
+
+---
+
+#### `bago sync`
+Regenera los artefactos derivados: `TREE.txt` y `CHECKSUMS.sha256`. Ejecutar después de añadir o eliminar archivos.
+
+```bash
+python3 bago sync
+```
+
+Commitea los cambios de `TREE.txt` y `CHECKSUMS.sha256` junto con el resto de la sesión.
+
+---
+
+#### `bago check`
+Verificación estática de pureza: comprueba que ningún `validate_*.py` contiene operaciones de escritura.
+
+```bash
+python3 bago check
 ```
 
 ---
@@ -369,7 +390,7 @@ Son dos modos distintos de la misma herramienta. `bago health` es contextual: si
 Son avisos de que el sandbox (smoke, vm, soak, matrix) no está disponible. Esto es **normal** en instalación pública o sin entorno de pruebas. Los validadores canónicos (manifest + state) deben estar en verde — si lo están, puedes trabajar con normalidad.
 
 **¿Debo ejecutar `bago validate` siempre?**
-Sí. `bago validate` regenera `CHECKSUMS.sha256` y `TREE.txt`. Ejecutarlo antes y después de cada sesión es una buena práctica. Sus cambios deben incluirse en cada commit.
+Sí, es una buena práctica. `bago validate` es **solo lectura** — verifica integridad sin modificar nada. Si detecta que los metadatos están desactualizados, ejecuta `bago sync` para regenerar `CHECKSUMS.sha256` y `TREE.txt`, y luego incluye esos cambios en el commit.
 
 **¿Cómo se usa el comando `bago versions`?**
 Requiere un directorio `cleanversion/` con snapshots históricos del sistema. No está incluido en el repositorio público. Se usa internamente para comparar versiones anteriores del framework.
