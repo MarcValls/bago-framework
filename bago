@@ -286,7 +286,11 @@ def main():
             sys.exit(1 if result == "error" else 0)
         # result == "banner" → continúa al banner normal
 
-    _auto_sync()
+    # validate and health are pure read-only commands — skip auto_sync so
+    # state/ remains untouched and CI can use a plain `git diff --quiet`.
+    _READ_ONLY_CMDS = {"validate", "health"}
+    if not (args and args[0].lower() in _READ_ONLY_CMDS):
+        _auto_sync()
 
     if not args:
         subprocess.run(

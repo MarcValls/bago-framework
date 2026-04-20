@@ -40,10 +40,10 @@ validate:
 
 # ─── Pureza de validación/reporting ───────────────────────────────────────────
 check-pure:
-	@git diff --quiet -- ':(exclude).bago/state/' || (echo "KO: working tree is dirty before checks"; git diff --stat; exit 1)
+	@git diff --quiet || (echo "KO: working tree is dirty before checks"; git diff --stat; exit 1)
 	@python3 bago validate
 	@python3 bago health
-	@git diff --quiet -- ':(exclude).bago/state/' || (echo "KO: validate/health introduced changes"; git diff --stat; git diff; exit 1)
+	@git diff --quiet || (echo "KO: validate/health introduced changes"; git diff --stat; git diff; exit 1)
 	@echo "OK: validate and health are side-effect free"
 
 # ─── Pack: regenera TREE+CHECKSUMS y crea zip ─────────────────────────────────
