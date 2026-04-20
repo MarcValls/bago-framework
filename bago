@@ -724,7 +724,19 @@ def _prompt_mode():
 def _pick_project_dir_in(base_dir):
     """Dado un directorio base, pregunta si crear proyecto nuevo o usar existente.
     Devuelve (ruta, is_existing) o (None, False)."""
-    base = Path(base_dir)
+    base = Path(base_dir).resolve()
+    framework_dir = BAGO_ROOT.parent.resolve()
+
+    # El framework nunca puede ser el destino de trabajo
+    if base == framework_dir:
+        print()
+        print("  ⚠  No puedes usar el directorio del framework como proyecto.")
+        print(f"     {base}")
+        print("  Elige un directorio externo o usa [D] en el menú principal")
+        print("  si realmente quieres desarrollar el framework.")
+        print()
+        return None, False
+
     print()
     print(f"  Directorio seleccionado: {base}")
     print()
@@ -751,8 +763,15 @@ def _pick_project_dir_in(base_dir):
 
     elif sel == "2":
         # Proyecto existente: listar subdirectorios del base
+        framework_dir = BAGO_ROOT.parent.resolve()
         try:
-            subdirs = sorted([d for d in base.iterdir() if d.is_dir() and not d.name.startswith('.')], key=lambda x: x.name)
+            subdirs = sorted(
+                [d for d in base.iterdir()
+                 if d.is_dir()
+                 and not d.name.startswith('.')
+                 and d.resolve() != framework_dir],  # excluir el propio framework
+                key=lambda x: x.name
+            )
         except Exception:
             subdirs = []
         if subdirs:
