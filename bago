@@ -534,12 +534,22 @@ def _auto_sync(cwd=None):
 def main():
     args = sys.argv[1:]
 
-    # Prompt de primera ejecución (solo sin args y con TTY)
-    if not args and sys.stdin.isatty() and _is_template_seed():
-        result = _prompt_mode()
-        if result in ("done", "error", "invalid"):
-            sys.exit(1 if result == "error" else 0)
-        # result == "banner" → continúa al banner normal
+    # Gestión del modo template_seed
+    if not args and _is_template_seed():
+        if sys.stdin.isatty():
+            # Terminal real: mostrar menú interactivo
+            result = _prompt_mode()
+            if result in ("done", "error", "invalid"):
+                sys.exit(1 if result == "error" else 0)
+            # result == "banner" → continúa al banner normal
+        else:
+            # Sin TTY (script, agente, pipe): avisar y salir — no mostrar banner
+            # como si BAGO estuviera configurado cuando no lo está
+            print()
+            print("  ⚠  BAGO está en modo template_seed (clon sin configurar).")
+            print("  Ejecuta  python3 bago  en un terminal interactivo para configurarlo.")
+            print()
+            sys.exit(1)
 
     # En arranque normal (no template_seed), comprobar si hay actualizaciones
     elif not args and sys.stdin.isatty():
