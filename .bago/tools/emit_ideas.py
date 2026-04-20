@@ -674,10 +674,6 @@ def main() -> int:
     ideas = order_ideas_by_section(sections)
 
     print("BAGO ideas selector")
-    print(summarize_report("smoke", smoke))
-    print(summarize_report("vm", vm))
-    print(summarize_report("soak", soak))
-    print(summarize_report("matrix", matrix))
     if baseline_clean_mode:
         print("baseline_clean_mode: activo (solo ideas low-risk con métrica)")
     print("")

@@ -220,6 +220,8 @@ templates/plantilla_rol.md
 templates/plantilla_workflow.md
 tools/
 tools/README.md
+tools/__pycache__/
+tools/__pycache__/context_detector.cpython-313.pyc
 tools/artifact_counter.py
 tools/audit_v2.py
 tools/bago_banner.py
