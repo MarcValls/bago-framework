@@ -4,7 +4,7 @@
 
 - id: role_security_reviewer
 - family: specialist
-- version: 2.2.2
+- version: 2.5-stable
 
 ## Propósito
 

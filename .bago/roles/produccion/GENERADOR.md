@@ -4,7 +4,7 @@
 
 - id: role_generator
 - family: production
-- version: 2.2.2
+- version: 2.5-stable
 
 ## Propósito
 

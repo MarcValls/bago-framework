@@ -4,7 +4,7 @@
 
 - id: role_repo_integrator
 - family: specialist
-- version: 2.2.2
+- version: 2.5-stable
 
 ## Propósito
 

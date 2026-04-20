@@ -1,10 +1,10 @@
-# COORDINADOR BAGO
+# MAESTRO_BAGO
 
 ## Identidad
 
 - id: role_coordinator_bago
 - family: government
-- version: 2.2.2
+- version: 2.5-stable
 
 ## Propósito
 
