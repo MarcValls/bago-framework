@@ -852,9 +852,15 @@ def main():
         if sys.stdin.isatty():
             if is_external:
                 # ── Uso normal: python3 bago-framework/bago desde el proyecto ──
-                # El directorio de trabajo ES el proyecto — inicializar ahí directamente
+                cwd_display = str(cwd)
+                if len(cwd_display) > 47:
+                    cwd_display = "..." + cwd_display[-44:]
                 print()
-                print(f"  📂 Directorio de trabajo: {cwd}")
+                print("  ┌─────────────────────────────────────────────────┐")
+                print("  │  BAGO Framework · Instalación                  │")
+                print("  ├─────────────────────────────────────────────────┤")
+                print(f"  │  {cwd_display:<47}│")
+                print("  └─────────────────────────────────────────────────┘")
                 print()
                 try:
                     ok = input("  ¿Inicializar BAGO aquí? [S/n]: ").strip().lower()
@@ -863,6 +869,9 @@ def main():
                 if ok == "n":
                     sys.exit(0)
                 result = _scaffold_project(str(cwd), is_existing=True)
+                if result and (cwd / "bago").exists():
+                    print()
+                    subprocess.run(["python3", str(cwd / "bago")], cwd=str(cwd))
                 sys.exit(0 if result else 1)
             else:
                 # ── Uso avanzado: python3 ./bago desde dentro del framework ──
