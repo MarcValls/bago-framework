@@ -1,6 +1,6 @@
 # BAGO — Structured AI Work Framework
 
-> **Version 2.5-stable** · 13 CLI commands · 30 tools · 12 workflows · Health 100/100
+> **Version 2.5-stable** · 13 CLI commands · 30 tools · 10 operational workflows · Health 100/100
 
 ---
 
@@ -54,6 +54,8 @@ BAGO has been built using BAGO itself. The following data was collected with `py
 
 **Growth from 2.3 → 2.5: +27.2%** — measured by weighted index (commands ×0.30, tools ×0.35, docs ×0.20, workflows ×0.15).
 
+> *Workflow count in the evolution table (12) includes all files in `.bago/workflows/`: 10 operational workflows + WORKFLOW_MAESTRO_BAGO + WORKFLOWS_INDEX.*
+
 ### New in 2.5-stable
 
 **New CLI commands:** `efficiency`, `task`, `stability`, `session`
@@ -67,7 +69,7 @@ BAGO has been built using BAGO itself. The following data was collected with `py
 
 ## Workflows
 
-BAGO ships with 12 structured workflows for different types of work:
+BAGO ships with **10 operational workflows** (W0–W9) for different types of work, plus a master orchestration protocol (`WORKFLOW_MAESTRO_BAGO`) that routes between them automatically based on session context.
 
 | Workflow | Purpose |
 |---|---|
@@ -82,6 +84,8 @@ BAGO ships with 12 structured workflows for different types of work:
 | `W8 · Exploration` | Research and discovery |
 | `W9 · Cosecha` | Artifact harvest and consolidation |
 
+> The `.bago/workflows/` directory also contains `WORKFLOW_MAESTRO_BAGO.md` (the orchestration layer) and `WORKFLOWS_INDEX.md` (reference index) — these are system-level protocols, not user-facing workflows.
+
 ---
 
 ## Quick Start
@@ -94,7 +98,7 @@ BAGO ships with 12 structured workflows for different types of work:
 
 ```bash
 # Clone or download
-git clone https://github.com/your-org/bago-framework.git
+git clone https://github.com/MarcValls/bago-framework.git
 cd bago-framework
 
 # Verify the system
@@ -142,7 +146,7 @@ bago-framework/
     ├── pack.json           ← manifest + version
     ├── AGENT_START.md      ← AI agent entry point
     ├── tools/              ← 30 Python tools
-    ├── workflows/          ← 12 workflow protocols (W0–W9)
+    ├── workflows/          ← 10 operational workflows (W0–W9) + orchestration layer
     ├── core/               ← BAGO constitution + protocols
     ├── agents/             ← Agent definitions (MAESTRO, COPILOT_ALIADO)
     ├── roles/              ← Role definitions (Architect, Implementor, Reviewer…)
