@@ -1,17 +1,17 @@
-# BAGO V2 — Guía Ejecutiva
+# BAGO 2.5-stable — Guía Ejecutiva
 
-> Versión: V2.0 | Fecha: 2026-04-18  
+> Versión: 2.5-stable | Fecha: 2026-04-20  
 > Audiencia: Alguien que no conoce BAGO
 
 ---
 
-## ¿Qué es BAGO V2?
+## ¿Qué es BAGO?
 
 **BAGO es el sistema operativo de trabajo técnico para programación y generación compleja.**
 
 No es una metodología de gestión de proyectos ni un framework de desarrollo. Es la capa de gobierno que hace que el trabajo técnico avanzado — el que requiere contexto acumulado, decisiones en cadena y múltiples artefactos — sea **reproducible, auditable y medible**.
 
-BAGO V2 es la versión estabilizada: un sistema adaptativo con gobierno de runtime, reporting vivo y métricas de salud integradas.
+BAGO 2.5-stable es la versión pública actual: un sistema adaptativo con gobierno de runtime, reporting vivo y métricas de salud integradas.
 
 ---
 
@@ -57,11 +57,11 @@ Esto responde: ¿Qué está activo? ¿Está el pack sano? ¿Qué workflow es el 
 
 Se elige el workflow apropiado para el trabajo del día y se ejecuta dentro de ese marco:
 
+- **W1** si se trata de un arranque limpio o un proyecto nuevo
 - **W7** si hay una tarea técnica definida
 - **W8** si hay que explorar o investigar  
 - **W9** si hay contexto acumulado que formalizar
 - **W0** si es una sesión libre
-- **WSC** si se está modificando BAGO mismo
 
 El workflow no es un proceso rígido — es un **contrato de atención**: qué artefactos se esperan, qué roles se activan, qué criterio de done aplica.
 
@@ -84,19 +84,16 @@ Y se valida:
 
 ### Health Score (0-100)
 
-BAGO V2 tiene un score de salud calculado automáticamente:
+BAGO expone un estado de salud calculado automáticamente:
 
 ```bash
 ./bago health
 
-# Salida:
-BAGO Health Score: 87/100  🟢
-  Integridad:          25/25 ✅
-  Disciplina workflow: 18/20 ✅
-  Captura decisiones:  16/20 ✅
-  Estado stale:        15/15 ✅
-  Consistencia inv.:   13/20 ⚠️
+# Salida inicial en instalación limpia:
+BAGO Health: initializing
 ```
+
+Tras la primera sesión cerrada, el comando devuelve un score numérico 0-100 por dimensiones.
 
 | Score | Semáforo | Interpretación |
 |---|---|---|
@@ -133,13 +130,13 @@ Produce un reporte de 6 dimensiones con veredicto GO/WATCH/KO. Es el comando de 
 
 | Documento | Propósito |
 |---|---|
-| `docs/V2_PLAYBOOK_OPERATIVO.md` | Guía técnica detallada para operadores |
-| `docs/V2_POLITICA_TRANSICION.md` | Reglas de transición entre workflows |
-| `docs/V2_CONTRATO_CIERRE_ESCENARIO.md` | Criterios de cierre de escenarios |
-| `docs/V2_PROPUESTA.md` | Análisis y propuesta que originó esta versión |
-| `core/00_CEREBRO_BAGO.md` | Documento conceptual fundacional |
-| `AGENT_START.md` | Punto de entrada para agentes IA |
+| `.bago/docs/V2_PLAYBOOK_OPERATIVO.md` | Guía técnica detallada para operadores |
+| `.bago/docs/V2_POLITICA_TRANSICION.md` | Reglas de transición entre workflows |
+| `.bago/docs/V2_CONTRATO_CIERRE_ESCENARIO.md` | Criterios de cierre de escenarios |
+| `.bago/docs/V2_PROPUESTA.md` | Análisis y propuesta que originó esta versión |
+| `.bago/core/00_CEREBRO_BAGO.md` | Documento conceptual fundacional |
+| `.bago/AGENT_START.md` | Punto de entrada para agentes IA |
 
 ---
 
-*BAGO V2 — Pack `2.4-v2rc` — Sistema operativo de trabajo técnico*
+*BAGO 2.5-stable — Pack público en instalación limpia — Sistema operativo de trabajo técnico*

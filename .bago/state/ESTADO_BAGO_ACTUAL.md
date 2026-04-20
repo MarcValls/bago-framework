@@ -16,7 +16,7 @@
 
 ## Health Score
 
-**initializing** — Ejecuta `python3 bago health` tras la primera sesión.
+**initializing** — Estado esperado en instalación limpia. Ejecuta `python3 bago health` de nuevo tras la primera sesión cerrada.
 
 ## Inventario declarado
 
@@ -29,4 +29,4 @@
 ## Notas
 
 Instalación limpia — listo para primera sesión.
-Consulta `docs/GETTING_STARTED.md` para comenzar.
+Consulta `README.md` para instalación rápida y `.bago/AGENT_START.md` como punto de arranque canónico para agentes.

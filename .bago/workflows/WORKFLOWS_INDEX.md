@@ -32,3 +32,7 @@
 4. Usar `workflow-info` cuando se quiera preparar una WF para configuración humana.
 5. Usar `launch_workflow_maestro.sh` cuando se quiera entrada ejecutable.
 6. Mantener `ESTADO_BAGO_ACTUAL.md` alineado con el workflow ejecutado.
+
+## Nota de conteo público
+
+El sistema publica 10 workflows operativos de usuario (W0–W9). `WORKFLOW_MAESTRO_BAGO.md` y este índice son protocolos del sistema, no workflows operativos adicionales.

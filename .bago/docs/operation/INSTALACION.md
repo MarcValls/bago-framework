@@ -1,4 +1,6 @@
-# Instalación · BAGO AMTEC V2.2.2 Revisión Canónica
+# Instalación · BAGO 2.5-stable · Snapshot público
+
+> Esta guía describe la instalación limpia distribuida en el repositorio público.
 
 ## Naturaleza del paquete
 
