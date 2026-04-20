@@ -57,7 +57,7 @@ La 2.2.2 añade:
 
 - `tools/perf/stress_bago_agents.py`
 - `tools/perf/render_perf_charts.py`
-- `state/metrics/runs/*`
+- `state/metrics/runs/*` (creado en primer uso del tooling de perf)
 
 ## Resultado esperado
 

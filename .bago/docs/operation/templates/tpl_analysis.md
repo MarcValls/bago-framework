@@ -15,6 +15,8 @@ python3 .bago/tools/session_preflight.py \
   --task-type analysis
 ```
 
+> `state/evaluations/` y `state/metrics/` se crean automáticamente en primer uso. No es necesario crearlos manualmente.
+
 ---
 
 ## Datos de sesión

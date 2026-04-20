@@ -198,6 +198,7 @@ state/changes/.gitkeep
 state/evidences/
 state/evidences/.gitkeep
 state/global_state.json
+state/implemented_ideas.json
 state/repo_context.json
 state/schema/
 state/schema/change.schema.json
@@ -216,13 +217,6 @@ templates/plantilla_rol.md
 templates/plantilla_workflow.md
 tools/
 tools/README.md
-tools/__pycache__/
-tools/__pycache__/bago_banner.cpython-313.pyc
-tools/__pycache__/context_detector.cpython-313.pyc
-tools/__pycache__/emit_ideas.cpython-313.pyc
-tools/__pycache__/pack_dashboard.cpython-313.pyc
-tools/__pycache__/session_opener.cpython-313.pyc
-tools/__pycache__/show_task.cpython-313.pyc
 tools/artifact_counter.py
 tools/audit_v2.py
 tools/bago_banner.py

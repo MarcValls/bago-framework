@@ -1,4 +1,4 @@
-# 00_CORE_BAGO
+# 00_CEREBRO_BAGO
 
 ## Definición
 

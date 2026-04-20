@@ -21,7 +21,7 @@ Notas:
 - Ajustes útiles: `--github-max-retries`, `--github-backoff-base-ms`, `--github-backoff-max-ms`.
 - Si no existe la credencial del provider elegido, entra en modo simulación automáticamente.
 - Para forzar simulación: `--simulate`.
-- Salida en `.bago/state/metrics/runs/stress_YYYYMMDD_HHMMSS/`.
+- Salida en `.bago/state/metrics/runs/stress_YYYYMMDD_HHMMSS/` (directorio creado automáticamente en primer uso).
 
 ## 2) Generar gráficas
 
