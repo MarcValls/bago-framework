@@ -33,7 +33,7 @@ Instalar como alias global:
   echo 'alias bago="python3 $(pwd)/bago"' >> ~/.zshrc
 """
 
-import json, os, shutil, subprocess, sys
+import json, os, shutil, subprocess, sys, threading, time
 from pathlib import Path
 
 BAGO_ROOT = Path(__file__).resolve().parent / ".bago"
@@ -207,6 +207,48 @@ def _candidate_dirs():
     return candidates
 
 
+# ── Helpers de git ─────────────────────────────────────────────────────────────
+
+def _git_short_hash(cwd=None):
+    """Devuelve el hash corto del HEAD actual, o None."""
+    try:
+        r = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=str(cwd or BAGO_ROOT.parent), capture_output=True, text=True
+        )
+        return r.stdout.strip() if r.returncode == 0 else None
+    except Exception:
+        return None
+
+
+def _git_describe(cwd=None):
+    """Devuelve git describe --tags --always, o None."""
+    try:
+        r = subprocess.run(
+            ["git", "describe", "--tags", "--always"],
+            cwd=str(cwd or BAGO_ROOT.parent), capture_output=True, text=True
+        )
+        return r.stdout.strip() if r.returncode == 0 else None
+    except Exception:
+        return None
+
+
+def _has_remote_updates():
+    """Devuelve True si origin/master tiene commits que no están en local."""
+    try:
+        subprocess.run(
+            ["git", "fetch", "--quiet"],
+            cwd=str(BAGO_ROOT.parent), capture_output=True, text=True, timeout=6
+        )
+        r = subprocess.run(
+            ["git", "rev-list", "HEAD..origin/master", "--count"],
+            cwd=str(BAGO_ROOT.parent), capture_output=True, text=True
+        )
+        return r.returncode == 0 and r.stdout.strip() not in ("", "0")
+    except Exception:
+        return False
+
+
 # ── Helpers de arranque ────────────────────────────────────────────────────────
 
 def _git_remote_url():
@@ -223,46 +265,131 @@ def _git_remote_url():
 
 
 def _update_framework():
-    """Ejecuta git pull --ff-only. Devuelve True si tuvo éxito."""
-    print("\n  🔄 Actualizando framework desde GitHub...\n")
-    r = subprocess.run(["git", "pull", "--ff-only"], cwd=str(BAGO_ROOT.parent))
+    """Actualiza el framework mostrando banner, progreso animado y versión final."""
+    framework_dir = BAGO_ROOT.parent
+    old_desc = _git_describe(framework_dir) or _git_short_hash(framework_dir) or "desconocida"
+
+    subprocess.run(
+        ["python3", str(TOOLS / "bago_banner.py")],
+        cwd=str(framework_dir)
+    )
+
+    print(f"  Versión actual : {old_desc}")
+    print()
+
+    done_event = threading.Event()
+
+    def _spin():
+        frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+        i = 0
+        while not done_event.is_set():
+            filled = (i * 2) % 21
+            bar = "█" * filled + "░" * (20 - filled)
+            print(
+                f"\r  {frames[i % len(frames)]} [{bar}] Descargando desde GitHub...",
+                end="", flush=True
+            )
+            i += 1
+            time.sleep(0.08)
+        print("\r" + " " * 65 + "\r", end="", flush=True)
+
+    t = threading.Thread(target=_spin, daemon=True)
+    t.start()
+
+    r = subprocess.run(
+        ["git", "pull", "--ff-only"],
+        cwd=str(framework_dir), capture_output=True, text=True
+    )
+    done_event.set()
+    t.join(timeout=1)
+
+    new_desc = _git_describe(framework_dir) or _git_short_hash(framework_dir) or "desconocida"
+
     if r.returncode == 0:
-        print("\n  ✅ Framework actualizado. Vuelve a ejecutar `python3 bago`.\n")
+        if old_desc == new_desc:
+            print("  ✅ Ya tenías la versión más reciente.")
+            print(f"     Versión: {new_desc}")
+        else:
+            print("  ✅ Framework actualizado.")
+            print(f"     {old_desc}  →  {new_desc}")
+        print()
         return True
     else:
-        print("\n  ⚠  No se pudo actualizar automáticamente.")
-        print("     Ejecuta manualmente:  git pull origin master\n")
+        print("  ⚠  No se pudo actualizar.")
+        if r.stderr.strip():
+            print(f"     {r.stderr.strip()}")
+        print("     Ejecuta: git pull origin master\n")
         return False
 
 
 def _pick_project_dir():
-    """Muestra el selector de directorios para el proyecto nuevo.
-    Devuelve la ruta elegida (str) o None si el usuario cancela."""
+    """Pide nombre del proyecto y directorio padre.
+    Devuelve la ruta completa (str) o None si cancela."""
+    print()
+    print("  ─── Nuevo proyecto ─────────────────────────────────────")
+    print()
+
+    # El nombre del proyecto es obligatorio
+    name = ""
+    while not name:
+        try:
+            name = input("  Nombre del proyecto: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            sys.exit(0)
+        if not name:
+            print("  ⚠  El nombre no puede estar vacío.")
+
     candidates = _candidate_dirs()
     print()
-    print("  BAGO trabaja SOBRE tu proyecto, no dentro del framework.")
-    print("  ¿Dónde está (o estará) tu proyecto?\n")
+    print("  ¿Dónde crear el proyecto?\n")
     for i, d in enumerate(candidates, 1):
-        print(f"  [{i}] {d}")
-    print("  [M] Otra ruta (escribirla)")
+        print(f"  [{i}] {d}{os.sep}{name}")
+    print("  [M] Otra ruta base (escribirla)")
     print()
+
     try:
-        sel = input("  Elige [1–{}/M]: ".format(len(candidates))).strip().upper()
+        sel = input(f"  Elige [1-{len(candidates)}/M]: ").strip().upper()
     except (EOFError, KeyboardInterrupt):
         print()
         sys.exit(0)
 
     if sel.isdigit() and 1 <= int(sel) <= len(candidates):
-        return str(candidates[int(sel) - 1])
+        parent = candidates[int(sel) - 1]
+        return str(parent / name)
     elif sel == "M":
         try:
-            return input("  Ruta del proyecto: ").strip()
+            base = input("  Ruta base: ").strip()
         except (EOFError, KeyboardInterrupt):
             print()
             sys.exit(0)
+        if base:
+            return str(Path(base).expanduser().resolve() / name)
+        print("  ⚠  Ruta vacía, cancelado.\n")
+        return None
     else:
         print("\n  Opción no válida.\n")
         return None
+
+
+def _startup_update_check():
+    """Comprueba actualizaciones silenciosamente y ofrece actualizar si las hay."""
+    if not _git_remote_url():
+        return
+    if not _has_remote_updates():
+        return
+    current = _git_describe() or _git_short_hash() or "actual"
+    print()
+    print(f"  ⚡ Hay una actualización disponible  (local: {current})")
+    print()
+    try:
+        ans = input("  ¿Actualizar ahora? [S/n]: ").strip().lower()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        return
+    if ans in ("", "s", "si", "sí", "y", "yes"):
+        _update_framework()
+        sys.exit(0)
 
 
 # ── Prompt de arranque ─────────────────────────────────────────────────────────
@@ -271,30 +398,43 @@ def _prompt_mode():
     """Mostrado la primera vez que se ejecuta una cleanversion."""
     remote = _git_remote_url()
 
+    # Comprobación silenciosa de actualizaciones disponibles
+    updates_available = False
+    if remote:
+        print("  Comprobando actualizaciones...", end="", flush=True)
+        updates_available = _has_remote_updates()
+        print("\r" + " " * 35 + "\r", end="", flush=True)
+
     print()
     print("  ┌─────────────────────────────────────────────────┐")
     print("  │  BAGO · Arranque del framework                  │")
+    if updates_available:
+        print("  ├─────────────────────────────────────────────────┤")
+        print("  │  [!] Nueva version disponible en GitHub         │")
     print("  ├─────────────────────────────────────────────────┤")
     print("  │  [1] Seguir con esta versión                    │")
     if remote:
-        print("  │  [2] Actualizar framework  (git pull)           │")
-        print("  │  [3] Iniciar un proyecto nuevo                  │")
+        if updates_available:
+            print("  │  [2] Actualizar framework  <- recomendado       │")
+        else:
+            print("  │  [2] Actualizar framework  (git pull)           │")
+        print("  │  [3] Nuevo proyecto                             │")
         print("  │  [4] Evolucionar el framework BAGO              │")
         max_opt = 4
     else:
-        print("  │  [2] Iniciar un proyecto nuevo                  │")
+        print("  │  [2] Nuevo proyecto                             │")
         print("  │  [3] Evolucionar el framework BAGO              │")
         max_opt = 3
     print("  └─────────────────────────────────────────────────┘")
     print()
 
     try:
-        choice = input(f"  Elige [1–{max_opt}]: ").strip()
+        choice = input(f"  Elige [1-{max_opt}]: ").strip()
     except (EOFError, KeyboardInterrupt):
         print()
         sys.exit(0)
 
-    # Normalise: when no remote, shift [3]=evolucionar to slot [2] offset
+    # Normalizar opciones según si hay remote o no
     if not remote and choice == "2":
         choice = "_new_project"
     elif not remote and choice == "3":
@@ -325,7 +465,7 @@ def _prompt_mode():
         return "banner"
 
     else:
-        print(f"\n  Opción no válida. Usa 1–{max_opt}.\n")
+        print(f"\n  Opción no válida. Usa 1-{max_opt}.\n")
         return "invalid"
 
 # ── bago versions ─────────────────────────────────────────────────────────────
@@ -401,8 +541,11 @@ def main():
             sys.exit(1 if result == "error" else 0)
         # result == "banner" → continúa al banner normal
 
-    # validate and health are pure read-only commands — skip auto_sync so
-    # state/ remains untouched and CI can use a plain `git diff --quiet`.
+    # En arranque normal (no template_seed), comprobar si hay actualizaciones
+    elif not args and sys.stdin.isatty():
+        _startup_update_check()
+
+    # validate y health son comandos de solo lectura — no tocar state/
     _READ_ONLY_CMDS = {"validate", "health"}
     if not (args and args[0].lower() in _READ_ONLY_CMDS):
         _auto_sync()
