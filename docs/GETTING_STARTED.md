@@ -29,14 +29,16 @@ If you see `KO`, run `python3 bago health` for diagnostics.
 
 ### First-run setup (optional interactive menu)
 
-Running `python3 bago` with **no arguments** on a fresh clone opens a one-time setup menu:
+Running `python3 bago` with **no arguments** opens a setup menu. Options adapt to your environment:
 
 ```
-  [1] Evolucionar el framework BAGO   → contribute to BAGO itself
-  [2] Iniciar un proyecto nuevo       → set up BAGO in your own project
+  [1] Seguir con esta versión          → continue with the current version
+  [2] Actualizar framework (git pull)  → pull latest from GitHub (git clones only)
+  [3] Iniciar un proyecto nuevo        → copy BAGO to your own project
+  [4] Evolucionar el framework BAGO    → develop BAGO itself
 ```
 
-If you choose `[2]`, BAGO presents a numbered list of candidate directories (your terminal CWD and parent folders of the framework directory). Pick a number or enter a custom path — BAGO copies its pack there and runs `setup` automatically.
+Choosing "Iniciar un proyecto nuevo" shows a numbered list of candidate directories — BAGO never silently operates inside the framework directory itself.
 
 > You can skip this menu entirely and use subcommands directly (`validate`, `health`, etc.).
 
