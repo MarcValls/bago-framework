@@ -1,4 +1,4 @@
-# Arquitectura · BAGO AMTEC V2.2.2 Revisión Canónica
+# Arquitectura · BAGO 2.5-stable (baseline V2.2.2)
 
 ## Resumen
 

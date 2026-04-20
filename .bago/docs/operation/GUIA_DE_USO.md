@@ -1,4 +1,4 @@
-# Guía de uso · BAGO AMTEC V2.2.2 Revisión Canónica
+# Guía de uso · BAGO 2.5-stable
 
 ## Ruta recomendada sobre repositorio real
 
