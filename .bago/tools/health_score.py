@@ -160,8 +160,34 @@ def score_consistencia_inventario() -> tuple[int, int, str]:
     return 0, 20, f"Diff detectado — {first}"
 
 
+def _has_closed_sessions() -> bool:
+    sessions_dir = STATE / "sessions"
+    if not sessions_dir.exists():
+        return False
+    return any(
+        json.loads(f.read_text(encoding="utf-8")).get("status") == "closed"
+        for f in sessions_dir.glob("*.json")
+        if f.stat().st_size > 0
+    )
+
+
 def main():
     score_only = "--score-only" in sys.argv
+
+    # Clean install: no closed sessions yet — report initializing state
+    if not _has_closed_sessions() and not score_only:
+        rc, _ = run_script("validate_pack.py")
+        pack_ok = rc == 0
+        print()
+        print("BAGO Health: initializing  ⚪")
+        print()
+        print("  No closed sessions yet — score dimensions require real usage history.")
+        print(f"  Pack integrity:  {'✅ GO' if pack_ok else '❌ KO'}")
+        print()
+        print("  Run a session and close it with `python3 bago cosecha`")
+        print("  to start building a meaningful health score.")
+        print()
+        return 0
 
     dimensions = [
         ("Integridad",          score_integridad),
