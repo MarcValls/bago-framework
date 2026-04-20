@@ -11,7 +11,7 @@ No ejecutar trabajo técnico relevante sin bootstrap mínimo.
 ## Secuencia obligatoria
 
 1. Leer `pack.json`.
-2. Leer `README.md`.
+2. Leer `../README.md` para capa pública.
 3. Leer `core/00_CEREBRO_BAGO.md`.
 4. Leer `core/05_GOBERNANZA_DE_SESION.md`.
 5. Leer `core/06_MATRIZ_DE_ACTIVACION.md`.
