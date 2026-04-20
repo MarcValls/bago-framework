@@ -86,6 +86,10 @@ git diff --exit-code .bago/TREE.txt .bago/CHECKSUMS.sha256
 Fuerza al desarrollador a ejecutar `bago sync` y commitear el resultado
 antes de que el PR pueda mergearse.
 
+> **Nota de activación**: el workflow completo está en `.github/workflows/validation-purity.yml`.
+> Requiere un PAT con scope `workflow` para publicarse en GitHub Actions.
+> Mientras tanto, ejecutar los 3 tests manualmente antes de cada PR.
+
 ---
 
 ## Flujo de trabajo correcto para un PR
