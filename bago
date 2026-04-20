@@ -626,19 +626,23 @@ def _prompt_mode():
             print("  │  [2] Actualizar framework  ← recomendado       │")
         else:
             print("  │  [2] Actualizar framework  (git pull)           │")
+        print("  │  [3] Analizar proyecto existente                │")
+        print("  │  [4] Nuevo proyecto                             │")
+        print("  │  [5] Evolucionar el framework BAGO              │")
+        max_opt = 5
+        _update_opt = "2"
+        _analyze_opt = "3"
+        _new_opt = "4"
+        _evolve_opt = "5"
+    else:
+        print("  │  [2] Analizar proyecto existente                │")
         print("  │  [3] Nuevo proyecto                             │")
         print("  │  [4] Evolucionar el framework BAGO              │")
         max_opt = 4
-        _update_opt = "2"
+        _update_opt = None
+        _analyze_opt = "2"
         _new_opt = "3"
         _evolve_opt = "4"
-    else:
-        print("  │  [2] Nuevo proyecto                             │")
-        print("  │  [3] Evolucionar el framework BAGO              │")
-        max_opt = 3
-        _update_opt = None
-        _new_opt = "2"
-        _evolve_opt = "3"
     print("  └─────────────────────────────────────────────────┘")
     print()
 
@@ -655,6 +659,24 @@ def _prompt_mode():
     elif _update_opt and choice == _update_opt:
         success = _update_framework()
         return "done" if success else "error"
+
+    elif choice == _analyze_opt:
+        print()
+        print("  Ruta del proyecto a analizar:")
+        print("  (Enter para usar el directorio actual)")
+        print()
+        try:
+            ruta = input(f"  [{Path.cwd()}]: ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print(); sys.exit(0)
+        project_path = Path(ruta).expanduser().resolve() if ruta else Path.cwd().resolve()
+        if not project_path.exists():
+            print(f"\n  ⚠  Ruta no encontrada: {project_path}\n")
+            return "invalid"
+        tool = TOOLS / "analyze_project.py"
+        subprocess.run([sys.executable, str(tool), str(project_path)],
+                       cwd=str(BAGO_ROOT.parent))
+        return "done"
 
     elif choice == _new_opt:
         # Nuevo proyecto — pedir nombre y elegir directorio base
@@ -872,6 +894,17 @@ def main():
 
     cmd = args[0].lower()
     rest = args[1:]
+
+    if cmd == "analyze":
+        if not rest:
+            print("  Uso: python3 bago analyze <ruta_proyecto>")
+            print("  Ejemplo: python3 bago analyze ../mi-proyecto")
+            sys.exit(1)
+        subprocess.run(
+            [sys.executable, str(TOOLS / "analyze_project.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+        return
 
     if cmd == "setup":
         subprocess.run(
