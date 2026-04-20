@@ -841,21 +841,43 @@ def _auto_sync(cwd=None):
 
 def main():
     args = sys.argv[1:]
+    cwd = Path.cwd().resolve()
+    framework_dir = BAGO_ROOT.parent.resolve()
+    # True cuando el usuario ejecuta desde fuera del directorio del framework
+    is_external = (cwd != framework_dir and
+                   not str(cwd).startswith(str(framework_dir) + os.sep))
 
-    # Gestión del modo template_seed
+    # Gestión del modo template_seed (primera ejecución)
     if not args and _is_template_seed():
         if sys.stdin.isatty():
-            # Terminal real: mostrar menú interactivo
-            result = _prompt_mode()
-            if result in ("done", "error", "invalid"):
-                sys.exit(1 if result == "error" else 0)
-            # result == "banner" → continúa al banner normal
+            if is_external:
+                # ── Uso normal: python3 bago-framework/bago desde el proyecto ──
+                # El directorio de trabajo ES el proyecto — inicializar ahí directamente
+                print()
+                print(f"  📂 Directorio de trabajo: {cwd}")
+                print()
+                try:
+                    ok = input("  ¿Inicializar BAGO aquí? [S/n]: ").strip().lower()
+                except (EOFError, KeyboardInterrupt):
+                    print(); sys.exit(0)
+                if ok == "n":
+                    sys.exit(0)
+                result = _scaffold_project(str(cwd), is_existing=True)
+                sys.exit(0 if result else 1)
+            else:
+                # ── Uso avanzado: python3 ./bago desde dentro del framework ──
+                result = _prompt_mode()
+                if result in ("done", "error", "invalid"):
+                    sys.exit(1 if result == "error" else 0)
         else:
-            # Sin TTY (script, agente, pipe): avisar y salir — no mostrar banner
-            # como si BAGO estuviera configurado cuando no lo está
+            # Sin TTY (script, agente, pipe): avisar y salir
             print()
-            print("  ⚠  BAGO está en modo template_seed (clon sin configurar).")
-            print("  Ejecuta  python3 bago  en un terminal interactivo para configurarlo.")
+            if is_external:
+                print(f"  ⚠  Ejecuta python3 bago-framework/bago en un terminal interactivo")
+                print(f"     desde tu directorio de proyecto para configurar BAGO.")
+            else:
+                print("  ⚠  BAGO está en modo template_seed (clon sin configurar).")
+                print("  Ejecuta  python3 bago  en un terminal interactivo para configurarlo.")
             print()
             sys.exit(1)
 
