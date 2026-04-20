@@ -50,7 +50,7 @@ BAGO has been built using BAGO itself. The following data was collected with `py
 |---|:---:|:---:|:---:|:---:|:---:|
 | **2.3-clean** *(baseline)* | 10 | 19 | 68 | 12 | 78.6 |
 | **2.4-v2rc** *(Dynamic BAGO)* | 10 | 27 | 73 | 12 | 89.3 |
-| **2.5-stable** *(current)* | **13** | **30** | **74** | **12** | **100.0** |
+| **2.5-stable** *(current)* | **13** | **30** | **76** | **12** | **100.0** |
 
 **Growth from 2.3 → 2.5: +27.2%** — measured by weighted index (commands ×0.30, tools ×0.35, docs ×0.20, workflows ×0.15).
 
@@ -150,7 +150,7 @@ bago-framework/
     ├── core/               ← BAGO constitution + protocols
     ├── agents/             ← Agent definitions (MAESTRO, COPILOT_ALIADO)
     ├── roles/              ← Role definitions (Architect, Implementor, Reviewer…)
-    ├── docs/               ← 74 documentation files
+    ├── docs/               ← 76 documentation files
     ├── templates/          ← Session templates
     ├── prompts/            ← Bootstrap prompts
     └── state/              ← Runtime state (sessions, changes, evidences)
