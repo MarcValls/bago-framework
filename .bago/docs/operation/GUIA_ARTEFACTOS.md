@@ -50,11 +50,16 @@ core/<archivo>.md               # si afecta al core
 ### `analysis` (evaluación, auditoría, diagnóstico)
 
 ```
-docs/analysis/<INFORME>.md        # informe principal
+docs/analysis/<INFORME>.md        # informe principal de la sesión
 state/evaluations/<EVAL>.md       # registro de evaluación
 state/metrics/metrics_snapshot.json  # si actualiza métricas (directorio creado en primer uso)
 docs/analysis/<HTML>.html         # si hay visualización
 ```
+
+> **Distinción importante:**
+> `docs/analysis/` es para artefactos generados *durante sesiones de trabajo sobre un proyecto*.
+> `docs/reports/` es para informes *meta-nivel sobre el propio framework* (auditorías de coherencia, estados de release, evolución de versiones).
+> Si el informe describe el estado o la evolución de BAGO como sistema, va en `docs/reports/`.
 
 ### `sprint`
 
@@ -140,7 +145,8 @@ Si la respuesta es NO → la sesión no fue productiva, independientemente de lo
 | Workflows | `workflows/` | `W7_FOCO_SESION.md` |
 | Core | `core/` | cerebro, principios, roles |
 | Operación | `docs/operation/` | guías, checklists, plantillas |
-| Análisis | `docs/analysis/` | informes HTML/MD |
+| Análisis (sesión) | `docs/analysis/` | informes de trabajo sobre proyectos |
+| Informes framework | `docs/reports/` | auditorías, estados de release, evolución |
 | Evaluaciones | `state/evaluations/` | registros de auditoría |
 | Plantillas | `docs/operation/templates/` | tpl_*.md |
 | Distribución | `dist/source/` | ZIPs de versión |
