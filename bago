@@ -788,6 +788,42 @@ def _cmd_versions():
 
     print()
 
+
+# ── Menú de trabajo (post-banner) ─────────────────────────────────────────────
+
+def _prompt_project_menu():
+    """Menú interactivo de trabajo que aparece tras el banner."""
+    opts = [
+        ("1", "Nueva sesión de trabajo",   "session"),
+        ("2", "Salud del proyecto",        "health"),
+        ("3", "Ideas",                     "ideas"),
+        ("4", "Dashboard",                 "dashboard"),
+        ("5", "Stability check",           "stability"),
+        ("6", "Audit",                     "audit"),
+    ]
+    print()
+    print("  ┌─────────────────────────────────────────────────┐")
+    print("  │  ¿Qué quieres hacer?                            │")
+    print("  ├─────────────────────────────────────────────────┤")
+    for key, label, _ in opts:
+        row = f"[{key}] {label}"
+        print(f"  │  {row:<47}│")
+    print("  │  [0] Salir / Enter                              │")
+    print("  └─────────────────────────────────────────────────┘")
+    print()
+    try:
+        choice = input("  Elige: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        return
+    if not choice or choice == "0":
+        return
+    for key, _, cmd in opts:
+        if choice == key and cmd in COMMANDS:
+            subprocess.run(COMMANDS[cmd], cwd=str(BAGO_ROOT.parent))
+            return
+    print(f"  Opción no válida: '{choice}'\n")
+
 # ── Auto-sync silencioso ───────────────────────────────────────────────────────
 
 def _auto_sync(cwd=None):
@@ -837,6 +873,8 @@ def main():
             ["python3", str(TOOLS / "bago_banner.py")],
             cwd=str(BAGO_ROOT.parent)
         )
+        if sys.stdin.isatty() and not _is_template_seed():
+            _prompt_project_menu()
         return
 
     cmd = args[0].lower()
