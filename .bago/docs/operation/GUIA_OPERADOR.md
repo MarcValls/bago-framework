@@ -17,7 +17,7 @@ python3 .bago/tools/validate_pack.py
 
 Si responde KO:
 - `GO manifest / KO state` → revisar `global_state.json` (campos last_completed)
-- `KO pack` → regenerar TREE+CHECKSUMS (ver sección 6)
+- `KO pack` → ejecutar `bago sync` y luego `bago validate` (ver sección 6)
 
 Leer estado:
 ```bash
