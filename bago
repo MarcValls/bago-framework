@@ -137,6 +137,21 @@ def _scaffold_project(dest_input):
     dest = Path(dest_input.strip()).expanduser().resolve() if dest_input.strip() else src
 
     if dest == src:
+        print()
+        print("  ⚠️  Estás a punto de inicializar BAGO en el propio directorio del framework.")
+        print(f"     {dest}")
+        print()
+        print("  BAGO está diseñado para gobernar un proyecto externo, no a sí mismo.")
+        print("  Usa esta opción solo si realmente quieres evolucionar el framework.")
+        print()
+        try:
+            confirm = input("  ¿Confirmar igualmente? [s/N]: ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            sys.exit(0)
+        if confirm != "s":
+            print("\n  Cancelado. Vuelve a ejecutar y elige otro directorio.\n")
+            return False
         _set_mode("project_active")
         _auto_sync(src)
         _install_extensions(silent=True)
@@ -174,6 +189,24 @@ def _scaffold_project(dest_input):
     print(f"  ▶  cd \"{dest}\" && python3 bago\n")
     return True
 
+
+def _candidate_dirs():
+    """Devuelve hasta 4 directorios candidatos para el nuevo proyecto:
+    el CWD (si no es el framework) y hasta 3 padres del framework."""
+    framework_dir = BAGO_ROOT.parent
+    cwd = Path.cwd()
+    seen = set()
+    candidates = []
+
+    for d in ([cwd] if cwd != framework_dir else []) + list(framework_dir.parents)[:4]:
+        if d not in seen and d != framework_dir:
+            seen.add(d)
+            candidates.append(d)
+        if len(candidates) == 4:
+            break
+    return candidates
+
+
 # ── Prompt de arranque ─────────────────────────────────────────────────────────
 
 def _prompt_mode():
@@ -199,14 +232,32 @@ def _prompt_mode():
         return "banner"
 
     elif choice == "2":
-        default = str(BAGO_ROOT.parent)
-        print(f"\n  Ruta del proyecto nuevo")
-        print(f"  (Enter = directorio actual: {default})")
+        candidates = _candidate_dirs()
+        print()
+        print("  BAGO trabaja SOBRE tu proyecto, no dentro del framework.")
+        print("  ¿Dónde está (o estará) tu proyecto?\n")
+        for i, d in enumerate(candidates, 1):
+            print(f"  [{i}] {d}")
+        print(f"  [M] Otra ruta (escribirla)")
+        print()
         try:
-            dest_input = input("  > ").strip()
+            sel = input("  Elige [1–{}/M]: ".format(len(candidates))).strip().upper()
         except (EOFError, KeyboardInterrupt):
             print()
             sys.exit(0)
+
+        if sel.isdigit() and 1 <= int(sel) <= len(candidates):
+            dest_input = str(candidates[int(sel) - 1])
+        elif sel == "M":
+            try:
+                dest_input = input("  Ruta del proyecto: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print()
+                sys.exit(0)
+        else:
+            print("\n  Opción no válida.\n")
+            return "invalid"
+
         return "done" if _scaffold_project(dest_input) else "error"
 
     else:
