@@ -134,14 +134,11 @@ def _get_health_score() -> int:
     """Ejecuta health_score.py y extrae el score."""
     try:
         result = subprocess.run(
-            ["python3", str(BAGO_ROOT / "tools" / "health_score.py")],
+            ["python3", str(BAGO_ROOT / "tools" / "health_score.py"), "--score-only"],
             capture_output=True, text=True, timeout=10,
             cwd=str(REPO_ROOT)
         )
-        for line in result.stdout.splitlines():
-            m = re.search(r"(\d+)/100", line)
-            if m:
-                return int(m.group(1))
+        return int(result.stdout.strip())
     except Exception:
         pass
     return -1

@@ -134,6 +134,8 @@ def _active_task():
     except Exception:
         return None
 
+def _last_session():
+    """Devuelve (session_id, workflow) de la última sesión cerrada."""
     try:
         gs = json.loads((STATE / "global_state.json").read_text())
         return gs.get("last_completed_session_id", ""), gs.get("last_completed_workflow", "")
