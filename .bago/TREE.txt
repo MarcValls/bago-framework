@@ -151,6 +151,9 @@ docs/operation/templates/tpl_exploration.md
 docs/operation/templates/tpl_harvest.md
 docs/operation/templates/tpl_sprint.md
 docs/operation/templates/tpl_system_change.md
+docs/reports/
+docs/reports/2026-04-20_auditoria_coherencia_v2.5-stable.md
+docs/reports/README.md
 examples/
 examples/prompts/
 examples/prompts/ejemplo_prompt_arquitectura.md
