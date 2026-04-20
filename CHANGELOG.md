@@ -5,6 +5,27 @@ Format: `[version] — date · summary · efficiency index`
 
 ---
 
+## [2.5-stable · post-release patches] — 2026-04-20
+
+### Summary
+Governance hardening and launcher UX fix applied on top of 2.5-stable. Fully backward-compatible.
+
+### Governance hardening (PRs #17–#22)
+- `docs/governance/REGLA_INMUTABILIDAD_VALIDACION.md` — formal rule: `validate_*` commands are side-effect free; `sync_*` are the only ones allowed to write
+- `make check-pure` — local validation purity check (mirrors CI)
+- `.github/workflows/validation-purity.yml` — CI enforces that `validate` and `health` leave no diff in the working tree
+- `bago` launcher: skip `_auto_sync()` for `validate` and `health` commands — state/ remains fully untouched
+- `tools/check_validate_purity.py` — static checker for write ops inside `validate_*.py` files
+- Documentation fully synchronized: all references to "validate regenerates checksums/TREE" replaced with correct behavior (`bago sync`)
+
+### Launcher UX fix (PR #23)
+- First-run `[2] Iniciar proyecto nuevo` now shows a numbered list of candidate project directories (terminal CWD + parent folders of the framework)
+- Never silently defaults to the framework directory itself
+- Requires explicit `[s]` confirmation if the user selects the framework directory anyway
+- New helper `_candidate_dirs()` in the launcher
+
+---
+
 ## [2.5-stable] — 2026-04-19 · Efficiency Index: 100/100
 
 ### Summary

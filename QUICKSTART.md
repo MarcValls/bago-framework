@@ -52,6 +52,42 @@ python3 bago health
 
 > **Nota:** El estado `initializing` es **correcto** en una instalación nueva. El score de salud solo sube con el uso real del sistema.
 
+### Primer arranque interactivo
+
+Cuando ejecutas `python3 bago` **sin argumentos** por primera vez, BAGO detecta que está en modo `template_seed` y muestra un menú de configuración:
+
+```
+  ┌─────────────────────────────────────────────┐
+  │  BAGO · Primera ejecución                   │
+  ├─────────────────────────────────────────────┤
+  │  [1] Evolucionar el framework BAGO          │
+  │  [2] Iniciar un proyecto nuevo              │
+  └─────────────────────────────────────────────┘
+```
+
+**Elige según tu objetivo:**
+
+| Opción | Cuándo usarla |
+|---|---|
+| `[1] Evolucionar el framework` | Quieres contribuir o mejorar BAGO en sí mismo |
+| `[2] Iniciar un proyecto nuevo` | Quieres usar BAGO **en tu propio proyecto** |
+
+Si eliges `[2]`, BAGO muestra un menú de directorios sugeridos — **nunca asume que el directorio del framework es tu proyecto**:
+
+```
+  BAGO trabaja SOBRE tu proyecto, no dentro del framework.
+  ¿Dónde está (o estará) tu proyecto?
+
+  [1] /ruta/a/tu/proyecto          ← directorio actual del terminal
+  [2] /ruta/al/directorio/padre
+  [3] /ruta/dos/niveles/arriba
+  [M] Otra ruta (escribirla)
+```
+
+BAGO copiará su pack al directorio elegido y lo dejará listo con `setup`.
+
+> **Nota:** Los subcomandos `validate`, `health`, `audit`… funcionan directamente sin pasar por este menú.
+
 ### Instalar el alias `bago` (opcional pero recomendado)
 
 ```bash
