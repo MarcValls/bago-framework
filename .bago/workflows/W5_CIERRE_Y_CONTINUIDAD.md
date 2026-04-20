@@ -1,4 +1,4 @@
-# W5_CIERRE_Y_CONTINUIDAD
+# W5 · Cierre y Continuidad
 
 ## id
 

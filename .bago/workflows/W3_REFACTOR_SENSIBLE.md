@@ -1,4 +1,4 @@
-# W3_REFACTOR_SENSIBLE
+# W3 · Refactor Sensible
 
 ## id
 

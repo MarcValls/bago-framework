@@ -52,7 +52,7 @@ core/<archivo>.md               # si afecta al core
 ```
 docs/analysis/<INFORME>.md        # informe principal
 state/evaluations/<EVAL>.md       # registro de evaluación
-state/metrics/metrics_snapshot.json  # si actualiza métricas
+state/metrics/metrics_snapshot.json  # si actualiza métricas (directorio creado en primer uso)
 docs/analysis/<HTML>.html         # si hay visualización
 ```
 

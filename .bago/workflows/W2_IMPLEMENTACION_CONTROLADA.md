@@ -1,4 +1,4 @@
-# W2_IMPLEMENTACION_CONTROLADA
+# W2 · Implementación Controlada
 
 ## id
 

@@ -1,4 +1,4 @@
-# W6_IDEACION_APLICADA
+# W6 · Ideación Aplicada
 
 ## id
 
