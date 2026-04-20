@@ -29,13 +29,18 @@ if new_tree != old_tree:
 else:
     print("TREE.txt sin cambios")
 
+EXCLUDED_FROM_CHECKSUMS = {
+    "CHECKSUMS.sha256",
+    "state/repo_context.json",  # volatile runtime file — changes on every bago invocation
+}
+
 # Regenerar CHECKSUMS.sha256
 checksum_lines = []
 for p in sorted(root.rglob("*")):
     if p.is_dir():
         continue
     rel = str(p.relative_to(root)).replace("\\", "/")
-    if rel == "CHECKSUMS.sha256":
+    if rel in EXCLUDED_FROM_CHECKSUMS:
         continue
     digest = hashlib.sha256(p.read_bytes()).hexdigest()
     checksum_lines.append(f"{digest}  {rel}")

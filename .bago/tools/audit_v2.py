@@ -81,8 +81,7 @@ def main():
 
     results = {}
 
-    # [1] INTEGRIDAD — sync metadata first, then verify
-    run_script("sync_pack_metadata.py")
+    # [1] INTEGRIDAD — read-only verify (sync must be run separately before audit)
     rc, out = run_script("validate_pack.py")
     ok1 = rc == 0 and "GO pack" in out
     results["integridad"] = ok1

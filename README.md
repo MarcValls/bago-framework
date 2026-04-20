@@ -1,6 +1,6 @@
 # BAGO — Structured AI Work Framework
 
-> **Version 2.5-stable** · 13 CLI commands · 30 tools · 10 operational workflows · Clean-install state: `initializing`
+> **Version 2.5-stable** · 15 CLI commands · 32 tools · 10 operational workflows · Clean-install state: `initializing`
 
 ---
 
@@ -50,7 +50,7 @@ BAGO has been built using BAGO itself. The following data was collected with `py
 |---|:---:|:---:|:---:|:---:|:---:|
 | **2.3-clean** *(baseline)* | 10 | 19 | 68 | 12 | 78.6 |
 | **2.4-v2rc** *(Dynamic BAGO)* | 10 | 27 | 73 | 12 | 89.3 |
-| **2.5-stable** *(current)* | **13** | **30** | **76** | **12** | **100.0** |
+| **2.5-stable** *(current)* | **15** | **32** | **77** | **12** | **100.0** |
 
 **Growth from 2.3 → 2.5: +27.2%** — measured by weighted index (commands ×0.30, tools ×0.35, docs ×0.20, workflows ×0.15).
 
@@ -147,12 +147,12 @@ bago-framework/
 └── .bago/
     ├── pack.json           ← manifest + version
     ├── AGENT_START.md      ← AI agent entry point
-    ├── tools/              ← 30 Python tools
+    ├── tools/              ← 32 Python tools
     ├── workflows/          ← 10 operational workflows (W0–W9) + orchestration layer
     ├── core/               ← BAGO constitution + protocols
     ├── agents/             ← Agent definitions (MAESTRO, COPILOT_ALIADO)
     ├── roles/              ← Role definitions (Architect, Implementor, Reviewer…)
-    ├── docs/               ← 76 documentation files
+    ├── docs/               ← 77 documentation files
     ├── templates/          ← Session templates
     ├── prompts/            ← Bootstrap prompts
     └── state/              ← Runtime state (sessions, changes, evidences)
