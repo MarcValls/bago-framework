@@ -1,0 +1,69 @@
+name: Validation Purity
+
+on:
+  push:
+  pull_request:
+
+# Enforces the governance rule:
+#   validate_* commands are side-effect free
+#   sync_* commands produce the canonical metadata artifacts
+#
+# See: .bago/docs/governance/REGLA_INMUTABILIDAD_VALIDACION.md
+
+jobs:
+
+  no-side-effects:
+    name: Read-only commands leave no source diff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run read-only commands
+        run: |
+          python3 bago validate
+          python3 bago health
+          python3 bago audit
+
+      - name: Assert no source files were modified
+        # state/ is runtime data (repo_context.json, sessions/, etc.) — excluded from check.
+        # TREE.txt and CHECKSUMS.sha256 are generated artifacts managed by `bago sync`.
+        # This check proves that validate / health / audit never touch source files.
+        run: |
+          git diff --exit-code \
+            -- \
+            ':(exclude).bago/state/' \
+            ':(exclude).bago/CHECKSUMS.sha256' \
+            ':(exclude).bago/TREE.txt'
+
+  metadata-in-sync:
+    name: TREE.txt and CHECKSUMS.sha256 committed in sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Regenerate metadata
+        run: python3 bago sync
+
+      - name: Assert metadata matches committed state
+        # Fails if the developer forgot to run `bago sync` before committing.
+        # state/repo_context.json is excluded from CHECKSUMS by sync_pack_metadata.py
+        # so this check is stable across environments.
+        run: git diff --exit-code .bago/TREE.txt .bago/CHECKSUMS.sha256
+
+  validate-purity-static:
+    name: No write operations inside validate_* tools
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Static purity check
+        run: python3 .bago/tools/check_validate_purity.py
