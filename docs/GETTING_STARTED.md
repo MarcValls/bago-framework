@@ -27,6 +27,19 @@ GO pack
 
 If you see `KO`, run `python3 bago health` for diagnostics.
 
+### First-run setup (optional interactive menu)
+
+Running `python3 bago` with **no arguments** on a fresh clone opens a one-time setup menu:
+
+```
+  [1] Evolucionar el framework BAGO   → contribute to BAGO itself
+  [2] Iniciar un proyecto nuevo       → set up BAGO in your own project
+```
+
+If you choose `[2]`, BAGO presents a numbered list of candidate directories (your terminal CWD and parent folders of the framework directory). Pick a number or enter a custom path — BAGO copies its pack there and runs `setup` automatically.
+
+> You can skip this menu entirely and use subcommands directly (`validate`, `health`, etc.).
+
 ---
 
 ## Step 2 — Check system health

@@ -110,6 +110,20 @@ python3 bago validate
 python3 bago health
 ```
 
+### First-run interactive setup
+
+Running `python3 bago` with **no arguments** on a fresh clone shows a setup menu:
+
+```
+  BAGO · Primera ejecución
+  [1] Evolucionar el framework BAGO   ← contribute to BAGO itself
+  [2] Iniciar un proyecto nuevo       ← use BAGO in your own project
+```
+
+If you choose `[2]`, BAGO shows a numbered list of candidate directories (your current terminal directory and parent folders of the framework). **It never silently uses the framework directory as your project.** Select a number or enter a custom path with `[M]`.
+
+> All subcommands (`validate`, `health`, `audit`, etc.) work directly without going through this menu.
+
 ### First session
 
 ```bash
