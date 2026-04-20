@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from pathlib import Path
-import hashlib
 import subprocess
 import sys
 import re
@@ -19,38 +18,6 @@ def run(script: str):
 
 run("validate_manifest.py")
 run("validate_state.py")
-
-tree = root / "TREE.txt"
-checks = root / "CHECKSUMS.sha256"
-
-# ── Auto-regeneración silenciosa de TREE.txt y CHECKSUMS.sha256 ──────────────
-# Regenerar TREE.txt
-real_paths = sorted(
-    str(p.relative_to(root)).replace("\\", "/") + ("/" if p.is_dir() else "")
-    for p in root.rglob("*")
-)
-new_tree = "\n".join(real_paths)
-old_tree = tree.read_text(encoding="utf-8").rstrip("\n") if tree.exists() else ""
-if new_tree != old_tree:
-    tree.write_text(new_tree, encoding="utf-8")
-    print("TREE.txt regenerado")
-
-# Regenerar CHECKSUMS.sha256
-checksum_lines = []
-for p in sorted(root.rglob("*")):
-    if p.is_dir():
-        continue
-    rel = str(p.relative_to(root)).replace("\\", "/")
-    if rel == "CHECKSUMS.sha256":
-        continue
-    digest = hashlib.sha256(p.read_bytes()).hexdigest()
-    checksum_lines.append(f"{digest}  {rel}")
-new_checksums = "\n".join(checksum_lines)
-old_checksums = checks.read_text(encoding="utf-8").rstrip("\n") if checks.exists() else ""
-if new_checksums != old_checksums:
-    checks.write_text(new_checksums, encoding="utf-8")
-    print("CHECKSUMS.sha256 regenerado")
-# ─────────────────────────────────────────────────────────────────────────────
 
 excluded_prefixes = [
     "docs/migration/",

@@ -19,7 +19,8 @@ Uso:
   ./bago efficiency         → medidor de eficiencia inter-versiones
   ./bago cosecha            → cosecha.py
   ./bago detector           → context_detector.py
-  ./bago validate           → validate_pack.py
+  ./bago validate           → validate_pack.py  (solo verifica)
+  ./bago sync               → sync_pack_metadata.py  (regenera TREE.txt y CHECKSUMS)
   ./bago dashboard --full   → dashboard extendido
   ./bago health             → health_score.py
   ./bago audit              → audit_v2.py
@@ -43,6 +44,7 @@ COMMANDS = {
     "cosecha":   ["python3", str(TOOLS / "cosecha.py")],
     "detector":  ["python3", str(TOOLS / "context_detector.py")],
     "validate":  ["python3", str(TOOLS / "validate_pack.py")],
+    "sync":      ["python3", str(TOOLS / "sync_pack_metadata.py")],
     "health":    ["python3", str(TOOLS / "health_score.py")],
     "audit":     ["python3", str(TOOLS / "audit_v2.py")],
     "workflow":  ["python3", str(TOOLS / "workflow_selector.py")],
