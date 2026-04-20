@@ -54,25 +54,41 @@ python3 bago health
 
 ### Primer arranque interactivo
 
-Cuando ejecutas `python3 bago` **sin argumentos** por primera vez, BAGO detecta que está en modo `template_seed` y muestra un menú de configuración:
+Cuando ejecutas `python3 bago` **sin argumentos**, BAGO detecta que está en modo `template_seed` y muestra un menú de configuración adaptado al entorno:
 
+**Si tienes conexión a GitHub (clon de git):**
 ```
-  ┌─────────────────────────────────────────────┐
-  │  BAGO · Primera ejecución                   │
-  ├─────────────────────────────────────────────┤
-  │  [1] Evolucionar el framework BAGO          │
-  │  [2] Iniciar un proyecto nuevo              │
-  └─────────────────────────────────────────────┘
+  ┌─────────────────────────────────────────────────┐
+  │  BAGO · Arranque del framework                  │
+  ├─────────────────────────────────────────────────┤
+  │  [1] Seguir con esta versión                    │
+  │  [2] Actualizar framework  (git pull)           │
+  │  [3] Iniciar un proyecto nuevo                  │
+  │  [4] Evolucionar el framework BAGO              │
+  └─────────────────────────────────────────────────┘
 ```
 
-**Elige según tu objetivo:**
+**Sin remote git (instalación zip/offline):**
+```
+  ┌─────────────────────────────────────────────────┐
+  │  BAGO · Arranque del framework                  │
+  ├─────────────────────────────────────────────────┤
+  │  [1] Seguir con esta versión                    │
+  │  [2] Iniciar un proyecto nuevo                  │
+  │  [3] Evolucionar el framework BAGO              │
+  └─────────────────────────────────────────────────┘
+```
 
-| Opción | Cuándo usarla |
+**Qué hace cada opción:**
+
+| Opción | Acción |
 |---|---|
-| `[1] Evolucionar el framework` | Quieres contribuir o mejorar BAGO en sí mismo |
-| `[2] Iniciar un proyecto nuevo` | Quieres usar BAGO **en tu propio proyecto** |
+| `[1] Seguir con esta versión` | Continúa directamente — muestra el banner de BAGO |
+| `[2] Actualizar framework` | Ejecuta `git pull --ff-only` y actualiza el framework *(solo con remote)* |
+| `Iniciar un proyecto nuevo` | Muestra el selector de directorio y copia BAGO a tu proyecto |
+| `Evolucionar el framework` | Activa modo desarrollo para contribuir a BAGO en sí mismo |
 
-Si eliges `[2]`, BAGO muestra un menú de directorios sugeridos — **nunca asume que el directorio del framework es tu proyecto**:
+Si eliges **Iniciar un proyecto nuevo**, BAGO muestra directorios candidatos — **nunca asume que el directorio del framework es tu proyecto**:
 
 ```
   BAGO trabaja SOBRE tu proyecto, no dentro del framework.

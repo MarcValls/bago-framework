@@ -112,15 +112,16 @@ python3 bago health
 
 ### First-run interactive setup
 
-Running `python3 bago` with **no arguments** on a fresh clone shows a setup menu:
+Running `python3 bago` with **no arguments** shows a setup menu. The options adapt based on whether a git remote is configured:
 
 ```
-  BAGO · Primera ejecución
-  [1] Evolucionar el framework BAGO   ← contribute to BAGO itself
-  [2] Iniciar un proyecto nuevo       ← use BAGO in your own project
+  [1] Seguir con esta versión          ← continue with current version
+  [2] Actualizar framework (git pull)  ← only shown when git remote exists
+  [3] Iniciar un proyecto nuevo        ← set up BAGO in your own project
+  [4] Evolucionar el framework BAGO    ← contribute to BAGO itself
 ```
 
-If you choose `[2]`, BAGO shows a numbered list of candidate directories (your current terminal directory and parent folders of the framework). **It never silently uses the framework directory as your project.** Select a number or enter a custom path with `[M]`.
+Choosing "Iniciar un proyecto nuevo" shows a numbered list of candidate directories (your terminal CWD and parent folders) — **BAGO never silently operates inside the framework directory itself.**
 
 > All subcommands (`validate`, `health`, `audit`, etc.) work directly without going through this menu.
 

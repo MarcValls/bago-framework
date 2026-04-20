@@ -18,11 +18,11 @@ Governance hardening and launcher UX fix applied on top of 2.5-stable. Fully bac
 - `tools/check_validate_purity.py` — static checker for write ops inside `validate_*.py` files
 - Documentation fully synchronized: all references to "validate regenerates checksums/TREE" replaced with correct behavior (`bago sync`)
 
-### Launcher UX fix (PR #23)
-- First-run `[2] Iniciar proyecto nuevo` now shows a numbered list of candidate project directories (terminal CWD + parent folders of the framework)
-- Never silently defaults to the framework directory itself
-- Requires explicit `[s]` confirmation if the user selects the framework directory anyway
-- New helper `_candidate_dirs()` in the launcher
+### Launcher UX fixes (PRs #23–#26)
+- **PR #23** — `[2] Iniciar proyecto nuevo` shows numbered candidate directories; never defaults silently to framework dir; explicit `[s]` required if user picks framework itself
+- **PR #24** — Documentation updated: QUICKSTART, README, GETTING_STARTED, CHANGELOG
+- **PR #25** — `global_state.json` now ships with `"distribution_mode": "template_seed"` so fresh clones trigger the first-run prompt correctly
+- **PR #26** — First-run menu redesigned: `[1] Seguir / [2] Actualizar (git pull) / [3] Iniciar proyecto / [4] Evolucionar`; update option shown only when git remote exists; `_git_remote_url()`, `_update_framework()`, `_pick_project_dir()` helpers added
 
 ---
 
