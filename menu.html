@@ -172,6 +172,88 @@
   .cc-metrics { color: #fbbf24; }
   .cc-orch    { color: #c084fc; }
 
+  /* ── QUICK START ────────────────────────────────────────── */
+  .quick-start-section {
+    width: 100%; max-width: 1080px;
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 18px; padding: 24px;
+    margin-bottom: 32px;
+  }
+  .qs-title {
+    font-size: 1.3rem; font-weight: 800; margin-bottom: 16px;
+    color: var(--text);
+  }
+  .qs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .qs-btn {
+    background: rgba(56,189,248,.1); color: var(--accent2);
+    border: 1px solid rgba(56,189,248,.3);
+    border-radius: 12px; padding: 14px;
+    font-size: .85rem; font-weight: 600;
+    cursor: pointer; transition: all .2s;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .qs-btn:hover {
+    background: rgba(56,189,248,.2);
+    border-color: rgba(56,189,248,.5);
+    transform: translateY(-2px);
+  }
+  .qs-icon { font-size: 1.5rem; }
+
+  /* ── INFO PANELS ────────────────────────────────────────── */
+  .info-panel {
+    width: 100%; max-width: 720px;
+    background: var(--card); border: 2px solid var(--accent2);
+    border-radius: 18px; padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 32px rgba(56,189,248,.15);
+  }
+  .info-panel.hidden { display: none; }
+  .info-panel h3 {
+    font-size: 1.2rem; margin-bottom: 16px;
+    color: var(--accent2);
+  }
+  .info-panel ol, .info-panel dl {
+    margin: 16px 0; line-height: 1.8;
+  }
+  .info-panel code {
+    background: rgba(56,189,248,.1);
+    padding: 2px 8px; border-radius: 4px;
+    font-family: monospace; font-size: .85rem;
+  }
+  .info-panel pre {
+    background: rgba(0,0,0,.3);
+    padding: 16px; border-radius: 8px;
+    overflow-x: auto;
+  }
+  .info-panel pre code {
+    background: none;
+    padding: 0;
+  }
+  .info-panel button {
+    margin-top: 16px;
+    background: rgba(56,189,248,.15); color: var(--accent2);
+    border: 1px solid rgba(56,189,248,.3);
+    padding: 8px 20px; border-radius: 8px;
+    cursor: pointer; font-weight: 600;
+  }
+  .info-panel button:hover {
+    background: rgba(56,189,248,.25);
+  }
+  .info-panel dt {
+    font-weight: 700;
+    margin-top: 12px;
+    color: var(--text);
+  }
+  .info-panel dd {
+    margin-left: 0;
+    margin-top: 4px;
+    color: var(--muted);
+  }
+
   /* ── FOOTER ─────────────────────────────────────── */
   .footer {
     margin-top: 48px; text-align: center;
@@ -208,6 +290,66 @@
     <span>⚡</span> Iniciar en Terminal
   </a>
   <button class="retry-btn" id="retry-btn" onclick="startDetection()" style="display:none;">⟳ Reintentar</button>
+</div>
+
+<!-- QUICK START SECTION -->
+<div class="quick-start-section">
+  <h2 class="qs-title">🚀 Inicio rápido</h2>
+  <div class="qs-grid">
+    <button class="qs-btn" onclick="togglePanel('guide')">
+      <span class="qs-icon">📖</span>
+      <span>Guía de 2 min</span>
+    </button>
+    <button class="qs-btn" onclick="togglePanel('workflow')">
+      <span class="qs-icon">🎯</span>
+      <span>Flujo recomendado</span>
+    </button>
+    <button class="qs-btn" onclick="togglePanel('faq')">
+      <span class="qs-icon">❓</span>
+      <span>FAQ</span>
+    </button>
+    <button class="qs-btn" onclick="copyCommand('./bago start')">
+      <span class="qs-icon">📋</span>
+      <span>Copiar comando CLI</span>
+    </button>
+  </div>
+</div>
+
+<!-- INFO PANELS -->
+<div id="guide-panel" class="info-panel hidden">
+  <h3>📖 Guía rápida BAGO (2 minutos)</h3>
+  <ol>
+    <li><strong>Primera vez:</strong> Ejecuta <code>./bago setup</code> en terminal</li>
+    <li><strong>Ver ideas:</strong> <code>./bago ideas</code> lista tareas priorizadas</li>
+    <li><strong>Trabajar:</strong> <code>./bago session</code> abre contexto de trabajo</li>
+    <li><strong>Estado:</strong> <code>./bago status</code> o este panel web</li>
+  </ol>
+  <button onclick="togglePanel('guide')">Cerrar</button>
+</div>
+
+<div id="workflow-panel" class="info-panel hidden">
+  <h3>🎯 Flujo de trabajo recomendado</h3>
+  <pre><code>./bago ideas                # 1. Lista ideas
+./bago ideas --accept 3     # 2. Acepta idea #3
+./bago session              # 3. Abre terminal con contexto
+# [haces cambios]
+./bago task --done          # 4. Marca completada</code></pre>
+  <button onclick="togglePanel('workflow')">Cerrar</button>
+</div>
+
+<div id="faq-panel" class="info-panel hidden">
+  <h3>❓ Preguntas frecuentes</h3>
+  <dl>
+    <dt><strong>¿Qué es BAGO?</strong></dt>
+    <dd>Sistema de gobernanza de sesiones IA para mantener contexto, trazabilidad y workflows estructurados.</dd>
+
+    <dt><strong>¿Cómo inicio el servidor?</strong></dt>
+    <dd><code>python3 .bago/tools/bago_chat_server.py</code></dd>
+
+    <dt><strong>¿Funciona sin servidor?</strong></dt>
+    <dd>Sí, este panel funciona sin servidor. El servidor solo añade datos en vivo.</dd>
+  </dl>
+  <button onclick="togglePanel('faq')">Cerrar</button>
 </div>
 
 <!-- SECTION CARDS -->
@@ -411,6 +553,23 @@ function disableCards() {
     card.href = '#';
     card.removeAttribute('target');
     card.onclick = () => false;
+  });
+}
+
+// ── PANELS & UTILITIES ────────────────────────────────────
+function togglePanel(panelId) {
+  const panel = document.getElementById(panelId + '-panel');
+  if (panel) {
+    panel.classList.toggle('hidden');
+  }
+}
+
+function copyCommand(cmd) {
+  navigator.clipboard.writeText(cmd).then(() => {
+    alert('✓ Comando copiado: ' + cmd);
+  }).catch(err => {
+    console.error('Error al copiar:', err);
+    prompt('Copia este comando:', cmd);
   });
 }
 
