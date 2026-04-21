@@ -10,3 +10,4 @@ BAGO_*_tester_*.zip
 # Script de sesión temporal
 _finish_session.sh
 .bago/state/global_state.backup.json
+LaunchBAGO.app/
