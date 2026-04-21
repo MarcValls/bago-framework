@@ -42,7 +42,9 @@ BAGO_ROOT = Path(__file__).resolve().parent / ".bago"
 TOOLS     = BAGO_ROOT / "tools"
 
 COMMANDS = {
+    "on":          ["python3", str(TOOLS / "bago_on.py")],
     "dashboard":   ["python3", str(TOOLS / "pack_dashboard.py")],
+    "debug":       ["python3", str(TOOLS / "bago_debug.py")],
     "ideas":       ["python3", str(TOOLS / "emit_ideas.py")],
     "cosecha":     ["python3", str(TOOLS / "cosecha.py")],
     "detector":    ["python3", str(TOOLS / "context_detector.py")],
@@ -57,7 +59,17 @@ COMMANDS = {
     "session":     ["python3", str(TOOLS / "session_opener.py")],
     "efficiency":  ["python3", str(TOOLS / "efficiency_meter.py")],
     "auto":        ["python3", str(TOOLS / "auto_mode.py")],
+    "map":         ["python3", str(TOOLS / "context_map.py")],
+    "chat":        ["python3", str(TOOLS / "bago_chat_server.py")],
+    "repo-on":     ["python3", str(TOOLS / "repo_on.py")],
+    "repo-debug":  ["python3", str(TOOLS / "bago_debug.py"), "--repo"],
+    "repo-lint":   ["python3", str(TOOLS / "repo_runner.py"), "lint"],
+    "repo-test":   ["python3", str(TOOLS / "repo_runner.py"), "test"],
+    "repo-build":  ["python3", str(TOOLS / "repo_runner.py"), "build"],
 }
+
+# Herramientas externas bloqueadas — nunca se invocan desde BAGO
+BLOCKED_CMDS = {"codex"}
 
 # ── Extensiones Copilot CLI ────────────────────────────────────────────────────
 
@@ -151,8 +163,31 @@ def _cmd_versions():
 
     print()
 
+def _ensure_launcher():
+    """Comprueba que LaunchBAGO.app existe y el URL scheme bago-launch:// está registrado.
+    Si no, ejecuta setup-launcher.sh automáticamente."""
+    project_root = BAGO_ROOT.parent
+    app_path     = project_root / "LaunchBAGO.app"
+    setup_script = project_root / "setup-launcher.sh"
+
+    if app_path.exists():
+        return  # ya instalado
+
+    if not setup_script.exists():
+        return  # no hay setup script, ignorar
+
+    print("  🔧 LaunchBAGO.app no encontrado — ejecutando setup-launcher.sh…")
+    result = subprocess.run(["bash", str(setup_script)], cwd=str(project_root))
+    if result.returncode == 0:
+        print("  ✅ Launcher instalado. El botón '⚡ Iniciar en Terminal' ya funciona.\n")
+    else:
+        print("  ⚠️  setup-launcher.sh terminó con error. Ejecuta 'bash setup-launcher.sh' manualmente.\n")
+
+
 def main():
     args = sys.argv[1:]
+
+    _ensure_launcher()
 
     if not args:
         subprocess.run(
@@ -163,6 +198,10 @@ def main():
 
     cmd = args[0].lower()
     rest = args[1:]
+
+    if cmd in BLOCKED_CMDS:
+        print(f"  ❌ '{cmd}' está bloqueado en BAGO. Invócalo directamente si lo necesitas.")
+        sys.exit(1)
 
     if cmd == "setup":
         subprocess.run(
@@ -196,4 +235,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
