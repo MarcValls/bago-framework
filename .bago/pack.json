@@ -1,7 +1,7 @@
 {
   "id": "bago_amtec",
   "name": "BAGO",
-  "version": "2.4-v2rc",
+  "version": "2.5-stable",
   "encoding": "UTF-8",
   "manifest": "pack.json",
   "description": "Sistema operativo de trabajo técnico para programación y generación compleja.",

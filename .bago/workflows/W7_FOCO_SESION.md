@@ -22,6 +22,7 @@ python3 tools/session_preflight.py \
   --objetivo "..." \
   --roles "role_principal[,role_apoyo]" \
   --artefactos "ruta1,ruta2,ruta3" \
+  --handoff-chain "role_analyst>role_architect>role_generator>role_validator>role_vertice" \
   --task-type system_change
 ```
 
@@ -96,6 +97,9 @@ Antes de cerrar la sesión, verificar:
 [ ] Se entregaron ≥ 3 artefactos pre-declarados (meta real: ≥ 4)
 [ ] Se usaron ≤ 2 roles
 [ ] validate_pack.py → GO
+[ ] `--handoff-chain` declarado y válido (≥3 etapas, sin duplicados contiguos, incluye `role_validator`, cierra en `role_validator` o `role_vertice`, y cubre los roles activos)
+[ ] `bago task --done --test-cmd "<cmd>" [--test-cmd "<cmd2>"] --human-check "<texto>"` ejecutado en GO
+[ ] `--human-check` usado en el cierre tiene mínimo 20 caracteres
 [ ] El campo `artifacts` del JSON de sesión coincide con los pre-declarados
 ```
 

@@ -1,0 +1,56 @@
+{
+  "tags": {
+    "harvest": {
+      "count": 1,
+      "entities": [
+        "SES-HARVEST-2026-04-21-001"
+      ]
+    },
+    "w9": {
+      "count": 1,
+      "entities": [
+        "SES-HARVEST-2026-04-21-001"
+      ]
+    },
+    "governance": {
+      "count": 1,
+      "entities": [
+        "SES-HARVEST-2026-04-21-001"
+      ]
+    },
+    "exploration": {
+      "count": 1,
+      "entities": [
+        "SES-W8-2026-04-18-001"
+      ]
+    },
+    "w8": {
+      "count": 1,
+      "entities": [
+        "SES-W8-2026-04-18-001"
+      ]
+    },
+    "analysis": {
+      "count": 1,
+      "entities": [
+        "SES-W8-2026-04-18-001"
+      ]
+    }
+  },
+  "entities": {
+    "SES-HARVEST-2026-04-21-001": {
+      "tags": [
+        "harvest",
+        "w9",
+        "governance"
+      ]
+    },
+    "SES-W8-2026-04-18-001": {
+      "tags": [
+        "exploration",
+        "w8",
+        "analysis"
+      ]
+    }
+  }
+}

@@ -2,16 +2,18 @@
 """
 session_preflight.py — Validador de reglas W7 antes de abrir una sesión BAGO.
 
-Verifica que se cumplen las tres reglas del ESCENARIO-001:
+Verifica que se cumplen las reglas del ESCENARIO-001 + continuidad de handoff:
   Regla A: ≥3 artefactos pre-declarados (no contar el JSON de sesión)
   Regla B: ≤2 roles activados
   Regla C: objetivo con formato "Verbo + objeto + criterio de done"
+  Regla D: cadena de handoff de roles explícita y cerrando en validación
 
 Uso:
   python3 tools/session_preflight.py \
     --objetivo "Crear X para que Y" \
     --roles "role_architect,role_validator" \
-    --artefactos "docs/A.md,state/changes/CHG.json,tools/script.py"
+    --artefactos "docs/A.md,state/changes/CHG.json,tools/script.py" \
+    --handoff-chain "role_analyst>role_architect>role_generator>role_validator>role_vertice"
 
 Salida:
   GO  — cumple todas las reglas, listo para abrir sesión
@@ -83,6 +85,43 @@ def check_artefactos(artefactos_raw: str) -> tuple[bool, str]:
     return True, f"OK ({len(useful)} artefactos útiles de {len(all_arts)} declarados)"
 
 
+def check_handoff_chain(chain_raw: str, roles_raw: str) -> tuple[bool, str]:
+    chain = [r.strip() for r in chain_raw.split(">") if r.strip()]
+    active_roles = [r.strip() for r in roles_raw.split(",") if r.strip()]
+
+    if not chain:
+        return False, (
+            "Regla D: falta --handoff-chain. "
+            "Declara una secuencia de relevo: role_a>role_b>role_validator."
+        )
+    if len(chain) < 3:
+        return False, (
+            f"Regla D: handoff demasiado corto ({chain}). "
+            "Necesitas al menos 3 etapas de relevo."
+        )
+    if any(chain[idx] == chain[idx - 1] for idx in range(1, len(chain))):
+        return False, (
+            f"Regla D: hay roles repetidos en pasos consecutivos ({chain}). "
+            "Define una secuencia limpia sin duplicados contiguos."
+        )
+    if "role_validator" not in chain:
+        return False, (
+            "Regla D: la cadena no incluye role_validator. "
+            "Todo cierre debe pasar por validación."
+        )
+    if chain[-1] not in {"role_validator", "role_vertice"}:
+        return False, (
+            f"Regla D: el último relevo debe cerrar en validación/supervisión, no en '{chain[-1]}'."
+        )
+    missing = [role for role in active_roles if role not in chain]
+    if missing:
+        return False, (
+            f"Regla D: roles activos fuera del handoff {missing}. "
+            "Alinea --roles con --handoff-chain."
+        )
+    return True, f"OK ({len(chain)} etapas: {' > '.join(chain)})"
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Valida las reglas W7 antes de abrir una sesión BAGO (ESCENARIO-001)."
@@ -90,6 +129,7 @@ def main():
     parser.add_argument("--objetivo",    required=True, help="Objetivo de la sesión: Verbo + objeto + criterio de done")
     parser.add_argument("--roles",       required=True, help="Roles separados por coma. Máximo 2.")
     parser.add_argument("--artefactos",  required=True, help="Artefactos pre-declarados separados por coma. Mínimo 3 útiles.")
+    parser.add_argument("--handoff-chain", required=False, default="", help="Cadena de relevo entre roles: role_a>role_b>role_validator")
     parser.add_argument("--task-type",   default="system_change", help="Tipo de tarea (para sugerir roles). Default: system_change")
     args = parser.parse_args()
 
@@ -108,6 +148,11 @@ def main():
 
     ok, msg = check_artefactos(args.artefactos)
     results.append(("Regla A — Artefactos", ok, msg))
+    if not ok:
+        all_ok = False
+
+    ok, msg = check_handoff_chain(args.handoff_chain, args.roles)
+    results.append(("Regla D — Handoff", ok, msg))
     if not ok:
         all_ok = False
 

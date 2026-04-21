@@ -35,6 +35,8 @@ TOOLS        = PACK_DIR / "tools"
 sys.path.insert(0, str(TOOLS))
 os.chdir(str(PROJECT_ROOT))   # las herramientas asumen cwd = project root
 
+from target_selector import choose_path
+
 # ─── Selección dinámica de directorio ────────────────────────────────────────
 
 def _load_recent_dirs() -> list[dict]:
@@ -90,58 +92,21 @@ def _load_recent_dirs() -> list[dict]:
 def _pick_directory() -> "str | None":
     """Muestra menú de directorios recientes y devuelve el path elegido."""
     dirs   = _load_recent_dirs()
-    W_DIR  = 58
-
-    print()
-    print("╔" + "═" * W_DIR + "╗")
-    print(f"║  {'BAGO · ¿Con qué directorio trabajamos?':<{W_DIR - 2}}║")
-    print("╠" + "═" * W_DIR + "╣")
-
-    for i, d in enumerate(dirs, 1):
-        ts      = d["timestamp"][:10] if d["timestamp"] else "—"
-        tag     = "  ← actual" if d["is_current"] else ""
-        path_s  = d["path"]
-        if len(path_s) > W_DIR - 6:
-            path_s = "…" + path_s[-(W_DIR - 7):]
-        header = f"[{i}] {d['label']}{tag}"
-        print(f"║  {header:<{W_DIR - 2}}║")
-        print(f"║      {path_s:<{W_DIR - 6}}║")
-        print(f"║      {ts:<{W_DIR - 6}}║")
-        if i < len(dirs):
-            print(f"║  {'·' * (W_DIR - 4)}║")
-
-    other_n = len(dirs) + 1
-    print("╠" + "═" * W_DIR + "╣")
-    print(f"║  [{other_n}] Otro directorio (ingresar ruta){'':<{W_DIR - 36}}║")
-    print(f"║  [0] Cancelar{'':<{W_DIR - 14}}║")
-    print("╚" + "═" * W_DIR + "╝")
-    print()
-
-    try:
-        choice = input("  Selección: ").strip()
-    except (KeyboardInterrupt, EOFError):
-        return None
-
-    if choice == "0":
-        return None
-
-    if choice.isdigit():
-        n = int(choice)
-        if 1 <= n <= len(dirs):
-            return dirs[n - 1]["path"]
-        if n == other_n:
-            try:
-                custom = input("  Ruta del directorio: ").strip()
-                return custom if custom else None
-            except (KeyboardInterrupt, EOFError):
-                return None
-
-    # Intento como ruta directa
-    if Path(choice).exists():
-        return choice
-
-    print(f"  ⚠️  Opción no válida.")
-    return None
+    entries = []
+    for d in dirs:
+        ts = d["timestamp"][:10] if d["timestamp"] else "—"
+        tag = "actual" if d["is_current"] else "reciente"
+        entries.append({
+            "label": f"{d['label']} [{tag}]",
+            "path": d["path"],
+            "reason": f"última marca: {ts}",
+        })
+    return choose_path(
+        entries,
+        title="BAGO · ¿Con qué directorio trabajamos?",
+        custom_label="Ruta exacta…",
+        custom_prompt="  Ruta del directorio: ",
+    )
 
 
 def _sync_context(target_path: str) -> bool:
@@ -430,7 +395,7 @@ def run():
             "plan": [{"id": s["id"], "cmd": s.get("cmd"), "label": s["label"],
                        "interactive": s.get("interactive", False)} for s in steps],
             "dry_run": dry_run,
-            "ts": datetime.now().isoformat()
+            "ts": datetime.now(timezone.utc).isoformat()
         }, indent=2, ensure_ascii=False))
         return
 

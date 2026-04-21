@@ -38,3 +38,20 @@ Presets recomendados:
 
 - `safe`: `global_rate_limit_rps=0.5`
 - `balanced`: `global_rate_limit_rps=1.0`
+
+## DEC-006
+
+Los LLMs pueden existir como capa opcional de UX, explicación o resumen,
+pero no forman parte del plano de control canónico de `.bago/`.
+
+Implicaciones:
+
+- no seleccionan target ni repo activo;
+- no activan workflows;
+- no escriben `state/` por inferencia;
+- no sustituyen guards, validadores ni runners;
+- si faltan o fallan, `.bago/` debe seguir operando igual.
+
+Contrato operativo:
+
+- ver `docs/operation/CONTRATO_FRONTERA_LLM.md`.

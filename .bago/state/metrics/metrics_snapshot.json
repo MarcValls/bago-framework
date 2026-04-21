@@ -122,5 +122,10 @@
       "roles_per_ses": 3.67,
       "decisions_per_ses": 0.0
     }
-  }
+  },
+  "native_sessions_completed": 19,
+  "migrated_sessions_count": 3,
+  "migrated_changes_count": 0,
+  "validated_changes": 0,
+  "pack_integrity_last_check": "GO"
 }

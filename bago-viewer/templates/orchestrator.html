@@ -4,7 +4,21 @@
 
 {% block content %}
 <style>
-  .orch-root { display: grid; grid-template-rows: auto 1fr; gap: 20px; }
+  /* Override layout base solo para Orquestador */
+  .wrap {
+    max-width: 100%;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .orch-root {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    overflow-x: clip;
+  }
 
   /* STATUS BAR */
   .orch-statusbar {
@@ -35,9 +49,158 @@
   .statusbar-right { margin-left:auto; color:var(--muted); font-size:.78rem; }
   #last-updated-ts { color:var(--accent2); font-weight:600; }
 
+  /* COMMAND DASHBOARD */
+  .cmd-kpis {
+    display:grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap:12px;
+    min-width: 0;
+  }
+  @media(max-width:1100px){ .cmd-kpis{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  @media(max-width:660px){ .cmd-kpis{ grid-template-columns: 1fr; } }
+  .cmd-card {
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px 14px;
+  }
+  .kpi-ok { border-color: rgba(34,197,94,.35); box-shadow: inset 0 0 0 1px rgba(34,197,94,.08); }
+  .kpi-warn { border-color: rgba(245,158,11,.35); box-shadow: inset 0 0 0 1px rgba(245,158,11,.08); }
+  .kpi-ko { border-color: rgba(239,68,68,.35); box-shadow: inset 0 0 0 1px rgba(239,68,68,.08); }
+  .cmd-k { color:var(--muted); font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; font-weight:700; }
+  .cmd-k-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .cmd-v { color:var(--text); font-weight:800; font-size:1.3rem; margin-top:6px; }
+  .cmd-s { color:var(--muted); font-size:.76rem; margin-top:5px; }
+  .window-select {
+    background:rgba(15,23,42,.6);
+    color:var(--text);
+    border:1px solid var(--line);
+    border-radius:6px;
+    font-size:.72rem;
+    padding:3px 6px;
+    font-weight:700;
+  }
+  .cmd-actions { display:flex; flex-wrap:wrap; gap:8px; }
+  .cmd-btn {
+    display:inline-flex; align-items:center; gap:6px;
+    text-decoration:none; padding:7px 10px; border-radius:8px;
+    font-size:.78rem; font-weight:700; color:#bae6fd;
+    background:rgba(56,189,248,.12); border:1px solid rgba(56,189,248,.25);
+  }
+  .cmd-btn:hover { filter:brightness(1.1); }
+
+  /* CONTROL PANEL */
+  .orch-control {
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:14px;
+    display:grid;
+    gap:12px;
+  }
+  .ctl-row { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:10px; min-width: 0; }
+  @media(max-width:1100px){ .ctl-row{ grid-template-columns:1fr; } }
+  .ctl-box {
+    background:rgba(17,24,39,.55);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px;
+  }
+  .ctl-title { font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); font-weight:700; margin-bottom:8px; }
+  .ctl-actions { display:flex; flex-wrap:wrap; gap:7px; }
+  .ctl-btn {
+    border:1px solid rgba(56,189,248,.25);
+    background:rgba(56,189,248,.1);
+    color:#bae6fd;
+    border-radius:8px;
+    padding:6px 10px;
+    font-size:.77rem;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .ctl-btn:hover { filter:brightness(1.1); }
+  .ctl-btn:disabled { opacity:.55; cursor:wait; }
+  .ctl-btn.preset { border-color: rgba(168,85,247,.28); background: rgba(168,85,247,.12); color:#ddd6fe; }
+  .ctl-input {
+    width:100%;
+    margin-top:8px;
+    background:rgba(15,23,42,.55);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:8px;
+    padding:8px 10px;
+    font-size:.78rem;
+  }
+  .ctl-log {
+    background:#0b1220;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px;
+    color:#d1d5db;
+    font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size:.74rem;
+    white-space:pre-wrap;
+    max-height:220px;
+    overflow:auto;
+  }
+  .drag-cmd { cursor:grab; }
+  .stage-drop {
+    border:1px dashed rgba(148,163,184,.45);
+    border-radius:8px;
+    padding:8px;
+    min-height:42px;
+    background:rgba(2,6,23,.25);
+  }
+  .stage-drop.drag-over {
+    border-color: rgba(56,189,248,.7);
+    background: rgba(56,189,248,.12);
+  }
+  .stage-card {
+    background:rgba(15,23,42,.6);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:8px;
+  }
+  .stage-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:7px;
+    color:var(--muted);
+    font-size:.72rem;
+    font-weight:700;
+  }
+  .stage-list { display:flex; flex-wrap:wrap; gap:6px; }
+  .stage-chip {
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    padding:4px 8px;
+    border-radius:999px;
+    border:1px solid rgba(56,189,248,.28);
+    background:rgba(56,189,248,.1);
+    font-size:.72rem;
+    color:#bae6fd;
+    cursor:grab;
+  }
+  .stage-chip button {
+    background:transparent;
+    border:none;
+    color:#fca5a5;
+    cursor:pointer;
+    padding:0 2px;
+    font-size:.8rem;
+  }
+
   /* MAIN GRID */
-  .orch-main { display:grid; grid-template-columns:1fr 360px; gap:20px; align-items:start; }
-  @media(max-width:960px){ .orch-main{grid-template-columns:1fr;} }
+  .orch-main {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(300px,360px);
+    gap:20px;
+    align-items:start;
+    min-width: 0;
+  }
+  @media(max-width:1280px){ .orch-main{grid-template-columns:1fr;} }
   .orch-left  { display:flex; flex-direction:column; gap:20px; }
   .orch-right { display:flex; flex-direction:column; gap:16px; }
 
@@ -204,6 +367,92 @@
     </div>
   </div>
 
+  <!-- COMMAND DASHBOARD -->
+  <div class="cmd-kpis">
+    <div class="cmd-card" id="kpi-card-validation">
+      <div class="cmd-k">Estado de validación</div>
+      <div class="cmd-v" id="kpi-validation">—</div>
+      <div class="cmd-s" id="kpi-validation-sub">pack/state/manifest</div>
+    </div>
+    <div class="cmd-card" id="kpi-card-activity">
+      <div class="cmd-k cmd-k-row">
+        <span>Actividad</span>
+        <select id="activity-window" class="window-select">
+          <option value="24h">24h</option>
+          <option value="7d">7d</option>
+          <option value="30d">30d</option>
+        </select>
+      </div>
+      <div class="cmd-v" id="kpi-activity">—</div>
+      <div class="cmd-s" id="kpi-activity-sub">sesiones/cambios/evidencias</div>
+    </div>
+    <div class="cmd-card" id="kpi-card-ideas">
+      <div class="cmd-k">Backlog de ideas</div>
+      <div class="cmd-v" id="kpi-ideas">—</div>
+      <div class="cmd-s" id="kpi-ideas-sub">pendientes/en progreso</div>
+    </div>
+    <div class="cmd-card">
+      <div class="cmd-k">Acciones rápidas</div>
+      <div class="cmd-actions">
+        <a id="qa-pack" class="cmd-btn" href="/packs">📦 Pack</a>
+        <a id="qa-validate" class="cmd-btn" href="/packs">✅ Validar</a>
+        <a id="qa-report" class="cmd-btn" href="/packs">📊 Reporte</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="orch-control">
+    <div class="ctl-row">
+      <div class="ctl-box">
+        <div class="ctl-title">Sesión y Estado</div>
+        <div class="ctl-actions">
+          <button class="ctl-btn orch-run-btn" data-kind="command" data-id="session-start">▶ Iniciar sesión</button>
+          <button class="ctl-btn orch-run-btn" data-kind="command" data-id="status">Estado</button>
+          <button class="ctl-btn orch-run-btn" data-kind="command" data-id="ideas">Ideas</button>
+          <button class="ctl-btn orch-run-btn" data-kind="command" data-id="validate">Validar</button>
+        </div>
+      </div>
+      <div class="ctl-box">
+        <div class="ctl-title">Repo Commands</div>
+        <div class="ctl-actions">
+          <button class="ctl-btn orch-run-btn" data-kind="command" data-id="repo-on">Repo On</button>
+          <button class="ctl-btn orch-run-btn" data-kind="command" data-id="repo-debug">Repo Debug</button>
+          <button class="ctl-btn orch-run-btn" data-kind="command" data-id="repo-lint">Repo Lint</button>
+          <button class="ctl-btn orch-run-btn" data-kind="command" data-id="repo-test">Repo Test</button>
+          <button class="ctl-btn orch-run-btn" data-kind="command" data-id="repo-build">Repo Build</button>
+        </div>
+        <input id="repo-path-input" class="ctl-input" placeholder="repo_path para repo-on/debug/lint/test/build (opcional salvo repo-on)" />
+      </div>
+      <div class="ctl-box">
+        <div class="ctl-title">Presets (Orden Fijo)</div>
+        <div class="ctl-actions" id="preset-actions"></div>
+      </div>
+    </div>
+    <div class="ctl-box">
+      <div class="ctl-title">Builder Drag & Drop de Cadenas</div>
+      <div id="builder-commands" class="ctl-actions"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+        <button class="ctl-btn" id="builder-add-serial">+ Etapa serial</button>
+        <button class="ctl-btn" id="builder-add-parallel">+ Etapa parallel</button>
+      </div>
+      <div id="builder-stages" style="display:grid;gap:8px;margin-top:10px;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+        <input id="builder-id" class="ctl-input" placeholder="preset id (ej: custom_cadena_w2)" />
+        <input id="builder-label" class="ctl-input" placeholder="label visible" />
+      </div>
+      <input id="builder-description" class="ctl-input" placeholder="descripción corta del preset" />
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+        <button class="ctl-btn" id="builder-save">💾 Guardar preset</button>
+        <button class="ctl-btn" id="builder-clear">🧹 Limpiar cadena</button>
+      </div>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.78rem;">
+      <input type="checkbox" id="run-in-terminal" />
+      Ejecutar en Terminal.app (visible)
+    </label>
+    <div id="orch-run-log" class="ctl-log">Listo para ejecutar acciones desde Orquestador.</div>
+  </div>
+
   <!-- MAIN GRID -->
   <div class="orch-main">
 
@@ -309,6 +558,296 @@ let elapsedInterval = null;
 let sessionStart = null;
 let progressInterval = null;
 let progressStart = null;
+let latestData = null;
+let activityWindow = '24h';
+let commandCatalog = [];
+let presetsCache = {};
+let chainBuilder = { stages: [{ mode: 'serial', commands: [] }] };
+let controlsBound = false;
+
+function setRunButtonsDisabled(flag){
+  document.querySelectorAll('.orch-run-btn').forEach(btn=>{ btn.disabled = !!flag; });
+}
+
+function fmtRunSummary(result){
+  if(!result || !result.steps) return 'Sin detalle de ejecución.';
+  const lines = [];
+  lines.push(`${result.kind || 'command'}:${result.id || '?'} · ${result.success ? 'OK' : 'KO'}`);
+  for(const step of result.steps){
+    lines.push(`step(${step.mode}) -> ${step.commands.join(', ')}`);
+    for(const r of (step.results || [])){
+      lines.push(`  - ${r.command_id} rc=${r.returncode} ${r.success ? 'OK' : 'KO'}`);
+      if(r.output){
+        const out = String(r.output).trim();
+        lines.push(`    ${out.slice(0, 800)}`);
+      }
+    }
+  }
+  return lines.join('\n');
+}
+
+function renderHistory(history){
+  if(!history || !history.length) return;
+  const last = history[history.length - 1];
+  const log = document.getElementById('orch-run-log');
+  if(log && last && (last.steps || last.error)){
+    if(last.error){
+      log.textContent = `ERROR ${last.kind || ''}:${last.id || ''}\n${last.error}`;
+    } else {
+      log.textContent = fmtRunSummary(last);
+    }
+  }
+}
+
+async function runOrchestratorAction(kind, id){
+  const repoPath = (document.getElementById('repo-path-input')?.value || '').trim();
+  const terminal = !!document.getElementById('run-in-terminal')?.checked;
+  const log = document.getElementById('orch-run-log');
+  try{
+    setRunButtonsDisabled(true);
+    log.textContent = `Ejecutando ${kind}:${id} ... ${terminal ? '(Terminal.app)' : '(capturado)'}`;
+    const res = await fetch('/orchestrator-run', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ kind, id, repo_path: repoPath, terminal }),
+    });
+    const data = await res.json();
+    if(!res.ok || data.success === false){
+      const msg = data.error || `HTTP ${res.status}`;
+      log.textContent = `ERROR ${kind}:${id}\n${msg}`;
+      return;
+    }
+    log.textContent = fmtRunSummary(data);
+    await fetchAndRender();
+  } catch(err){
+    log.textContent = `ERROR ${kind}:${id}\n${err}`;
+  } finally {
+    setRunButtonsDisabled(false);
+  }
+}
+
+function normalizePresetId(raw){
+  return String(raw || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+function renderPresetButtons(presets){
+  presetsCache = presets || {};
+  const container = document.getElementById('preset-actions');
+  const rows = Object.entries(presetsCache).sort(([a],[b])=>a.localeCompare(b));
+  if(!rows.length){
+    container.innerHTML = '<div style="color:var(--muted);font-size:.78rem;">Sin presets.</div>';
+    return;
+  }
+  container.innerHTML = rows.map(([id, p])=>{
+    const title = (p.description || '').replace(/"/g,'&quot;');
+    const del = p.builtin ? '' : `<button class="ctl-btn" data-action="delete-preset" data-id="${id}">🗑</button>`;
+    return `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+      <button class="ctl-btn preset orch-run-btn" data-kind="preset" data-id="${id}" title="${title}">▶ ${p.label || id}</button>
+      <button class="ctl-btn" data-action="load-preset" data-id="${id}">↩ Cargar</button>
+      ${del}
+    </div>`;
+  }).join('');
+}
+
+function renderBuilderCommands(){
+  const box = document.getElementById('builder-commands');
+  box.innerHTML = commandCatalog.map(c =>
+    `<div class="ctl-btn drag-cmd" draggable="true" data-cmd-id="${c.id}" title="${c.id}">+ ${c.label}</div>`
+  ).join('');
+}
+
+function ensureBuilderHasStage(){
+  if(!chainBuilder.stages.length) chainBuilder.stages.push({mode:'serial', commands:[]});
+}
+
+function renderBuilderStages(){
+  ensureBuilderHasStage();
+  const root = document.getElementById('builder-stages');
+  root.innerHTML = chainBuilder.stages.map((st, idx)=>{
+    const chips = st.commands.map((cmd, ci)=>`
+      <span class="stage-chip" draggable="true" data-cmd-id="${cmd}" data-stage-index="${idx}">
+        ${cmd}
+        <button data-action="remove-cmd" data-stage-index="${idx}" data-cmd-index="${ci}">×</button>
+      </span>
+    `).join('');
+    return `<div class="stage-card">
+      <div class="stage-head">
+        <span>Etapa ${idx+1} · ${st.mode.toUpperCase()}</span>
+        <span style="display:flex;gap:4px;">
+          <button class="ctl-btn" data-action="stage-up" data-stage-index="${idx}">↑</button>
+          <button class="ctl-btn" data-action="stage-down" data-stage-index="${idx}">↓</button>
+          <button class="ctl-btn" data-action="remove-stage" data-stage-index="${idx}">🗑</button>
+        </span>
+      </div>
+      <div class="stage-drop" data-stage-index="${idx}">
+        <div class="stage-list">${chips || '<span style="color:var(--muted);font-size:.73rem;">Arrastra comandos aquí</span>'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadPresetIntoBuilder(presetId){
+  const p = presetsCache[presetId];
+  if(!p) return;
+  chainBuilder = {
+    stages: (p.steps || []).map(s => ({ mode: s.mode === 'parallel' ? 'parallel' : 'serial', commands: [...(s.commands || [])] })),
+  };
+  document.getElementById('builder-id').value = p.builtin ? '' : presetId;
+  document.getElementById('builder-label').value = p.label || presetId;
+  document.getElementById('builder-description').value = p.description || '';
+  renderBuilderStages();
+}
+
+async function deletePreset(presetId){
+  const log = document.getElementById('orch-run-log');
+  const res = await fetch(`/orchestrator-presets/${encodeURIComponent(presetId)}`, { method: 'DELETE' });
+  const d = await res.json();
+  if(!res.ok || d.success === false){
+    log.textContent = `ERROR deleting preset ${presetId}\n${d.error || res.status}`;
+    return;
+  }
+  log.textContent = `Preset eliminado: ${presetId}`;
+  await fetchAndRender();
+}
+
+async function saveBuilderPreset(){
+  const idRaw = document.getElementById('builder-id').value;
+  const id = normalizePresetId(idRaw);
+  const label = document.getElementById('builder-label').value.trim() || id;
+  const description = document.getElementById('builder-description').value.trim();
+  const log = document.getElementById('orch-run-log');
+  const steps = chainBuilder.stages
+    .map(s => ({mode: s.mode, commands: (s.commands || []).filter(Boolean)}))
+    .filter(s => s.commands.length > 0);
+
+  if(!id){
+    log.textContent = 'ERROR guardar preset\nDefine un ID (a-z0-9_-).';
+    return;
+  }
+  if(!steps.length){
+    log.textContent = 'ERROR guardar preset\nLa cadena está vacía.';
+    return;
+  }
+  const res = await fetch('/orchestrator-presets', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({id, label, description, steps}),
+  });
+  const data = await res.json();
+  if(!res.ok || data.success === false){
+    log.textContent = `ERROR guardar preset ${id}\n${data.error || res.status}`;
+    return;
+  }
+  log.textContent = `Preset guardado: ${id}\n${label}`;
+  await fetchAndRender();
+}
+
+function handleStageDrop(stageIndex, cmdId, fromStageIndex){
+  if(!cmdId) return;
+  const target = chainBuilder.stages[stageIndex];
+  if(!target) return;
+  if(fromStageIndex !== null && fromStageIndex !== undefined && fromStageIndex !== ''){
+    const fromIdx = Number(fromStageIndex);
+    const from = chainBuilder.stages[fromIdx];
+    if(from){
+      const pos = from.commands.indexOf(cmdId);
+      if(pos >= 0) from.commands.splice(pos, 1);
+    }
+  }
+  target.commands.push(cmdId);
+  renderBuilderStages();
+}
+
+function bindOrchestratorControls(){
+  if(controlsBound) return;
+  controlsBound = true;
+
+  document.addEventListener('click', (ev)=>{
+    const runBtn = ev.target.closest('.orch-run-btn');
+    if(runBtn){
+      runOrchestratorAction(runBtn.dataset.kind || 'command', runBtn.dataset.id || '');
+      return;
+    }
+
+    const a = ev.target.closest('[data-action]');
+    if(!a) return;
+    const action = a.dataset.action;
+    const idx = Number(a.dataset.stageIndex);
+    if(action === 'load-preset'){
+      loadPresetIntoBuilder(a.dataset.id || '');
+    } else if(action === 'delete-preset'){
+      deletePreset(a.dataset.id || '');
+    } else if(action === 'remove-stage'){
+      chainBuilder.stages.splice(idx, 1);
+      ensureBuilderHasStage();
+      renderBuilderStages();
+    } else if(action === 'stage-up' && idx > 0){
+      const t = chainBuilder.stages[idx-1];
+      chainBuilder.stages[idx-1] = chainBuilder.stages[idx];
+      chainBuilder.stages[idx] = t;
+      renderBuilderStages();
+    } else if(action === 'stage-down' && idx < chainBuilder.stages.length - 1){
+      const t = chainBuilder.stages[idx+1];
+      chainBuilder.stages[idx+1] = chainBuilder.stages[idx];
+      chainBuilder.stages[idx] = t;
+      renderBuilderStages();
+    } else if(action === 'remove-cmd'){
+      const cidx = Number(a.dataset.cmdIndex);
+      chainBuilder.stages[idx].commands.splice(cidx, 1);
+      renderBuilderStages();
+    }
+  });
+
+  document.addEventListener('dragstart', (ev)=>{
+    const item = ev.target.closest('[data-cmd-id]');
+    if(!item || !ev.dataTransfer) return;
+    ev.dataTransfer.setData('text/cmd-id', item.dataset.cmdId || '');
+    ev.dataTransfer.setData('text/from-stage', item.dataset.stageIndex || '');
+  });
+
+  document.addEventListener('dragover', (ev)=>{
+    const zone = ev.target.closest('.stage-drop');
+    if(!zone) return;
+    ev.preventDefault();
+    zone.classList.add('drag-over');
+  });
+
+  document.addEventListener('dragleave', (ev)=>{
+    const zone = ev.target.closest('.stage-drop');
+    if(zone) zone.classList.remove('drag-over');
+  });
+
+  document.addEventListener('drop', (ev)=>{
+    const zone = ev.target.closest('.stage-drop');
+    if(!zone || !ev.dataTransfer) return;
+    ev.preventDefault();
+    zone.classList.remove('drag-over');
+    const cmdId = ev.dataTransfer.getData('text/cmd-id');
+    const fromStage = ev.dataTransfer.getData('text/from-stage');
+    handleStageDrop(Number(zone.dataset.stageIndex), cmdId, fromStage);
+  });
+
+  document.getElementById('builder-add-serial').addEventListener('click', ()=>{
+    chainBuilder.stages.push({mode:'serial', commands:[]});
+    renderBuilderStages();
+  });
+  document.getElementById('builder-add-parallel').addEventListener('click', ()=>{
+    chainBuilder.stages.push({mode:'parallel', commands:[]});
+    renderBuilderStages();
+  });
+  document.getElementById('builder-clear').addEventListener('click', ()=>{
+    chainBuilder = { stages: [{mode:'serial', commands:[]}] };
+    document.getElementById('builder-id').value = '';
+    document.getElementById('builder-label').value = '';
+    document.getElementById('builder-description').value = '';
+    renderBuilderStages();
+  });
+  document.getElementById('builder-save').addEventListener('click', saveBuilderPreset);
+}
 
 function pad(n){ return String(n).padStart(2,'0'); }
 
@@ -498,6 +1037,54 @@ function renderNotes(notes){
   }
 }
 
+function renderDashboardKpis(d){
+  const setKpiState = (id, state)=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.classList.remove('kpi-ok','kpi-warn','kpi-ko');
+    el.classList.add(state);
+  };
+
+  const lv = d.last_validation || {};
+  const pack = lv.pack || '—';
+  const state = lv.state || '—';
+  const manifest = lv.manifest || '—';
+  const vals = [pack, state, manifest].map(v => String(v).toUpperCase());
+  const goCount = vals.filter(v => v === 'GO').length;
+  const ok = goCount === 3;
+  document.getElementById('kpi-validation').textContent = ok ? 'OK' : (goCount > 0 ? 'WARN' : 'KO');
+  document.getElementById('kpi-validation-sub').textContent = `${pack}/${state}/${manifest}`;
+  setKpiState('kpi-card-validation', ok ? 'kpi-ok' : (goCount > 0 ? 'kpi-warn' : 'kpi-ko'));
+
+  const aw = d.activity_windows || {};
+  const a = aw[activityWindow] || d.activity_24h || {};
+  const s = Number(a.sessions || 0);
+  const c = Number(a.changes || 0);
+  const e = Number(a.evidences || 0);
+  const totalActivity = s + c + e;
+  document.getElementById('kpi-activity').textContent = `${totalActivity}`;
+  document.getElementById('kpi-activity-sub').textContent = `${activityWindow}: ${s} ses · ${c} chg · ${e} evd`;
+  setKpiState('kpi-card-activity', totalActivity > 0 ? 'kpi-ok' : 'kpi-warn');
+
+  const is = d.ideas_summary || {};
+  const pending = Number(is.pending || 0);
+  const progress = Number(is.progress || 0);
+  const total = Number(is.total || 0);
+  document.getElementById('kpi-ideas').textContent = `${pending}`;
+  document.getElementById('kpi-ideas-sub').textContent = `${progress} en progreso · ${total} total`;
+  setKpiState('kpi-card-ideas', pending === 0 ? 'kpi-ok' : (pending <= 5 ? 'kpi-warn' : 'kpi-ko'));
+}
+
+function bindQuickActions(d){
+  const path = encodeURIComponent(d.pack_path || '');
+  const validate = document.getElementById('qa-validate');
+  const report = document.getElementById('qa-report');
+  const pack = document.getElementById('qa-pack');
+  pack.href = path ? `/pack?path=${path}` : '/packs';
+  validate.href = path ? `/validate?path=${path}` : '/packs';
+  report.href = path ? `/pack-report?path=${path}` : '/packs';
+}
+
 // progress bar animation
 function startProgressBar(){
   if(progressInterval) clearInterval(progressInterval);
@@ -515,6 +1102,7 @@ async function fetchAndRender(){
     const res = await fetch('/orchestrator-data');
     if(!res.ok) throw new Error('HTTP '+res.status);
     const d = await res.json();
+    latestData = d;
 
     document.getElementById('last-updated-ts').textContent = new Date().toLocaleTimeString('es-ES');
     document.getElementById('bago-version').textContent = 'BAGO '+( d.bago_version||'?');
@@ -525,6 +1113,15 @@ async function fetchAndRender(){
     renderLastAction(d);
     renderRecentSessions(d.recent_sessions||[]);
     renderActiveSession(d.active_session||{active:false});
+    renderDashboardKpis(d);
+    bindQuickActions(d);
+    commandCatalog = d.orchestrator_commands || commandCatalog;
+    renderBuilderCommands();
+    renderPresetButtons(d.orchestrator_presets || {});
+    if(!document.querySelector('#builder-stages .stage-card')){
+      renderBuilderStages();
+    }
+    renderHistory(d.orchestrator_history || []);
     document.getElementById('inv-sessions').textContent  = (d.inventory||{}).sessions||0;
     document.getElementById('inv-changes').textContent   = (d.inventory||{}).changes||0;
     document.getElementById('inv-evidences').textContent = (d.inventory||{}).evidences||0;
@@ -538,6 +1135,12 @@ async function fetchAndRender(){
 }
 
 // boot
+document.getElementById('activity-window').addEventListener('change', (ev)=>{
+  activityWindow = ev.target.value || '24h';
+  if(latestData) renderDashboardKpis(latestData);
+});
+bindOrchestratorControls();
+renderBuilderStages();
 fetchAndRender();
 setInterval(fetchAndRender, POLL_INTERVAL);
 startProgressBar();

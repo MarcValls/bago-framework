@@ -1,9 +1,9 @@
 {
   "bago_host_root": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA",
-  "note": "Este archivo es SOLO un puntero al repo externo intervenido. No contiene progreso funcional del pack BAGO ni estado canónico. El estado del pack vive en global_state.json. El snapshot legible vive en ESTADO_BAGO_ACTUAL.md. working_mode=external indica que BAGO opera como herramienta sobre un proyecto distinto al directorio donde reside.",
-  "recorded_at": "2026-04-19T13:25:49+00:00",
-  "repo_fingerprint": "6523db411ed4dd1430b26ec16356c0b38b2cbce5e7bb21a4491497ce76daefba",
+  "note": "Sincronizado desde auto_mode · BAGO_CAJAFISICA",
+  "recorded_at": "2026-04-21T22:23:29+00:00",
+  "repo_fingerprint": "36320eddf09ceda2f267771570027890b501a20bd474df1b13fbafba98f7dcbf",
   "repo_root": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA",
-  "role": "external_repo_pointer",
+  "role": "self",
   "working_mode": "self"
 }

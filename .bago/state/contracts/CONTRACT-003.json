@@ -1,0 +1,128 @@
+{
+  "contract_id": "CONTRACT-003",
+  "title": "T+4h — Automatización, memoria institucional y test generation",
+  "type": "commitment",
+  "created_at": "2026-04-21T22:46:13.694763+00:00",
+  "deadline": "2026-04-22T02:46:13.694763+00:00",
+  "business_impact": "Al completar este contrato BAGO puede: generar tests completos para cualquier repo desconocido (bago testgen), integrarse en CI/CD con un solo comando (bago ci), responder preguntas sobre su propia historia (bago ask), y vigilar ficheros en tiempo real (bago watch). El framework pasa de herramienta manual a sistema autónomo que protege la calidad sin intervención constante.",
+  "commitments": [
+    "bago testgen <path> — genera suite de tests para repos/dirs desconocidos (Python+JS, AST-based)",
+    "bago ci — genera GitHub Actions YAML con scan+risk en cada PR, pre-commit hook",
+    "bago ask 'query' — búsqueda lenguaje natural sobre toda la historia BAGO",
+    "bago watch — vigila .py, ejecuta scan dirigido al guardar, muestra delta hallazgos",
+    "bago dashboard v2 completamente operativo con contratos countdown",
+    "SPRINT-004 cerrado con evidencia + SPRINT-005 abierto",
+    "Toda la documentación de nuevos tools actualizada",
+    "CHG-078 + CHG-079 registrados",
+    "56+ integration tests ALL PASS",
+    "Snapshot final tomado"
+  ],
+  "conditions": [
+    {
+      "id": "C003-001",
+      "description": "≥56 integration tests ALL PASS",
+      "type": "test_count",
+      "params": {
+        "min": 56
+      },
+      "critical": true
+    },
+    {
+      "id": "C003-002",
+      "description": "testgen.py existe",
+      "type": "file_exists",
+      "params": {
+        "files": [
+          ".bago/tools/testgen.py"
+        ]
+      },
+      "critical": true
+    },
+    {
+      "id": "C003-003",
+      "description": "ci_generator.py existe",
+      "type": "file_exists",
+      "params": {
+        "files": [
+          ".bago/tools/ci_generator.py"
+        ]
+      },
+      "critical": true
+    },
+    {
+      "id": "C003-004",
+      "description": "bago_ask.py existe",
+      "type": "file_exists",
+      "params": {
+        "files": [
+          ".bago/tools/bago_ask.py"
+        ]
+      },
+      "critical": true
+    },
+    {
+      "id": "C003-005",
+      "description": "bago_watch.py existe",
+      "type": "file_exists",
+      "params": {
+        "files": [
+          ".bago/tools/bago_watch.py"
+        ]
+      },
+      "critical": false
+    },
+    {
+      "id": "C003-006",
+      "description": "snapshot tomado tras firma del contrato",
+      "type": "snapshot_exists",
+      "params": {
+        "since": "2026-04-21T22:46:13.694763+00:00"
+      },
+      "critical": true
+    },
+    {
+      "id": "C003-007",
+      "description": "≥78 CHG registrados",
+      "type": "chg_count",
+      "params": {
+        "min": 78
+      },
+      "critical": false
+    },
+    {
+      "id": "C003-008",
+      "description": "≥95 tools en .bago/tools/",
+      "type": "tools_count",
+      "params": {
+        "min": 95
+      },
+      "critical": false
+    },
+    {
+      "id": "C003-009",
+      "description": "health >= 100/100",
+      "type": "health_score",
+      "params": {
+        "min": 100
+      },
+      "critical": true
+    },
+    {
+      "id": "C003-010",
+      "description": "bago validate retorna GO",
+      "type": "validate_go",
+      "params": {},
+      "critical": true
+    },
+    {
+      "id": "C003-011",
+      "description": "sin datetime.now() sin timezone en tools",
+      "type": "file_not_contains",
+      "params": {
+        "glob": ".bago/tools/*.py",
+        "pattern": "datetime.now()"
+      },
+      "critical": false
+    }
+  ]
+}

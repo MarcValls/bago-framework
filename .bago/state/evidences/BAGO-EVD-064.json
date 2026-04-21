@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-064",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-063",
+    "SES-HARVEST-2026-04-21-003"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-21-003",
+  "details": "Decisión: Automatizar el cierre de la tarea W2 al marcarla done | Descarte: Dejar el cierre manual para después de implementar | Próximo paso: Revisar el nuevo artefacto de cierre y volver a validar el pack | Ficheros afectados: .bago/ideas/caos_game_ideas.json, .bago/state/changes/BAGO-CHG-061.json, .bago/state/changes/BAGO-CHG-062.json",
+  "status": "recorded",
+  "recorded_at": "2026-04-21T01:53:25.203099+00:00"
+}

@@ -9,6 +9,8 @@ BAGO AMTEC V1 convierte la base documental de V.0 en un paquete operativo con:
 - **protocolo de cambio y trazabilidad**,
 - **migración explícita desde V.0**.
 
+> Esta copia se conserva como referencia histórica. Su vocabulario refleja el estado de aquella versión y no debe leerse como estado vivo del pack actual.
+
 ## Qué cambia respecto a V.0
 
 1. `pack.json` pasa a ser el manifiesto canónico del paquete.

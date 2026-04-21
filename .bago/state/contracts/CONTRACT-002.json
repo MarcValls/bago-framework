@@ -1,0 +1,122 @@
+{
+  "contract_id": "CONTRACT-002",
+  "title": "T+2h — Salud de código → Rendimiento comercial",
+  "type": "commitment",
+  "created_at": "2026-04-21T22:46:13.694763+00:00",
+  "deadline": "2026-04-22T00:46:13.694763+00:00",
+  "business_impact": "Al completar este contrato el sistema traduce métricas de calidad a €/trimestre, aplica reglas canónicas de gobernanza que bloquean degradación, y el dashboard muestra un cockpit completo en un solo comando. El equipo pasa de 'saber que hay deuda' a 'saber cuánto cuesta la deuda y qué hacer primero'.",
+  "commitments": [
+    "impact_engine.py — salud → €/trimestre y h/semana perdidas (6/6 tests)",
+    "risk_matrix.py — matriz riesgo oculto operativa y routed (6/6 tests)",
+    "debt_ledger.py — ledger deuda técnica con cuadrantes y ROI (6/6 tests)",
+    "contracts.py — sistema de contratos verificable (6/6 tests)",
+    "BAGO-RULE-CDTR-001 — regla canónica en validate + health badge",
+    "bago dashboard v2 — cockpit: anillo salud, top riesgos, deuda €, countdown contratos",
+    "bago_utils.py — utilidades compartidas, elimina fail() duplicado en 26 archivos",
+    "14 tools sin routing añadidos al script bago",
+    "datetime.now() sin timezone corregido en 4 archivos",
+    "50+ integration tests ALL PASS + CHG-078 registrado"
+  ],
+  "conditions": [
+    {
+      "id": "C002-001",
+      "description": "≥50 integration tests ALL PASS",
+      "type": "test_count",
+      "params": {
+        "min": 50
+      },
+      "critical": true
+    },
+    {
+      "id": "C002-002",
+      "description": "impact_engine.py existe",
+      "type": "file_exists",
+      "params": {
+        "files": [
+          ".bago/tools/impact_engine.py"
+        ]
+      },
+      "critical": true
+    },
+    {
+      "id": "C002-003",
+      "description": "contracts.py existe",
+      "type": "file_exists",
+      "params": {
+        "files": [
+          ".bago/tools/contracts.py"
+        ]
+      },
+      "critical": true
+    },
+    {
+      "id": "C002-004",
+      "description": "risk_matrix.py y debt_ledger.py existen",
+      "type": "file_exists",
+      "params": {
+        "files": [
+          ".bago/tools/risk_matrix.py",
+          ".bago/tools/debt_ledger.py"
+        ]
+      },
+      "critical": true
+    },
+    {
+      "id": "C002-005",
+      "description": "BAGO-RULE-CDTR-001 canónica existe",
+      "type": "file_exists",
+      "params": {
+        "files": [
+          ".bago/core/canon/REGLA_SALUD_RENDIMIENTO.md",
+          ".bago/state/contracts/RULE-CDTR-001.json"
+        ]
+      },
+      "critical": true
+    },
+    {
+      "id": "C002-006",
+      "description": "bago_utils.py existe",
+      "type": "file_exists",
+      "params": {
+        "files": [
+          ".bago/tools/bago_utils.py"
+        ]
+      },
+      "critical": false
+    },
+    {
+      "id": "C002-007",
+      "description": "≥85 tools en .bago/tools/",
+      "type": "tools_count",
+      "params": {
+        "min": 85
+      },
+      "critical": false
+    },
+    {
+      "id": "C002-008",
+      "description": "≥65 rutas registradas en bago script",
+      "type": "routing_count",
+      "params": {
+        "min": 65
+      },
+      "critical": false
+    },
+    {
+      "id": "C002-009",
+      "description": "health >= 100/100",
+      "type": "health_score",
+      "params": {
+        "min": 100
+      },
+      "critical": true
+    },
+    {
+      "id": "C002-010",
+      "description": "bago validate retorna GO",
+      "type": "validate_go",
+      "params": {},
+      "critical": true
+    }
+  ]
+}

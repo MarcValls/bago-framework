@@ -9,7 +9,7 @@ Uso:
 """
 
 import json, subprocess, sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 BAGO_ROOT = Path(__file__).resolve().parent.parent
@@ -95,7 +95,7 @@ def main():
     last_sid = get_last_session()
     ideas_count = get_ideas_count()
     verdict = get_detector_verdict()
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
 
     print()
     print(BOLD(CYAN("BAGO")), BOLD(f"v{version}"))

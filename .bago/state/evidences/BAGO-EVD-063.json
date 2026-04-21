@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-063",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-062",
+    "Cierre automático de sesión"
+  ],
+  "summary": "Cierre W2 automático: Cierre automático de sesión",
+  "details": "La tarea W2 quedó marcada como done, se generó un CHG de gobernanza y se actualizó global_state con el nuevo inventario. Archivos candidatos de la tarea: .bago/tools/emit_ideas.py.",
+  "status": "recorded",
+  "recorded_at": "2026-04-21T01:52:31.575449+00:00"
+}

@@ -1,5 +1,5 @@
 {
-  "bago_version": "2.4-v2rc",
+  "bago_version": "2.5-stable",
   "canon_version": "2.4-v2rc",
   "system_health": "stable",
   "active_session_id": null,
@@ -9,21 +9,21 @@
   "active_scenarios": [],
   "active_workflows": [],
   "history_migration_status": "completed_with_preserved_legacy",
-  "updated_at": "2026-04-19T13:33:59.009208+00:00",
+  "updated_at": "2026-04-21T23:04:10.097475+00:00",
   "v2_status": "stable",
-  "notes": "",
-  "last_completed_session_id": "SES-W8-2026-04-18-001",
-  "last_completed_task_type": "analysis",
-  "last_completed_workflow": "w8_exploracion",
+  "notes": "W1+W2 completos sobre visor ER. 22/22 tests verdes. 6 tests corregidos (bugs de test post-refactor). Producción intacta.",
+  "last_completed_session_id": "SES-HARVEST-2026-04-21-007",
+  "last_completed_task_type": "harvest",
+  "last_completed_workflow": "w9_cosecha",
   "last_completed_roles": [
     "role_auditor"
   ],
-  "last_completed_change_id": "BAGO-CHG-058",
-  "last_completed_evidence_id": "BAGO-EVD-059",
+  "last_completed_change_id": "BAGO-CHG-069",
+  "last_completed_evidence_id": "BAGO-EVD-070",
   "inventory": {
-    "sessions": 40,
-    "changes": 39,
-    "evidences": 42
+    "sessions": 50,
+    "changes": 62,
+    "evidences": 52
   },
   "last_validation": {
     "pack": "GO",
@@ -33,12 +33,12 @@
   "baseline_code": "baseline_bago_2_3_clean",
   "baseline_status": "active_clean_core",
   "sprint_status": {
-    "sprint_1a": "DONE",
-    "sprint_1b": "DONE",
-    "sprint_1c": "DONE",
-    "sprint_1d": "DONE",
-    "sprint_2": "DONE",
-    "sprint_3": "DONE",
-    "sprint_4": "DONE"
-  }
+    "SPRINT-001": "closed",
+    "SPRINT-002": "closed",
+    "SPRINT-003": "closed",
+    "SPRINT-004": "closed",
+    "SPRINT-005": "open",
+    "SPRINT-006": "closed"
+  },
+  "changes": 59
 }

@@ -6,5 +6,6 @@
   "distribution_mode": "template_seed",
   "chg_count": 0,
   "bago_script": "v2 (prompt de arranque)",
-  "notes": "Usar esta cleanversion para distribuir o iniciar proyectos nuevos."
+  "notes": "Usar esta cleanversion para distribuir o iniciar proyectos nuevos.",
+  "bago_version": "2.4-v2rc"
 }

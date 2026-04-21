@@ -1,0 +1,26 @@
+{
+  "sprint_id": "SPRINT-005",
+  "name": "SPRINT — Consolidación y Evolución Post-180",
+  "goal": "Consolidar artefactos Sprint 180, activar governance rule en validate_state, dashboard v2, y expandir testgen con soporte multilenguaje",
+  "status": "open",
+  "tags": [
+    "governance",
+    "dashboard",
+    "testing",
+    "contracts"
+  ],
+  "sessions": [],
+  "artifacts": [],
+  "decisions": [],
+  "created_at": "2026-04-21T23:02:06.402660+00:00",
+  "closed_at": null,
+  "summary": null,
+  "goals": [
+    "dashboard v2 — cockpit con health ring + risk + debt + velocity",
+    "RULE-CDTR-001 enforcement en validate_state.py",
+    "testgen multilenguaje (Go, Rust)",
+    "bago_watch — watcher de archivos con delta findings",
+    "Optional[str] compat Python 3.9 en gh_integration + contracts",
+    "CHG-079 consolidación final"
+  ]
+}

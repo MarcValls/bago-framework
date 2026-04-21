@@ -1,0 +1,27 @@
+{
+  "change_id": "BAGO-CHG-077",
+  "type": "architecture",
+  "severity": "minor",
+  "title": "Sprint 180 Fase 6: velocity, patch, notes, template — 4 nuevas herramientas CLI",
+  "motivation": "Completar la Fase 6 del Sprint 180 con herramientas de velocidad, corrección de datos, notas y plantillas de sesión.",
+  "status": "applied",
+  "affected_components": [
+    "tools/velocity.py",
+    "tools/patch.py",
+    "tools/notes.py",
+    "tools/template.py",
+    "bago"
+  ],
+  "details": "Se añaden 4 herramientas: velocity (métricas con sparklines), patch (corrección de inconsistencias legacy), notes (notas ligeras por sesión/sprint), template (plantillas builtin para nuevas sesiones). Routing en bago script y entradas en help --all.",
+  "tests": [
+    "python3 .bago/tools/velocity.py --test → 5/5",
+    "python3 .bago/tools/patch.py --test → 5/5",
+    "python3 .bago/tools/notes.py --test → 5/5",
+    "python3 .bago/tools/template.py --test → 5/5"
+  ],
+  "sprint_ref": "SPRINT-004",
+  "related_evidence": [],
+  "created_at": "2026-04-21T22:25:46.272213Z",
+  "updated_at": "2026-04-21T22:25:46.272683Z",
+  "author": "Sprint-180-BAGO"
+}

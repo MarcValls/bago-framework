@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -83,13 +84,29 @@ def main() -> int:
         st, line = report_gate(name, report)
         gates.append((st, line))
 
-    # 3. Print gates
+    # 3. Task W2 staleness
+    task_data = load_json(BAGO_ROOT / "state" / "pending_w2_task.json")
+    if task_data is not None and task_data.get("status") != "done":
+        accepted_at_str = task_data.get("accepted_at")
+        if accepted_at_str:
+            try:
+                accepted_at = datetime.fromisoformat(accepted_at_str)
+                if accepted_at.tzinfo is None:
+                    accepted_at = accepted_at.replace(tzinfo=timezone.utc)
+                days_open = (datetime.now(timezone.utc) - accepted_at).days
+                if days_open > 3:
+                    title = task_data.get("idea_title", "?")
+                    gates.append(("WARN", f"task_stale: '{title}' lleva {days_open}d abierta sin completarse"))
+            except Exception:
+                pass
+
+    # 4. Print gates
     print()
     for st, line in gates:
         icon = "✓" if st == "GO" else ("⚠" if st == "WARN" else "✗")
         print(f"  [{st}] {icon} {line}")
 
-    # 4. Overall decision
+    # 5. Overall decision
     has_ko = any(st == "KO" for st, _ in gates)
     has_warn = any(st == "WARN" for st, _ in gates)
 

@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-065",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-064",
+    "SES-HARVEST-2026-04-21-004"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-21-004",
+  "details": "Decisión: Corregir la desalineacion entre auto_mode.py y context_detector.py para que bago auto use el mismo conteo de senales HARVEST que el dashboard. | Descarte: Mantener la lectura de campos high_signals/low_signals inexistentes, porque producia una sugerencia incoherente y ocultaba la ruta interactiva correcta. | Próximo paso: Revalidar bago auto, validate_pack y audit_v2 para dejar el comportamiento automatico y la auditoria alineados. | Ficheros afectados: .bago/docs/migration/legacy/ORIGEN_Y_ALCANCE.md, .bago/state/changes/BAGO-CHG-063.json, .bago/state/evidences/BAGO-EVD-064.json",
+  "status": "recorded",
+  "recorded_at": "2026-04-21T02:05:38.526646+00:00"
+}

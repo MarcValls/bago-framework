@@ -1,0 +1,42 @@
+{
+  "session_id": "SES-HARVEST-2026-04-21-001",
+  "task_type": "harvest",
+  "selected_workflow": "w9_cosecha",
+  "roles_activated": [
+    "role_auditor"
+  ],
+  "user_goal": "Cosecha contextual: Analisis completo",
+  "status": "closed",
+  "escenario": "ESCENARIO-003",
+  "created_at": "2026-04-20T22:42:52.408593+00:00",
+  "updated_at": "2026-04-20T22:42:52.408593+00:00",
+  "artifacts": [
+    ".bago/tools/bago_banner.py",
+    ".bago/tools/emit_ideas.py",
+    "bago",
+    "cleanversion/v01-base-patched/VERSION_INFO.json",
+    "cleanversion/v02-template-seed/VERSION_INFO.json",
+    ".bago/dist/source/BAGO_2.5-stable_20260419_201347.zip",
+    ".bago/dist/source/BAGO_2.5-stable_20260419_205010.zip",
+    ".bago/docs/BAGO_REFERENCIA_COMPLETA.md",
+    ".bago/state/changes/BAGO-CHG-059.json",
+    ".bago/state/evidences/BAGO-EVD-060.json",
+    ".bago/state/implemented_ideas.json",
+    ".bago/state/pending_w2_task.json",
+    ".bago/state/sessions/SES-HARVEST-2026-04-19-001.json",
+    ".bago/tools/efficiency_meter.py",
+    ".bago/tools/session_opener.py",
+    ".bago/tools/show_task.py",
+    "RELEASE/",
+    "bago-viewer/templates/evolution.html",
+    "cleanversion/v03-template-seed/",
+    "ideas",
+    "stability-summary"
+  ],
+  "decisions": [
+    "DECISIÓN: Analisis completo",
+    "DESCARTE: bago framework porque quiero trabajar en modo bago no sobre bago"
+  ],
+  "next_step": "Auditoria completa",
+  "summary": "Harvest W9. Decisión: Analisis completo. Próximo: Auditoria completa."
+}

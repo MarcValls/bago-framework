@@ -1,0 +1,24 @@
+{
+  "change_id": "BAGO-CHG-063",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Cosecha contextual W9: Automatizar el cierre de la tarea W2 al marcarla done",
+  "motivation": "Formalizar exploración libre. Decisión: Automatizar el cierre de la tarea W2 al marcarla done. Descarte: Dejar el cierre manual para después de implementar.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/ideas/caos_game_ideas.json",
+    ".bago/state/changes/BAGO-CHG-061.json",
+    ".bago/state/changes/BAGO-CHG-062.json",
+    ".bago/state/changes/CHG-010-ux-controles-13fixes.json",
+    ".bago/state/changes/CHG-011-caos-12ideas-cosecha.json",
+    ".bago/state/changes/CHG-012.md",
+    ".bago/state/evidences/BAGO-EVD-062.json",
+    ".bago/state/evidences/BAGO-EVD-063.json",
+    ".bago/state/sessions/SES-HARVEST-2026-04-21-002.json",
+    ".bago/tools/auto_mode.py"
+  ],
+  "related_evidence": "BAGO-EVD-064",
+  "created_at": "2026-04-21T01:53:25.203099+00:00",
+  "updated_at": "2026-04-21T01:53:25.203099+00:00",
+  "author": "role_auditor"
+}

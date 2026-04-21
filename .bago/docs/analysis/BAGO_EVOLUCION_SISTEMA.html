@@ -3,116 +3,267 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Evolución del sistema BAGO · 2.3-clean</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <title>Evolución del sistema BAGO</title>
   <style>
     :root {
-      --bg:#0f172a;--panel:#111827;--card:#1e293b;--text:#e2e8f0;
-      --muted:#94a3b8;--accent:#22c55e;--accent2:#38bdf8;--line:#334155;
+      --bg: #0f172a;
+      --panel: #111827;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #22c55e;
+      --accent2: #38bdf8;
+      --line: #334155;
     }
-    body{margin:0;font-family:Inter,system-ui,sans-serif;background:linear-gradient(180deg,#0b1120 0%,#111827 100%);color:var(--text);}
-    .wrap{max-width:1100px;margin:0 auto;padding:32px 20px 56px;}
-    h1,h2{margin:0 0 12px;line-height:1.15;}
-    h1{font-size:2rem;} h2{margin-top:38px;font-size:1.2rem;color:var(--accent2);}
-    .grid{display:grid;gap:14px;}
-    .cards{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin:18px 0 10px;}
-    .card{background:rgba(30,41,59,.8);border:1px solid var(--line);border-radius:16px;padding:16px;}
-    .card-title{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;}
-    .card-value{font-size:1.4rem;font-weight:700;margin-top:8px;}
-    .card-sub{color:var(--muted);font-size:.78rem;margin-top:4px;}
-    table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:14px;}
-    th{color:var(--muted);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:.78rem;}
-    td{padding:7px 10px;border-bottom:1px solid rgba(51,65,85,.3);}
-    .panel{background:rgba(30,41,59,.6);border:1px solid var(--line);border-radius:12px;padding:20px;}
-    .stale-note{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:12px 16px;font-size:.83rem;color:#fbbf24;margin-top:6px;}
-    .alert-resolved{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:12px 16px;font-size:.83rem;color:#4ade80;margin:18px 0;}
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: linear-gradient(180deg, #0b1120 0%, #111827 100%);
+      color: var(--text);
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 56px; }
+    h1, h2, h3 { margin: 0 0 12px; line-height: 1.15; }
+    h1 { font-size: 2.2rem; }
+    h2 { margin-top: 38px; font-size: 1.35rem; }
+    p, li, td { color: var(--text); line-height: 1.55; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; gap: 14px; }
+    .cards { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin: 18px 0 10px; }
+    .card {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,.18);
+    }
+    .card-title { color: var(--muted); font-size: .82rem; text-transform: uppercase; letter-spacing: .06em; }
+    .card-value { font-size: 1.35rem; font-weight: 700; margin-top: 8px; }
+    .card-subtitle { color: var(--muted); margin-top: 6px; font-size: .92rem; }
+    .panel {
+      background: rgba(17, 24, 39, 0.9);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 16px 32px rgba(0,0,0,.22);
+      margin-top: 20px;
+    }
+    img.svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #f8fafc;
+      border-radius: 14px;
+      border: 1px solid #cbd5e1;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: .95rem;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { color: var(--accent2); font-weight: 600; }
+    code, pre {
+      background: #0b1220;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: #dbeafe;
+    }
+    pre {
+      padding: 14px;
+      overflow: auto;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .box {
+      background: rgba(30, 41, 59, 0.55);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .diagram-title { color: var(--accent2); margin-bottom: 10px; }
   </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>📈 Evolución del sistema BAGO</h1>
-  <p style="color:var(--muted);font-size:.88rem;">Pack <strong style="color:var(--text);">2.3-clean</strong> · Snapshot: <strong>2026-04-18T12:06:00Z</strong> · actualizado desde global_state.json</p>
+  <div class="wrap">
+    <h1>Evolución del sistema BAGO</h1>
+    <p class="muted">Comparación entre el arranque de corrección/migración y el estado actual operativo. Generado desde `state/` y `state/metrics/runs/`.</p>
 
-  <div class="alert-resolved">✅ Informe regenerado el 2026-04-18. Snapshot anterior (2026-04-11) estaba desfasado — corregido.</div>
-
-  <h2>Inventario real</h2>
-  <div class="grid cards">
-    <div class="card"><div class="card-title">🗂 Sesiones</div><div class="card-value" style="color:#38bdf8;">20</div><div class="card-sub">10 cerradas · 10 completadas</div></div>
-    <div class="card"><div class="card-title">🔧 Cambios</div><div class="card-value" style="color:#a78bfa;">19</div><div class="card-sub">governance + architecture</div></div>
-    <div class="card"><div class="card-title">📋 Evidencias</div><div class="card-value" style="color:#4ade80;">21</div><div class="card-sub">closure + validation + decision</div></div>
-    <div class="card"><div class="card-title">📦 Artefactos/sesión</div><div class="card-value">8.7</div><div class="card-sub">media · pico 20</div></div>
-    <div class="card"><div class="card-title">⚖️ Decisiones/sesión</div><div class="card-value">3.6</div><div class="card-sub">rigor de razonamiento</div></div>
-    <div class="card"><div class="card-title">📅 Rango activo</div><div class="card-value" style="font-size:1rem;">2026-04-11</div><div class="card-sub">→ 2026-04-18</div></div>
-  </div>
-
-  <h2>Radar de evolución (early vs late)</h2>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;margin-top:14px;">
-    <div class="panel" style="display:flex;align-items:center;justify-content:center;">
-      <canvas id="radarChart" style="max-width:380px;max-height:380px;"></canvas>
+    <div class="grid cards">
+      
+        <div class="card">
+          <div class="card-title">Corpus inicial</div>
+          <div class="card-value">22 artefactos</div>
+          <div class="card-subtitle">Snapshot base 2026-04-18T13:41:00Z</div>
+        </div>
+        
+      
+        <div class="card">
+          <div class="card-title">Corpus actual</div>
+          <div class="card-value">154 artefactos</div>
+          <div class="card-subtitle">Inventario visible: 50 sesiones, 52 cambios, 52 evidencias</div>
+        </div>
+        
+      
+        <div class="card">
+          <div class="card-title">Integridad</div>
+          <div class="card-value">GO / GO / GO</div>
+          <div class="card-subtitle">Validación más reciente</div>
+        </div>
+        
+      
+        <div class="card">
+          <div class="card-title">Última sesión</div>
+          <div class="card-value">SES-HARVEST-2026-04-21-007</div>
+          <div class="card-subtitle">w9_cosecha</div>
+        </div>
+        
     </div>
+
     <div class="panel">
+      <h2>Lectura ejecutiva</h2>
+      <div class="two-col">
+        <div class="box">
+          <h3 class="diagram-title">Al principio</h3>
+          <p>BAGO se enfocaba en <code>system_change</code>, preservación canónica, migración histórica y validación documental. La variedad funcional era baja y el trabajo era esencialmente de consolidación.</p>
+          <p class="muted">system_change: 7 | project_bootstrap: 0 | analysis: 0 | repository_audit: 0 | execution: 0</p>
+        </div>
+        <div class="box">
+          <h3 class="diagram-title">Ahora</h3>
+          <p>El sistema trabaja de forma más madura: bootstrap del repo, análisis, auditoría, ejecución y cierre de ciclos con evidencias y estado vivo actualizado.</p>
+          <p class="muted">system_change: 19 | project_bootstrap: 3 | analysis: 4 | repository_audit: 2 | execution: 4</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Métricas de hoy</h2>
+      <div class="grid cards" style="margin-top: 10px;">
+        
+        <div class="card">
+          <div class="card-title">Hoy local</div>
+          <div class="card-value">21/04/2026</div>
+          <div class="card-subtitle">reloj del entorno de trabajo</div>
+        </div>
+        
+        
+        <div class="card">
+          <div class="card-title">Sesiones de hoy</div>
+          <div class="card-value">9</div>
+          <div class="card-subtitle">sin actividad si vale 0</div>
+        </div>
+        
+        
+        <div class="card">
+          <div class="card-title">Cambios de hoy</div>
+          <div class="card-value">10</div>
+          <div class="card-subtitle">sin actividad si vale 0</div>
+        </div>
+        
+        
+        <div class="card">
+          <div class="card-title">Evidencias de hoy</div>
+          <div class="card-value">10</div>
+          <div class="card-subtitle">sin actividad si vale 0</div>
+        </div>
+        
+        
+        <div class="card">
+          <div class="card-title">Corridas autónomas</div>
+          <div class="card-value">0</div>
+          <div class="card-subtitle">ventanas de metrics/runs</div>
+        </div>
+        
+        
+        <div class="card">
+          <div class="card-title">Solicitudes hoy</div>
+          <div class="card-value">0</div>
+          <div class="card-subtitle">total en corridas que tocan hoy</div>
+        </div>
+        
+      </div>
+      <p class="muted">Si la cifra es 0, no hay registros fechados hoy en el reloj local del entorno.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Actividad diaria</h2>
+      <img class="svg" src="figures/activity_by_day.svg" alt="Actividad diaria" />
+    </div>
+
+    <div class="panel">
+      <h2>Mezcla de trabajo por fase</h2>
+      <img class="svg" src="figures/session_mix_by_phase.svg" alt="Mezcla de trabajo por fase" />
       <table>
-        <tr><th>Dimensión</th><th>Inicio</th><th>Ahora</th><th>Δ</th></tr>
-        <tr><td>🔀 Diversidad tareas</td><td>4.0</td><td style="color:#4ade80;font-weight:700;">10.0</td><td style="color:#4ade80;">▲ +6.0</td></tr>
-        <tr><td>✅ Protocolo cierre</td><td>0.0</td><td style="color:#4ade80;font-weight:700;">10.0</td><td style="color:#4ade80;">▲ +10.0</td></tr>
-        <tr><td>🎯 Alcance workflows</td><td>2.5</td><td style="color:#4ade80;font-weight:700;">10.0</td><td style="color:#4ade80;">▲ +7.5</td></tr>
-        <tr><td>🎯 Foco sesión</td><td>3.0</td><td style="color:#4ade80;font-weight:700;">6.9</td><td style="color:#4ade80;">▲ +3.9</td></tr>
-        <tr><td>📦 Producción artefactos</td><td>4.8</td><td style="color:#f87171;">4.0</td><td style="color:#f87171;">▼ -0.8</td></tr>
-        <tr><td>⚖️ Rigor decisiones</td><td>9.0</td><td style="color:#94a3b8;">9.0</td><td style="color:#94a3b8;">= 0.0</td></tr>
+        <thead><tr><th>Fase</th><th>system_change</th><th>project_bootstrap</th><th>analysis</th><th>repository_audit</th><th>execution</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr><td>Inicio</td><td>7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>7</td></tr>
+          <tr><td>Ahora</td><td>19</td><td>3</td><td>4</td><td>2</td><td>4</td><td>43</td></tr>
+        </tbody>
       </table>
-      <p style="font-size:.8rem;color:var(--muted);margin-top:12px;">Azul = primeras 10 sesiones · Verde = últimas 10</p>
+    </div>
+
+    <div class="panel">
+      <h2>Evolución de tipos de trabajo</h2>
+      <img class="svg" src="figures/task_type_evolution.svg" alt="Evolución de tipos de trabajo por día" />
+      <table>
+        <thead><tr><th>Día</th><th>analysis</th><th>design</th><th>execution</th><th>validation</th><th>organization</th><th>system_change</th><th>project_bootstrap</th><th>repository_audit</th><th>history_migration</th></tr></thead>
+        <tbody><tr><td>2026-04-11</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-04-13</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-04-14</td><td>0</td><td>0</td><td>2</td><td>0</td><td>0</td><td>2</td><td>0</td><td>1</td><td>0</td></tr><tr><td>2026-04-15</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>1</td><td>0</td><td>0</td></tr><tr><td>2026-04-17</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>2026-04-18</td><td>3</td><td>0</td><td>2</td><td>0</td><td>0</td><td>13</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-04-19</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-04-21</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>2026-04-22</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Crecimiento del corpus</h2>
+      <img class="svg" src="figures/corpus_growth.svg" alt="Crecimiento del corpus" />
+    </div>
+
+    <div class="panel">
+      <h2>Ventanas de trabajo autónomo</h2>
+      <img class="svg" src="figures/runs_clusters.svg" alt="Ventanas de trabajo autónomo" />
+      <table>
+        <thead><tr><th>Bloque</th><th>Inicio local</th><th>Fin local</th><th>Duración activa</th><th>Solicitudes</th><th>Corridas</th></tr></thead>
+        <tbody><tr><td>bloque 1</td><td>12/04 15:48</td><td>12/04 15:49</td><td>56.318s</td><td>500</td><td>2</td></tr><tr><td>bloque 2</td><td>13/04 22:28</td><td>13/04 23:11</td><td>57.897s</td><td>605</td><td>7</td></tr><tr><td>bloque 3</td><td>13/04 23:44</td><td>14/04 00:34</td><td>928.868s</td><td>494</td><td>8</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h2>Diagramas</h2>
+      <div class="two-col">
+        <div class="box">
+          <h3 class="diagram-title">Evolución funcional</h3>
+          <pre>flowchart LR
+  A["Corrección y migración"] --&gt; B["Endurecimiento estructural"]
+  B --&gt; C["Performance y release"]
+  C --&gt; D["Bootstrap repo-first"]
+  D --&gt; E["Evaluación y reconstrucción"]
+  E --&gt; F["Operación estable"]</pre>
+        </div>
+        <div class="box">
+          <h3 class="diagram-title">Ciclo autónomo</h3>
+          <pre>stateDiagram-v2
+  [*] --&gt; Session
+  Session --&gt; Change
+  Change --&gt; Evidence
+  Evidence --&gt; GlobalState
+  GlobalState --&gt; NextSession
+  NextSession --&gt; Session</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Observaciones técnicas</h2>
+      <p class="muted">Snapshot canónico de referencia: 21/04/2026 desde <code>global_state.updated_at</code>.</p>
+      <p class="muted">El árbol local visible tiene menos archivos que <code>global_state.json</code> anticipa en su inventario. Eso sugiere que el estado canónico va por delante de esta copia del árbol.</p>
+      <p class="muted">La evolución principal no es solo de volumen; es de especialización y de capacidad para cerrar ciclos de trabajo con evidencias y validación.</p>
     </div>
   </div>
-
-  <h2>Actividad por día</h2>
-  <div class="panel">
-    <table>
-      <tr><th>Fecha</th><th>system_change</th><th>bootstrap</th><th>execution</th><th>analysis</th><th>repo_audit</th><th>Total</th></tr>
-      <tr><td>2026-04-11</td><td>4</td><td>0</td><td>0</td><td>0</td><td>0</td><td style='font-weight:700;color:#4ade80'>4</td></tr><tr><td>2026-04-13</td><td>3</td><td>0</td><td>0</td><td>0</td><td>0</td><td style='font-weight:700;color:#4ade80'>3</td></tr><tr><td>2026-04-14</td><td>2</td><td>1</td><td>2</td><td>0</td><td>1</td><td style='font-weight:700;color:#4ade80'>6</td></tr><tr><td>2026-04-15</td><td>3</td><td>0</td><td>0</td><td>1</td><td>0</td><td style='font-weight:700;color:#4ade80'>4</td></tr><tr><td>2026-04-17</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td style='font-weight:700;color:#4ade80'>2</td></tr><tr><td>2026-04-18</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td style='font-weight:700;color:#4ade80'>1</td></tr>
-    </table>
-  </div>
-
-  <h2>Estado de sprints</h2>
-  <div class="panel">
-    <table><tr><th>Sprint</th><th>Estado</th></tr><tr><td>sprint_1a</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr><tr><td>sprint_1b</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr><tr><td>sprint_1c</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr><tr><td>sprint_1d</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr><tr><td>sprint_2</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr><tr><td>sprint_3</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr><tr><td>sprint_4</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr></table>
-  </div>
-
-  <h2>Gaps de observabilidad identificados</h2>
-  <div class="panel">
-    <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px;">Áreas no medidas todavía (prioridad para siguiente iteración de métricas):</p>
-    <ul style="font-size:.85rem;line-height:1.8;color:var(--text);">
-      <li>Calidad semántica de salida (utilidad, accionabilidad)</li>
-      <li>Tiempo bootstrap → primera acción útil</li>
-      <li>Éxito y duración por workflow</li>
-      <li>Métricas reales separadas de métricas afectadas por TLS/rate-limit</li>
-      <li>Valor incremental de activar roles adicionales</li>
-      <li>Artefactos útiles vs artefactos de relleno</li>
-    </ul>
-  </div>
-
-</div>
-<script>
-(function(){
-  const labels = ["Diversidad", "Protocolo", "Alcance WF", "Foco", "Producci\u00f3n", "Rigor"];
-  const early  = [4.0, 0.0, 2.5, 3.0, 4.8, 9.0];
-  const late   = [10.0, 10.0, 10.0, 6.9, 4.0, 9.0];
-  const ctx = document.getElementById('radarChart').getContext('2d');
-  new Chart(ctx,{
-    type:'radar',
-    data:{
-      labels,
-      datasets:[
-        {label:'Inicio',data:early,backgroundColor:'rgba(56,189,248,0.15)',borderColor:'rgba(56,189,248,0.9)',pointBackgroundColor:'rgba(56,189,248,1)',pointRadius:4,borderWidth:2},
-        {label:'Ahora',data:late,backgroundColor:'rgba(74,222,128,0.18)',borderColor:'rgba(74,222,128,0.95)',pointBackgroundColor:'rgba(74,222,128,1)',pointRadius:4,borderWidth:2}
-      ]
-    },
-    options:{
-      responsive:true,
-      scales:{r:{min:0,max:10,ticks:{stepSize:2,color:'#64748b',font:{size:10}},grid:{color:'rgba(51,65,85,0.6)'},angleLines:{color:'rgba(51,65,85,0.6)'},pointLabels:{color:'#94a3b8',font:{size:11}}}},
-      plugins:{legend:{labels:{color:'#e2e8f0',font:{size:12},padding:16}},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.raw}/10`}}}
-    }
-  });
-})();
-</script>
 </body>
 </html>

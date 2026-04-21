@@ -3,6 +3,15 @@
 **Versión:** 1.0 · **Pack:** 2.3-clean  
 **Propósito:** Arrancar, ejecutar y cerrar cualquier sesión BAGO sin depender de memoria.
 
+## Regla previa
+
+Los LLMs son opcionales y no gobiernan `.bago/`.
+Si existe una capa conversacional o de ayuda, su función es explicar y acompañar;
+no decidir target, workflow ni cambios de estado.
+
+Referencia:
+`docs/operation/CONTRATO_FRONTERA_LLM.md`
+
 ---
 
 ## 1. Bootstrap — lo primero siempre

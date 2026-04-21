@@ -41,6 +41,7 @@ MENU = """
 ║  4. 🌐 Abrir BAGO Viewer (web)                       ║
 ║  5. 📝 Listar comandos disponibles                   ║
 ║  6. ⚙️  Configuración y setup                         ║
+║  7. 🧭 Recolecta de contexto (directorio/s)          ║
 ║  0. Salir                                            ║
 ╚══════════════════════════════════════════════════════╝
 """
@@ -152,6 +153,13 @@ def option_6():
     print()
     print(GREEN("✓ Setup completado"))
 
+def option_7():
+    """Recolecta de contexto por directorio/s"""
+    print()
+    print(GREEN("🧭 Recolecta de contexto"))
+    print(DIM("─" * 54))
+    run_command(["python3", str(TOOLS / "context_collector.py")])
+
 def main():
     # Banner breve
     print()
@@ -178,6 +186,8 @@ def main():
             option_5()
         elif choice == "6":
             option_6()
+        elif choice == "7":
+            option_7()
         else:
             print()
             print(f"{_c('1;33', '⚠')} Opción no válida: {choice}")

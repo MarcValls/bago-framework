@@ -1,0 +1,24 @@
+{
+  "change_id": "BAGO-CHG-072",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Sprint 180 Fase 3 — snapshot, diff, session-stats, compare, goals, lint",
+  "motivation": "Continuar el sprint de 180 minutos con herramientas de archivado (snapshot/diff), análisis avanzado (session-stats, compare), gestión de objetivos (goals) y control de calidad (lint).",
+  "status": "applied",
+  "affected_components": [
+    "tools/snapshot.py",
+    "tools/diff.py",
+    "tools/session_details.py",
+    "tools/compare.py",
+    "tools/goals.py",
+    "tools/lint.py",
+    "bago"
+  ],
+  "details": "snapshot: ZIP point-in-time 293 archivos, 5/5 tests. diff: delta vs snapshot, 5/5 tests. session-stats: top sesiones por score + breakdown por ID, 5/5 tests. compare: wf/periodo/rol lado a lado, 5/5 tests. goals: objetivos del pack con link/close/progress, 5/5 tests. lint: linter calidad pack 0 errores 11 avisos 19 info, 5/5 tests.",
+  "tests": "todos: 5/5; validate GO; health 100/100",
+  "sprint_ref": "SPRINT-003",
+  "related_evidence": [],
+  "created_at": "2026-04-21T23:33:56.889602",
+  "updated_at": "2026-04-21T23:33:56.889602",
+  "author": "copilot-swe-agent"
+}

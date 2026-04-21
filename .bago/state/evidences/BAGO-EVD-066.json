@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-066",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-065",
+    "Alerta de task obsoleta"
+  ],
+  "summary": "Cierre W2 automático: Alerta de task obsoleta",
+  "details": "La tarea W2 quedó marcada como done, se generó un CHG de gobernanza y se actualizó global_state con el nuevo inventario. Archivos candidatos de la tarea: .bago/tools/emit_ideas.py.",
+  "status": "recorded",
+  "recorded_at": "2026-04-21T04:06:48.046465+00:00"
+}

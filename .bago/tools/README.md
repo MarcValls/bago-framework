@@ -31,6 +31,14 @@ Esta carpeta contiene utilidades ligeras para verificar que el pack no se rompe 
   detecta si `.bago/` está operando sobre un repo distinto al contexto anterior.
   Si hay `new` o `mismatch`, obliga a arrancar por `W1/repo-first`
   para evitar bucles de estado heredado.
+  En `check`, si `repo_context.json` declara un `external_repo_pointer`,
+  expone ese contexto como efectivo para alinear banner y automatismos.
+  En `sync`, resetea al contexto detectado real del host.
+- `target_selector.py`:
+  selección segura de directorio objetivo. Prioriza contexto operativo,
+  baja la prioridad de rutas históricas o auxiliares (`TESTS/`, `RELEASE/`,
+  `audit/`, `cleanversion/`, snapshots, backups), permite navegación con
+  flechas y siempre ofrece `Ruta exacta…` como salida manual.
 
 ## Filosofía
 

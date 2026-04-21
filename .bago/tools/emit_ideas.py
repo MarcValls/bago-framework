@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from pathlib import Path
 import json
 import subprocess
@@ -183,6 +184,48 @@ def filter_ideas_for_baseline_mode(items: list[dict[str, object]]) -> list[dict[
     return filtered
 
 
+def detect_implemented_features() -> dict[str, bool]:
+    """Detecta qué ideas ya están implementadas inspeccionando el filesystem."""
+    tools = ROOT / ".bago" / "tools"
+    state = ROOT / ".bago" / "state"
+    bago_readme = ROOT / ".bago" / "README.md"
+    banner_text = (tools / "bago_banner.py").read_text(encoding="utf-8") if (tools / "bago_banner.py").exists() else ""
+
+    def _pending_task_is_active() -> bool:
+        task_file = state / "pending_w2_task.json"
+        if not task_file.exists():
+            return False
+        try:
+            data = json.loads(task_file.read_text(encoding="utf-8"))
+            return data.get("status") == "pending"
+        except Exception:
+            return False
+
+    return {
+        "handoff_w2":       (tools / "show_task.py").exists(),
+        "stability_cmd":    (ROOT / "stability-summary").exists() and (tools / "stability_summary.py").exists(),
+        "ideas_wrapper":    (ROOT / "ideas").exists(),
+        "gate_in_code":     True,  # siempre presente en emit_ideas.py
+        "readme_aligned":   bago_readme.exists() and "bago stability" in bago_readme.read_text(encoding="utf-8"),
+        "pending_task":     _pending_task_is_active(),
+        "session_opener":   (tools / "session_opener.py").exists(),
+        "banner_shows_task": "_active_task" in banner_text,
+        "impl_registry":    (state / "implemented_ideas.json").exists(),
+    }
+
+
+def load_implemented_titles() -> set[str]:
+    """Devuelve el conjunto de títulos de ideas ya registradas como implementadas."""
+    impl_file = ROOT / ".bago" / "state" / "implemented_ideas.json"
+    if not impl_file.exists():
+        return set()
+    try:
+        data = json.loads(impl_file.read_text(encoding="utf-8"))
+        return {str(e.get("title", "")) for e in data.get("implemented", [])}
+    except Exception:
+        return set()
+
+
 def build_idea_sections(items: list[dict[str, object]]) -> dict[str, list[dict[str, object]]]:
     contextual = [
         item
@@ -270,6 +313,61 @@ def render_handoff(selected: dict[str, object]) -> list[str]:
     return lines
 
 
+def build_handoff_data(selected: dict[str, object], index: int) -> dict[str, object]:
+    """Construye el dict estructurado del handoff para persistir en disco."""
+    title = str(selected["title"])
+    summary = str(selected["summary"])
+    detail = [str(line) for line in selected["detail"]]  # type: ignore[index]
+    w2 = str(selected["w2"])
+    metric = str(selected.get("metric", "")).strip()
+    priority = int(str(selected.get("priority", 0)))
+
+    if title == "Handoff idea -> W2":
+        objective = "Convertir una idea seleccionada en una tarea lista para implementar."
+        scope = "Generar una salida accionable al aceptar una idea sin tocar el ranking ni el detalle."
+        non_scope = "No cambia la selección, el scoring ni los reports de estabilidad."
+        files = [".bago/tools/emit_ideas.py"]
+        validation = [
+            "`./ideas --detail 1` mantiene la salida actual.",
+            "`./ideas --accept 1` imprime objetivo, alcance, no alcance, archivos candidatos y validación.",
+            "`./ideas` sin flags conserva el selector existente.",
+        ]
+    else:
+        objective = summary
+        scope = "Materializar la idea seleccionada con el menor cambio suficiente."
+        non_scope = "No expandir el alcance fuera de la idea elegida."
+        files = [".bago/tools/emit_ideas.py"]
+        validation = ["La salida debe explicar el cambio, los archivos y la verificación mínima."]
+        if metric:
+            validation.append(f"Métrica objetivo: {metric}")
+
+    return {
+        "idea_index": index,
+        "idea_title": title,
+        "priority": priority,
+        "workflow": "W2_IMPLEMENTACION_CONTROLADA",
+        "objetivo": objective,
+        "alcance": scope,
+        "no_alcance": non_scope,
+        "archivos_candidatos": files,
+        "validacion_minima": validation,
+        "siguiente_paso": w2,
+        "metric": metric,
+        "handoff_chain": "role_analyst>role_architect>role_generator>role_validator>role_vertice",
+        "human_validation_prompt": "Describe en 1-2 frases qué experiencia humana mejora y cómo lo verificaste.",
+        "contexto": detail,
+        "status": "pending",
+        "accepted_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+def save_handoff(data: dict[str, object]) -> Path:
+    """Escribe el handoff en .bago/state/pending_w2_task.json y devuelve la ruta."""
+    dest = ROOT / ".bago" / "state" / "pending_w2_task.json"
+    dest.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    return dest
+
+
 def parse_args(argv: list[str]) -> tuple[int | None, bool]:
     detail_index = None
     accept = False
@@ -324,7 +422,7 @@ def main() -> int:
         for msg in gate_warn:
             print(msg)
         print("")
-        print("KO → ninguna idea avanza. Ejecuta `make stability-summary` para el detalle.")
+        print("KO → ninguna idea avanza. Ejecuta `bago stability` para el detalle.")
         return 1
     # ── /gate ──────────────────────────────────────────────────────────────────
 
@@ -342,9 +440,13 @@ def main() -> int:
         repo_lines = len(read_text(readme_path).splitlines())
 
     baseline_clean_mode = global_state.get("baseline_status") == "active_clean_core"
+    feat = detect_implemented_features()
 
-    ideas: list[dict[str, object]] = [
-        {
+    ideas: list[dict[str, object]] = []
+
+    # ── Idea 1: Handoff W2 → Opener → Cierre automático ──────────────────────
+    if not feat["handoff_w2"]:
+        ideas.append({
             "priority": 90,
             "section": "contextuales",
             "risk": "low",
@@ -357,8 +459,43 @@ def main() -> int:
                 "Ventaja: reduce la fricción entre ideación e implementación.",
             ],
             "w2": "Pasar la idea elegida a W2 con un alcance pequeño y un criterio de salida claro.",
-        },
-        {
+        })
+    elif not feat["session_opener"]:
+        # Generación 2: opener de sesión desde la tarea aceptada
+        ideas.append({
+            "priority": 90,
+            "section": "contextuales",
+            "risk": "low",
+            "metric": "bago session lee pending_w2_task.json y lanza session_preflight con objetivo, roles y artefactos pre-rellenados.",
+            "title": "Opener de sesión desde task",
+            "summary": "Añadir `bago session` que lee el handoff aceptado y abre la sesión W2 con preflight pre-rellenado, evitando trabajo manual.",
+            "detail": [
+                "Entrada: pending_w2_task.json con objetivo, archivos y validación.",
+                "Salida: llamada a session_preflight.py con los datos del handoff.",
+                "Ventaja: elimina el paso manual de copiar datos del handoff al preflight.",
+            ],
+            "w2": "Implementar bago session en el script raíz delegando en session_preflight.py.",
+        })
+    else:
+        # Generación 3: cierre automático de sesión desde bago task --done
+        ideas.append({
+            "priority": 90,
+            "section": "contextuales",
+            "risk": "low",
+            "metric": "bago task --done genera y guarda automáticamente el artefacto de cierre de sesión.",
+            "title": "Cierre automático de sesión",
+            "summary": "Al marcar la tarea como done, generar automáticamente el artefacto de cierre con resumen de cambios y evidencias.",
+            "detail": [
+                "Entrada: tarea W2 completada (pending_w2_task.json con status=done).",
+                "Salida: artefacto de cierre con resumen, CHG/EVD generados y estado actualizado.",
+                "Ventaja: elimina el paso manual de redactar el cierre después de implementar.",
+            ],
+            "w2": "Extender show_task.py --done para llamar al generador de cierre de sesión.",
+        })
+
+    # ── Idea 2: Stability → Banner → Stale task alert ─────────────────────────
+    if not feat["stability_cmd"]:
+        ideas.append({
             "priority": 86,
             "section": "contextuales",
             "risk": "low",
@@ -371,123 +508,180 @@ def main() -> int:
                 "Ventaja: evita idear sobre una base ya inestable.",
             ],
             "w2": "Si el resumen está en verde, permitir avanzar a una idea concreta.",
-        },
-    ]
+        })
+    elif not feat["banner_shows_task"]:
+        # Generación 2: mostrar task pendiente en el banner
+        ideas.append({
+            "priority": 86,
+            "section": "contextuales",
+            "risk": "low",
+            "metric": "El banner muestra el estado de la tarea W2 activa (título + estado) si pending_w2_task.json existe.",
+            "title": "Banner muestra task activa",
+            "summary": "Mostrar en el banner de BAGO si hay una tarea W2 pendiente o completada, para visibilidad inmediata al arrancar.",
+            "detail": [
+                "Entrada: pending_w2_task.json si existe.",
+                "Salida: línea extra en el banner con título y estado (⏳/✅).",
+                "Ventaja: el usuario sabe al abrir BAGO si tiene trabajo en curso.",
+            ],
+            "w2": "Leer pending_w2_task.json en bago_banner.py y añadir línea condicional al banner.",
+        })
+    else:
+        # Generación 3: alerta de tarea obsoleta
+        ideas.append({
+            "priority": 86,
+            "section": "contextuales",
+            "risk": "low",
+            "metric": "bago stability y el banner alertan si la task lleva más de 3 días sin completarse.",
+            "title": "Alerta de task obsoleta",
+            "summary": "Si pending_w2_task.json lleva más de 3 días sin marcarse done, mostrar aviso en banner y en bago stability.",
+            "detail": [
+                "Entrada: pending_w2_task.json con campo accepted_at.",
+                "Salida: aviso visual (⚠️) en banner y en stability cuando la task supera 3 días.",
+                "Ventaja: evita que tareas abiertas queden olvidadas.",
+            ],
+            "w2": "Añadir lógica de antigüedad en bago_banner.py y stability_summary.py.",
+        })
 
+    # ── Idea 3: Gate → Registro → Selector filtra por registro ───────────────
     stable_reports = all(
         report and report.get("status") == "pass" and report.get("failure_count", 1) == 0
         for report in (smoke, vm, soak)
         if report is not None
     )
-    if stable_reports:
-        ideas.append(
-            {
-                "priority": 84,
-                "section": "contextuales",
-                "risk": "low",
-                "metric": "Ninguna idea avanza si validate_pack/validate_state/smoke no están en verde.",
-                "title": "Gate seguro antes de implementar",
-                "summary": "Bloquear sugerencias nuevas si validate_pack, validate_state o smoke no están en verde.",
-                "detail": [
-                    "Entrada: validadores canónicos y smoke del sandbox.",
-                    "Salida: permiso o bloqueo para seguir ideando e implementar.",
-                    "Ventaja: protege la estabilidad antes de abrir trabajo nuevo.",
-                ],
-                "w2": "Si el gate pasa, la idea elegida puede convertirse en W2.",
-            }
-        )
+    if not feat["gate_in_code"] and stable_reports:
+        ideas.append({
+            "priority": 84,
+            "section": "contextuales",
+            "risk": "low",
+            "metric": "Ninguna idea avanza si validate_pack/validate_state/smoke no están en verde.",
+            "title": "Gate seguro antes de implementar",
+            "summary": "Bloquear sugerencias nuevas si validate_pack, validate_state o smoke no están en verde.",
+            "detail": [
+                "Entrada: validadores canónicos y smoke del sandbox.",
+                "Salida: permiso o bloqueo para seguir ideando e implementar.",
+                "Ventaja: protege la estabilidad antes de abrir trabajo nuevo.",
+            ],
+            "w2": "Si el gate pasa, la idea elegida puede convertirse en W2.",
+        })
+    elif feat["gate_in_code"] and not feat["impl_registry"]:
+        # Generación 2: registro de ideas implementadas para no repetirlas
+        ideas.append({
+            "priority": 84,
+            "section": "contextuales",
+            "risk": "low",
+            "metric": "El selector no repite una idea marcada como implementada en implemented_ideas.json.",
+            "title": "Registro de ideas implementadas",
+            "summary": "Guardar en estado qué ideas ya fueron implementadas para que el selector evolucione en lugar de repetirlas en cada sesión.",
+            "detail": [
+                "Entrada: lista de ideas aceptadas e implementadas.",
+                "Salida: archivo .bago/state/implemented_ideas.json con IDs y fechas.",
+                "Ventaja: el selector siempre propone trabajo nuevo, no repetido.",
+            ],
+            "w2": "Crear implemented_ideas.json y leerlo en emit_ideas para filtrar ideas ya hechas.",
+        })
+    elif feat["impl_registry"]:
+        # Generación 3: puntuación dinámica basada en registro
+        ideas.append({
+            "priority": 84,
+            "section": "contextuales",
+            "risk": "low",
+            "metric": "El scoring de ideas sube cuando la feature que proponen no está en implemented_ideas.json.",
+            "title": "Scoring dinámico por registro",
+            "summary": "Ajustar la prioridad de las ideas en función de si la feature que proponen ya fue implementada, incrementando el score de las que aportan trabajo nuevo.",
+            "detail": [
+                "Entrada: implemented_ideas.json con historial de ideas completadas.",
+                "Salida: ideas reordenadas priorizando trabajo genuinamente nuevo.",
+                "Ventaja: el selector se vuelve más preciso con el tiempo.",
+            ],
+            "w2": "Leer implemented_ideas.json en emit_ideas y aplicar penalización de score a ideas similares ya hechas.",
+        })
 
     if matrix and matrix.get("status") == "pass":
-        ideas.append(
-            {
-                "priority": 82,
-                "section": "contextuales",
-                "risk": "medium",
-                "metric": "WF responde por intención y reduce navegación manual.",
-                "title": "Selector por intención",
-                "summary": "Extender WF para filtrar ideas y workflows por intención, por ejemplo idea, implementar, depurar o cerrar.",
-                "detail": [
-                    "Entrada: intención del usuario.",
-                    "Salida: selector más fino para aterrizar al workflow correcto.",
-                    "Ventaja: evita navegar manualmente cuando la intención ya está clara.",
-                ],
-                "w2": "Usar la intención seleccionada para orientar la tarea siguiente.",
-            }
-        )
-
-    if baseline_clean_mode:
-        ideas.append(
-            {
-                "priority": 78,
-                "section": "contextuales",
-                "risk": "low",
-                "metric": "Cada idea aceptada declara una mejora medible en trazabilidad u operación.",
-                "title": "Ideas orientadas a baseline",
-                "summary": "Proponer solo cambios que mantengan el baseline limpio y generen un incremento medible en trazabilidad u operacion.",
-                "detail": [
-                    "Entrada: baseline limpio y estable.",
-                    "Salida: ideas pequeñas con mejora mensurable.",
-                    "Ventaja: alinea la ideación con la continuidad del pack.",
-                ],
-                "w2": "Seleccionar una idea que preserve el baseline y tenga bajo riesgo.",
-            }
-        )
-
-    if sections.get("cierre de sesión"):
-        ideas.append(
-            {
-                "priority": 74,
-                "section": "contextuales",
-                "risk": "medium",
-                "metric": "Reapertura evita reconstrucción manual y reduce pasos de arranque.",
-                "title": "Reabrir desde continuidad",
-                "summary": "Añadir un modo para reactivar la sesión desde el cierre actual sin reconstruir contexto manualmente.",
-                "detail": [
-                    "Entrada: cierre de sesión ya escrito en estado.",
-                    "Salida: reanudación más rápida sin perder contexto.",
-                    "Ventaja: mantiene continuidad de trabajo entre sesiones.",
-                ],
-                "w2": "Si se acepta, convertirlo en una mejora pequeña y segura de continuidad.",
-            }
-        )
-
-    if repo_lines > 0:
-        ideas.append(
-            {
-                "priority": 70,
-                "section": "contextuales",
-                "risk": "medium",
-                "metric": "La primera decisión del usuario llega a una acción en un paso.",
-                "title": "Entrada rápida del repo",
-                "summary": "Conectar ideas con README y WF para que la primera decisión del usuario vaya a una acción concreta sin leer toda la canonica.",
-                "detail": [
-                    "Entrada: comandos cortos y selector de workflows.",
-                    "Salida: menos fricción para abrir ideas o W2.",
-                    "Ventaja: mejora la usabilidad diaria del repo.",
-                ],
-                "w2": "Promover la idea seleccionada a una tarea corta y directa.",
-            }
-        )
-
-    ideas.append(
-        {
-            "priority": 68,
+        ideas.append({
+            "priority": 82,
             "section": "contextuales",
             "risk": "medium",
-            "metric": "El ranking refleja señales de estado actual y reduce recomendaciones estáticas.",
-            "title": "Mejorar ranking de ideas",
-            "summary": "Ajustar el scoring para reflejar señales del estado actual y evitar prioridades estáticas que oculten trabajo real.",
+            "metric": "WF responde por intención y reduce navegación manual.",
+            "title": "Selector por intención",
+            "summary": "Extender WF para filtrar ideas y workflows por intención, por ejemplo idea, implementar, depurar o cerrar.",
             "detail": [
-                "Entrada: estado BAGO, salud de reports y workflow activo.",
-                "Salida: orden de ideas más sensible al contexto operativo.",
-                "Ventaja: reduce sesgos de ranking y evita ciclos de recomendación.",
+                "Entrada: intención del usuario.",
+                "Salida: selector más fino para aterrizar al workflow correcto.",
+                "Ventaja: evita navegar manualmente cuando la intención ya está clara.",
             ],
-            "w2": "Implementar un ranking contextual acotado y validarlo con ejemplos reales del estado.",
-        }
-    )
+            "w2": "Usar la intención seleccionada para orientar la tarea siguiente.",
+        })
+
+    if baseline_clean_mode:
+        ideas.append({
+            "priority": 78,
+            "section": "contextuales",
+            "risk": "low",
+            "metric": "Cada idea aceptada declara una mejora medible en trazabilidad u operación.",
+            "title": "Ideas orientadas a baseline",
+            "summary": "Proponer solo cambios que mantengan el baseline limpio y generen un incremento medible en trazabilidad u operacion.",
+            "detail": [
+                "Entrada: baseline limpio y estable.",
+                "Salida: ideas pequeñas con mejora mensurable.",
+                "Ventaja: alinea la ideación con la continuidad del pack.",
+            ],
+            "w2": "Seleccionar una idea que preserve el baseline y tenga bajo riesgo.",
+        })
+
+    if sections.get("cierre de sesión"):
+        ideas.append({
+            "priority": 74,
+            "section": "contextuales",
+            "risk": "medium",
+            "metric": "Reapertura evita reconstrucción manual y reduce pasos de arranque.",
+            "title": "Reabrir desde continuidad",
+            "summary": "Añadir un modo para reactivar la sesión desde el cierre actual sin reconstruir contexto manualmente.",
+            "detail": [
+                "Entrada: cierre de sesión ya escrito en estado.",
+                "Salida: reanudación más rápida sin perder contexto.",
+                "Ventaja: mantiene continuidad de trabajo entre sesiones.",
+            ],
+            "w2": "Si se acepta, convertirlo en una mejora pequeña y segura de continuidad.",
+        })
+
+    if repo_lines > 0:
+        ideas.append({
+            "priority": 70,
+            "section": "contextuales",
+            "risk": "medium",
+            "metric": "La primera decisión del usuario llega a una acción en un paso.",
+            "title": "Entrada rápida del repo",
+            "summary": "Conectar ideas con README y WF para que la primera decisión del usuario vaya a una acción concreta sin leer toda la canonica.",
+            "detail": [
+                "Entrada: comandos cortos y selector de workflows.",
+                "Salida: menos fricción para abrir ideas o W2.",
+                "Ventaja: mejora la usabilidad diaria del repo.",
+            ],
+            "w2": "Promover la idea seleccionada a una tarea corta y directa.",
+        })
+
+    ideas.append({
+        "priority": 68,
+        "section": "contextuales",
+        "risk": "medium",
+        "metric": "El ranking refleja señales de estado actual y reduce recomendaciones estáticas.",
+        "title": "Mejorar ranking de ideas",
+        "summary": "Ajustar el scoring para reflejar señales del estado actual y evitar prioridades estáticas que oculten trabajo real.",
+        "detail": [
+            "Entrada: estado BAGO, salud de reports y workflow activo.",
+            "Salida: orden de ideas más sensible al contexto operativo.",
+            "Ventaja: reduce sesgos de ranking y evita ciclos de recomendación.",
+        ],
+        "w2": "Implementar un ranking contextual acotado y validarlo con ejemplos reales del estado.",
+    })
 
     if baseline_clean_mode:
         ideas = filter_ideas_for_baseline_mode(ideas)
+
+    # Filtrar ideas cuyo título ya fue registrado como implementado
+    done_titles = load_implemented_titles()
+    if done_titles:
+        ideas = [i for i in ideas if str(i.get("title", "")) not in done_titles]
 
     sections = build_idea_sections(ideas)
     ideas = order_ideas_by_section(sections)
@@ -530,6 +724,10 @@ def main() -> int:
         print("- Workflow: run `make workflow-tactical NAME=W2`")
         for line in render_handoff(selected):
             print(line)
+        handoff_data = build_handoff_data(selected, detail_index)
+        saved_path = save_handoff(handoff_data)
+        print(f"\n→ Tarea guardada en {saved_path.relative_to(ROOT)}")
+        print("  Consulta con: bago task")
     else:
         print("- Status: awaiting acceptance")
         print(f"- If you want to accept it, run `./ideas --accept {detail_index}`")

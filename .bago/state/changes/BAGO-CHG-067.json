@@ -1,0 +1,17 @@
+{
+  "change_id": "BAGO-CHG-067",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Cosecha contextual W9: auditoria nuclear",
+  "motivation": "Formalizar exploración libre. Decisión: auditoria nuclear. Descarte: framework.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/state/changes/BAGO-CHG-066.json",
+    ".bago/state/evidences/BAGO-EVD-067.json",
+    ".bago/state/sessions/SES-HARVEST-2026-04-21-005.json"
+  ],
+  "related_evidence": "BAGO-EVD-068",
+  "created_at": "2026-04-21T04:23:57.175208+00:00",
+  "updated_at": "2026-04-21T04:23:57.175208+00:00",
+  "author": "role_auditor"
+}

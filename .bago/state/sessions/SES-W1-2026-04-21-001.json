@@ -1,0 +1,52 @@
+{
+  "session_id": "SES-W1-2026-04-21-001",
+  "task_type": "project_bootstrap",
+  "selected_workflow": "w1_cold_start",
+  "roles_activated": [
+    "role_auditor"
+  ],
+  "user_goal": "Cold start sobre repo externo visor ER — JS/Node, vitest, sin .bago previo",
+  "status": "closed",
+  "escenario": null,
+  "created_at": "2026-04-21T07:58:25.991269+00:00",
+  "updated_at": "2026-04-21T08:08:55.060928+00:00",
+  "artifacts": [
+    "tests/layout.focus.test.js — F1: state.panzoom → state.transform",
+    "tests/model.cleanup.test.js — F2+F3: createTable/createView firma corregida",
+    "tests/model.rename.test.js — F4: expectativa errónea eliminada; F5: assertion bug corregido",
+    "tests/structure.test.js — F6: click → dblclick"
+  ],
+  "decisions": [
+    "PIVOT: sesión SES-W7-2026-04-21-001 cerrada sin artefactos — cambio de repo confirmado por usuario",
+    "REPO ACTIVO: /Volumes/Warehouse/visor ER (visor-er v1.0.0, Node/JS, vitest, sin git, sin .bago)",
+    "HALLAZGO: 6 tests fallando — todos bugs de TEST, no de producción",
+    "HALLAZGO: API refactorizada Panzoom→state.transform — tests desactualizados (F1)",
+    "HALLAZGO: createTable/createView firma cambió model→string — tests usaban API antigua (F2, F3)",
+    "HALLAZGO: renameTableReferences no renombra la tabla, solo sus referencias FK (F4)",
+    "HALLAZGO: removeForeignReferencesToTable — assertion accedía a undefined tras cleanup correcto (F5)",
+    "HALLAZGO: structure.js vincula focusNode a dblclick, no a click (F6)",
+    "DECISIÓN: producción correcta — solo tests corregidos",
+    "RESULTADO: 22/22 tests verdes — 0 fallos — criterio de salida cumplido"
+  ],
+  "context": {
+    "repo_externo": "visor ER",
+    "repo_root": "/Volumes/Warehouse/visor ER",
+    "repo_fingerprint": "62a4d1b26abc082ce39f98668db0839c9315d64102faadcff97a490d553700fc",
+    "repo_context_status": "match",
+    "repo_has_git": false,
+    "repo_has_bago": false,
+    "stack": "Node.js / JS / vitest",
+    "estructura_detectada": {
+      "package_json": true,
+      "vitest_config": true,
+      "js_modules": ["core.js", "main.js", "model.js", "query.js", "structure.js", "layout.js", "menu.js", "parser.js", "sqldb.js"],
+      "test_files": 12,
+      "tests_total": 22,
+      "tests_passing": 22,
+      "tests_failing": 0
+    },
+    "proviene_de": "pivot desde SES-W7-2026-04-21-001 — decisión usuario"
+  },
+  "next_step": "repo bajo control — siguiente sesión puede abordar deuda técnica o nuevas features",
+  "summary": "W1 cold start + W2 fix tests completados. visor ER: 9 módulos JS, 22/22 tests verdes. 6 tests corregidos (API stale Panzoom, firma createTable/View, assertions incorrectas, evento dblclick). Producción intacta."
+}

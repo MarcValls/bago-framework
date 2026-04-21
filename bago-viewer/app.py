@@ -7,15 +7,18 @@ from __future__ import annotations
 
 import json
 import re
+import shlex
 import subprocess
 import sys
+import tempfile
 import zipfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
 
-from flask import Flask, abort, redirect, render_template, request, send_file
+from flask import Flask, abort, jsonify, redirect, render_template, request, send_file
 
 app = Flask(__name__)
 
@@ -806,6 +809,329 @@ def metrics_img(filename: str):
 
 # ── ORCHESTRATOR ──────────────────────────────────────────────────────────
 _ORCH_BAGO_ROOT = Path(__file__).resolve().parent.parent / ".bago"
+_ORCH_PROJECT_ROOT = _ORCH_BAGO_ROOT.parent
+_ORCH_BAGO_BIN = _ORCH_PROJECT_ROOT / "bago"
+_ORCH_PRESETS_FILE = _ORCH_BAGO_ROOT / "state" / "orchestrator_presets.json"
+_ORCH_HISTORY: list[dict] = []
+_ORCH_HISTORY_MAX = 40
+
+_ORCH_SIMPLE_COMMANDS = {
+    "status": ["status"],
+    "validate": ["validate"],
+    "ideas": ["ideas"],
+    "session-start": ["session"],
+    "detector": ["detector"],
+    "cosecha": ["cosecha"],
+    "stability": ["stability"],
+    "dashboard": ["dashboard"],
+}
+
+_ORCH_BUILTIN_PRESETS = {
+    "preset_sesion_w2": {
+        "label": "Sesión W2",
+        "description": "status → ideas → session (orden fijo)",
+        "steps": [
+            {"mode": "serial", "commands": ["status", "ideas", "session-start"]},
+        ],
+    },
+    "preset_guardia_pack": {
+        "label": "Guardia Pack",
+        "description": "validate → stability → detector",
+        "steps": [
+            {"mode": "serial", "commands": ["validate", "stability", "detector"]},
+        ],
+    },
+    "preset_repo_qa": {
+        "label": "QA Repo",
+        "description": "repo-debug → (repo-lint || repo-test) → repo-build",
+        "steps": [
+            {"mode": "serial", "commands": ["repo-debug"]},
+            {"mode": "parallel", "commands": ["repo-lint", "repo-test"]},
+            {"mode": "serial", "commands": ["repo-build"]},
+        ],
+    },
+}
+
+
+def _orch_remember(entry: dict) -> None:
+    _ORCH_HISTORY.append(entry)
+    if len(_ORCH_HISTORY) > _ORCH_HISTORY_MAX:
+        del _ORCH_HISTORY[: len(_ORCH_HISTORY) - _ORCH_HISTORY_MAX]
+
+
+def _orch_command_catalog() -> list[dict]:
+    return [
+        {"id": "status", "label": "Status"},
+        {"id": "validate", "label": "Validate"},
+        {"id": "ideas", "label": "Ideas"},
+        {"id": "session-start", "label": "Session Start"},
+        {"id": "detector", "label": "Detector"},
+        {"id": "cosecha", "label": "Cosecha"},
+        {"id": "stability", "label": "Stability"},
+        {"id": "dashboard", "label": "Dashboard"},
+        {"id": "repo-on", "label": "Repo On"},
+        {"id": "repo-debug", "label": "Repo Debug"},
+        {"id": "repo-lint", "label": "Repo Lint"},
+        {"id": "repo-test", "label": "Repo Test"},
+        {"id": "repo-build", "label": "Repo Build"},
+    ]
+
+
+def _orch_allowed_command_ids() -> set[str]:
+    return {c["id"] for c in _orch_command_catalog()}
+
+
+def _orch_validate_steps(steps: list[dict]) -> list[dict]:
+    if not isinstance(steps, list) or not steps:
+        raise ValueError("steps debe ser una lista no vacía")
+    clean = []
+    allowed = _orch_allowed_command_ids()
+    for i, step in enumerate(steps):
+        if not isinstance(step, dict):
+            raise ValueError(f"step[{i}] inválido")
+        mode = str(step.get("mode", "serial")).strip().lower()
+        if mode not in {"serial", "parallel"}:
+            raise ValueError(f"step[{i}].mode inválido")
+        cmds = step.get("commands", [])
+        if not isinstance(cmds, list) or not cmds:
+            raise ValueError(f"step[{i}].commands vacío")
+        clean_cmds = []
+        for c in cmds:
+            cid = str(c).strip()
+            if cid not in allowed:
+                raise ValueError(f"Comando no permitido en step[{i}]: {cid}")
+            clean_cmds.append(cid)
+        clean.append({"mode": mode, "commands": clean_cmds})
+    return clean
+
+
+def _orch_load_custom_presets() -> dict:
+    if not _ORCH_PRESETS_FILE.exists():
+        return {}
+    try:
+        data = json.loads(_ORCH_PRESETS_FILE.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            return {}
+        presets = data.get("presets", {})
+        if not isinstance(presets, dict):
+            return {}
+        clean: dict = {}
+        for pid, p in presets.items():
+            if not isinstance(p, dict):
+                continue
+            try:
+                steps = _orch_validate_steps(p.get("steps", []))
+            except Exception:
+                continue
+            clean[str(pid)] = {
+                "label": str(p.get("label", pid)),
+                "description": str(p.get("description", "")),
+                "steps": steps,
+                "builtin": False,
+            }
+        return clean
+    except Exception:
+        return {}
+
+
+def _orch_save_custom_presets(presets: dict) -> None:
+    payload = {
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "presets": presets,
+    }
+    _ORCH_PRESETS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    _ORCH_PRESETS_FILE.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
+def _orch_all_presets() -> dict:
+    merged = {k: {**v, "builtin": True} for k, v in _ORCH_BUILTIN_PRESETS.items()}
+    merged.update(_orch_load_custom_presets())
+    return merged
+
+
+def _orch_repo_commands(command_id: str, payload: dict) -> list[str] | None:
+    repo_path = str(payload.get("repo_path", "")).strip()
+    if command_id == "repo-on":
+        if not repo_path:
+            raise ValueError("Falta repo_path para repo-on")
+        return ["repo-on", repo_path]
+
+    if command_id in {"repo-debug", "repo-lint", "repo-test", "repo-build"}:
+        args = [command_id]
+        if repo_path:
+            args.append(repo_path)
+        return args
+    return None
+
+
+def _orch_resolve_command(command_id: str, payload: dict) -> list[str]:
+    if command_id in _ORCH_SIMPLE_COMMANDS:
+        return ["python3", str(_ORCH_BAGO_BIN), *_ORCH_SIMPLE_COMMANDS[command_id]]
+
+    repo_args = _orch_repo_commands(command_id, payload)
+    if repo_args is not None:
+        return ["python3", str(_ORCH_BAGO_BIN), *repo_args]
+
+    raise ValueError(f"Comando no permitido: {command_id}")
+
+
+def _orch_run_command(command_id: str, payload: dict, timeout_sec: int = 240) -> dict:
+    started = datetime.now(timezone.utc)
+    argv = _orch_resolve_command(command_id, payload)
+    try:
+        proc = subprocess.run(
+            argv,
+            cwd=str(_ORCH_PROJECT_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=timeout_sec,
+        )
+        output = ((proc.stdout or "") + (proc.stderr or "")).strip()
+        if len(output) > 12000:
+            output = output[:12000] + "\n...[truncado]..."
+        result = {
+            "command_id": command_id,
+            "argv": argv,
+            "success": proc.returncode == 0,
+            "returncode": proc.returncode,
+            "output": output,
+            "started_at": started.isoformat(),
+            "finished_at": datetime.now(timezone.utc).isoformat(),
+        }
+    except subprocess.TimeoutExpired:
+        result = {
+            "command_id": command_id,
+            "argv": argv,
+            "success": False,
+            "returncode": 124,
+            "output": f"Timeout > {timeout_sec}s",
+            "started_at": started.isoformat(),
+            "finished_at": datetime.now(timezone.utc).isoformat(),
+        }
+    return result
+
+
+def _orch_terminal_script_for_command(command_id: str, payload: dict) -> str:
+    argv = _orch_resolve_command(command_id, payload)
+    return " ".join(shlex.quote(a) for a in argv)
+
+
+def _orch_terminal_script_for_preset(preset_id: str, payload: dict) -> str:
+    preset = _orch_all_presets().get(preset_id)
+    if not preset:
+        raise ValueError(f"Preset no permitido: {preset_id}")
+
+    pieces: list[str] = []
+    for step in preset.get("steps", []):
+        mode = step.get("mode", "serial")
+        commands = step.get("commands", [])
+        cmd_scripts = [_orch_terminal_script_for_command(cmd, payload) for cmd in commands]
+        if not cmd_scripts:
+            continue
+        if mode == "parallel":
+            # Mantiene el orden por etapa, pero ejecuta comandos de la etapa en paralelo.
+            par = " ; ".join(f"({c}) &" for c in cmd_scripts) + " wait"
+            pieces.append(par)
+        else:
+            pieces.append(" && ".join(cmd_scripts))
+    return " && ".join(pieces)
+
+
+def _orch_launch_in_terminal(shell_script: str) -> dict:
+    script = f"cd {shlex.quote(str(_ORCH_PROJECT_ROOT))}\n{shell_script}\n"
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            suffix=".command",
+            prefix="bago_orch_",
+            delete=False,
+        ) as tf:
+            tf.write("#!/bin/zsh\n")
+            tf.write("set -e\n")
+            tf.write(script)
+            tf.write("\necho\n")
+            tf.write('echo "[Orchestrator] Fin de ejecución."\n')
+            tf.write('read -k 1 "?Pulsa una tecla para cerrar..."\n')
+            temp_path = Path(tf.name)
+
+        temp_path.chmod(0o755)
+        proc = subprocess.run(
+            ["open", "-a", "Terminal", str(temp_path)],
+            cwd=str(_ORCH_PROJECT_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+        ok = proc.returncode == 0
+        output = ((proc.stdout or "") + (proc.stderr or "")).strip()
+        return {
+            "success": ok,
+            "returncode": proc.returncode,
+            "output": output or "Comando enviado a Terminal.app",
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "returncode": 1,
+            "output": f"No se pudo abrir Terminal.app: {e}",
+        }
+
+
+def _orch_execute_step(step: dict, payload: dict) -> dict:
+    mode = step.get("mode", "serial")
+    commands = step.get("commands", [])
+    results: list[dict] = []
+    success = True
+
+    if mode == "parallel":
+        with ThreadPoolExecutor(max_workers=min(len(commands), 4)) as ex:
+            fut_map = {ex.submit(_orch_run_command, cmd, payload): cmd for cmd in commands}
+            for fut in as_completed(fut_map):
+                res = fut.result()
+                results.append(res)
+        order = {cmd: i for i, cmd in enumerate(commands)}
+        results.sort(key=lambda x: order.get(x["command_id"], 999))
+        success = all(r.get("success") for r in results)
+    else:
+        for cmd in commands:
+            res = _orch_run_command(cmd, payload)
+            results.append(res)
+            if not res.get("success"):
+                success = False
+                break
+
+    return {"mode": mode, "commands": commands, "results": results, "success": success}
+
+
+def _orch_execute_preset(preset_id: str, payload: dict) -> dict:
+    preset = _orch_all_presets().get(preset_id)
+    if not preset:
+        raise ValueError(f"Preset no permitido: {preset_id}")
+
+    started = datetime.now(timezone.utc)
+    steps_out = []
+    success = True
+    for step in preset.get("steps", []):
+        step_out = _orch_execute_step(step, payload)
+        steps_out.append(step_out)
+        if not step_out.get("success"):
+            success = False
+            break
+
+    return {
+        "kind": "preset",
+        "id": preset_id,
+        "label": preset.get("label", preset_id),
+        "description": preset.get("description", ""),
+        "success": success,
+        "started_at": started.isoformat(),
+        "finished_at": datetime.now(timezone.utc).isoformat(),
+        "steps": steps_out,
+    }
 
 def _collect_orchestrator_data() -> dict:
     """Recopila todo el estado BAGO para el panel orquestador."""
@@ -827,11 +1153,13 @@ def _collect_orchestrator_data() -> dict:
     data["system_health"]            = gs.get("system_health", "unknown")
     data["sprint_status"]            = gs.get("sprint_status", {})
     data["inventory"]                = gs.get("inventory", {"sessions": 0, "changes": 0, "evidences": 0})
+    data["last_validation"]          = gs.get("last_validation", {})
     data["notes"]                    = gs.get("notes", None)
     data["last_completed_session_id"]= gs.get("last_completed_session_id")
     data["last_completed_task_type"] = gs.get("last_completed_task_type")
     data["last_completed_workflow"]  = gs.get("last_completed_workflow")
     data["last_completed_roles"]     = gs.get("last_completed_roles", [])
+    data["pack_path"]                = str(_ORCH_BAGO_ROOT)
 
     # sesión activa
     active_id = gs.get("active_session_id")
@@ -914,6 +1242,55 @@ def _collect_orchestrator_data() -> dict:
                 pass
     data["ideas"] = ideas_agg
 
+    # resumen ideas
+    data["ideas_summary"] = {
+        "projects": len(ideas_agg),
+        "total": sum(i.get("total", 0) for i in ideas_agg),
+        "pending": sum(i.get("pending", 0) for i in ideas_agg),
+        "progress": sum(i.get("progress", 0) for i in ideas_agg),
+        "done": sum(i.get("done", 0) for i in ideas_agg),
+    }
+
+    # actividad por ventana temporal (según timestamps UTC en state/)
+    now_utc = datetime.now(timezone.utc)
+
+    def _recent_count(folder: Path, field: str, seconds: int) -> int:
+        if not folder.exists():
+            return 0
+        n = 0
+        cutoff = now_utc.timestamp() - seconds
+        for f in folder.glob("*.json"):
+            try:
+                record = json.loads(f.read_text())
+                ts = record.get(field)
+                if not ts:
+                    continue
+                t = datetime.fromisoformat(ts.replace("Z", "+00:00")).timestamp()
+                if t >= cutoff:
+                    n += 1
+            except Exception:
+                continue
+        return n
+
+    windows = {
+        "24h": 24 * 3600,
+        "7d": 7 * 24 * 3600,
+        "30d": 30 * 24 * 3600,
+    }
+    activity_windows = {}
+    for key, seconds in windows.items():
+        activity_windows[key] = {
+            "sessions": _recent_count(_ORCH_BAGO_ROOT / "state" / "sessions", "created_at", seconds),
+            "changes": _recent_count(_ORCH_BAGO_ROOT / "state" / "changes", "created_at", seconds),
+            "evidences": _recent_count(_ORCH_BAGO_ROOT / "state" / "evidences", "recorded_at", seconds),
+        }
+
+    data["activity_windows"] = activity_windows
+    data["activity_24h"] = activity_windows["24h"]
+    data["orchestrator_presets"] = _orch_all_presets()
+    data["orchestrator_commands"] = _orch_command_catalog()
+    data["orchestrator_history"] = _ORCH_HISTORY[-8:]
+
     return data
 
 
@@ -924,12 +1301,129 @@ def orchestrator():
 
 @app.route("/orchestrator-data")
 def orchestrator_data():
-    from flask import jsonify
     try:
         d = _collect_orchestrator_data()
         return jsonify(d)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/orchestrator-run", methods=["POST"])
+def orchestrator_run():
+    payload = request.get_json(silent=True) or {}
+    kind = str(payload.get("kind", "command"))
+    target_id = str(payload.get("id", "")).strip()
+    terminal_mode = bool(payload.get("terminal"))
+
+    if not target_id:
+        return jsonify({"success": False, "error": "Falta id"}), 400
+
+    try:
+        if terminal_mode:
+            started = datetime.now(timezone.utc).isoformat()
+            if kind == "preset":
+                shell_script = _orch_terminal_script_for_preset(target_id, payload)
+            else:
+                shell_script = _orch_terminal_script_for_command(target_id, payload)
+            launch = _orch_launch_in_terminal(shell_script)
+            result = {
+                "kind": kind,
+                "id": target_id,
+                "success": launch.get("success", False),
+                "terminal": True,
+                "started_at": started,
+                "finished_at": datetime.now(timezone.utc).isoformat(),
+                "steps": [{
+                    "mode": "serial",
+                    "commands": [target_id],
+                    "results": [{
+                        "command_id": target_id,
+                        "success": launch.get("success", False),
+                        "returncode": launch.get("returncode", 1),
+                        "output": launch.get("output", ""),
+                    }],
+                    "success": launch.get("success", False),
+                }],
+            }
+            _orch_remember(result)
+            status = 200 if result["success"] else 500
+            return jsonify(result), status
+
+        if kind == "preset":
+            result = _orch_execute_preset(target_id, payload)
+        else:
+            cmd_result = _orch_run_command(target_id, payload)
+            result = {
+                "kind": "command",
+                "id": target_id,
+                "success": cmd_result.get("success", False),
+                "started_at": cmd_result.get("started_at", datetime.now(timezone.utc).isoformat()),
+                "finished_at": cmd_result.get("finished_at", datetime.now(timezone.utc).isoformat()),
+                "steps": [{
+                    "mode": "serial",
+                    "commands": [target_id],
+                    "results": [cmd_result],
+                    "success": cmd_result.get("success", False),
+                }],
+            }
+        _orch_remember(result)
+        return jsonify(result)
+    except ValueError as e:
+        err = {"success": False, "error": str(e), "kind": kind, "id": target_id}
+        _orch_remember(err)
+        return jsonify(err), 400
+    except Exception as e:
+        err = {"success": False, "error": f"Error ejecutando acción: {e}", "kind": kind, "id": target_id}
+        _orch_remember(err)
+        return jsonify(err), 500
+
+
+@app.route("/orchestrator-presets", methods=["GET", "POST"])
+def orchestrator_presets():
+    if request.method == "GET":
+        return jsonify({
+            "presets": _orch_all_presets(),
+            "commands": _orch_command_catalog(),
+        })
+
+    payload = request.get_json(silent=True) or {}
+    preset_id = str(payload.get("id", "")).strip()
+    if not preset_id:
+        return jsonify({"success": False, "error": "Falta id"}), 400
+    if not re.match(r"^[a-z0-9_-]{3,64}$", preset_id):
+        return jsonify({"success": False, "error": "id inválido (usa a-z0-9_-)."}), 400
+    if preset_id in _ORCH_BUILTIN_PRESETS:
+        return jsonify({"success": False, "error": "No puedes sobrescribir un preset builtin."}), 400
+
+    label = str(payload.get("label", preset_id)).strip() or preset_id
+    description = str(payload.get("description", "")).strip()
+    try:
+        steps = _orch_validate_steps(payload.get("steps", []))
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+    custom = _orch_load_custom_presets()
+    custom[preset_id] = {
+        "label": label,
+        "description": description,
+        "steps": steps,
+        "builtin": False,
+    }
+    _orch_save_custom_presets(custom)
+    return jsonify({"success": True, "preset": custom[preset_id], "id": preset_id})
+
+
+@app.route("/orchestrator-presets/<preset_id>", methods=["DELETE"])
+def orchestrator_preset_delete(preset_id: str):
+    preset_id = str(preset_id).strip()
+    if preset_id in _ORCH_BUILTIN_PRESETS:
+        return jsonify({"success": False, "error": "No se puede borrar un preset builtin."}), 400
+    custom = _orch_load_custom_presets()
+    if preset_id not in custom:
+        return jsonify({"success": False, "error": "Preset no encontrado."}), 404
+    del custom[preset_id]
+    _orch_save_custom_presets(custom)
+    return jsonify({"success": True, "deleted": preset_id})
 
 
 

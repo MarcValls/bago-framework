@@ -55,7 +55,7 @@ def detect_working_mode(repo_root: Path) -> str:
     return "self" if repo_root.resolve() == ROOT.resolve() else "external"
 
 
-def current_context() -> dict:
+def detected_context() -> dict:
     repo_root = detect_repo_root()
     return {
         "repo_root": str(repo_root),
@@ -64,6 +64,37 @@ def current_context() -> dict:
         "working_mode": detect_working_mode(repo_root),
         "recorded_at": now_iso(),
     }
+
+
+def effective_context(previous: dict | None, detected: dict) -> dict:
+    """
+    Cuando existe un puntero externo declarado en repo_context.json, ese puntero
+    debe prevalecer en modo check para que la superficie operativa (banner/auto)
+    no se contradiga con el contexto guardado.
+
+    sync sigue usando el contexto detectado real para permitir volver a `self`.
+    """
+    if not previous:
+        return detected
+
+    declared_root = previous.get("repo_root")
+    declared_mode = previous.get("working_mode")
+    declared_role = previous.get("role")
+    if (
+        declared_role == "external_repo_pointer"
+        and declared_mode == "external"
+        and declared_root
+    ):
+        declared_path = Path(declared_root).resolve()
+        if declared_path.exists() and declared_path != ROOT.resolve():
+            return {
+                "repo_root": str(declared_path),
+                "bago_host_root": str(ROOT.resolve()),
+                "repo_fingerprint": previous.get("repo_fingerprint") or repo_fingerprint(declared_path),
+                "working_mode": "external",
+                "recorded_at": now_iso(),
+            }
+    return detected
 
 
 def load_previous() -> dict | None:
@@ -110,12 +141,13 @@ def main(argv: list[str]) -> int:
     args = parser.parse_args(argv[1:])
 
     prev = load_previous()
-    cur = current_context()
+    detected = detected_context()
+    cur = effective_context(prev, detected)
     status = compare_context(prev, cur)
 
     if args.mode == "sync":
-        save_context(cur)
-        print(json.dumps({"status": "synced", "context": cur}, indent=2, ensure_ascii=False))
+        save_context(detected)
+        print(json.dumps({"status": "synced", "context": detected}, indent=2, ensure_ascii=False))
         return 0
 
     print(
@@ -124,6 +156,7 @@ def main(argv: list[str]) -> int:
                 "status": status,
                 "previous": prev,
                 "current": cur,
+                "detected": detected,
             },
             indent=2,
             ensure_ascii=False,

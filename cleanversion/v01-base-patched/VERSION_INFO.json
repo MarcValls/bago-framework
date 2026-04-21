@@ -6,5 +6,6 @@
   "distribution_mode": null,
   "chg_count": 3,
   "bago_script": "v1",
-  "notes": "No usar como base para proyectos nuevos."
+  "notes": "No usar como base para proyectos nuevos.",
+  "bago_version": "2.4-v2rc"
 }

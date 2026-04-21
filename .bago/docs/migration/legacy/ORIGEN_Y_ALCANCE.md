@@ -16,3 +16,7 @@ El material preservado procede de la `.bago` original subida al entorno. Se cons
 ## Qué no implica
 
 Preservar no significa que ese material gobierne la operación actual. Significa que sigue disponible como prueba y contexto.
+
+## Regla de interpretación
+
+Si un documento legado menciona tareas "pendientes", "activas" o "en curso", esa formulación pertenece al momento histórico que describe. La operación vigente se rige por `.bago/state/global_state.json`, `ESTADO_BAGO_ACTUAL.md` y los comandos actuales.

@@ -1,0 +1,460 @@
+#!/usr/bin/env python3
+"""
+findings_engine.py — Motor de hallazgos unificado para BAGO.
+
+Modelo canónico de Finding:
+  id, severity, file, line, col, rule, source, message,
+  fix_suggestion, autofixable, fix_patch, context_lines
+
+Parsea salida de: flake8, pylint, mypy, pyflakes, bandit, custom-bago
+Persiste en state/findings/SCAN-{timestamp}.json
+"""
+import json, re, subprocess, sys, datetime, hashlib
+from dataclasses import dataclass, field, asdict
+from pathlib import Path
+from typing import Optional
+
+BAGO_ROOT    = Path(__file__).parent.parent
+FINDINGS_DIR = BAGO_ROOT / "state" / "findings"
+FINDINGS_DIR.mkdir(parents=True, exist_ok=True)
+
+SEVERITIES = ("error", "warning", "info", "hint")
+
+
+@dataclass
+class Finding:
+    id:             str
+    severity:       str          # error|warning|info|hint
+    file:           str
+    line:           int
+    col:            int
+    rule:           str
+    source:         str          # flake8|pylint|mypy|bandit|bago
+    message:        str
+    fix_suggestion: str  = ""
+    autofixable:    bool = False
+    fix_patch:      str  = ""    # unified diff when autofixable
+    context_lines:  list = field(default_factory=list)  # ±2 lines
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "Finding":
+        return cls(**{k: v for k, v in d.items() if k in cls.__dataclass_fields__})
+
+
+def _make_id(source: str, file: str, line: int, rule: str) -> str:
+    key = f"{source}:{file}:{line}:{rule}"
+    return "FIND-" + hashlib.md5(key.encode()).hexdigest()[:8].upper()
+
+
+def _read_context(filepath: str, line: int, radius: int = 2) -> list:
+    try:
+        lines = Path(filepath).read_text(errors="replace").splitlines()
+        start = max(0, line - 1 - radius)
+        end   = min(len(lines), line + radius)
+        return [f"{i+1:4d} | {lines[i]}" for i in range(start, end)]
+    except Exception:
+        return []
+
+
+# ─── Parsers ────────────────────────────────────────────────────────────────
+
+def parse_flake8(output: str, root: str = "") -> list:
+    """
+    flake8 --format='%(path)s:%(row)d:%(col)d: %(code)s %(text)s'
+    """
+    findings = []
+    pattern  = re.compile(r"^(.+?):(\d+):(\d+):\s+([A-Z]\d+)\s+(.+)$", re.MULTILINE)
+    sev_map  = {"E": "error", "W": "warning", "F": "warning", "C": "info", "N": "hint"}
+    autofix_rules = {"E302","E303","E501","W291","W293","W292","E231","E225","E251"}
+    fix_hints = {
+        "E302": "Añade 2 líneas en blanco antes de la definición",
+        "E303": "Reduce a máximo 2 líneas en blanco consecutivas",
+        "E501": "Acorta la línea a ≤79 caracteres",
+        "W291": "Elimina espacios al final de la línea",
+        "W293": "Elimina espacios en blanco en línea vacía",
+        "W292": "Añade newline al final del archivo",
+        "E231": "Añade espacio después de ','",
+        "E225": "Añade espacios alrededor del operador",
+        "E251": "Elimina espacios alrededor del '=' en keyword argument",
+    }
+    for m in pattern.finditer(output):
+        filepath, line, col, code, msg = m.groups()
+        prefix = code[0]
+        sev    = sev_map.get(prefix, "info")
+        fid    = _make_id("flake8", filepath, int(line), code)
+        fix    = fix_hints.get(code, "")
+        findings.append(Finding(
+            id=fid, severity=sev, file=filepath,
+            line=int(line), col=int(col),
+            rule=code, source="flake8", message=msg.strip(),
+            fix_suggestion=fix, autofixable=code in autofix_rules,
+            context_lines=_read_context(filepath, int(line)),
+        ))
+    return findings
+
+
+def parse_pylint(output: str, root: str = "") -> list:
+    """
+    pylint --output-format=text
+    formato: filepath:line:col: CODE (category) message
+    """
+    findings = []
+    # pylint JSON format is more reliable
+    try:
+        data = json.loads(output)
+        sev_map = {"error":"error","warning":"warning","convention":"info",
+                   "refactor":"hint","fatal":"error","information":"info"}
+        for item in data:
+            filepath = item.get("path","")
+            line     = item.get("line", 0)
+            col      = item.get("column", 0)
+            code     = item.get("message-id","")
+            msg      = item.get("message","")
+            cat      = item.get("type","")
+            sev      = sev_map.get(cat, "info")
+            fid      = _make_id("pylint", filepath, line, code)
+            findings.append(Finding(
+                id=fid, severity=sev, file=filepath,
+                line=line, col=col, rule=code,
+                source="pylint", message=msg,
+                context_lines=_read_context(filepath, line),
+            ))
+    except (json.JSONDecodeError, TypeError):
+        # Fallback: text format
+        pattern = re.compile(r"^(.+?):(\d+):(\d+):\s+([A-Z]\d+):\s+(.+)$", re.MULTILINE)
+        for m in pattern.finditer(output):
+            filepath, line, col, code, msg = m.groups()
+            fid = _make_id("pylint", filepath, int(line), code)
+            findings.append(Finding(
+                id=fid, severity="warning", file=filepath,
+                line=int(line), col=int(col), rule=code,
+                source="pylint", message=msg.strip(),
+                context_lines=_read_context(filepath, int(line)),
+            ))
+    return findings
+
+
+def parse_mypy(output: str, root: str = "") -> list:
+    """
+    mypy: filepath:line: error: message  [code]
+    """
+    findings = []
+    pattern  = re.compile(r"^(.+?):(\d+):\s+(error|warning|note):\s+(.+?)(?:\s+\[(.+?)\])?$", re.MULTILINE)
+    sev_map  = {"error":"error","warning":"warning","note":"info"}
+    for m in pattern.finditer(output):
+        filepath, line, level, msg, code = m.groups()
+        code = code or "mypy"
+        sev  = sev_map.get(level, "info")
+        fid  = _make_id("mypy", filepath, int(line), code)
+        findings.append(Finding(
+            id=fid, severity=sev, file=filepath,
+            line=int(line), col=0, rule=code,
+            source="mypy", message=msg.strip(),
+            context_lines=_read_context(filepath, int(line)),
+        ))
+    return findings
+
+
+def parse_bandit(output: str, root: str = "") -> list:
+    """Parse bandit JSON output."""
+    findings = []
+    try:
+        data = json.loads(output)
+        sev_map = {"HIGH":"error","MEDIUM":"warning","LOW":"info"}
+        for issue in data.get("results", []):
+            filepath = issue.get("filename","")
+            line     = issue.get("line_number", 0)
+            code     = issue.get("test_id","")
+            msg      = issue.get("issue_text","")
+            sev      = sev_map.get(issue.get("issue_severity","LOW"), "info")
+            fid      = _make_id("bandit", filepath, line, code)
+            findings.append(Finding(
+                id=fid, severity=sev, file=filepath,
+                line=line, col=0, rule=code,
+                source="bandit", message=msg,
+                fix_suggestion=issue.get("more_info",""),
+                context_lines=_read_context(filepath, line),
+            ))
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return findings
+
+
+def parse_bago_custom(output: str, root: str = "") -> list:
+    """
+    BAGO custom lint: JSON array of {severity,file,line,rule,message,fix,autofixable}
+    """
+    findings = []
+    try:
+        items = json.loads(output)
+        for item in items:
+            filepath = item.get("file","")
+            line     = item.get("line", 0)
+            code     = item.get("rule","BAGO-CUSTOM")
+            fid      = _make_id("bago", filepath, line, code)
+            findings.append(Finding(
+                id=fid,
+                severity=item.get("severity","info"),
+                file=filepath, line=line, col=0, rule=code,
+                source="bago",
+                message=item.get("message",""),
+                fix_suggestion=item.get("fix",""),
+                autofixable=item.get("autofixable", False),
+                fix_patch=item.get("fix_patch",""),
+                context_lines=_read_context(filepath, line),
+            ))
+    except (json.JSONDecodeError, TypeError):
+        pass
+    return findings
+
+
+# ─── Runner ─────────────────────────────────────────────────────────────────
+
+def run_linter(cmd: list, parser_fn, cwd: str = ".") -> tuple:
+    """Run a linter command and parse its output. Returns (findings, error_msg)."""
+    try:
+        r = subprocess.run(
+            cmd, capture_output=True, text=True, cwd=cwd,
+            timeout=60
+        )
+        output   = r.stdout + r.stderr
+        findings = parser_fn(output)
+        return findings, None
+    except FileNotFoundError:
+        return [], f"linter not found: {cmd[0]}"
+    except subprocess.TimeoutExpired:
+        return [], f"timeout: {cmd[0]}"
+    except Exception as e:
+        return [], str(e)
+
+
+def run_bago_lint(target_dir: str) -> list:
+    """
+    BAGO's own lint: checks Python files for known issues.
+    Returns list of Finding objects (no external dependency).
+    """
+    findings = []
+    target = Path(target_dir)
+    for pyfile in sorted(target.rglob("*.py")):
+        try:
+            src   = pyfile.read_text(errors="replace")
+            lines = src.splitlines()
+            rel   = str(pyfile)
+            for i, line in enumerate(lines, 1):
+                # Detect deprecated utcnow()
+                if "datetime.utcnow()" in line or ".utcnow()" in line:
+                    fid = _make_id("bago", rel, i, "BAGO-W001")
+                    findings.append(Finding(
+                        id=fid, severity="warning", file=rel, line=i, col=0,
+                        rule="BAGO-W001", source="bago",
+                        message="datetime.utcnow() está deprecado desde Python 3.12",
+                        fix_suggestion="Usa datetime.datetime.now(datetime.timezone.utc)",
+                        autofixable=True,
+                        fix_patch=_make_utcnow_patch(rel, i, line),
+                        context_lines=_read_context(rel, i),
+                    ))
+                # Detect bare sys.exit() without proper check
+                if re.search(r'\bsys\.exit\(1\)\s*$', line) and "test" not in pyfile.name.lower():
+                    fid = _make_id("bago", rel, i, "BAGO-I001")
+                    findings.append(Finding(
+                        id=fid, severity="info", file=rel, line=i, col=0,
+                        rule="BAGO-I001", source="bago",
+                        message="sys.exit(1) sin mensaje de error claro para el usuario",
+                        fix_suggestion="Añade print(mensaje) antes de sys.exit(1)",
+                        autofixable=False,
+                        context_lines=_read_context(rel, i),
+                    ))
+        except Exception:
+            pass
+    return findings
+
+
+def _make_utcnow_patch(filepath: str, lineno: int, line: str) -> str:
+    """Generate a unified diff patch for utcnow replacement."""
+    old = line
+    new = re.sub(
+        r'datetime\.datetime\.utcnow\(\)',
+        'datetime.datetime.now(datetime.timezone.utc)',
+        re.sub(r'datetime\.utcnow\(\)',
+               'datetime.datetime.now(datetime.timezone.utc)', line)
+    )
+    if old == new:
+        return ""
+    return (
+        f"--- a/{filepath}\n+++ b/{filepath}\n"
+        f"@@ -{lineno},1 +{lineno},1 @@\n"
+        f"-{old}\n+{new}\n"
+    )
+
+
+# ─── Storage ─────────────────────────────────────────────────────────────────
+
+class FindingsDB:
+    def __init__(self, scan_id: str | None = None):
+        if scan_id is None:
+            ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d_%H%M%S")
+            scan_id = f"SCAN-{ts}"
+        self.scan_id  = scan_id
+        self.path     = FINDINGS_DIR / f"{scan_id}.json"
+        self.findings: list = []
+        self.meta:     dict = {
+            "scan_id":    scan_id,
+            "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            "sources":    [],
+            "target":     "",
+        }
+
+    def add(self, findings: list):
+        self.findings.extend(findings)
+
+    def save(self):
+        # Deduplicate by id
+        seen  = set()
+        dedup = []
+        for f in self.findings:
+            if f.id not in seen:
+                seen.add(f.id)
+                dedup.append(f)
+        self.findings = dedup
+
+        data = {
+            "meta":     self.meta,
+            "summary":  self._summary(),
+            "findings": [f.to_dict() for f in self.findings],
+        }
+        self.path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+        return self.path
+
+    def _summary(self) -> dict:
+        by_sev = {s: 0 for s in SEVERITIES}
+        by_src: dict = {}
+        by_file: dict = {}
+        for f in self.findings:
+            by_sev[f.severity] = by_sev.get(f.severity, 0) + 1
+            by_src[f.source]   = by_src.get(f.source, 0) + 1
+            by_file[f.file]    = by_file.get(f.file, 0) + 1
+        autofixable = sum(1 for f in self.findings if f.autofixable)
+        return {
+            "total":      len(self.findings),
+            "autofixable": autofixable,
+            "by_severity": by_sev,
+            "by_source":   by_src,
+            "top_files":   sorted(by_file.items(), key=lambda x: -x[1])[:10],
+        }
+
+    @classmethod
+    def load(cls, scan_id: str) -> "FindingsDB":
+        db = cls(scan_id)
+        if db.path.exists():
+            data = json.loads(db.path.read_text())
+            db.meta     = data.get("meta", {})
+            db.findings = [Finding.from_dict(f) for f in data.get("findings", [])]
+        return db
+
+    @classmethod
+    def latest(cls) -> "FindingsDB | None":
+        scans = sorted(FINDINGS_DIR.glob("SCAN-*.json"))
+        if not scans:
+            return None
+        scan_id = scans[-1].stem
+        return cls.load(scan_id)
+
+
+# ─── Tests ───────────────────────────────────────────────────────────────────
+
+def run_tests():
+    print("Ejecutando tests de findings_engine.py...")
+    errors = 0
+    def ok(n): print(f"  OK: {n}")
+    def fail(n, m):
+        nonlocal errors; errors += 1; print(f"  FAIL: {n} — {m}")
+
+    # T1: parse_flake8
+    sample_flake8 = ".bago/tools/test.py:10:1: E302 expected 2 blank lines, found 1\n.bago/tools/test.py:20:5: W291 trailing whitespace\n"
+    fs = parse_flake8(sample_flake8)
+    if len(fs) == 2 and fs[0].rule == "E302" and fs[0].severity == "error":
+        ok("engine:parse_flake8")
+    else:
+        fail("engine:parse_flake8", str([(f.rule,f.severity) for f in fs]))
+
+    # T2: parse_mypy
+    sample_mypy = '.bago/tools/x.py:5: error: Incompatible return value type  [return-value]\n.bago/tools/x.py:8: note: hint here\n'
+    fs2 = parse_mypy(sample_mypy)
+    if len(fs2) == 2 and fs2[0].severity == "error" and fs2[1].severity == "info":
+        ok("engine:parse_mypy")
+    else:
+        fail("engine:parse_mypy", str([(f.severity,f.rule) for f in fs2]))
+
+    # T3: Finding autofixable flag
+    f = Finding(id="X",severity="warning",file="a.py",line=1,col=0,
+                rule="E302",source="flake8",message="test",autofixable=True)
+    if f.autofixable:
+        ok("engine:autofixable_flag")
+    else:
+        fail("engine:autofixable_flag", str(f))
+
+    # T4: FindingsDB save/load roundtrip
+    import tempfile, shutil
+    tmp = Path(tempfile.mkdtemp())
+    orig_dir = FindingsDB.__init__.__globals__["FINDINGS_DIR"]
+    # Monkeypatch via module-level
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("fe", Path(__file__))
+    m    = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    m.FINDINGS_DIR = tmp
+    db = m.FindingsDB("SCAN-TEST")
+    db.add([m.Finding(id="F1",severity="error",file="a.py",line=1,col=0,
+                      rule="E001",source="flake8",message="test")])
+    db.save()
+    db2 = m.FindingsDB.load("SCAN-TEST")
+    if len(db2.findings) == 1 and db2.findings[0].id == "F1":
+        ok("engine:db_roundtrip")
+    else:
+        fail("engine:db_roundtrip", str(db2.findings))
+    shutil.rmtree(tmp)
+
+    # T5: run_bago_lint detects utcnow
+    import tempfile as tf
+    tmp2 = Path(tf.mkdtemp())
+    py_file = tmp2 / "sample.py"
+    py_file.write_text("import datetime\nts = datetime.datetime.utcnow()\nprint(ts)\n")
+    findings = run_bago_lint(str(tmp2))
+    utcnow_f = [f for f in findings if f.rule == "BAGO-W001"]
+    if utcnow_f:
+        ok("engine:bago_lint_utcnow")
+    else:
+        fail("engine:bago_lint_utcnow", str(findings))
+    shutil.rmtree(tmp2)
+
+    # T6: _make_utcnow_patch generates valid diff
+    patch = _make_utcnow_patch("a.py", 5, "    ts = datetime.datetime.utcnow()")
+    if "BAGO-W001" not in patch and "datetime.timezone.utc" in patch and "@@ -5" in patch:
+        ok("engine:utcnow_patch")
+    else:
+        fail("engine:utcnow_patch", repr(patch[:100]))
+
+    # T7: parse_bandit JSON
+    bandit_json = json.dumps({"results":[
+        {"filename":"a.py","line_number":3,"test_id":"B101",
+         "issue_text":"assert used","issue_severity":"LOW","more_info":""}
+    ]})
+    fb = parse_bandit(bandit_json)
+    if len(fb)==1 and fb[0].source=="bandit" and fb[0].rule=="B101":
+        ok("engine:parse_bandit")
+    else:
+        fail("engine:parse_bandit", str(fb))
+
+    total = 7; passed = total - errors
+    print(f"\n  {passed}/{total} tests pasaron")
+    if errors: sys.exit(1)
+
+
+if __name__ == "__main__":
+    if "--test" in sys.argv:
+        run_tests()
+    else:
+        print("findings_engine.py — importable module. Usa scan.py o 'bago scan'.")

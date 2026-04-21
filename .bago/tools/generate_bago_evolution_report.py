@@ -585,7 +585,10 @@ def main() -> int:
     for session in sessions:
         day = parse_iso(session["created_at"]).astimezone(MADRID).date().isoformat()
         if day in task_values:
-            task_values[day][session["task_type"]] += 1
+            task = session.get("task_type", "unknown")
+            if task not in task_values[day]:
+                task_values[day][task] = 0
+            task_values[day][task] += 1
     day_values = {
         day: {
             "sessions": session_days.get(day, 0),
