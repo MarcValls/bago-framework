@@ -172,6 +172,19 @@
   .cc-metrics { color: #fbbf24; }
   .cc-orch    { color: #c084fc; }
 
+  /* ── TOAST NOTIFICATION ─────────────────────────────────── */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: rgba(34,197,94,.15); color: #4ade80;
+    border: 1px solid rgba(34,197,94,.4);
+    border-radius: 10px; padding: 10px 20px;
+    font-size: .85rem; font-weight: 600;
+    opacity: 0; transform: translateY(8px);
+    transition: opacity .25s, transform .25s;
+    pointer-events: none; z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
   /* ── QUICK START ────────────────────────────────────────── */
   .quick-start-section {
     width: 100%; max-width: 1080px;
@@ -264,6 +277,9 @@
 </style>
 </head>
 <body>
+
+<!-- TOAST -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <!-- HERO -->
 <div class="hero">
@@ -566,11 +582,18 @@ function togglePanel(panelId) {
 
 function copyCommand(cmd) {
   navigator.clipboard.writeText(cmd).then(() => {
-    alert('✓ Comando copiado: ' + cmd);
+    showToast('✓ Comando copiado: ' + cmd);
   }).catch(err => {
     console.error('Error al copiar:', err);
     prompt('Copia este comando:', cmd);
   });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2800);
 }
 
 // ── BOOT ─────────────────────────────────────────────────────────────

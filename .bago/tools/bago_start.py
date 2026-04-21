@@ -98,8 +98,12 @@ def option_4():
 
     menu_html = BAGO_ROOT.parent / "menu.html"
     if menu_html.exists():
-        webbrowser.open(str(menu_html))
-        print(CYAN("✓") + " Abriendo menu.html en tu navegador...")
+        opened = webbrowser.open(str(menu_html))
+        if opened:
+            print(CYAN("✓") + " Abriendo menu.html en tu navegador...")
+        else:
+            print(YELLOW("⚠") + " No se pudo abrir el navegador automáticamente.")
+            print(DIM("  Abre manualmente:") + " " + CYAN(str(menu_html)))
         print()
         print(DIM("💡 Para datos en vivo, ejecuta en otra terminal:"))
         print(CYAN("   python3 .bago/tools/bago_chat_server.py"))
