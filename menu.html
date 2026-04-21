@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BAGO·Viewer — Menú</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #0d1117;
+    --card:    #161b22;
+    --line:    #21262d;
+    --text:    #e6edf3;
+    --muted:   #8b949e;
+    --accent:  #58a6ff;
+    --accent2: #38bdf8;
+    --warn:    #f59e0b;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 48px 24px 64px;
+  }
+
+  /* ── HERO ───────────────────────────────────────── */
+  .hero { text-align: center; margin-bottom: 36px; }
+  .logo {
+    font-size: 3rem; font-weight: 900; letter-spacing: -.04em; line-height: 1;
+    background: linear-gradient(135deg, #58a6ff 0%, #38bdf8 50%, #c084fc 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+  .logo span { opacity: .5; }
+  .tagline {
+    color: var(--muted); font-size: .92rem; max-width: 440px;
+    margin: 0 auto 20px; line-height: 1.6;
+  }
+
+  /* ── SERVER STRIP ───────────────────────────────── */
+  .server-strip {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    justify-content: center;
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 16px; padding: 14px 24px;
+    margin-bottom: 44px; width: 100%; max-width: 640px;
+    transition: border-color .3s;
+  }
+  .server-strip.found   { border-color: rgba(34,197,94,.35); }
+  .server-strip.not-found { border-color: rgba(239,68,68,.25); }
+  .server-strip.checking  { border-color: rgba(56,189,248,.2); }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 4px 12px; border-radius: 999px;
+    font-size: .78rem; font-weight: 800;
+    letter-spacing: .05em; text-transform: uppercase;
+    transition: all .3s;
+  }
+  .sb-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .badge-checking { background: rgba(56,189,248,.1); color: #7dd3fc; border: 1px solid rgba(56,189,248,.2); }
+  .badge-found    { background: rgba(34,197,94,.12); color: #4ade80; border: 1px solid rgba(34,197,94,.3);
+                    animation: pulse 2.4s ease-in-out infinite; }
+  .badge-notfound { background: rgba(239,68,68,.1);  color: #f87171; border: 1px solid rgba(239,68,68,.2); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+
+  .port-label { color: var(--muted); font-size: .82rem; }
+  .port-value { color: var(--accent2); font-weight: 700; font-family: monospace; font-size: .9rem; }
+
+  .start-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 20px; border-radius: 10px;
+    font-size: .85rem; font-weight: 700;
+    cursor: pointer; text-decoration: none;
+    border: none; transition: all .2s;
+    white-space: nowrap;
+  }
+  .btn-open {
+    background: rgba(34,197,94,.15); color: #4ade80;
+    border: 1px solid rgba(34,197,94,.3);
+  }
+  .btn-open:hover { background: rgba(34,197,94,.25); transform: translateY(-1px); }
+  .btn-start {
+    background: rgba(56,189,248,.1); color: var(--accent2);
+    border: 1px solid rgba(56,189,248,.25);
+  }
+  .btn-start:hover { background: rgba(56,189,248,.2); transform: translateY(-1px); }
+  .btn-disabled { opacity: .4; cursor: not-allowed; }
+
+  /* ── START INSTRUCTIONS ─────────────────────────── */
+  .start-instructions {
+    background: rgba(17,24,39,.8);
+    border: 1px solid rgba(56,189,248,.15);
+    border-radius: 12px; padding: 14px 18px;
+    width: 100%; max-width: 640px; margin-bottom: 32px;
+    display: none;
+  }
+  .start-instructions .si-label {
+    color: var(--muted); font-size: .75rem;
+    text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px;
+  }
+  .cmd-row {
+    display: flex; align-items: center; gap: 10px;
+    background: #0d1117; border: 1px solid var(--line);
+    border-radius: 8px; padding: 10px 14px;
+  }
+  .cmd-text {
+    flex: 1; font-family: monospace; font-size: .82rem;
+    color: #7dd3fc; word-break: break-all;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .copy-btn {
+    background: rgba(56,189,248,.1); color: var(--accent2);
+    border: 1px solid rgba(56,189,248,.2);
+    border-radius: 6px; padding: 4px 10px;
+    font-size: .73rem; font-weight: 700; cursor: pointer;
+    transition: all .15s; flex-shrink: 0;
+  }
+  .copy-btn:hover { background: rgba(56,189,248,.22); }
+  .copy-btn.copied { background: rgba(34,197,94,.15); color: #4ade80; border-color: rgba(34,197,94,.3); }
+  .si-hint { color: var(--muted); font-size: .76rem; margin-top: 8px; line-height: 1.5; }
+
+  /* ── RETRY ──────────────────────────────────────── */
+  .retry-btn {
+    background: none; border: 1px solid var(--line); color: var(--muted);
+    border-radius: 8px; padding: 5px 12px; font-size: .75rem;
+    cursor: pointer; transition: all .2s;
+  }
+  .retry-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  /* ── SECTION CARDS ──────────────────────────────── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px; width: 100%; max-width: 1080px;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 18px; padding: 24px 24px 18px;
+    text-decoration: none; display: flex; flex-direction: column;
+    transition: transform .18s, border-color .18s, box-shadow .18s;
+    position: relative; overflow: hidden;
+    cursor: default; opacity: .5;
+  }
+  .card.active { cursor: pointer; opacity: 1; }
+  .card::before {
+    content: ''; position: absolute; inset: 0;
+    opacity: 0; transition: opacity .2s; pointer-events: none;
+  }
+  .card-packs::before   { background: radial-gradient(ellipse at top left, rgba(56,189,248,.1)  0%, transparent 65%); }
+  .card-evo::before     { background: radial-gradient(ellipse at top left, rgba(52,211,153,.1)  0%, transparent 65%); }
+  .card-metrics::before { background: radial-gradient(ellipse at top left, rgba(251,191,36,.1)  0%, transparent 65%); }
+  .card-orch::before    { background: radial-gradient(ellipse at top left, rgba(192,132,252,.1) 0%, transparent 65%); }
+
+  .card.active:hover { transform: translateY(-4px); }
+  .card.active.card-packs:hover   { border-color:rgba(56,189,248,.4);  box-shadow:0 8px 28px rgba(56,189,248,.08);  }
+  .card.active.card-evo:hover     { border-color:rgba(52,211,153,.4);  box-shadow:0 8px 28px rgba(52,211,153,.08);  }
+  .card.active.card-metrics:hover { border-color:rgba(251,191,36,.4);  box-shadow:0 8px 28px rgba(251,191,36,.08);  }
+  .card.active.card-orch:hover    { border-color:rgba(192,132,252,.4); box-shadow:0 8px 28px rgba(192,132,252,.08); }
+  .card.active:hover::before { opacity: 1; }
+
+  .c-icon  { font-size: 2.2rem; margin-bottom: 12px; }
+  .c-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -.02em; }
+  .c-route { font-family: monospace; font-size: .7rem; color: var(--muted); margin-bottom: 12px; opacity: .7; }
+  .c-desc  { font-size: .82rem; line-height: 1.6; color: var(--muted); flex: 1; }
+  .c-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; margin-bottom: 14px; }
+  .c-pill  {
+    padding: 2px 8px; border-radius: 6px;
+    font-size: .68rem; font-weight: 600;
+  }
+  .pill-blue   { background:rgba(56,189,248,.1);  color:#7dd3fc;  border:1px solid rgba(56,189,248,.2); }
+  .pill-green  { background:rgba(52,211,153,.1);  color:#6ee7b7;  border:1px solid rgba(52,211,153,.2); }
+  .pill-yellow { background:rgba(251,191,36,.1);  color:#fde68a;  border:1px solid rgba(251,191,36,.2); }
+  .pill-purple { background:rgba(192,132,252,.1); color:#ddd6fe;  border:1px solid rgba(192,132,252,.2); }
+  .pill-muted  { background:rgba(100,116,139,.08);color:#94a3b8;  border:1px solid rgba(100,116,139,.15); }
+
+  .c-cta {
+    margin-top: auto; padding-top: 14px;
+    border-top: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: .78rem; font-weight: 700;
+  }
+  .card.active .c-cta-arrow { transition: transform .18s; }
+  .card.active:hover .c-cta-arrow { transform: translateX(4px); }
+  .cc-packs   { color: #38bdf8; }
+  .cc-evo     { color: #34d399; }
+  .cc-metrics { color: #fbbf24; }
+  .cc-orch    { color: #c084fc; }
+
+  /* ── FOOTER ─────────────────────────────────────── */
+  .footer {
+    margin-top: 48px; text-align: center;
+    color: var(--muted); font-size: .75rem; line-height: 2;
+  }
+  .footer a { color: var(--accent2); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="logo">BAGO<span>·</span>Viewer</div>
+  <p class="tagline">Panel de control para el framework BAGO.<br>
+  Inspecciona proyectos, métricas, evolución y estado en tiempo real.</p>
+</div>
+
+<!-- SERVER STRIP -->
+<div class="server-strip checking" id="server-strip">
+  <div class="status-badge badge-checking" id="status-badge">
+    <div class="sb-dot"></div>
+    <span id="badge-text">Buscando servidor…</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;" id="port-display">
+    <span class="port-label">Puerto:</span>
+    <span class="port-value" id="port-value">—</span>
+  </div>
+  <a id="open-btn" class="start-btn btn-open btn-disabled" href="#" onclick="return false;">
+    <span>🚀</span> <span id="open-btn-text">Abrir BAGO·Viewer</span>
+  </a>
+  <button class="retry-btn" id="retry-btn" onclick="startDetection()" style="display:none;">⟳ Reintentar</button>
+</div>
+
+<!-- START INSTRUCTIONS (shown when server not found) -->
+<div class="start-instructions" id="start-instructions">
+  <div class="si-label">▶ Para iniciar el servidor, ejecuta en terminal:</div>
+  <div class="cmd-row">
+    <span class="cmd-text" id="cmd-text">cd /Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA &amp;&amp; python3 bago-viewer/app.py</span>
+    <button class="copy-btn" id="copy-btn" onclick="copyCommand()">Copiar</button>
+  </div>
+  <div class="si-hint">
+    💡 También puedes hacer doble clic en <code style="color:#38bdf8;">start-viewer.command</code>
+    desde el Finder para iniciar el servidor automáticamente.
+  </div>
+</div>
+
+<!-- SECTION CARDS -->
+<div class="cards-grid" id="cards-grid">
+
+  <a class="card card-packs" id="card-packs" href="#" onclick="return false;">
+    <div class="c-icon">📦</div>
+    <div class="c-title">Explorador de Packs</div>
+    <div class="c-route">/packs</div>
+    <div class="c-desc">
+      Detecta automáticamente todos los proyectos con <code>.bago/</code> en tu equipo.
+      Selecciona uno para ver su estado, artefactos, validación y health check.
+    </div>
+    <div class="c-pills">
+      <span class="c-pill pill-blue">Proyectos detectados</span>
+      <span class="c-pill pill-muted">Validación</span>
+      <span class="c-pill pill-muted">Health check</span>
+    </div>
+    <div class="c-cta">
+      <span class="cc-packs">Ver packs</span>
+      <span class="c-cta-arrow cc-packs">→</span>
+    </div>
+  </a>
+
+  <a class="card card-evo" id="card-evo" href="#" onclick="return false;">
+    <div class="c-icon">📈</div>
+    <div class="c-title">Evolución</div>
+    <div class="c-route">/evolution</div>
+    <div class="c-desc">
+      Línea de tiempo del proyecto activo: cambios aplicados, evidencias generadas
+      y actividad de workflows. Visualiza cómo crece tu trabajo.
+    </div>
+    <div class="c-pills">
+      <span class="c-pill pill-green">Historial cambios</span>
+      <span class="c-pill pill-muted">Evidencias</span>
+      <span class="c-pill pill-muted">Workflows</span>
+    </div>
+    <div class="c-cta">
+      <span class="cc-evo">Ver evolución</span>
+      <span class="c-cta-arrow cc-evo">→</span>
+    </div>
+  </a>
+
+  <a class="card card-metrics" id="card-metrics" href="#" onclick="return false;">
+    <div class="c-icon">📊</div>
+    <div class="c-title">Métricas</div>
+    <div class="c-route">/metrics</div>
+    <div class="c-desc">
+      Dashboard analítico: calidad semántica, tiempos de bootstrap, tasa de éxito
+      por workflow, valor de roles y evolución del inventario de artefactos.
+    </div>
+    <div class="c-pills">
+      <span class="c-pill pill-yellow">6 KPI cards</span>
+      <span class="c-pill pill-muted">Gráficos</span>
+      <span class="c-pill pill-muted">Tabla workflows</span>
+    </div>
+    <div class="c-cta">
+      <span class="cc-metrics">Ver métricas</span>
+      <span class="c-cta-arrow cc-metrics">→</span>
+    </div>
+  </a>
+
+  <a class="card card-orch" id="card-orch" href="#" onclick="return false;">
+    <div class="c-icon">🎛</div>
+    <div class="c-title">Orquestador</div>
+    <div class="c-route">/orchestrator</div>
+    <div class="c-desc">
+      Panel en tiempo real: sesión activa con contador live, estado de sprints,
+      ideas detectadas por proyecto. Se actualiza cada 5 segundos.
+    </div>
+    <div class="c-pills">
+      <span class="c-pill pill-purple">Sesión activa live</span>
+      <span class="c-pill pill-muted">Sprints</span>
+      <span class="c-pill pill-muted">Polling 5 s</span>
+    </div>
+    <div class="c-cta">
+      <span class="cc-orch">Abrir panel</span>
+      <span class="c-cta-arrow cc-orch">→</span>
+    </div>
+  </a>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  BAGO·Viewer · <a href="https://github.com/MarcValls/bago-framework" target="_blank">github.com/MarcValls/bago-framework</a>
+  &nbsp;·&nbsp; Abre este fichero directamente en el navegador — no requiere servidor.
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────
+const PORTS = [5050, 5051, 5052, 5053, 5054];
+const START_CMD = 'cd /Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA && python3 bago-viewer/app.py';
+const ROUTES = {
+  'card-packs':   '/packs',
+  'card-evo':     '/evolution',
+  'card-metrics': '/metrics',
+  'card-orch':    '/orchestrator',
+};
+
+let detectedPort = null;
+
+// ── SERVER DETECTION ──────────────────────────────────────────────────
+function pingPort(port) {
+  return new Promise(resolve => {
+    // img-tag trick: works from file:// → http://localhost cross-origin
+    const img = new Image();
+    const t = setTimeout(() => { img.src = ''; resolve(false); }, 1800);
+    img.onload  = () => { clearTimeout(t); resolve(true);  };
+    img.onerror = () => { clearTimeout(t); resolve(false); };
+    img.src = `http://localhost:${port}/static/ping.png?_=${Date.now()}`;
+  });
+}
+
+async function startDetection() {
+  setStateChecking();
+  document.getElementById('retry-btn').style.display = 'none';
+
+  for (const port of PORTS) {
+    document.getElementById('port-value').textContent = port;
+    const up = await pingPort(port);
+    if (up) {
+      setStateFound(port);
+      return;
+    }
+  }
+  setStateNotFound();
+}
+
+// ── STATE SETTERS ─────────────────────────────────────────────────────
+function setStateChecking() {
+  const strip = document.getElementById('server-strip');
+  strip.className = 'server-strip checking';
+  const badge = document.getElementById('status-badge');
+  badge.className = 'status-badge badge-checking';
+  document.getElementById('badge-text').textContent = 'Buscando servidor…';
+  const btn = document.getElementById('open-btn');
+  btn.classList.add('btn-disabled'); btn.href = '#';
+  btn.removeAttribute('target');
+  btn.onclick = () => false;
+  document.getElementById('open-btn-text').textContent = 'Abrir BAGO·Viewer';
+  document.getElementById('start-instructions').style.display = 'none';
+  disableCards();
+}
+
+function setStateFound(port) {
+  detectedPort = port;
+  const baseUrl = `http://localhost:${port}`;
+
+  const strip = document.getElementById('server-strip');
+  strip.className = 'server-strip found';
+  const badge = document.getElementById('status-badge');
+  badge.className = 'status-badge badge-found';
+  document.getElementById('badge-text').textContent = 'Servidor activo';
+  document.getElementById('port-value').textContent = port;
+
+  const btn = document.getElementById('open-btn');
+  btn.classList.remove('btn-disabled');
+  btn.href = baseUrl + '/';
+  btn.target = '_blank';
+  btn.onclick = null;
+  document.getElementById('open-btn-text').textContent = `Abrir en :${port} →`;
+  document.getElementById('start-instructions').style.display = 'none';
+  document.getElementById('retry-btn').style.display = 'none';
+
+  enableCards(baseUrl);
+}
+
+function setStateNotFound() {
+  const strip = document.getElementById('server-strip');
+  strip.className = 'server-strip not-found';
+  const badge = document.getElementById('status-badge');
+  badge.className = 'status-badge badge-notfound';
+  document.getElementById('badge-text').textContent = 'Servidor no encontrado';
+  document.getElementById('port-value').textContent = '—';
+
+  const btn = document.getElementById('open-btn');
+  btn.classList.add('btn-disabled'); btn.href = '#';
+  btn.onclick = () => false;
+  document.getElementById('open-btn-text').textContent = 'Servidor inactivo';
+  document.getElementById('start-instructions').style.display = 'block';
+  document.getElementById('cmd-text').textContent = START_CMD;
+  document.getElementById('retry-btn').style.display = 'inline-flex';
+
+  disableCards();
+}
+
+// ── CARD MANAGEMENT ───────────────────────────────────────────────────
+function enableCards(baseUrl) {
+  Object.entries(ROUTES).forEach(([id, path]) => {
+    const card = document.getElementById(id);
+    card.classList.add('active');
+    card.href = baseUrl + path;
+    card.target = '_blank';
+    card.onclick = null;
+  });
+}
+
+function disableCards() {
+  Object.keys(ROUTES).forEach(id => {
+    const card = document.getElementById(id);
+    card.classList.remove('active');
+    card.href = '#';
+    card.removeAttribute('target');
+    card.onclick = () => false;
+  });
+}
+
+// ── COPY COMMAND ──────────────────────────────────────────────────────
+function copyCommand() {
+  navigator.clipboard.writeText(START_CMD).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copiar';
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = START_CMD;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    document.getElementById('copy-btn').textContent = '✓ Copiado';
+  });
+}
+
+// ── BOOT ─────────────────────────────────────────────────────────────
+startDetection();
+// re-check every 10 s if not found
+setInterval(() => { if (!detectedPort) startDetection(); }, 10000);
+</script>
+</body>
+</html>
