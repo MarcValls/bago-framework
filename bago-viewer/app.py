@@ -785,6 +785,135 @@ def metrics_img(filename: str):
     return send_file(img_path)
 
 
+# ── ORCHESTRATOR ──────────────────────────────────────────────────────────
+_ORCH_BAGO_ROOT = Path(__file__).resolve().parent.parent / ".bago"
+
+def _collect_orchestrator_data() -> dict:
+    """Recopila todo el estado BAGO para el panel orquestador."""
+    import json
+    from datetime import datetime, timezone
+
+    data: dict = {}
+
+    # global_state
+    gs_path = _ORCH_BAGO_ROOT / "state" / "global_state.json"
+    gs = {}
+    if gs_path.exists():
+        try:
+            gs = json.loads(gs_path.read_text())
+        except Exception:
+            pass
+
+    data["bago_version"]             = gs.get("bago_version", "?")
+    data["system_health"]            = gs.get("system_health", "unknown")
+    data["sprint_status"]            = gs.get("sprint_status", {})
+    data["inventory"]                = gs.get("inventory", {"sessions": 0, "changes": 0, "evidences": 0})
+    data["notes"]                    = gs.get("notes", None)
+    data["last_completed_session_id"]= gs.get("last_completed_session_id")
+    data["last_completed_task_type"] = gs.get("last_completed_task_type")
+    data["last_completed_workflow"]  = gs.get("last_completed_workflow")
+    data["last_completed_roles"]     = gs.get("last_completed_roles", [])
+
+    # sesión activa
+    active_id = gs.get("active_session_id")
+    active_session: dict = {"active": False}
+    if active_id:
+        sess_path = _ORCH_BAGO_ROOT / "state" / "sessions" / f"{active_id}.json"
+        if sess_path.exists():
+            try:
+                sess = json.loads(sess_path.read_text())
+                active_session = {
+                    "active": True,
+                    "session_id": active_id,
+                    "goal":               sess.get("user_goal", "—"),
+                    "workflow":           sess.get("selected_workflow", ""),
+                    "roles":              sess.get("roles_activated", []),
+                    "start_iso":          sess.get("created_at"),
+                    "artifacts_planned":  sess.get("artifacts_planned", []),
+                    "status":             sess.get("status", "active"),
+                }
+            except Exception:
+                active_session = {"active": True, "session_id": active_id, "goal": "—"}
+    data["active_session"] = active_session
+
+    # sesiones recientes (últimas 8)
+    sessions_dir = _ORCH_BAGO_ROOT / "state" / "sessions"
+    recent = []
+    total_sessions = 0
+    if sessions_dir.exists():
+        all_sess = sorted(sessions_dir.glob("*.json"),
+                          key=lambda f: f.stat().st_mtime, reverse=True)
+        total_sessions = len(all_sess)
+        for sf in all_sess[:8]:
+            try:
+                s = json.loads(sf.read_text())
+                # duration
+                dur = None
+                try:
+                    ca = datetime.fromisoformat(s.get("created_at", "").replace("Z", "+00:00"))
+                    ua = datetime.fromisoformat(s.get("updated_at", "").replace("Z", "+00:00"))
+                    diff = (ua - ca).total_seconds() / 60
+                    if 0.5 <= diff <= 600:
+                        dur = round(diff, 1)
+                except Exception:
+                    pass
+                recent.append({
+                    "__total":          total_sessions,
+                    "session_id":       s.get("session_id", sf.stem),
+                    "user_goal":        s.get("user_goal", "—"),
+                    "selected_workflow":s.get("selected_workflow", ""),
+                    "status":           s.get("status", ""),
+                    "duration_minutes": dur,
+                })
+            except Exception:
+                pass
+    data["recent_sessions"] = recent
+
+    # ideas detectadas
+    ideas_dir = _ORCH_BAGO_ROOT / "ideas"
+    ideas_agg = []
+    if ideas_dir.exists():
+        for ideas_file in sorted(ideas_dir.glob("*.json")):
+            try:
+                content = json.loads(ideas_file.read_text())
+                proj_name = content.get("project", ideas_file.stem)
+                ideas_list = content.get("ideas", [])
+                if not isinstance(ideas_list, list):
+                    continue
+                pending  = sum(1 for i in ideas_list if i.get("status") == "pending")
+                done     = sum(1 for i in ideas_list if i.get("status") == "done")
+                progress = sum(1 for i in ideas_list if i.get("status") == "in_progress")
+                if ideas_list:
+                    ideas_agg.append({
+                        "project":  proj_name,
+                        "total":    len(ideas_list),
+                        "pending":  pending,
+                        "done":     done,
+                        "progress": progress,
+                    })
+            except Exception:
+                pass
+    data["ideas"] = ideas_agg
+
+    return data
+
+
+@app.route("/orchestrator")
+def orchestrator():
+    return render_template("orchestrator.html")
+
+
+@app.route("/orchestrator-data")
+def orchestrator_data():
+    from flask import jsonify
+    try:
+        d = _collect_orchestrator_data()
+        return jsonify(d)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
 if __name__ == "__main__":
     port = 5050
     print(f"\n  BAGO Viewer  →  http://localhost:{port}\n")

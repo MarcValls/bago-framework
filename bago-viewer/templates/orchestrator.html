@@ -1,0 +1,545 @@
+{% extends "base.html" %}
+{% block title %}BAGO · Orquestador{% endblock %}
+{% block breadcrumb %}🎛 Orquestador{% endblock %}
+
+{% block content %}
+<style>
+  .orch-root { display: grid; grid-template-rows: auto 1fr; gap: 20px; }
+
+  /* STATUS BAR */
+  .orch-statusbar {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 12px 20px; flex-wrap: wrap;
+  }
+  .health-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .health-stable  { background: #22c55e; box-shadow: 0 0 6px #22c55e88; }
+  .health-unknown { background: #94a3b8; }
+  .health-warn    { background: #f59e0b; box-shadow: 0 0 6px #f59e0b88; }
+  .sys-health { display:flex; align-items:center; gap:7px; font-size:.82rem; font-weight:700; }
+  .orch-sep { color: var(--line); user-select: none; }
+  .live-badge {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:3px 10px; border-radius:999px;
+    font-size:.75rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+  }
+  .live-active {
+    background:rgba(34,197,94,.15); color:#4ade80;
+    border:1px solid rgba(34,197,94,.3);
+    animation: livepulse 2s ease-in-out infinite;
+  }
+  .live-idle { background:rgba(100,116,139,.12); color:#94a3b8; border:1px solid rgba(100,116,139,.2); }
+  @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+  .live-dot { width:7px; height:7px; border-radius:50%; background:currentColor; }
+  .statusbar-version { color: var(--muted); font-size:.78rem; }
+  .statusbar-right { margin-left:auto; color:var(--muted); font-size:.78rem; }
+  #last-updated-ts { color:var(--accent2); font-weight:600; }
+
+  /* MAIN GRID */
+  .orch-main { display:grid; grid-template-columns:1fr 360px; gap:20px; align-items:start; }
+  @media(max-width:960px){ .orch-main{grid-template-columns:1fr;} }
+  .orch-left  { display:flex; flex-direction:column; gap:20px; }
+  .orch-right { display:flex; flex-direction:column; gap:16px; }
+
+  /* ACTIVE SESSION BOX */
+  .active-session-box {
+    background:var(--card); border:1px solid var(--line);
+    border-radius:18px; overflow:hidden; transition:border-color .3s;
+  }
+  .active-session-box.is-active {
+    border-color:rgba(34,197,94,.4);
+    box-shadow:0 0 0 1px rgba(34,197,94,.1);
+  }
+  .box-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:13px 20px; border-bottom:1px solid var(--line);
+    background:rgba(17,24,39,.5);
+  }
+  .box-header-title {
+    font-size:.74rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:.08em; color:var(--muted);
+  }
+  .box-body { padding:20px; }
+
+  /* idle */
+  .idle-placeholder { text-align:center; padding:40px 24px; color:var(--muted); }
+  .idle-placeholder .idle-icon { font-size:2.8rem; margin-bottom:12px; }
+  .idle-placeholder p { font-size:.88rem; line-height:1.6; }
+  .idle-placeholder .start-hint {
+    margin-top:16px; display:inline-block;
+    padding:6px 14px; border-radius:8px;
+    background:rgba(56,189,248,.08); color:var(--accent2);
+    border:1px solid rgba(56,189,248,.15); font-size:.8rem; font-family:monospace;
+  }
+
+  /* active */
+  .session-goal { font-size:1rem; font-weight:700; line-height:1.45; color:var(--text); margin-bottom:14px; }
+  .session-meta-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+  .meta-chip {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:3px 10px; border-radius:8px; font-size:.78rem; font-weight:600;
+  }
+  .mc-id  { background:rgba(56,189,248,.1); color:var(--accent2); border:1px solid rgba(56,189,248,.18); }
+  .mc-wf  { background:rgba(168,85,247,.1); color:#c084fc; border:1px solid rgba(168,85,247,.2); }
+  .mc-rol { background:rgba(34,197,94,.08); color:#86efac; border:1px solid rgba(34,197,94,.18); }
+
+  /* elapsed */
+  .elapsed-row { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+  .elapsed-label { color:var(--muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; }
+  .elapsed-value {
+    font-size:1.8rem; font-weight:800; font-variant-numeric:tabular-nums;
+    color:var(--accent); font-family:"Courier New",monospace;
+  }
+  .elapsed-start { color:var(--muted); font-size:.75rem; }
+
+  /* artifacts */
+  .artifacts-section { margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+  .af-label { color:var(--muted); font-size:.74rem; text-transform:uppercase; letter-spacing:.07em; margin-bottom:8px; }
+  .af-item { display:flex; gap:8px; padding:4px 0; font-size:.82rem; color:var(--muted); align-items:flex-start; }
+  .af-icon { color:var(--accent); flex-shrink:0; margin-top:1px; }
+  .af-path { font-family:monospace; font-size:.77rem; word-break:break-all; }
+
+  /* RECENT SESSIONS */
+  .recent-sessions-box { background:var(--card); border:1px solid var(--line); border-radius:18px; overflow:hidden; }
+  .sr-row {
+    display:flex; align-items:center; gap:10px;
+    padding:11px 20px; border-bottom:1px solid rgba(51,65,85,.4);
+    transition:background .15s; cursor:default;
+  }
+  .sr-row:last-child { border-bottom:none; }
+  .sr-row:hover { background:rgba(56,189,248,.04); }
+  .sr-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .sd-closed,.sd-completed { background:#4ade80; }
+  .sd-active  { background:#22c55e; box-shadow:0 0 5px #22c55e; }
+  .sd-other   { background:#94a3b8; }
+  .sr-id   { font-family:monospace; font-size:.73rem; color:var(--muted); min-width:158px; flex-shrink:0; }
+  .sr-goal { font-size:.81rem; color:var(--text); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sr-dur  { color:var(--muted); font-size:.74rem; flex-shrink:0; }
+  .sr-wf   {
+    font-size:.72rem; font-weight:600; padding:2px 7px; border-radius:6px;
+    background:rgba(56,189,248,.1); color:var(--accent2);
+    border:1px solid rgba(56,189,248,.15); flex-shrink:0;
+  }
+
+  /* SIDE CARDS */
+  .side-card { background:var(--card); border:1px solid var(--line); border-radius:16px; overflow:hidden; }
+  .side-header {
+    padding:10px 16px; border-bottom:1px solid var(--line);
+    font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted);
+    background:rgba(17,24,39,.4); display:flex; align-items:center; justify-content:space-between;
+  }
+  .side-body { padding:14px 16px; }
+
+  /* INVENTORY KPIs */
+  .inv-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .inv-kpi { background:rgba(17,24,39,.6); border:1px solid var(--line); border-radius:10px; padding:10px 12px; text-align:center; }
+  .iv { font-size:1.5rem; font-weight:800; }
+  .il { color:var(--muted); font-size:.64rem; text-transform:uppercase; letter-spacing:.06em; margin-top:3px; }
+  .iv-s { color:var(--accent2); }
+  .iv-c { color:#a78bfa; }
+  .iv-e { color:#f59e0b; }
+
+  /* SPRINTS */
+  .sprint-row { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid rgba(51,65,85,.3); }
+  .sprint-row:last-child { border-bottom:none; }
+  .sprint-name { flex:1; color:var(--text); font-weight:600; font-size:.8rem; }
+  .sprint-pill { padding:2px 9px; border-radius:999px; font-size:.72rem; font-weight:700; }
+  .sp-done    { background:rgba(34,197,94,.15); color:#4ade80; border:1px solid rgba(34,197,94,.25); }
+  .sp-active  { background:rgba(56,189,248,.15); color:#38bdf8; border:1px solid rgba(56,189,248,.25); animation:livepulse 2s infinite; }
+  .sp-pending { background:rgba(100,116,139,.1); color:#94a3b8; border:1px solid rgba(100,116,139,.2); }
+  .sp-blocked { background:rgba(239,68,68,.12); color:#f87171; border:1px solid rgba(239,68,68,.2); }
+
+  /* IDEAS */
+  .idea-block { margin-bottom:12px; }
+  .idea-block:last-child { margin-bottom:0; }
+  .idea-proj { font-size:.78rem; font-weight:700; color:var(--accent2); margin-bottom:6px; }
+  .idea-chips { display:flex; gap:6px; flex-wrap:wrap; }
+  .idea-chip { padding:2px 8px; border-radius:6px; font-size:.72rem; font-weight:700; }
+  .ic-pending  { background:rgba(245,158,11,.1); color:#fbbf24; border:1px solid rgba(245,158,11,.2); }
+  .ic-done     { background:rgba(34,197,94,.08); color:#86efac; border:1px solid rgba(34,197,94,.15); }
+  .ic-progress { background:rgba(56,189,248,.1); color:#7dd3fc; border:1px solid rgba(56,189,248,.2); }
+
+  /* LAST ACTION */
+  .lrow { padding:7px 0; border-bottom:1px solid rgba(51,65,85,.3); }
+  .lrow:last-child { border-bottom:none; }
+  .lk { color:var(--muted); font-size:.75rem; }
+  .lv { color:var(--text); font-size:.85rem; font-weight:600; margin-top:2px; }
+  .lv small { color:var(--muted); font-weight:400; font-size:.77rem; }
+
+  /* NOTES */
+  .notes-box {
+    background:rgba(56,189,248,.04); border:1px solid rgba(56,189,248,.15);
+    border-radius:10px; padding:10px 14px;
+    font-size:.82rem; line-height:1.55; color:var(--muted);
+  }
+  .notes-box strong { color:var(--accent2); }
+
+  /* PROGRESS BAR */
+  .refresh-bar {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:8px 12px; background:rgba(17,24,39,.6);
+    border-top:1px solid var(--line); font-size:.72rem; color:var(--muted);
+  }
+  #refresh-track { height:2px; background:var(--line); border-radius:1px; overflow:hidden; margin-top:4px; }
+  #refresh-fill  { height:100%; background:var(--accent2); width:0%; transition:width .1s linear; }
+</style>
+
+<div class="orch-root">
+
+  <!-- STATUS BAR -->
+  <div class="orch-statusbar" id="orch-statusbar">
+    <div class="sys-health">
+      <div class="health-dot" id="health-dot"></div>
+      <span id="health-text">cargando…</span>
+    </div>
+    <span class="orch-sep">│</span>
+    <div id="live-badge" class="live-badge live-idle">
+      <div class="live-dot"></div>
+      <span id="live-text">sin sesión</span>
+    </div>
+    <span class="orch-sep">│</span>
+    <span class="statusbar-version" id="bago-version">BAGO …</span>
+    <div class="statusbar-right">
+      actualizado <span id="last-updated-ts">—</span>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="orch-main">
+
+    <!-- LEFT: sesión activa + recientes -->
+    <div class="orch-left">
+
+      <!-- SESIÓN ACTIVA -->
+      <div class="active-session-box" id="active-session-box">
+        <div class="box-header">
+          <span class="box-header-title">🟢 Sesión activa</span>
+          <span id="session-status-badge" style="font-size:.75rem;color:var(--muted);">—</span>
+        </div>
+        <div class="box-body" id="active-session-body">
+          <!-- filled by JS -->
+          <div class="idle-placeholder" id="idle-placeholder">
+            <div class="idle-icon">🛌</div>
+            <p>No hay sesión activa en este momento.<br>El sistema está en reposo.</p>
+            <div class="start-hint">bago session start</div>
+          </div>
+          <div id="session-active-content" style="display:none;">
+            <div class="session-goal" id="session-goal">—</div>
+            <div class="session-meta-row" id="session-meta-row"><!-- chips --></div>
+            <div class="elapsed-row">
+              <span class="elapsed-label">⏱ tiempo activo</span>
+              <span class="elapsed-value" id="elapsed-value">00:00:00</span>
+              <span class="elapsed-start" id="elapsed-start"></span>
+            </div>
+            <div class="artifacts-section" id="artifacts-section">
+              <div class="af-label">artefactos planificados</div>
+              <div id="artifacts-list"><!-- filled --></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SESIONES RECIENTES -->
+      <div class="recent-sessions-box">
+        <div class="box-header">
+          <span class="box-header-title">🗂 Sesiones recientes</span>
+          <span id="total-sessions" style="font-size:.75rem;color:var(--muted);">— sesiones</span>
+        </div>
+        <div id="recent-sessions-list">
+          <div style="padding:20px;color:var(--muted);font-size:.85rem;text-align:center;">cargando…</div>
+        </div>
+        <div class="refresh-bar">
+          <span>actualización automática cada 5 s</span>
+          <div style="width:140px;">
+            <div id="refresh-track"><div id="refresh-fill"></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: sidebar cards -->
+    <div class="orch-right">
+
+      <!-- INVENTARIO -->
+      <div class="side-card">
+        <div class="side-header">📦 Inventario BAGO</div>
+        <div class="side-body">
+          <div class="inv-grid" id="inv-grid">
+            <div class="inv-kpi"><div class="iv iv-s" id="inv-sessions">—</div><div class="il">sesiones</div></div>
+            <div class="inv-kpi"><div class="iv iv-c" id="inv-changes">—</div><div class="il">cambios</div></div>
+            <div class="inv-kpi"><div class="iv iv-e" id="inv-evidences">—</div><div class="il">evidencias</div></div>
+          </div>
+          <div style="margin-top:12px;" id="notes-container"></div>
+        </div>
+      </div>
+
+      <!-- SPRINTS -->
+      <div class="side-card">
+        <div class="side-header">🏃 Sprints</div>
+        <div class="side-body" id="sprints-body">
+          <div style="color:var(--muted);font-size:.82rem;">cargando…</div>
+        </div>
+      </div>
+
+      <!-- IDEAS DETECTADAS -->
+      <div class="side-card">
+        <div class="side-header">💡 Ideas detectadas</div>
+        <div class="side-body" id="ideas-body">
+          <div style="color:var(--muted);font-size:.82rem;">cargando…</div>
+        </div>
+      </div>
+
+      <!-- ÚLTIMA ACCIÓN COMPLETADA -->
+      <div class="side-card">
+        <div class="side-header">✅ Última acción completada</div>
+        <div class="side-body" id="last-action-body">
+          <div style="color:var(--muted);font-size:.82rem;">cargando…</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// ── ORCHESTRATOR PANEL JS ─────────────────────────────────────────────
+const POLL_INTERVAL = 5000;
+let elapsedInterval = null;
+let sessionStart = null;
+let progressInterval = null;
+let progressStart = null;
+
+function pad(n){ return String(n).padStart(2,'0'); }
+
+function formatElapsed(ms){
+  const s = Math.floor(ms/1000);
+  const h = Math.floor(s/3600);
+  const m = Math.floor((s%3600)/60);
+  const sec = s%60;
+  return `${pad(h)}:${pad(m)}:${pad(sec)}`;
+}
+
+function formatDuration(minutes){
+  if(!minutes || minutes<=0) return '—';
+  if(minutes < 60) return `${Math.round(minutes)}m`;
+  return `${Math.floor(minutes/60)}h ${Math.round(minutes%60)}m`;
+}
+
+function setHealth(health){
+  const dot = document.getElementById('health-dot');
+  const txt = document.getElementById('health-text');
+  dot.className = 'health-dot';
+  if(health==='stable'){ dot.classList.add('health-stable'); txt.textContent='Sistema estable'; }
+  else if(health==='warn'||health==='warning'){ dot.classList.add('health-warn'); txt.textContent='Sistema con avisos'; }
+  else { dot.classList.add('health-unknown'); txt.textContent='Estado desconocido'; }
+}
+
+function renderSprints(sprints){
+  const body = document.getElementById('sprints-body');
+  if(!sprints||Object.keys(sprints).length===0){
+    body.innerHTML='<div style="color:var(--muted);font-size:.82rem;">Sin datos de sprints.</div>';
+    return;
+  }
+  const order = ['sprint_1a','sprint_1b','sprint_1c','sprint_1d','sprint_2','sprint_3','sprint_4','sprint_5','sprint_6'];
+  const keys = order.filter(k=>sprints[k]!==undefined);
+  const otherKeys = Object.keys(sprints).filter(k=>!order.includes(k));
+  const allKeys = [...keys, ...otherKeys];
+
+  const labelMap = {
+    sprint_1a:'Sprint 1a', sprint_1b:'Sprint 1b', sprint_1c:'Sprint 1c', sprint_1d:'Sprint 1d',
+    sprint_2:'Sprint 2', sprint_3:'Sprint 3', sprint_4:'Sprint 4', sprint_5:'Sprint 5', sprint_6:'Sprint 6'
+  };
+  body.innerHTML = allKeys.map(k=>{
+    const v = sprints[k]||'';
+    const vl = v.toLowerCase();
+    let cls='sp-pending', label=v||'pending';
+    if(vl==='done'||vl==='completed'){ cls='sp-done'; label='DONE'; }
+    else if(vl==='active'||vl==='in_progress'){ cls='sp-active'; label='ACTIVO'; }
+    else if(vl==='blocked'){ cls='sp-blocked'; label='BLOQUEADO'; }
+    return `<div class="sprint-row">
+      <span class="sprint-name">${labelMap[k]||k}</span>
+      <span class="sprint-pill ${cls}">${label}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderIdeas(ideas){
+  const body = document.getElementById('ideas-body');
+  if(!ideas||ideas.length===0){
+    body.innerHTML='<div style="color:var(--muted);font-size:.82rem;">Sin ideas detectadas.</div>';
+    return;
+  }
+  body.innerHTML = ideas.map(proj=>{
+    const chips = [];
+    if(proj.pending>0)  chips.push(`<span class="idea-chip ic-pending">${proj.pending} pendientes</span>`);
+    if(proj.progress>0) chips.push(`<span class="idea-chip ic-progress">${proj.progress} en progreso</span>`);
+    if(proj.done>0)     chips.push(`<span class="idea-chip ic-done">${proj.done} hechas</span>`);
+    return `<div class="idea-block">
+      <div class="idea-proj">📁 ${proj.project}</div>
+      <div class="idea-chips">${chips.join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderLastAction(data){
+  const body = document.getElementById('last-action-body');
+  const rows = [];
+  if(data.last_completed_session_id) rows.push({k:'Sesión', v: data.last_completed_session_id});
+  if(data.last_completed_task_type)  rows.push({k:'Tarea',  v: data.last_completed_task_type});
+  if(data.last_completed_workflow)   rows.push({k:'Workflow', v: data.last_completed_workflow});
+  if(data.last_completed_roles && data.last_completed_roles.length){
+    rows.push({k:'Roles', v: data.last_completed_roles.map(r=>r.replace('role_','')).join(', ')});
+  }
+  if(!rows.length){
+    body.innerHTML='<div style="color:var(--muted);font-size:.82rem;">Sin historial disponible.</div>';
+    return;
+  }
+  body.innerHTML = rows.map(r=>
+    `<div class="lrow"><div class="lk">${r.k}</div><div class="lv">${r.v}</div></div>`
+  ).join('');
+}
+
+function renderRecentSessions(sessions){
+  const container = document.getElementById('recent-sessions-list');
+  const totalEl   = document.getElementById('total-sessions');
+  if(!sessions||!sessions.length){
+    container.innerHTML='<div style="padding:20px;color:var(--muted);font-size:.85rem;text-align:center;">Sin sesiones.</div>';
+    return;
+  }
+  totalEl.textContent = `total: ${sessions[0].__total||sessions.length} sesiones`;
+
+  container.innerHTML = sessions.map(s=>{
+    const st = (s.status||'').toLowerCase();
+    let dotCls='sd-other';
+    if(st==='closed') dotCls='sd-closed';
+    else if(st==='completed') dotCls='sd-completed';
+    else if(st==='active') dotCls='sd-active';
+
+    const wfShort = (s.selected_workflow||'—').replace('w','W').split('_')[0];
+    return `<div class="sr-row">
+      <div class="sr-dot ${dotCls}"></div>
+      <div class="sr-id">${s.session_id||'—'}</div>
+      <div class="sr-goal" title="${(s.user_goal||'').replace(/"/g,'&quot;')}">${s.user_goal||'—'}</div>
+      <div class="sr-wf">${wfShort}</div>
+      <div class="sr-dur">${formatDuration(s.duration_minutes)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderActiveSession(data){
+  const box     = document.getElementById('active-session-box');
+  const idle    = document.getElementById('idle-placeholder');
+  const content = document.getElementById('session-active-content');
+  const badge   = document.getElementById('session-status-badge');
+  const liveBadge = document.getElementById('live-badge');
+  const liveText  = document.getElementById('live-text');
+
+  if(!data.active){
+    box.classList.remove('is-active');
+    idle.style.display='block';
+    content.style.display='none';
+    badge.textContent='reposo';
+    liveBadge.className='live-badge live-idle';
+    liveText.textContent='sin sesión';
+    if(elapsedInterval){ clearInterval(elapsedInterval); elapsedInterval=null; }
+    return;
+  }
+
+  box.classList.add('is-active');
+  idle.style.display='none';
+  content.style.display='block';
+  liveBadge.className='live-badge live-active';
+  liveText.textContent='activo';
+  badge.textContent = data.session_id||'';
+
+  document.getElementById('session-goal').textContent = data.goal||'—';
+
+  // meta chips
+  const mr = document.getElementById('session-meta-row');
+  const chips = [];
+  if(data.session_id) chips.push(`<span class="meta-chip mc-id">${data.session_id}</span>`);
+  if(data.workflow)   chips.push(`<span class="meta-chip mc-wf">${data.workflow}</span>`);
+  (data.roles||[]).forEach(r=>chips.push(`<span class="meta-chip mc-rol">${r.replace('role_','')}</span>`));
+  mr.innerHTML = chips.join('');
+
+  // elapsed timer
+  if(data.start_iso){
+    sessionStart = new Date(data.start_iso).getTime();
+    const updateElapsed = ()=>{
+      const ms = Date.now()-sessionStart;
+      document.getElementById('elapsed-value').textContent = formatElapsed(ms);
+    };
+    updateElapsed();
+    if(elapsedInterval) clearInterval(elapsedInterval);
+    elapsedInterval = setInterval(updateElapsed, 1000);
+    document.getElementById('elapsed-start').textContent =
+      'desde '+new Date(data.start_iso).toLocaleTimeString('es-ES');
+  }
+
+  // artifacts
+  const afList = document.getElementById('artifacts-list');
+  const planned = data.artifacts_planned||[];
+  if(planned.length){
+    afList.innerHTML = planned.map(a=>
+      `<div class="af-item"><span class="af-icon">→</span><span class="af-path">${a}</span></div>`
+    ).join('');
+  } else {
+    afList.innerHTML='<div style="color:var(--muted);font-size:.82rem;">Sin artefactos planificados.</div>';
+  }
+}
+
+function renderNotes(notes){
+  const container = document.getElementById('notes-container');
+  if(notes){
+    container.innerHTML=`<div class="notes-box"><strong>Nota:</strong> ${notes}</div>`;
+  } else {
+    container.innerHTML='';
+  }
+}
+
+// progress bar animation
+function startProgressBar(){
+  if(progressInterval) clearInterval(progressInterval);
+  progressStart = Date.now();
+  const fill = document.getElementById('refresh-fill');
+  progressInterval = setInterval(()=>{
+    const pct = Math.min(100, (Date.now()-progressStart)/POLL_INTERVAL*100);
+    fill.style.width = pct+'%';
+    if(pct>=100) clearInterval(progressInterval);
+  }, 100);
+}
+
+async function fetchAndRender(){
+  try {
+    const res = await fetch('/orchestrator-data');
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const d = await res.json();
+
+    document.getElementById('last-updated-ts').textContent = new Date().toLocaleTimeString('es-ES');
+    document.getElementById('bago-version').textContent = 'BAGO '+( d.bago_version||'?');
+
+    setHealth(d.system_health||'unknown');
+    renderSprints(d.sprint_status||{});
+    renderIdeas(d.ideas||[]);
+    renderLastAction(d);
+    renderRecentSessions(d.recent_sessions||[]);
+    renderActiveSession(d.active_session||{active:false});
+    document.getElementById('inv-sessions').textContent  = (d.inventory||{}).sessions||0;
+    document.getElementById('inv-changes').textContent   = (d.inventory||{}).changes||0;
+    document.getElementById('inv-evidences').textContent = (d.inventory||{}).evidences||0;
+    renderNotes(d.notes||null);
+
+  } catch(e){
+    console.error('orchestrator-data error:', e);
+    document.getElementById('last-updated-ts').textContent = 'error';
+  }
+  startProgressBar();
+}
+
+// boot
+fetchAndRender();
+setInterval(fetchAndRender, POLL_INTERVAL);
+startProgressBar();
+</script>
+{% endblock %}
