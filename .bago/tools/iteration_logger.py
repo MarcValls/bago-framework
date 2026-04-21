@@ -126,13 +126,15 @@ def _evolution_hints(records: list[dict]) -> list[dict]:
     total         = len(records)
 
     # Comando más frecuente → podría necesitar optimización de prompt/rol
-    top_cmd, top_count = cmd_counter.most_common(1)[0]
-    if top_count >= max(3, total * 0.3):
-        hints.append({
-            "type": "prompt",
-            "reason": f"El comando '{top_cmd}' representa {top_count}/{total} iteraciones.",
-            "suggestion": f"Revisar y afinar el prompt/rol asociado a '{top_cmd}'.",
-        })
+    top_cmd_list = cmd_counter.most_common(1)
+    if top_cmd_list:
+        top_cmd, top_count = top_cmd_list[0]
+        if top_count >= max(3, total * 0.3):
+            hints.append({
+                "type": "prompt",
+                "reason": f"El comando '{top_cmd}' representa {top_count}/{total} iteraciones.",
+                "suggestion": f"Revisar y afinar el prompt/rol asociado a '{top_cmd}'.",
+            })
 
     # Uso frecuente en modo external → podría merecer un agente o workflow dedicado
     if mode_counter.get("external", 0) >= max(3, total * 0.4):
@@ -143,13 +145,15 @@ def _evolution_hints(records: list[dict]) -> list[dict]:
         })
 
     # Workspace recurrente → podría merecer un preset/configuración guardada
-    top_ws, ws_count = ws_counter.most_common(1)[0]
-    if ws_count >= max(3, total * 0.25) and top_ws:
-        hints.append({
-            "type": "tool",
-            "reason": f"El workspace '{top_ws}' aparece en {ws_count}/{total} iteraciones.",
-            "suggestion": "Crear un preset de workspace para acceso rápido.",
-        })
+    top_ws_list = ws_counter.most_common(1)
+    if top_ws_list:
+        top_ws, ws_count = top_ws_list[0]
+        if ws_count >= max(3, total * 0.25) and top_ws:
+            hints.append({
+                "type": "tool",
+                "reason": f"El workspace '{top_ws}' aparece en {ws_count}/{total} iteraciones.",
+                "suggestion": "Crear un preset de workspace para acceso rápido.",
+            })
 
     # Muchas iteraciones sin workflows → posible falta de automatización
     if total >= 10 and mode_counter.get("self", 0) >= 5:
@@ -241,8 +245,7 @@ def main() -> int:
     args = _parse()
 
     if args.action == "log":
-        record = log_iteration(cmd=args.cmd, workspace=args.workspace, notes=args.notes)
-        print(json.dumps(record, indent=2, ensure_ascii=False))
+        log_iteration(cmd=args.cmd, workspace=args.workspace, notes=args.notes)
         return 0
 
     if args.action == "summary" or args.action is None:
