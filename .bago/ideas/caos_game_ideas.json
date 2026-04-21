@@ -1,0 +1,138 @@
+{
+  "project": "CAoS — El Sigarrito",
+  "cosecha": "2026-04-21 (sesión W8+)",
+  "ideas": [
+    {
+      "id": "IDEA-009",
+      "title": "SFX one-shot por interacción",
+      "category": "game_feel",
+      "priority": "alta",
+      "status": "pending",
+      "description": "Extender InteractionResult con sfx?: AudioCue. AudioManager reproduce el cue como one-shot (sin loop) cuando llega vía applyInteractionResult. Permite que cada pickup, examen o diálogo tenga sonido propio sin modificar la arquitectura.",
+      "implementation": "AudioManager crea un Audio temporal, lo reproduce sin loop y lo destruye al terminar. applyInteractionResult llama a playOneShot(res.sfx) si está definido. No bloquea el audio ambiental.",
+      "files": ["src/components/game/AudioManager.tsx", "src/types/game.ts", "src/state/store.ts"],
+      "effort": "pequeño"
+    },
+    {
+      "id": "IDEA-010",
+      "title": "Secuencias encadenadas de acciones",
+      "category": "architecture",
+      "priority": "alta",
+      "status": "pending",
+      "description": "InteractionResult gana sequence?: InteractionResult[] para encadenar efectos con delays. Ejemplo: pickup → narrativa → notebook unlock → cambio de room, todo desde un solo onInteract(). Motor procesa la cola con setTimeout proporcional.",
+      "implementation": "applyInteractionResult procesa res directamente y luego pone cada elemento de res.sequence en setTimeout(n * 800ms). Orden: flags, itemEarned, sfx, narrative, notebookUnlock, dialogueId, titleCard, roomTransition.",
+      "files": ["src/types/game.ts", "src/state/store.ts"],
+      "effort": "medio"
+    },
+    {
+      "id": "IDEA-011",
+      "title": "Barras cinematográficas (letterbox)",
+      "category": "game_feel",
+      "priority": "alta",
+      "status": "pending",
+      "description": "GameShell añade barras negras superior/inferior (h-14) que aparecen/desaparecen suavemente. Se activan automáticamente durante diálogos y manualmente desde InteractionResult.cinematic?: boolean. Dan peso narrativo al juego al instante.",
+      "implementation": "Store añade isCinematic: boolean. GameShell renderiza dos <motion.div> absolutas top-0/bottom-0 h-14 bg-black. DialoguePanel activa cinematic al montar y lo desactiva al endDialogue. InteractionResult puede setearlo.",
+      "files": ["src/state/store.ts", "src/components/game/GameShell.tsx", "src/components/game/DialoguePanel.tsx", "src/types/game.ts"],
+      "effort": "pequeño"
+    },
+    {
+      "id": "IDEA-012",
+      "title": "Retrato del personaje en DialoguePanel",
+      "category": "ux",
+      "priority": "media",
+      "status": "pending",
+      "description": "Nodo de diálogo puede tener portrait?: string (id de personaje). DialoguePanel muestra el SVG/componente del personaje hablante a la izquierda del texto, con transición en el cambio de nodo. Mejora enormemente la legibilidad y presencia narrativa.",
+      "implementation": "Mapa speakerToComponent similar a NPCS en SceneView. Si node.portrait existe, renderizar el componente a tamaño h-32 con clip-path para simular un busto. Fade entre retratos en cambio de nodo.",
+      "files": ["src/components/game/DialoguePanel.tsx"],
+      "effort": "medio"
+    },
+    {
+      "id": "IDEA-013",
+      "title": "SaveSystem integrado con auto-save",
+      "category": "architecture",
+      "priority": "alta",
+      "status": "pending",
+      "description": "SaveSystem existe pero no está conectado. Necesita: auto-save en changeRoom (cada transición), load en loadChapter si hay save existente, botón Save/Load en HUD. Sin esto el juego pierde todo al recargar.",
+      "implementation": "changeRoom llama saveCurrentState() al final. loadChapter compara si hay save en localStorage con mismo chapterId y lo restaura. HUD añade botón Save manual. loadChapter acepta forceNewGame: boolean.",
+      "files": ["src/state/store.ts", "src/components/ui/HUD.tsx"],
+      "effort": "medio"
+    },
+    {
+      "id": "IDEA-014",
+      "title": "Title card (rótulo de capítulo/escena)",
+      "category": "narrative",
+      "priority": "media",
+      "status": "pending",
+      "description": "InteractionResult gana titleCard?: { title: string; subtitle?: string }. Muestra un overlay con texto centrado que hace fade in → pausa 2s → fade out. Perfecto para 'Capítulo 1: La llegada', cambios de día, o momentos climáticos.",
+      "implementation": "Store añade activeTitleCard state. TitleCard.tsx (nuevo componente en GameShell) renderiza el overlay con AnimatePresence. applyInteractionResult pone el title y usa setTimeout para limpiarlo.",
+      "files": ["src/state/store.ts", "src/types/game.ts", "src/components/game/GameShell.tsx"],
+      "effort": "pequeño"
+    },
+    {
+      "id": "IDEA-015",
+      "title": "Soporte táctil / mobile",
+      "category": "accessibility",
+      "priority": "media",
+      "status": "pending",
+      "description": "HotspotOverlay e interacciones no responden en móvil/tablet. Añadir onTouchEnd como alias de onClick en hotspots. Long press (>400ms) = right-click (examinar). SceneView añade onTouchEnd al fondo para caminar. Permite play en iPad.",
+      "implementation": "Hook useLongPress en HotspotOverlay. onTouchStart guarda timestamp; onTouchEnd compara. Si >400ms → handleRightClick, si <400ms → handleClick. setTargetPos en SceneView recibe TouchEvent igual que MouseEvent.",
+      "files": ["src/components/game/HotspotOverlay.tsx", "src/components/game/SceneView.tsx"],
+      "effort": "medio"
+    },
+    {
+      "id": "IDEA-016",
+      "title": "Cursor SVG personalizado por contexto",
+      "category": "ux",
+      "priority": "media",
+      "status": "pending",
+      "description": "Reemplazar cursor-pointer/crosshair/alias por cursores SVG personalizados en línea. Default: flecha estilizada. Sobre hotspot: ojo (look) o rueda dentada (interact). Sobre conexión: flecha doble (→). Con item seleccionado: mira de cruceta ambar. Convierte el juego visualmente.",
+      "implementation": "CSS en index.css con @cursor variables. HotspotOverlay aplica style={{ cursor: 'url(...)' }} según contexto. Cursores generados como SVG inline en base64. Fallback a CSS cursors para compatibilidad.",
+      "files": ["src/components/game/HotspotOverlay.tsx", "src/index.css"],
+      "effort": "medio"
+    },
+    {
+      "id": "IDEA-017",
+      "title": "Partículas ambientales en sala (CSS)",
+      "category": "game_feel",
+      "priority": "baja",
+      "status": "pending",
+      "description": "Room gana particles?: { type: 'rain'|'dust'|'smoke'|'ember', density: number }. AmbientParticles.tsx renderiza N divs con posición aleatoria y animación CSS keyframe (translateY + opacity). Sin canvas, sin WebGL, 0 impacto en performance R3F.",
+      "implementation": "useMemo genera array de N elementos con posX, delay, duration aleatorios. CSS @keyframes ya definidos. Se inyecta en SceneView sobre la imagen de fondo. Solo en modo 2D por ahora (R3F tiene su propia atmosphere).",
+      "files": ["src/types/game.ts", "src/components/game/SceneView.tsx"],
+      "effort": "pequeño"
+    },
+    {
+      "id": "IDEA-018",
+      "title": "Modal de detalle de objeto en inventario",
+      "category": "ux",
+      "priority": "baja",
+      "status": "pending",
+      "description": "Right-click en inventario actualmente muestra narrativa en HUD. Mejor: abrir un modal (z-80) con el icono grande del objeto, nombre, descripción completa, y lore opcional (item.lore?: string). Más inmersivo que texto flotante.",
+      "implementation": "InventoryPanel añade estado activeDetailItem. Modal con AnimatePresence, icono escalado 4x, texto completo. Cierra con click exterior o Escape. item.lore es nuevo campo opcional en ItemDef.",
+      "files": ["src/components/game/InventoryPanel.tsx", "src/types/game.ts"],
+      "effort": "pequeño"
+    },
+    {
+      "id": "IDEA-019",
+      "title": "Patrullaje de NPCs en modo 2D",
+      "category": "game_feel",
+      "priority": "baja",
+      "status": "pending",
+      "description": "ActorPlacement gana patrolPath?: {x,y}[] y patrolSpeed?: number. RenderNPC en SceneView hace un loop de waypoints con RAF (igual que PlayerActor). NPCs que se mueven hacen las salas sentir vivas sin lógica de IA.",
+      "implementation": "useRef para índice actual de waypoint. useEffect con RAF: mover hacia siguiente punto, cuando llega avanzar índice (circular). Dirección calculada igual que PlayerActor. Respeta condition: si NPC desaparece, RAF se cancela.",
+      "files": ["src/types/game.ts", "src/components/game/SceneView.tsx"],
+      "effort": "medio"
+    },
+    {
+      "id": "IDEA-020",
+      "title": "Atajos de teclado para verbos sobre hotspot activo",
+      "category": "ux",
+      "priority": "baja",
+      "status": "pending",
+      "description": "Cuando el VerbMenu está abierto (activeVerbMenu != null), teclas L/I/P/T ejecutan el verbo correspondiente sin necesidad de clic. Complementa el keyboard support de DialoguePanel (ux-k) para un flujo 100% teclado posible.",
+      "implementation": "HotspotOverlay añade useEffect con keydown cuando activeVerbMenu es non-null. Mapa: L→look, I→interact, P→pickup, T→talk. Escape cierra el menú. Limpieza del listener en cleanup.",
+      "files": ["src/components/game/HotspotOverlay.tsx"],
+      "effort": "pequeño"
+    }
+  ]
+}

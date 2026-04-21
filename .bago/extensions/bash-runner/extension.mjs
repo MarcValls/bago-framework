@@ -185,7 +185,8 @@ const session = await joinSession({
 
                     // python3 en Unix/Mac, python en Windows (si no hay python3 en PATH)
                     const pyExe = IS_WIN ? "python" : "python3";
-                    const cmdArgs = bago_cmd.trim().split(/\s+/);
+                    const trimmed = bago_cmd.trim();
+                    const cmdArgs = trimmed ? trimmed.split(/\s+/) : [];
                     const result = runCmd([pyExe, bagoScript, ...cmdArgs], root, 30000);
                     return JSON.stringify({ bago_root: root, platform: process.platform, ...result }, null, 2);
                 } catch (err) {

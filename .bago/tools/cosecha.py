@@ -19,7 +19,20 @@ SESSIONS   = STATE_DIR / "sessions"
 CHANGES    = STATE_DIR / "changes"
 EVIDENCES  = STATE_DIR / "evidences"
 
-DRY_RUN = "--dry-run" in sys.argv
+import argparse as _argparse
+
+def _parse_args():
+    p = _argparse.ArgumentParser(add_help=False)
+    p.add_argument("--dry-run",       action="store_true")
+    p.add_argument("--que-decidiste", default=None)
+    p.add_argument("--descartaste",   default=None)
+    p.add_argument("--proximo-paso",  default=None)
+    p.add_argument("--yes",           action="store_true", help="Confirmar sin prompt")
+    args, _ = p.parse_known_args()
+    return args
+
+_ARGS = _parse_args()
+DRY_RUN = _ARGS.dry_run
 
 # ─── Utilidades ───────────────────────────────────────────────────────────────
 
@@ -100,31 +113,41 @@ def run():
     now = datetime.now(timezone.utc).isoformat()
     today_str = datetime.now().strftime("%Y-%m-%d")
 
+    # ── Modo no-interactivo (agente pasa las 3 respuestas como args) ──────────
+    non_interactive = (
+        _ARGS.que_decidiste is not None and
+        _ARGS.descartaste   is not None and
+        _ARGS.proximo_paso  is not None
+    )
+
     print()
     print("╔══════════════════════════════════════════════════╗")
     print("║   BAGO · Cosecha Contextual (W9)                 ║")
     print("║   3 preguntas → sesión harvest cerrada           ║")
     print("╠══════════════════════════════════════════════════╣")
-    print("║  Responde con una o dos líneas. Enter en blanco  ║")
-    print("║  para finalizar cada respuesta.                  ║")
+    if non_interactive:
+        print("║  Modo no-interactivo (args proporcionados)       ║")
+    else:
+        print("║  Responde con una o dos líneas. Enter en blanco  ║")
+        print("║  para finalizar cada respuesta.                  ║")
     if DRY_RUN:
         print("║  ⚠️  DRY-RUN: no se escribirá ningún fichero    ║")
     print("╚══════════════════════════════════════════════════╝")
 
     # ── Pregunta 1 ────────────────────────────────────────────────────────────
-    decision = _ask(
+    decision = _ARGS.que_decidiste if non_interactive else _ask(
         "¿Qué decidiste en esta exploración?",
         hint="La decisión principal. Qué elegiste y por qué (máx. 2 líneas)."
     )
 
     # ── Pregunta 2 ────────────────────────────────────────────────────────────
-    discard = _ask(
+    discard = _ARGS.descartaste if non_interactive else _ask(
         "¿Qué descartaste y por qué?",
         hint="Qué opción o camino quedó fuera y la razón (máx. 2 líneas)."
     )
 
     # ── Pregunta 3 ────────────────────────────────────────────────────────────
-    next_step = _ask(
+    next_step = _ARGS.proximo_paso if non_interactive else _ask(
         "¿Cuál es el próximo paso concreto?",
         hint="El siguiente artefacto a producir o acción a ejecutar."
     )
@@ -150,7 +173,7 @@ def run():
     print("  └──────────────────────────────────────────────┘")
     print()
 
-    confirm = input("  ¿Guardar esta cosecha? [S/n] ").strip().lower()
+    confirm = "s" if (_ARGS.yes or non_interactive) else input("  ¿Guardar esta cosecha? [S/n] ").strip().lower()
     if confirm == "n":
         print("\n  Cosecha cancelada.")
         return
