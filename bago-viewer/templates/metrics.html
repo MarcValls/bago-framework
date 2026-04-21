@@ -1,0 +1,476 @@
+{% extends "base.html" %}
+{% block title %}BAGO · Métricas de Evolución{% endblock %}
+{% block breadcrumb %}📊 Métricas{% endblock %}
+
+{% block content %}
+<style>
+  /* ── Layout helpers ─────────────────────────────────────────── */
+  .metrics-hero { margin-bottom: 36px; }
+  .metrics-hero h1 { font-size: 2rem; margin-bottom: 8px; }
+  .metrics-hero p  { max-width: 620px; }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 44px;
+  }
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px 20px;
+  }
+  .kpi-label { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; }
+  .kpi-val   { font-size: 2rem; font-weight: 800; margin: 8px 0 4px; line-height: 1; }
+  .kpi-sub   { color: var(--muted); font-size: .8rem; }
+  .kpi-green { color: var(--accent); }
+  .kpi-blue  { color: var(--accent2); }
+  .kpi-warn  { color: var(--warn); }
+  .kpi-red   { color: #f87171; }
+
+  /* ── Section layout ──────────────────────────────────────────── */
+  .metrics-section {
+    margin-bottom: 52px;
+  }
+  .metrics-section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .metrics-section-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .metrics-section-header .sec-num {
+    background: rgba(56,189,248,.15);
+    color: var(--accent2);
+    border: 1px solid rgba(56,189,248,.25);
+    border-radius: 8px;
+    padding: 2px 9px;
+    font-size: .78rem;
+    font-weight: 800;
+  }
+
+  /* ── Chart+text side-by-side ─────────────────────────────────── */
+  .chart-panel {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    align-items: start;
+  }
+  .chart-panel.reversed { grid-template-columns: 340px 1fr; }
+  @media (max-width: 900px) {
+    .chart-panel,
+    .chart-panel.reversed { grid-template-columns: 1fr; }
+    .chart-panel.reversed .chart-img-box { order: -1; }
+  }
+
+  .chart-img-box {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .chart-img-box img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* ── Side info card ──────────────────────────────────────────── */
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 22px 24px;
+  }
+  .info-card h3 {
+    color: var(--text);
+    font-size: .88rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(51,65,85,.45);
+    font-size: .88rem;
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-label { color: var(--muted); }
+  .stat-val   { font-weight: 700; color: var(--text); }
+
+  /* ── Full-width chart ────────────────────────────────────────── */
+  .chart-full {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .chart-full img { width: 100%; height: auto; display: block; }
+
+  /* ── Inline table ────────────────────────────────────────────── */
+  .metrics-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .86rem;
+    margin-top: 4px;
+  }
+  .metrics-table th {
+    color: var(--accent2);
+    font-weight: 600;
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+  }
+  .metrics-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid rgba(51,65,85,.4);
+    color: var(--text);
+    vertical-align: middle;
+  }
+  .metrics-table tr:last-child td { border-bottom: none; }
+  .metrics-table tr:hover td { background: rgba(56,189,248,.03); }
+
+  /* pill rate */
+  .rate-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 700;
+  }
+  .rate-100 { background: rgba(34,197,94,.15); color: #4ade80; }
+  .rate-hi  { background: rgba(34,197,94,.1);  color: #86efac; }
+  .rate-mid { background: rgba(245,158,11,.15); color: #fbbf24; }
+  .rate-low { background: rgba(239,68,68,.15);  color: #f87171; }
+
+  /* bar inline */
+  .mini-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .mini-bar-track { flex: 1; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+  .mini-bar-fill  { height: 100%; border-radius: 3px; background: var(--accent2); }
+
+  /* ── Two-col grid for section 3 ──────────────────────────────── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* ── Affected badge ──────────────────────────────────────────── */
+  .affected-pill {
+    display: inline-block;
+    background: rgba(239,68,68,.1);
+    color: #f87171;
+    border: 1px solid rgba(239,68,68,.2);
+    border-radius: 8px;
+    padding: 2px 10px;
+    font-family: monospace;
+    font-size: .82rem;
+  }
+
+  /* ── Footer note ──────────────────────────────────────────────── */
+  .metrics-footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: .82rem;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+</style>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════════════ -->
+<div class="metrics-hero">
+  <h1>Métricas <span style="color:var(--accent2)">BAGO</span> — Evolución del sistema</h1>
+  <p>Datos extraídos de <strong style="color:var(--text)">{{ data.total_sessions }} sesiones</strong>,
+     <strong style="color:var(--text)">{{ data.total_changes }} changes</strong> y
+     <strong style="color:var(--text)">{{ data.total_evidences }} evidencias</strong> reales.
+     Generado <strong style="color:var(--text)">{{ data.generated_at }}</strong>.
+  </p>
+</div>
+
+<!-- KPI cards -->
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-label">Sesiones totales</div>
+    <div class="kpi-val kpi-blue">{{ data.total_sessions }}</div>
+    <div class="kpi-sub">{{ data.real_sessions }} reales · {{ data.tls_affected }} afectadas TLS</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Tasa de éxito global</div>
+    <div class="kpi-val kpi-green">{{ data.success_rate }}</div>
+    <div class="kpi-sub">Sesiones completadas</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Artefactos útiles</div>
+    <div class="kpi-val kpi-green">{{ data.useful_ratio }}</div>
+    <div class="kpi-sub">{{ data.useful_artifacts }} / {{ data.total_artifacts }} artefactos</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Duración media</div>
+    <div class="kpi-val kpi-blue">{{ data.avg_duration }}</div>
+    <div class="kpi-sub">Por sesión</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Changes</div>
+    <div class="kpi-val" style="color:var(--accent2)">{{ data.total_changes }}</div>
+    <div class="kpi-sub">Cambios registrados</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Evidencias</div>
+    <div class="kpi-val" style="color:#a78bfa">{{ data.total_evidences }}</div>
+    <div class="kpi-sub">Evidencias registradas</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN 1 — Calidad semántica
+════════════════════════════════════════════════════════════════ -->
+<div class="metrics-section">
+  <div class="metrics-section-header">
+    <span class="sec-num">01</span>
+    <h2>Calidad semántica de salida</h2>
+  </div>
+  <div class="chart-panel">
+    <div class="chart-img-box">
+      <img src="/metrics-img/01_calidad_semantica.png" alt="Calidad semántica de salida" loading="lazy">
+    </div>
+    <div class="info-card">
+      <h3>Resumen</h3>
+      <div class="stat-row">
+        <span class="stat-label">Total artefactos</span>
+        <span class="stat-val">{{ data.total_artifacts }}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Artefactos útiles</span>
+        <span class="stat-val kpi-green">{{ data.useful_artifacts }}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Artefactos relleno</span>
+        <span class="stat-val" style="color:#f87171">{{ data.filler_artifacts }}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Ratio útiles</span>
+        <span class="stat-val kpi-green">{{ data.useful_ratio }}</span>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem;line-height:1.55;">
+        Las sesiones sin artefactos planificados se contabilizan como trabajo ad-hoc (100% útil).
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN 2 — Tiempo bootstrap
+════════════════════════════════════════════════════════════════ -->
+<div class="metrics-section">
+  <div class="metrics-section-header">
+    <span class="sec-num">02</span>
+    <h2>Tiempo bootstrap → primera acción útil</h2>
+  </div>
+  <div class="chart-panel reversed">
+    <div class="info-card">
+      <h3>Distribución</h3>
+      <div class="stat-row">
+        <span class="stat-label">Duración media</span>
+        <span class="stat-val kpi-blue">{{ data.avg_duration }}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Sesiones ≤ 30 min</span>
+        <span class="stat-val kpi-green">{{ data.sessions_under_30 }}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Sesiones > 60 min</span>
+        <span class="stat-val kpi-warn">{{ data.sessions_over_60 }}</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Con duración conocida</span>
+        <span class="stat-val">{{ data.sessions_with_duration }}</span>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem;line-height:1.55;">
+        El 90% de sesiones con duración registrada se completan en ≤ 30 min.
+      </div>
+    </div>
+    <div class="chart-img-box">
+      <img src="/metrics-img/02_tiempo_bootstrap.png" alt="Tiempo bootstrap" loading="lazy">
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN 3 — Éxito por workflow
+════════════════════════════════════════════════════════════════ -->
+<div class="metrics-section">
+  <div class="metrics-section-header">
+    <span class="sec-num">03</span>
+    <h2>Éxito y duración por workflow</h2>
+  </div>
+  <div class="two-col">
+    <div class="chart-img-box">
+      <img src="/metrics-img/03_exito_workflow.png" alt="Éxito por workflow" loading="lazy">
+    </div>
+    <div class="info-card" style="padding:0;overflow:hidden;">
+      <table class="metrics-table">
+        <thead>
+          <tr>
+            <th>Workflow</th>
+            <th style="text-align:center">Ses.</th>
+            <th style="text-align:center">Éxito</th>
+            <th style="text-align:right">Dur. media</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for wf in data.workflows %}
+          <tr>
+            <td style="font-weight:600;font-size:.82rem;">{{ wf.name }}</td>
+            <td style="text-align:center;color:var(--muted)">{{ wf.count }}</td>
+            <td style="text-align:center">
+              {% set r = wf.success_pct | int %}
+              {% if r == 100 %}
+                <span class="rate-pill rate-100">100%</span>
+              {% elif r >= 75 %}
+                <span class="rate-pill rate-hi">{{ wf.success_pct }}</span>
+              {% elif r >= 50 %}
+                <span class="rate-pill rate-mid">{{ wf.success_pct }}</span>
+              {% else %}
+                <span class="rate-pill rate-low">{{ wf.success_pct }}</span>
+              {% endif %}
+            </td>
+            <td style="text-align:right;color:var(--muted);font-size:.82rem;">{{ wf.avg_duration }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN 4 — Reales vs TLS
+════════════════════════════════════════════════════════════════ -->
+<div class="metrics-section">
+  <div class="metrics-section-header">
+    <span class="sec-num">04</span>
+    <h2>Métricas reales vs afectadas por TLS / rate-limit</h2>
+  </div>
+  <div class="chart-panel">
+    <div class="chart-img-box">
+      <img src="/metrics-img/04_reales_vs_tls.png" alt="Reales vs TLS" loading="lazy">
+    </div>
+    <div class="info-card">
+      <h3>Calidad del corpus</h3>
+      <div class="stat-row">
+        <span class="stat-label">Sesiones reales</span>
+        <span class="stat-val kpi-green">{{ data.real_sessions }} ({{ data.real_sessions_pct }})</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Potencialmente afectadas</span>
+        <span class="stat-val kpi-red">{{ data.tls_affected }}</span>
+      </div>
+      <div style="margin-top:16px;">
+        <div style="color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">IDs afectados</div>
+        {% for sid in data.tls_ids %}
+          <div style="margin-bottom:6px;"><span class="affected-pill">{{ sid }}</span></div>
+        {% endfor %}
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem;line-height:1.55;">
+        Criterio: duración &lt; 5 min <strong>y</strong> sin artefactos entregados.
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN 5 — Valor incremental de roles
+════════════════════════════════════════════════════════════════ -->
+<div class="metrics-section">
+  <div class="metrics-section-header">
+    <span class="sec-num">05</span>
+    <h2>Valor incremental de activar roles adicionales</h2>
+  </div>
+  <div class="two-col">
+    <div class="info-card" style="padding:0;overflow:hidden;">
+      <table class="metrics-table">
+        <thead>
+          <tr>
+            <th>Rol</th>
+            <th style="text-align:center">Ses.</th>
+            <th style="text-align:right">Art./ses</th>
+            <th style="text-align:right">Dec./ses</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rol in data.roles %}
+          <tr>
+            <td>
+              <span style="font-weight:600;font-size:.83rem;">{{ rol.name }}</span>
+            </td>
+            <td style="text-align:center;color:var(--muted)">{{ rol.count }}</td>
+            <td style="text-align:right;">
+              <div class="mini-bar-wrap" style="justify-content:flex-end;">
+                <span style="font-weight:700;color:var(--accent2);font-size:.85rem;">{{ "%.1f"|format(rol.artifacts_per_session) }}</span>
+              </div>
+            </td>
+            <td style="text-align:right;color:var(--muted);font-size:.85rem;">{{ "%.1f"|format(rol.decisions_per_session) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="chart-img-box">
+      <img src="/metrics-img/05_valor_roles.png" alt="Valor por rol" loading="lazy">
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SECCIÓN 6 — Evolución acumulada
+════════════════════════════════════════════════════════════════ -->
+<div class="metrics-section">
+  <div class="metrics-section-header">
+    <span class="sec-num">06</span>
+    <h2>Evolución acumulada del inventario</h2>
+  </div>
+  <div class="chart-full" style="margin-bottom:16px;">
+    <img src="/metrics-img/06_evolucion_inventario.png" alt="Evolución inventario" loading="lazy">
+  </div>
+  <div style="color:var(--muted);font-size:.85rem;line-height:1.6;padding:0 4px;">
+    Crecimiento cronológico de sesiones, changes y evidencias desde la primera sesión registrada hasta hoy.
+    El inventario crece de forma consistente, reflejando adopción sostenida del sistema.
+  </div>
+</div>
+
+
+<!-- Footer -->
+<div class="metrics-footer">
+  <span>Generado por <code style="color:var(--accent2)">.bago/tools/state_store.py</code></span>
+  <span>{{ data.generated_at }} · {{ data.total_sessions }} sesiones analizadas</span>
+</div>
+
+{% endblock %}

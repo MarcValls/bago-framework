@@ -6,8 +6,10 @@ bago-viewer — Dashboard web para inspeccionar packs .bago
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
+import zipfile
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -411,6 +413,376 @@ def pack_asset():
         abort(404)
 
     return send_file(target)
+
+
+
+
+# ---------------------------------------------------------------------------
+# Evolution dashboard data
+# ---------------------------------------------------------------------------
+
+_EVO_BAGO_ROOT = Path(__file__).resolve().parent.parent / ".bago"
+_EVO_REPO_ROOT = _EVO_BAGO_ROOT.parent
+_EVO_CV_DIR    = _EVO_REPO_ROOT / "cleanversion"
+_EVO_DIST_DIR  = _EVO_BAGO_ROOT / "dist" / "source"
+
+
+def _evo_commands_from_bago(bago_path: Path) -> list[str]:
+    if not bago_path.exists():
+        return []
+    txt = bago_path.read_text(encoding="utf-8", errors="ignore")
+    return re.findall(r'"([a-z_-]+)"\s*:\s*\["python3"', txt)
+
+
+def _evo_metrics_from_zip(zip_path: Path) -> dict:
+    if not zip_path.exists():
+        return {}
+    with zipfile.ZipFile(zip_path) as zf:
+        names = zf.namelist()
+        tools     = [n for n in names if "/tools/" in n and n.endswith(".py") and "__" not in n]
+        workflows = [n for n in names if "/workflows/W" in n and n.endswith(".md")]
+        docs      = [n for n in names if "/docs/" in n and n.endswith(".md")]
+        version   = "?"
+        for name in names:
+            if name.endswith("pack.json"):
+                try:
+                    version = json.loads(zf.read(name)).get("version", "?")
+                except Exception:
+                    pass
+                break
+    return {
+        "tools": len(tools),
+        "tool_names": sorted(Path(t).name for t in tools),
+        "workflows": len(workflows),
+        "docs": len(docs),
+        "version": version,
+    }
+
+
+def collect_evolution_data() -> dict:
+    versions = []
+
+    # ── ZIP fuentes disponibles ────────────────────────────────────────────
+    zip_map = {}
+    # Scan dist/source/ ZIPs (primary)
+    if _EVO_DIST_DIR.exists():
+        for z in sorted(_EVO_DIST_DIR.glob("BAGO_*.zip")):
+            m = _evo_metrics_from_zip(z)
+            ver = m.get("version", "?")
+            m.update({
+                "slug": f"src-{ver}",
+                "label": ver,
+                "source": "dist/",
+                "commands": m.get("commands", 0),
+                "cmd_names": [],
+            })
+            zip_map[ver] = m
+    # Scan cleanversion/ ZIPs (secondary — fill gaps, don't overwrite)
+    if _EVO_CV_DIR.exists():
+        for z in sorted(_EVO_CV_DIR.glob("BAGO_*.zip")):
+            fn_m = re.match(r"BAGO_([0-9]+\.[0-9]+-[a-z0-9]+)", z.name)
+            if not fn_m:
+                continue
+            ver = fn_m.group(1)
+            if ver in zip_map:
+                continue  # dist/ wins
+            m = _evo_metrics_from_zip(z)
+            m["version"] = ver  # override pack.json "1.0.0" with filename version
+            m.update({
+                "slug": f"cv-{ver}",
+                "label": ver,
+                "source": "cleanversion/",
+                "commands": 0,
+                "cmd_names": [],
+            })
+            zip_map[ver] = m
+
+    # ── Cleanversions ─────────────────────────────────────────────────────
+    cv_meta = {
+        "v01-base-clean":    {"ver": "2.3-clean",   "sprint": "Sprint 0"},
+        "v01-base-patched":  {"ver": "2.4-v2rc",    "sprint": "Sprint 0+"},
+        "v02-template-seed": {"ver": "2.4-v2rc",    "sprint": "Sprint 1"},
+        "v03-template-seed": {"ver": "2.5-stable",  "sprint": "Sprint 2"},
+    }
+    for slug, meta in cv_meta.items():
+        d = _EVO_CV_DIR / slug
+        if not d.exists():
+            continue
+        cmds = _evo_commands_from_bago(d / "bago")
+        info = {}
+        info_file = d / "VERSION_INFO.json"
+        if info_file.exists():
+            try:
+                info = json.loads(info_file.read_text())
+            except Exception:
+                pass
+        # enrich with zip data if available
+        zip_data = zip_map.get(info.get("bago_version", meta["ver"]), {})
+        versions.append({
+            "slug":      slug,
+            "label":     info.get("display_name", slug),
+            "version":   info.get("bago_version", meta["ver"]),
+            "sprint":    meta["sprint"],
+            "commands":  len(cmds),
+            "cmd_names": cmds,
+            "tools":     zip_data.get("tools"),
+            "tool_names": zip_data.get("tool_names", []),
+            "docs":      zip_data.get("docs"),
+            "workflows": zip_data.get("workflows"),
+            "source":    "cleanversion/",
+        })
+
+    # ── Estado activo ─────────────────────────────────────────────────────
+    live_tools = sorted(
+        p.name for p in (_EVO_BAGO_ROOT / "tools").rglob("*.py")
+        if not p.name.startswith("__")
+    ) if (_EVO_BAGO_ROOT / "tools").exists() else []
+    live_workflows = list((_EVO_BAGO_ROOT / "workflows").glob("W*.md"))
+    live_docs      = list((_EVO_BAGO_ROOT / "docs").rglob("*.md"))
+    live_chgs      = list((_EVO_BAGO_ROOT / "state" / "changes").glob("BAGO-CHG-*.json")) \
+                     if (_EVO_BAGO_ROOT / "state" / "changes").exists() else []
+    live_cmds      = _evo_commands_from_bago(_EVO_REPO_ROOT / "bago")
+
+    version_live = "?"
+    state_file = _EVO_BAGO_ROOT / "state" / "global_state.json"
+    if state_file.exists():
+        try:
+            version_live = json.loads(state_file.read_text()).get("bago_version", "?")
+        except Exception:
+            pass
+
+    # Health score
+    health = -1
+    health_script = _EVO_BAGO_ROOT / "tools" / "health_score.py"
+    if health_script.exists():
+        try:
+            proc = subprocess.run(
+                [sys.executable, str(health_script)],
+                capture_output=True, text=True, timeout=15,
+                stdin=subprocess.DEVNULL, cwd=str(_EVO_REPO_ROOT)
+            )
+            for line in proc.stdout.splitlines():
+                m2 = re.search(r"(\d+)/100", line)
+                if m2:
+                    health = int(m2.group(1))
+                    break
+        except Exception:
+            pass
+
+    # Ideas implementadas
+    ideas_done = []
+    impl_file = _EVO_BAGO_ROOT / "state" / "implemented_ideas.json"
+    if impl_file.exists():
+        try:
+            data = json.loads(impl_file.read_text())
+            ideas_done = data.get("implemented", [])
+        except Exception:
+            pass
+
+    versions.append({
+        "slug":      "live",
+        "label":     f"ACTIVO ({version_live})",
+        "version":   version_live,
+        "sprint":    "Sprint 2 (activo)",
+        "commands":  len(live_cmds),
+        "cmd_names": live_cmds,
+        "tools":     len(live_tools),
+        "tool_names": live_tools,
+        "docs":      len(live_docs),
+        "workflows": len(live_workflows),
+        "chgs":      len(live_chgs),
+        "health":    health,
+        "source":    "live",
+    })
+
+    # ── Detectar nuevas tools/cmds por versión ────────────────────────────
+    for i, v in enumerate(versions):
+        if i == 0:
+            v["new_tools"] = v.get("tool_names", [])
+            v["new_cmds"]  = v.get("cmd_names", [])
+        else:
+            prev = versions[i - 1]
+            v["new_tools"] = sorted(set(v.get("tool_names", [])) - set(prev.get("tool_names", [])))
+            v["new_cmds"]  = sorted(set(v.get("cmd_names", [])) - set(prev.get("cmd_names", [])))
+
+    # ── Calcular índice de eficiencia ─────────────────────────────────────
+    WEIGHTS = {"commands": 0.30, "tools": 0.35, "docs": 0.20, "workflows": 0.15}
+    maxima  = {k: max((v.get(k) or 0 for v in versions), default=1) for k in WEIGHTS}
+    for v in versions:
+        score = sum(
+            ((v.get(k) or 0) / max(maxima[k], 1)) * w * 100
+            for k, w in WEIGHTS.items()
+        )
+        v["efficiency"] = round(score, 1)
+
+    return {
+        "versions":    versions,
+        "ideas":       ideas_done,
+        "live_health": health,
+        "live_chgs":   len(live_chgs),
+        "live_version": version_live,
+    }
+
+
+@app.route("/evolution")
+def evolution():
+    data = collect_evolution_data()
+    return render_template("evolution.html", data=data)
+
+
+# ---------------------------------------------------------------------------
+# Metrics dashboard
+# ---------------------------------------------------------------------------
+
+METRICS_DIR = Path(__file__).parent.parent / "docs" / "metrics"
+
+def _collect_metrics_data() -> dict:
+    """Lee las sesiones reales y compila los KPIs para la vista de métricas."""
+    bago_root = Path(__file__).parent.parent / ".bago"
+    sessions_dir = bago_root / "state" / "sessions"
+    changes_dir  = bago_root / "state" / "changes"
+    evidences_dir = bago_root / "state" / "evidences"
+
+    sessions = []
+    for f in sorted(sessions_dir.glob("*.json")):
+        try:
+            sessions.append(json.loads(f.read_text(encoding="utf-8")))
+        except Exception:
+            pass
+    sessions.sort(key=lambda s: s.get("created_at", ""))
+
+    total_sessions = len(sessions)
+    total_changes  = len(list(changes_dir.glob("*.json")))
+    total_evidences = len(list(evidences_dir.glob("*.json")))
+
+    # Éxito — status "completed" o "closed"
+    completed = sum(1 for s in sessions if s.get("status") in ("completed", "closed"))
+    success_rate = f"{(completed/total_sessions*100):.1f}%" if total_sessions else "—"
+
+    # Artefactos — campo real es "artifacts"
+    def _arts(s: dict) -> list:
+        return s.get("artifacts") or s.get("artifacts_delivered") or []
+
+    total_arts  = sum(len(_arts(s)) for s in sessions)
+    planned_arts = sum(len(s.get("artifacts_planned") or []) for s in sessions)
+    # "útiles" = entregados; "relleno" = planificados - entregados (si planned > delivered)
+    filler = max(0, planned_arts - total_arts)
+    useful_arts = total_arts
+    useful_ratio = f"{(useful_arts/(useful_arts+filler)*100):.1f}%" if (useful_arts + filler) else "100%"
+
+    # Duración — calculada desde created_at → updated_at
+    def _dur_min(s: dict) -> float | None:
+        c, u = s.get("created_at"), s.get("updated_at")
+        if not c or not u or c == u:
+            return None
+        try:
+            dt = (
+                datetime.fromisoformat(u.replace("Z", "+00:00"))
+                - datetime.fromisoformat(c.replace("Z", "+00:00"))
+            ).total_seconds() / 60
+            return round(dt, 1) if 0 < dt < 600 else None
+        except Exception:
+            return None
+
+    durations = [d for s in sessions if (d := _dur_min(s)) is not None]
+    avg_dur = f"{sum(durations)/len(durations):.1f} min" if durations else "—"
+    sessions_u30 = sum(1 for d in durations if d <= 30)
+    sessions_o60 = sum(1 for d in durations if d > 60)
+
+    # TLS heuristic: duración < 5 min y sin artefactos
+    tls_ids = [
+        s.get("session_id", "?")
+        for s in sessions
+        if (_dur_min(s) or 999) < 5
+        and len(_arts(s)) == 0
+    ]
+    real_sessions = total_sessions - len(tls_ids)
+    real_pct = f"{(real_sessions/total_sessions*100):.0f}%" if total_sessions else "—"
+
+    # Workflows
+    wf_data: dict[str, dict] = {}
+    for s in sessions:
+        wf = s.get("task_type") or s.get("selected_workflow") or "desconocido"
+        if wf not in wf_data:
+            wf_data[wf] = {"count": 0, "ok": 0, "durations": []}
+        wf_data[wf]["count"] += 1
+        if s.get("status") in ("completed", "closed"):
+            wf_data[wf]["ok"] += 1
+        d = _dur_min(s)
+        if d:
+            wf_data[wf]["durations"].append(d)
+
+    workflows = []
+    for name, v in sorted(wf_data.items(), key=lambda x: -x[1]["count"]):
+        pct = (v["ok"] / v["count"] * 100) if v["count"] else 0
+        dur = f"{sum(v['durations'])/len(v['durations']):.0f} min" if v["durations"] else "—"
+        workflows.append({
+            "name": name,
+            "count": v["count"],
+            "success_pct": f"{pct:.0f}%",
+            "avg_duration": dur,
+        })
+
+    # Roles
+    role_data: dict[str, dict] = {}
+    for s in sessions:
+        arts = len(_arts(s))
+        decs = len(s.get("decisions") or [])
+        for r in s.get("roles_activated") or []:
+            role_clean = r.replace("role_", "")
+            if role_clean not in role_data:
+                role_data[role_clean] = {"count": 0, "artifacts": 0, "decisions": 0}
+            role_data[role_clean]["count"] += 1
+            role_data[role_clean]["artifacts"] += arts
+            role_data[role_clean]["decisions"] += decs
+
+    roles = []
+    for name, v in sorted(role_data.items(), key=lambda x: -x[1]["artifacts"]):
+        c = v["count"]
+        roles.append({
+            "name": name,
+            "count": c,
+            "artifacts_per_session": v["artifacts"] / c if c else 0,
+            "decisions_per_session": v["decisions"] / c if c else 0,
+        })
+
+    return {
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "total_sessions": total_sessions,
+        "total_changes": total_changes,
+        "total_evidences": total_evidences,
+        "success_rate": success_rate,
+        "total_artifacts": total_arts,
+        "useful_artifacts": useful_arts,
+        "filler_artifacts": filler,
+        "useful_ratio": useful_ratio,
+        "avg_duration": avg_dur,
+        "sessions_with_duration": len(durations),
+        "sessions_under_30": f"{sessions_u30} ({int(sessions_u30/len(durations)*100)}%)" if durations else "—",
+        "sessions_over_60": f"{sessions_o60} ({int(sessions_o60/len(durations)*100)}%)" if durations else "—",
+        "real_sessions": real_sessions,
+        "real_sessions_pct": real_pct,
+        "tls_affected": len(tls_ids),
+        "tls_ids": tls_ids,
+        "workflows": workflows,
+        "roles": roles,
+    }
+
+
+@app.route("/metrics")
+def metrics():
+    data = _collect_metrics_data()
+    return render_template("metrics.html", data=data)
+
+
+@app.route("/metrics-img/<filename>")
+def metrics_img(filename: str):
+    """Sirve los PNGs de docs/metrics/."""
+    safe = Path(filename).name
+    img_path = METRICS_DIR / safe
+    if not img_path.exists() or img_path.suffix not in (".png", ".jpg", ".svg"):
+        abort(404)
+    return send_file(img_path)
 
 
 if __name__ == "__main__":
