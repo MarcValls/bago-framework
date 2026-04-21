@@ -13,11 +13,12 @@ O directo:
   python3 .bago/tools/auto_mode.py --dry-run
 """
 
+import hashlib
 import json
 import sys
 import subprocess
 import argparse
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 import os
 
@@ -33,6 +34,163 @@ TOOLS        = PACK_DIR / "tools"
 # ─── Imports directos de herramientas BAGO ───────────────────────────────────
 sys.path.insert(0, str(TOOLS))
 os.chdir(str(PROJECT_ROOT))   # las herramientas asumen cwd = project root
+
+# ─── Selección dinámica de directorio ────────────────────────────────────────
+
+def _load_recent_dirs() -> list[dict]:
+    """Combina repo_context.json (actual) + nodos de context_map.json (recientes)."""
+    entries: list[dict] = []
+    seen: set[str] = set()
+
+    # 1. Directorio actualmente configurado
+    try:
+        rc = json.loads((STATE_DIR / "repo_context.json").read_text())
+        current = rc.get("repo_root")
+        if current and Path(current).exists():
+            entries.append({
+                "path":       current,
+                "label":      Path(current).name,
+                "timestamp":  rc.get("recorded_at", ""),
+                "is_current": True,
+            })
+            seen.add(current)
+    except Exception:
+        pass
+
+    # 2. Nodos del context_map ordenados por fecha descendente
+    try:
+        cm    = json.loads((STATE_DIR / "context_map.json").read_text())
+        nodes = sorted(
+            cm.get("nodes", []),
+            key=lambda n: n.get("recorded_at", "") or n.get("last_session", ""),
+            reverse=True,
+        )
+        for node in nodes:
+            mode      = node.get("working_mode", "")
+            candidate = (node.get("repo_root") or node.get("path")) if mode == "external" \
+                        else node.get("path")
+            if not candidate or candidate in seen:
+                continue
+            if not Path(candidate).exists():
+                continue
+            ts = node.get("recorded_at", "") or node.get("last_session", "")
+            entries.append({
+                "path":       candidate,
+                "label":      Path(candidate).name,
+                "timestamp":  ts,
+                "is_current": False,
+            })
+            seen.add(candidate)
+    except Exception:
+        pass
+
+    return entries
+
+
+def _pick_directory() -> "str | None":
+    """Muestra menú de directorios recientes y devuelve el path elegido."""
+    dirs   = _load_recent_dirs()
+    W_DIR  = 58
+
+    print()
+    print("╔" + "═" * W_DIR + "╗")
+    print(f"║  {'BAGO · ¿Con qué directorio trabajamos?':<{W_DIR - 2}}║")
+    print("╠" + "═" * W_DIR + "╣")
+
+    for i, d in enumerate(dirs, 1):
+        ts      = d["timestamp"][:10] if d["timestamp"] else "—"
+        tag     = "  ← actual" if d["is_current"] else ""
+        path_s  = d["path"]
+        if len(path_s) > W_DIR - 6:
+            path_s = "…" + path_s[-(W_DIR - 7):]
+        header = f"[{i}] {d['label']}{tag}"
+        print(f"║  {header:<{W_DIR - 2}}║")
+        print(f"║      {path_s:<{W_DIR - 6}}║")
+        print(f"║      {ts:<{W_DIR - 6}}║")
+        if i < len(dirs):
+            print(f"║  {'·' * (W_DIR - 4)}║")
+
+    other_n = len(dirs) + 1
+    print("╠" + "═" * W_DIR + "╣")
+    print(f"║  [{other_n}] Otro directorio (ingresar ruta){'':<{W_DIR - 36}}║")
+    print(f"║  [0] Cancelar{'':<{W_DIR - 14}}║")
+    print("╚" + "═" * W_DIR + "╝")
+    print()
+
+    try:
+        choice = input("  Selección: ").strip()
+    except (KeyboardInterrupt, EOFError):
+        return None
+
+    if choice == "0":
+        return None
+
+    if choice.isdigit():
+        n = int(choice)
+        if 1 <= n <= len(dirs):
+            return dirs[n - 1]["path"]
+        if n == other_n:
+            try:
+                custom = input("  Ruta del directorio: ").strip()
+                return custom if custom else None
+            except (KeyboardInterrupt, EOFError):
+                return None
+
+    # Intento como ruta directa
+    if Path(choice).exists():
+        return choice
+
+    print(f"  ⚠️  Opción no válida.")
+    return None
+
+
+def _sync_context(target_path: str) -> bool:
+    """Actualiza repo_context.json → target_path y regenera context_map."""
+    target = Path(target_path).resolve()
+    if not target.exists():
+        print(f"  ❌ Directorio no existe: {target_path}")
+        return False
+
+    # Fingerprint consistente con repo_context_guard.py
+    try:
+        marker  = [str(target), str(PROJECT_ROOT.resolve())]
+        marker += sorted(p.name for p in target.iterdir() if p.name != ".bago")[:200]
+        fp      = hashlib.sha256("\n".join(marker).encode("utf-8")).hexdigest()
+    except Exception:
+        fp = ""
+
+    working_mode = "self" if target.resolve() == PROJECT_ROOT.resolve() else "external"
+
+    new_ctx = {
+        "bago_host_root":   str(PROJECT_ROOT),
+        "role":             "external_repo_pointer" if working_mode == "external" else "self",
+        "working_mode":     working_mode,
+        "repo_root":        str(target),
+        "repo_fingerprint": fp,
+        "recorded_at":      datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+        "note":             f"Sincronizado desde auto_mode · {target.name}",
+    }
+
+    ctx_file = STATE_DIR / "repo_context.json"
+    try:
+        ctx_file.write_text(json.dumps(new_ctx, indent=2, ensure_ascii=False) + "\n")
+        print(f"  ✅ Contexto sincronizado → {target}")
+    except Exception as e:
+        print(f"  ❌ Error al guardar repo_context.json: {e}")
+        return False
+
+    print("  🔄 Regenerando context_map…")
+    try:
+        subprocess.run(
+            [sys.executable, str(TOOLS / "context_map.py"), "--save"],
+            cwd=str(PROJECT_ROOT), capture_output=True,
+        )
+        print("  ✅ context_map actualizado")
+    except Exception:
+        pass  # no bloqueante
+
+    return True
+
 
 # ─── Args ─────────────────────────────────────────────────────────────────────
 def _parse():
@@ -237,6 +395,20 @@ def run():
     dry_run   = args.dry_run
     as_json   = args.as_json
     max_steps = args.steps
+
+    # ── Selección de directorio (solo en modo interactivo) ──────────────────
+    if not as_json:
+        target_dir = _pick_directory()
+        if target_dir is None:
+            print("  ↩  Cancelado.")
+            return
+        print()
+        if dry_run:
+            print(f"  [dry-run] Se sincronizaría contexto → {target_dir}")
+        else:
+            if not _sync_context(target_dir):
+                return
+        print()
 
     gs                     = _global_state()
     health                 = _health_score()
