@@ -91,38 +91,19 @@
   .btn-start:hover { background: rgba(56,189,248,.2); transform: translateY(-1px); }
   .btn-disabled { opacity: .4; cursor: not-allowed; }
 
-  /* ── START INSTRUCTIONS ─────────────────────────── */
-  .start-instructions {
-    background: rgba(17,24,39,.8);
-    border: 1px solid rgba(56,189,248,.15);
-    border-radius: 12px; padding: 14px 18px;
-    width: 100%; max-width: 640px; margin-bottom: 32px;
-    display: none;
+  .btn-terminal {
+    background: rgba(192,132,252,.12); color: #c084fc;
+    border: 1px solid rgba(192,132,252,.35);
+    font-size: .9rem; padding: 11px 24px;
+    letter-spacing: .01em;
+    box-shadow: 0 0 18px rgba(192,132,252,.08);
   }
-  .start-instructions .si-label {
-    color: var(--muted); font-size: .75rem;
-    text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px;
+  .btn-terminal:hover {
+    background: rgba(192,132,252,.22);
+    border-color: rgba(192,132,252,.6);
+    box-shadow: 0 0 28px rgba(192,132,252,.18);
+    transform: translateY(-2px);
   }
-  .cmd-row {
-    display: flex; align-items: center; gap: 10px;
-    background: #0d1117; border: 1px solid var(--line);
-    border-radius: 8px; padding: 10px 14px;
-  }
-  .cmd-text {
-    flex: 1; font-family: monospace; font-size: .82rem;
-    color: #7dd3fc; word-break: break-all;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .copy-btn {
-    background: rgba(56,189,248,.1); color: var(--accent2);
-    border: 1px solid rgba(56,189,248,.2);
-    border-radius: 6px; padding: 4px 10px;
-    font-size: .73rem; font-weight: 700; cursor: pointer;
-    transition: all .15s; flex-shrink: 0;
-  }
-  .copy-btn:hover { background: rgba(56,189,248,.22); }
-  .copy-btn.copied { background: rgba(34,197,94,.15); color: #4ade80; border-color: rgba(34,197,94,.3); }
-  .si-hint { color: var(--muted); font-size: .76rem; margin-top: 8px; line-height: 1.5; }
 
   /* ── RETRY ──────────────────────────────────────── */
   .retry-btn {
@@ -222,20 +203,11 @@
   <a id="open-btn" class="start-btn btn-open btn-disabled" href="#" onclick="return false;">
     <span>🚀</span> <span id="open-btn-text">Abrir BAGO·Viewer</span>
   </a>
+  <a id="launch-btn" class="start-btn btn-terminal" href="./start-viewer.command"
+     style="display:none;" title="Abre Terminal y lanza el servidor automáticamente">
+    <span>⚡</span> Iniciar en Terminal
+  </a>
   <button class="retry-btn" id="retry-btn" onclick="startDetection()" style="display:none;">⟳ Reintentar</button>
-</div>
-
-<!-- START INSTRUCTIONS (shown when server not found) -->
-<div class="start-instructions" id="start-instructions">
-  <div class="si-label">▶ Para iniciar el servidor, ejecuta en terminal:</div>
-  <div class="cmd-row">
-    <span class="cmd-text" id="cmd-text">cd /Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA &amp;&amp; python3 bago-viewer/app.py</span>
-    <button class="copy-btn" id="copy-btn" onclick="copyCommand()">Copiar</button>
-  </div>
-  <div class="si-hint">
-    💡 También puedes hacer doble clic en <code style="color:#38bdf8;">start-viewer.command</code>
-    desde el Finder para iniciar el servidor automáticamente.
-  </div>
 </div>
 
 <!-- SECTION CARDS -->
@@ -328,7 +300,6 @@
 <script>
 // ── CONFIG ────────────────────────────────────────────────────────────
 const PORTS = [5050, 5051, 5052, 5053, 5054];
-const START_CMD = 'cd /Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA && python3 bago-viewer/app.py';
 const ROUTES = {
   'card-packs':   '/packs',
   'card-evo':     '/evolution',
@@ -377,7 +348,9 @@ function setStateChecking() {
   btn.removeAttribute('target');
   btn.onclick = () => false;
   document.getElementById('open-btn-text').textContent = 'Abrir BAGO·Viewer';
-  document.getElementById('start-instructions').style.display = 'none';
+  document.getElementById('open-btn').style.display = '';
+  document.getElementById('launch-btn').style.display = 'none';
+  document.getElementById('retry-btn').style.display = 'none';
   disableCards();
 }
 
@@ -398,7 +371,8 @@ function setStateFound(port) {
   btn.target = '_blank';
   btn.onclick = null;
   document.getElementById('open-btn-text').textContent = `Abrir en :${port} →`;
-  document.getElementById('start-instructions').style.display = 'none';
+  document.getElementById('open-btn').style.display = '';
+  document.getElementById('launch-btn').style.display = 'none';
   document.getElementById('retry-btn').style.display = 'none';
 
   enableCards(baseUrl);
@@ -412,12 +386,8 @@ function setStateNotFound() {
   document.getElementById('badge-text').textContent = 'Servidor no encontrado';
   document.getElementById('port-value').textContent = '—';
 
-  const btn = document.getElementById('open-btn');
-  btn.classList.add('btn-disabled'); btn.href = '#';
-  btn.onclick = () => false;
-  document.getElementById('open-btn-text').textContent = 'Servidor inactivo';
-  document.getElementById('start-instructions').style.display = 'block';
-  document.getElementById('cmd-text').textContent = START_CMD;
+  document.getElementById('open-btn').style.display = 'none';
+  document.getElementById('launch-btn').style.display = '';
   document.getElementById('retry-btn').style.display = 'inline-flex';
 
   disableCards();
@@ -441,28 +411,6 @@ function disableCards() {
     card.href = '#';
     card.removeAttribute('target');
     card.onclick = () => false;
-  });
-}
-
-// ── COPY COMMAND ──────────────────────────────────────────────────────
-function copyCommand() {
-  navigator.clipboard.writeText(START_CMD).then(() => {
-    const btn = document.getElementById('copy-btn');
-    btn.textContent = '✓ Copiado';
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = 'Copiar';
-      btn.classList.remove('copied');
-    }, 2000);
-  }).catch(() => {
-    // fallback
-    const ta = document.createElement('textarea');
-    ta.value = START_CMD;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    document.getElementById('copy-btn').textContent = '✓ Copiado';
   });
 }
 
