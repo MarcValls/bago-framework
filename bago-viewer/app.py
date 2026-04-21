@@ -322,6 +322,25 @@ def _validate_bago_path(path_str: str) -> Path:
 # ---------------------------------------------------------------------------
 
 @app.route("/")
+def home():
+    """Main menu — landing page."""
+    import json
+    gs_path = Path(__file__).resolve().parent.parent / ".bago" / "state" / "global_state.json"
+    gs = {}
+    if gs_path.exists():
+        try:
+            gs = json.loads(gs_path.read_text())
+        except Exception:
+            pass
+    return render_template(
+        "home.html",
+        health=gs.get("system_health", "unknown"),
+        bago_version=gs.get("bago_version", "?"),
+        inventory=gs.get("inventory", {"sessions": 0, "changes": 0, "evidences": 0}),
+    )
+
+
+@app.route("/packs")
 def index():
     packs = [read_pack_info(p) for p in find_bago_packs(SCAN_ROOTS)]
     error = request.args.get("error")
@@ -344,7 +363,7 @@ def pick_folder():
         )
         path = result.stdout.strip()
         if not path:
-            return redirect("/")
+            return redirect("/packs")
 
         chosen = Path(path)
         # El usuario pudo seleccionar directamente el .bago o el proyecto padre
@@ -353,12 +372,12 @@ def pick_folder():
         elif (chosen / ".bago" / "pack.json").exists():
             return redirect(f"/pack?path={quote(str(chosen / '.bago'))}")
         else:
-            return redirect(f"/?error=invalid_pack&chosen={quote(str(chosen))}")
+            return redirect(f"/packs?error=invalid_pack&chosen={quote(str(chosen))}")
 
     except subprocess.TimeoutExpired:
-        return redirect("/")
+        return redirect("/packs")
     except Exception:
-        return redirect("/")
+        return redirect("/packs")
 
 
 @app.route("/pack")
