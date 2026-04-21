@@ -199,6 +199,16 @@ def main():
     cmd = args[0].lower()
     rest = args[1:]
 
+    # Para comandos repo-* con path multi-token (espacios sin comillas),
+    # unir todos los fragmentos en un único argumento de path
+    REPO_CMDS = {"repo-on", "repo-debug", "repo-lint", "repo-test", "repo-build"}
+    if cmd in REPO_CMDS and len(rest) > 1:
+        # Heurística: si hay más de un fragment y ninguno empieza por '--', unirlos
+        non_flag = [a for a in rest if not a.startswith("--")]
+        flags    = [a for a in rest if a.startswith("--")]
+        if len(non_flag) > 1:
+            rest = [" ".join(non_flag)] + flags
+
     if cmd in BLOCKED_CMDS:
         print(f"  ❌ '{cmd}' está bloqueado en BAGO. Invócalo directamente si lo necesitas.")
         sys.exit(1)
