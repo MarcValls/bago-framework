@@ -1,3 +1,4 @@
+from typing import Optional
 #!/usr/bin/env python3
 """
 bago contract — Sistema de contratos de estado verificables.
@@ -296,7 +297,7 @@ def cmd_list():
     print()
 
 
-def cmd_check(contract_id: str | None, verbose: bool):
+def cmd_check(contract_id: Optional[str], verbose: bool):
     contracts = load_all_contracts()
     if not contracts:
         print(f"\n  {RED}Sin contratos.{RESET}\n"); return

@@ -272,6 +272,11 @@ def main():
             ["python3", str(TOOLS / "watch.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "watch-state":
+        subprocess.run(
+            ["python3", str(TOOLS / "bago_watch.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "test":
         subprocess.run(
             ["python3", str(TOOLS / "integration_tests.py")] + rest,

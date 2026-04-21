@@ -1,0 +1,25 @@
+{
+  "change_id": "BAGO-CHG-080",
+  "type": "architecture",
+  "severity": "major",
+  "title": "SPRINT-005 PROXIMO: Python 3.9 compat, dashboard v2, auto_mode fix, RULE-CDTR-001, bago_watch, testgen Go/Rust, IDEAS scoring dinámico",
+  "motivation": "Implementación de todos los ítems marcados PRÓXIMO en SPRINT-005: compatibilidad Python 3.9, cockpit dashboard v2, corrección auto_mode/context_detector, enforcement CDTR-001 en validate_state, watcher de estado, generación de tests en Go y Rust, scoring dinámico de ideas.",
+  "status": "applied",
+  "affected_components": [
+    "tools/gh_integration.py",
+    "tools/contracts.py",
+    "tools/auto_mode.py",
+    "tools/pack_dashboard.py",
+    "tools/validate_state.py",
+    "tools/testgen.py",
+    "tools/emit_ideas.py",
+    "tools/bago_watch.py",
+    "bago"
+  ],
+  "details": "gh_integration.py/contracts.py/auto_mode.py: Optional[X] para Python 3.9. auto_mode._detector(): leer score correcto de context_detector (era high_signals inexistente). pack_dashboard.py: reescritura total a cockpit v2 (460 líneas): health ring ASCII, inventory, W9 detector, sprint, top risks, deuda técnica, velocity sparkline, contracts countdown. validate_state.py: RULE-CDTR-001 enforcement — CDTR-E01 blocking (findings críticos >7d sin ack), CDTR-E02 advisory (salud<70 sin sprint). bago_watch.py: nuevo tool — polling SHA256 de 4 dirs de estado, delta findings+, health check post-cambio. testgen.py: analyze_go_file/generate_go_test_file + analyze_rust_file/generate_rust_test_file; discovery+output para go/rust; dispatch main() loop go/rust. emit_ideas.py: _title_similarity, apply_dynamic_scoring (penalización -20 por similitud ≥0.5), register_implemented_idea (auto-registro al aceptar). bago script: routing watch-state→bago_watch.py.",
+  "sprint": "SPRINT-005",
+  "applied_at": "2026-04-21T23:37:24.576386+00:00",
+  "tests": "bago validate → GO, testgen --test → 4/4, emit_ideas → OK, bago_watch --once → 118 files 86 findings health 100",
+  "created_at": "2026-04-21T23:37:49.014926+00:00",
+  "updated_at": "2026-04-21T23:37:49.014926+00:00"
+}

@@ -226,6 +226,63 @@ def load_implemented_titles() -> set[str]:
         return set()
 
 
+def _title_similarity(a: str, b: str) -> float:
+    """Simple token overlap similarity between two strings (0.0 to 1.0)."""
+    tokens_a = set(a.lower().split())
+    tokens_b = set(b.lower().split())
+    if not tokens_a or not tokens_b:
+        return 0.0
+    overlap = tokens_a & tokens_b
+    return len(overlap) / max(len(tokens_a), len(tokens_b))
+
+
+def apply_dynamic_scoring(
+    ideas: list[dict[str, object]],
+    done_titles: set[str],
+    penalty: int = 20,
+    similarity_threshold: float = 0.5,
+) -> list[dict[str, object]]:
+    """Aplica penalización de score a ideas similares (no iguales) a las ya implementadas.
+
+    Las ideas exactamente implementadas se filtran fuera; las similares bajan su prioridad.
+    """
+    result = []
+    for idea in ideas:
+        title = str(idea.get("title", ""))
+        if title in done_titles:
+            continue  # filtro exacto: ya implementada
+        max_sim = max(
+            (_title_similarity(title, done) for done in done_titles),
+            default=0.0,
+        )
+        if max_sim >= similarity_threshold:
+            adjusted = dict(idea)
+            adjusted["priority"] = max(0, int(str(idea.get("priority", 0))) - penalty)
+            adjusted["_penalized"] = True
+            result.append(adjusted)
+        else:
+            result.append(idea)
+    return result
+
+
+def register_implemented_idea(title: str, idea_index: int) -> None:
+    """Registra una idea como implementada en implemented_ideas.json."""
+    impl_file = ROOT / ".bago" / "state" / "implemented_ideas.json"
+    try:
+        data = json.loads(impl_file.read_text(encoding="utf-8")) if impl_file.exists() else {}
+    except Exception:
+        data = {}
+    entries = data.get("implemented", [])
+    if not any(str(e.get("title", "")) == title for e in entries):
+        entries.append({
+            "title": title,
+            "idea_index": idea_index,
+            "registered_at": datetime.now(timezone.utc).isoformat(),
+        })
+    data["implemented"] = entries
+    impl_file.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def build_idea_sections(items: list[dict[str, object]]) -> dict[str, list[dict[str, object]]]:
     contextual = [
         item
@@ -678,10 +735,9 @@ def main() -> int:
     if baseline_clean_mode:
         ideas = filter_ideas_for_baseline_mode(ideas)
 
-    # Filtrar ideas cuyo título ya fue registrado como implementado
+    # Scoring dinámico: penaliza ideas similares a las ya implementadas, filtra exactas
     done_titles = load_implemented_titles()
-    if done_titles:
-        ideas = [i for i in ideas if str(i.get("title", "")) not in done_titles]
+    ideas = apply_dynamic_scoring(ideas, done_titles)
 
     sections = build_idea_sections(ideas)
     ideas = order_ideas_by_section(sections)
@@ -726,6 +782,7 @@ def main() -> int:
             print(line)
         handoff_data = build_handoff_data(selected, detail_index)
         saved_path = save_handoff(handoff_data)
+        register_implemented_idea(str(selected["title"]), detail_index)
         print(f"\n→ Tarea guardada en {saved_path.relative_to(ROOT)}")
         print("  Consulta con: bago task")
     else:

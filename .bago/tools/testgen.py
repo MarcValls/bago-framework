@@ -290,6 +290,141 @@ def generate_js_test_file(analysis: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+# ─── Go analysis ──────────────────────────────────────────────────────────────
+
+def analyze_go_file(path: Path) -> dict:
+    src = path.read_text(encoding="utf-8", errors="replace")
+    # Extract package name
+    pkg_match = re.search(r'^package\s+(\w+)', src, re.MULTILINE)
+    pkg = pkg_match.group(1) if pkg_match else path.stem
+    # Extract exported functions (capital letter)
+    funcs = re.findall(r'^func\s+([A-Z]\w*)\s*\(([^)]*)\)', src, re.MULTILINE)
+    # Extract method receivers: func (r ReceiverType) MethodName(...)
+    methods = re.findall(r'^func\s+\(\w+\s+\*?(\w+)\)\s+([A-Z]\w*)\s*\(([^)]*)\)', src, re.MULTILINE)
+    # Extract structs
+    structs = re.findall(r'^type\s+([A-Z]\w*)\s+struct', src, re.MULTILINE)
+    return {
+        "path":    str(path),
+        "package": pkg,
+        "funcs":   [{"name": n, "params": p} for n, p in funcs],
+        "methods": [{"receiver": r, "name": n, "params": p} for r, n, p in methods],
+        "structs": structs,
+    }
+
+
+def generate_go_test_file(analysis: dict, rel_path: Optional[Path] = None) -> str:
+    pkg  = analysis["package"]
+    src_path = Path(analysis["path"])
+    lines = [
+        f"// Tests auto-generados por bago testgen para: {src_path.name}",
+        f"// IMPORTANTE: Revisa y ajusta los assertions — son placeholders.",
+        "",
+        f"package {pkg}",
+        "",
+        'import "testing"',
+        "",
+    ]
+    for fn in analysis["funcs"]:
+        name = fn["name"]
+        lines += [
+            f"func Test{name}(t *testing.T) {{",
+            f"\t// result := {name}(/* args */)",
+            f"\t// if result == nil {{ t.Error(\"{name} returned nil\") }}",
+            f"\tt.Log(\"placeholder test for {name}\")",
+            "}",
+            "",
+        ]
+    seen_receivers = set()
+    for m in analysis["methods"]:
+        recv = m["receiver"]
+        name = m["name"]
+        test_name = f"Test{recv}_{name}"
+        if test_name in seen_receivers:
+            continue
+        seen_receivers.add(test_name)
+        lines += [
+            f"func {test_name}(t *testing.T) {{",
+            f"\t// var obj {recv}",
+            f"\t// obj.{name}(/* args */)",
+            f"\tt.Log(\"placeholder test for {recv}.{name}\")",
+            "}",
+            "",
+        ]
+    for s in analysis["structs"]:
+        test_name = f"Test{s}Creation"
+        if test_name not in seen_receivers:
+            seen_receivers.add(test_name)
+            lines += [
+                f"func {test_name}(t *testing.T) {{",
+                f"\t// var s {s}",
+                f"\t// if s == ({{{{ }}}}) {{ t.Error(\"{s} zero value unexpected\") }}",
+                f"\tt.Log(\"placeholder struct test for {s}\")",
+                "}",
+                "",
+            ]
+    return "\n".join(lines)
+
+
+# ─── Rust analysis ────────────────────────────────────────────────────────────
+
+def analyze_rust_file(path: Path) -> dict:
+    src = path.read_text(encoding="utf-8", errors="replace")
+    # Extract public functions
+    funcs = re.findall(r'^pub\s+fn\s+(\w+)\s*\(([^)]*)\)', src, re.MULTILINE)
+    # Private functions too
+    priv_funcs = re.findall(r'^fn\s+(\w+)\s*\(([^)]*)\)', src, re.MULTILINE)
+    # impl blocks
+    impls = re.findall(r'^impl\s+(?:<[^>]*>\s+)?(\w+)', src, re.MULTILINE)
+    # structs
+    structs = re.findall(r'^pub\s+struct\s+(\w+)', src, re.MULTILINE)
+    return {
+        "path":       str(path),
+        "module":     path.stem,
+        "pub_funcs":  [{"name": n, "params": p} for n, p in funcs],
+        "priv_funcs": [{"name": n, "params": p} for n, p in priv_funcs
+                       if not n.startswith("test") and n != "main"],
+        "impls":      list(dict.fromkeys(impls)),  # unique
+        "structs":    structs,
+    }
+
+
+def generate_rust_test_file(analysis: dict) -> str:
+    src_path = Path(analysis["path"])
+    mod_name = analysis["module"]
+    lines = [
+        f"// Tests auto-generados por bago testgen para: {src_path.name}",
+        f"// IMPORTANTE: Revisa y ajusta los assertions — son placeholders.",
+        "",
+        f"#[cfg(test)]",
+        f"mod tests {{",
+        f"    use super::*;",
+        "",
+    ]
+    all_funcs = analysis["pub_funcs"] + analysis["priv_funcs"][:3]
+    for fn in all_funcs[:10]:
+        name = fn["name"]
+        lines += [
+            f"    #[test]",
+            f"    fn test_{name}() {{",
+            f"        // let result = {name}(/* args */);",
+            f"        // assert!(result.is_some());",
+            f"        assert!(true, \"placeholder test for {name}\");",
+            "    }",
+            "",
+        ]
+    for s in analysis["structs"][:3]:
+        lines += [
+            f"    #[test]",
+            f"    fn test_{s.lower()}_creation() {{",
+            f"        // let obj = {s} {{ /* fields */ }};",
+            f"        assert!(true, \"placeholder for {s}\");",
+            "    }",
+            "",
+        ]
+    lines += ["}", ""]
+    return "\n".join(lines)
+
+
 # ─── Discovery ────────────────────────────────────────────────────────────────
 
 def discover_files(target: Path, lang: str) -> list:
@@ -298,22 +433,34 @@ def discover_files(target: Path, lang: str) -> list:
         return [target]
 
     results = []
-    if lang in ("py", "python"):
-        patterns = ["**/*.py"]
-    elif lang in ("js", "ts", "javascript", "typescript"):
-        patterns = ["**/*.js", "**/*.ts", "**/*.mjs"]
-    else:
-        patterns = ["**/*.py", "**/*.js", "**/*.ts"]
+    lang_patterns = {
+        "py":         ["**/*.py"],
+        "python":     ["**/*.py"],
+        "js":         ["**/*.js", "**/*.mjs"],
+        "ts":         ["**/*.ts"],
+        "javascript": ["**/*.js", "**/*.mjs"],
+        "typescript": ["**/*.ts"],
+        "go":         ["**/*.go"],
+        "rust":       ["**/*.rs"],
+        "rs":         ["**/*.rs"],
+    }
+    patterns = lang_patterns.get(lang, ["**/*.py", "**/*.js", "**/*.ts"])
+
+    skip_dirs = {"node_modules", "__pycache__", ".git", "dist", "build",
+                 ".venv", "venv", "env", "target", "vendor"}
+    skip_suffixes = {"_test.go", "_test.py"}
 
     for pat in patterns:
         for f in target.glob(pat):
-            # skip common noise dirs
-            parts = f.parts
-            if any(p in parts for p in ("node_modules", "__pycache__", ".git",
-                                        "dist", "build", ".venv", "venv", "env")):
+            parts = set(f.parts)
+            if parts & skip_dirs:
                 continue
-            if f.name.startswith("test_") or f.name.endswith("_test.py"):
-                continue  # skip existing tests
+            # skip existing test files
+            name = f.name
+            if (name.startswith("test_") or name.endswith("_test.py")
+                    or name.endswith("_test.go") or name.startswith("test")
+                    and name.endswith(".go")):
+                continue
             results.append(f)
 
     return sorted(results)
@@ -328,10 +475,13 @@ def _output_path(src: Path, target: Path, output_dir: Path, lang: str) -> Path:
     if lang in ("js", "ts", "javascript", "typescript"):
         stem = rel.stem
         parts = list(rel.parent.parts) + [f"{stem}.test.{rel.suffix.lstrip('.') or 'js'}"]
-        return output_dir / Path(*parts)
+    elif lang in ("go",):
+        parts = list(rel.parent.parts) + [f"{rel.stem}_test.go"]
+    elif lang in ("rust", "rs"):
+        parts = list(rel.parent.parts) + [f"test_{rel.stem}.rs"]
     else:
         parts = list(rel.parent.parts) + [f"test_{rel.stem}.py"]
-        return output_dir / Path(*parts)
+    return output_dir / Path(*parts)
 
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
@@ -341,7 +491,8 @@ def main():
         prog="bago testgen",
         description="Genera tests para repositorios o directorios desconocidos.")
     p.add_argument("target", nargs="?", default=".", help="Ruta al repo o directorio")
-    p.add_argument("--lang", default="py", choices=["py","js","ts"],
+    p.add_argument("--lang", default="py",
+                   choices=["py","js","ts","go","rust","rs"],
                    help="Lenguaje objetivo (default: py)")
     p.add_argument("--output", "-o", default=None,
                    help="Directorio de salida (default: <target>/tests/generated/)")
@@ -393,6 +544,14 @@ def main():
                 len(c["methods"]) for c in analysis["classes"])
             content  = generate_python_test_file(analysis, src.relative_to(
                 target if target.is_dir() else target.parent))
+        elif lang in ("go",):
+            analysis = analyze_go_file(src)
+            n_tests  = len(analysis["funcs"]) + len(analysis["methods"])
+            content  = generate_go_test_file(analysis)
+        elif lang in ("rust", "rs"):
+            analysis = analyze_rust_file(src)
+            n_tests  = len(analysis["pub_funcs"]) + len(analysis["priv_funcs"])
+            content  = generate_rust_test_file(analysis)
         else:
             analysis = analyze_js_file(src)
             n_tests  = len(analysis["funcs"])

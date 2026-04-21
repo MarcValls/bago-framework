@@ -619,6 +619,7 @@ tools/__pycache__/bago_start.cpython-313.pyc
 tools/__pycache__/context_collector.cpython-313.pyc
 tools/__pycache__/context_detector.cpython-313.pyc
 tools/__pycache__/findings_engine.cpython-313.pyc
+tools/__pycache__/health_score.cpython-313.pyc
 tools/__pycache__/notes.cpython-313.pyc
 tools/__pycache__/repo_context_guard.cpython-313.pyc
 tools/__pycache__/show_task.cpython-313.pyc
@@ -626,6 +627,7 @@ tools/__pycache__/sprint_manager.cpython-313.pyc
 tools/__pycache__/state_store.cpython-313.pyc
 tools/__pycache__/target_selector.cpython-313.pyc
 tools/__pycache__/template.cpython-313.pyc
+tools/__pycache__/testgen.cpython-313.pyc
 tools/__pycache__/velocity.cpython-313.pyc
 tools/archive.py
 tools/artifact_counter.py
@@ -640,6 +642,7 @@ tools/bago_on.py
 tools/bago_search.py
 tools/bago_start.py
 tools/bago_utils.py
+tools/bago_watch.py
 tools/changelog.py
 tools/check.py
 tools/ci_generator.py

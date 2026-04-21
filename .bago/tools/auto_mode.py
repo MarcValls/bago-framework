@@ -1,3 +1,4 @@
+from typing import Optional
 #!/usr/bin/env python3
 """
 auto_mode.py — BAGO Modo Automático
@@ -89,7 +90,7 @@ def _load_recent_dirs() -> list[dict]:
     return entries
 
 
-def _pick_directory() -> "str | None":
+def _pick_directory() -> "Optional[str]":
     """Muestra menú de directorios recientes y devuelve el path elegido."""
     dirs   = _load_recent_dirs()
     entries = []
@@ -200,8 +201,10 @@ def _detector():
         from context_detector import evaluate
         result = evaluate()
         verdict = result.get("verdict", "CLEAN")
-        high    = len(result.get("high_signals", []))
-        low     = len(result.get("low_signals", []))
+        # context_detector returns 'score' (count of high/very_high signals)
+        # and 'signals' list — align with actual schema
+        high = result.get("score", 0)
+        low  = len([s for s in result.get("signals", []) if s.get("weight") == "medium"])
         return verdict, high, low
     except Exception:
         return "CLEAN", 0, 0

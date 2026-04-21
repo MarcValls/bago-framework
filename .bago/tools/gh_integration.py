@@ -1,3 +1,4 @@
+from typing import Optional
 #!/usr/bin/env python3
 """
 bago gh — integración con GitHub: check runs y comentarios inline en PRs.
@@ -53,11 +54,11 @@ def save_config(cfg: dict):
     CONFIG_FILE.write_text(json.dumps(cfg, indent=2) + "\n")
 
 
-def get_token(cfg: dict) -> str | None:
+def get_token(cfg: dict) -> Optional[str]:
     return cfg.get("token") or os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
 
 
-def get_repo(cfg: dict) -> str | None:
+def get_repo(cfg: dict) -> Optional[str]:
     """Returns 'owner/repo' string or None."""
     if cfg.get("repo"):
         return cfg["repo"]
@@ -78,7 +79,7 @@ def get_repo(cfg: dict) -> str | None:
     return None
 
 
-def get_head_sha(cfg: dict) -> str | None:
+def get_head_sha(cfg: dict) -> Optional[str]:
     """Get current HEAD commit SHA."""
     try:
         import subprocess
@@ -100,7 +101,7 @@ class GitHubAPI:
         self.token = token
         self.repo  = repo
 
-    def _request(self, method: str, path: str, body: dict | None = None) -> tuple:
+    def _request(self, method: str, path: str, body: Optional[dict] = None) -> tuple:
         """Returns (status_code, response_dict)."""
         url  = f"{self.BASE}{path}"
         data = json.dumps(body).encode() if body else None
@@ -242,7 +243,7 @@ def cmd_status(cfg: dict):
     print()
 
 
-def cmd_checks(cfg: dict, scan_id: str | None, min_severity: str, dry_run: bool):
+def cmd_checks(cfg: dict, scan_id: Optional[str], min_severity: str, dry_run: bool):
     token = get_token(cfg)
     repo  = get_repo(cfg)
     sha   = get_head_sha(cfg)
@@ -346,7 +347,7 @@ def cmd_pr(cfg: dict, pr_number: int, min_severity: str, dry_run: bool):
         print(f"\n  {RED}✗ Error {status}:{RESET} {resp.get('message','')}\n")
 
 
-def cmd_config(cfg: dict, token: str | None, repo: str | None):
+def cmd_config(cfg: dict, token: Optional[str], repo: Optional[str]):
     if token:
         cfg["token"] = token
         print(f"  {GREEN}✓ Token guardado{RESET}")
