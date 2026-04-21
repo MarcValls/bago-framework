@@ -5,6 +5,8 @@ Muestra banner + gestiona comandos rápidos.
 
 Uso:
   ./bago                      → banner + estado
+  ./bago start                → menú interactivo (¡empieza aquí!)
+  ./bago status               → estado rápido del proyecto
   ./bago setup                → sincroniza repo_context + instala extensiones Copilot
   ./bago extensions           → gestiona extensiones BAGO (.bago/extensions/)
   ./bago versions             → lista cleanversions disponibles
@@ -41,11 +43,19 @@ from pathlib import Path
 BAGO_ROOT = Path(__file__).resolve().parent / ".bago"
 TOOLS     = BAGO_ROOT / "tools"
 
-COMMANDS = {
+# Comandos principales (visibles siempre)
+COMMANDS_MAIN = {
+    "start":     ["python3", str(TOOLS / "bago_start.py")],
+    "ideas":     ["python3", str(TOOLS / "emit_ideas.py")],
+    "session":   ["python3", str(TOOLS / "session_opener.py")],
+    "status":    ["python3", str(TOOLS / "quick_status.py")],
+}
+
+# Comandos avanzados (visibles con --all)
+COMMANDS_ADVANCED = {
     "on":          ["python3", str(TOOLS / "bago_on.py")],
     "dashboard":   ["python3", str(TOOLS / "pack_dashboard.py")],
     "debug":       ["python3", str(TOOLS / "bago_debug.py")],
-    "ideas":       ["python3", str(TOOLS / "emit_ideas.py")],
     "cosecha":     ["python3", str(TOOLS / "cosecha.py")],
     "detector":    ["python3", str(TOOLS / "context_detector.py")],
     "validate":    ["python3", str(TOOLS / "validate_pack.py")],
@@ -56,7 +66,6 @@ COMMANDS = {
     "v2":          ["python3", str(TOOLS / "v2_close_checklist.py")],
     "task":        ["python3", str(TOOLS / "show_task.py")],
     "stability":   ["python3", str(TOOLS / "stability_summary.py")],
-    "session":     ["python3", str(TOOLS / "session_opener.py")],
     "efficiency":  ["python3", str(TOOLS / "efficiency_meter.py")],
     "auto":        ["python3", str(TOOLS / "auto_mode.py")],
     "map":         ["python3", str(TOOLS / "context_map.py")],
@@ -67,6 +76,9 @@ COMMANDS = {
     "repo-test":   ["python3", str(TOOLS / "repo_runner.py"), "test"],
     "repo-build":  ["python3", str(TOOLS / "repo_runner.py"), "build"],
 }
+
+# Combinar todos los comandos
+COMMANDS = {**COMMANDS_MAIN, **COMMANDS_ADVANCED}
 
 # Herramientas externas bloqueadas — nunca se invocan desde BAGO
 BLOCKED_CMDS = {"codex"}
@@ -230,12 +242,26 @@ def main():
             ["python3", str(TOOLS / "bago_banner.py"), "--mini"],
             cwd=str(BAGO_ROOT.parent)
         )
-        print("  Comandos disponibles:")
-        print("    bago setup")
-        print("    bago extensions")
-        print("    bago versions")
-        for k in COMMANDS:
-            print(f"    bago {k}")
+        show_all = "--all" in rest
+
+        print("  Comandos principales:")
+        main_desc = {
+            "start":   "menú interactivo (¡empieza aquí!)",
+            "ideas":   "ver y aceptar ideas priorizadas",
+            "session": "abrir sesión de trabajo",
+            "status":  "estado rápido del proyecto",
+        }
+        for k in COMMANDS_MAIN:
+            desc = main_desc.get(k, "")
+            print(f"    bago {k:12s} → {desc}")
+        print(f"    bago setup       → configuración inicial")
+
+        if show_all:
+            print("\n  Comandos avanzados:")
+            for k in sorted(COMMANDS_ADVANCED.keys()):
+                print(f"    bago {k}")
+        else:
+            print(f"\n  Usa 'bago help --all' para ver todos los comandos")
         print()
     else:
         print(f"  Comando desconocido: '{cmd}'")
