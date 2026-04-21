@@ -5,7 +5,8 @@ Muestra banner + gestiona comandos rápidos.
 
 Uso:
   ./bago                      → banner + estado
-  ./bago start                → menú interactivo (¡empieza aquí!)
+  ./bago start                → menú interactivo con selector de workspace (¡empieza aquí!)
+  ./bago workspace            → selector de workspace (framework/padre/ruta externa)
   ./bago status               → estado rápido del proyecto
   ./bago setup                → sincroniza repo_context + instala extensiones Copilot
   ./bago extensions           → gestiona extensiones BAGO (.bago/extensions/)
@@ -28,6 +29,7 @@ Uso:
   ./bago workflow             → workflow_selector.py (interactivo)
   ./bago stale                → stale_detector.py
   ./bago v2                   → v2_close_checklist.py
+  ./bago evolution            → análisis de iteraciones y sugerencias de evolución
 
 Wrappers root disponibles:
   ./ideas               → bago ideas (con todos los flags)
@@ -75,6 +77,8 @@ COMMANDS_ADVANCED = {
     "repo-lint":   ["python3", str(TOOLS / "repo_runner.py"), "lint"],
     "repo-test":   ["python3", str(TOOLS / "repo_runner.py"), "test"],
     "repo-build":  ["python3", str(TOOLS / "repo_runner.py"), "build"],
+    "workspace":   ["python3", str(TOOLS / "workspace_selector.py")],
+    "evolution":   ["python3", str(TOOLS / "iteration_logger.py"), "summary"],
 }
 
 # Combinar todos los comandos
@@ -82,6 +86,21 @@ COMMANDS = {**COMMANDS_MAIN, **COMMANDS_ADVANCED}
 
 # Herramientas externas bloqueadas — nunca se invocan desde BAGO
 BLOCKED_CMDS = {"codex"}
+
+# ── Registro de iteraciones ────────────────────────────────────────────────────
+
+def _log_iteration(cmd: str) -> None:
+    """Registra silenciosamente la invocación en .bago/state/iterations/."""
+    try:
+        iter_script = TOOLS / "iteration_logger.py"
+        if iter_script.exists():
+            subprocess.run(
+                ["python3", str(iter_script), "log", "--cmd", cmd],
+                capture_output=True,
+                cwd=str(BAGO_ROOT.parent),
+            )
+    except Exception:
+        pass  # el logging nunca debe interrumpir el flujo normal
 
 # ── Extensiones Copilot CLI ────────────────────────────────────────────────────
 
@@ -224,6 +243,9 @@ def main():
     if cmd in BLOCKED_CMDS:
         print(f"  ❌ '{cmd}' está bloqueado en BAGO. Invócalo directamente si lo necesitas.")
         sys.exit(1)
+
+    # Registrar la iteración (silencioso, no bloquea)
+    _log_iteration(f"bago {cmd}")
 
     if cmd == "setup":
         subprocess.run(
