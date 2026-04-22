@@ -459,6 +459,11 @@ def main():
             ["python3", str(TOOLS / "install_deps.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "rule-catalog":
+        subprocess.run(
+            ["python3", str(TOOLS / "rule_catalog.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -635,6 +640,7 @@ def main():
                 "ast-scan":      "linter JS/TS basado en AST (acorn) — detecta arrow fn, eval, debugger, ==",
                 "permission-check": "verifica y corrige permisos +x de todos los ejecutables BAGO",
                 "install-deps":  "verifica e instala deps opcionales (flake8, eslint, acorn, golangci-lint…)",
+                "rule-catalog":  "catálogo Markdown/HTML de todas las reglas BAGO-* y JS-* con ejemplos",
                 "hotspot":       "detecta hotspots: archivos con mas cambios + fallos + complejidad",
                 "fix":           "autofix serio: genera y aplica parches concretos con validacion",
                 "gh":            "integracion GitHub: check runs y comentarios en PRs",

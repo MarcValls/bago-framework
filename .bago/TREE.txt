@@ -417,6 +417,7 @@
 ./state/iterations/ITER-0020.json
 ./state/iterations/ITER-0021.json
 ./state/iterations/ITER-0022.json
+./state/iterations/ITER-0023.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -712,6 +713,7 @@
 ./tools/report_generator.py
 ./tools/review.py
 ./tools/risk_matrix.py
+./tools/rule_catalog.py
 ./tools/scan.py
 ./tools/session_details.py
 ./tools/session_opener.py
