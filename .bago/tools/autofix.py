@@ -9,6 +9,10 @@ Para cada Finding autofixable del último scan:
   4. Ejecuta --test del tool afectado para validar
   5. Si falla: revierte automáticamente
 
+Modos de autofix:
+  --internal (default) : parches line-by-line internos (BAGO-W001, W291, E302, W293)
+  --external           : usa black (Python) o prettier/eslint --fix (JS/TS) para bulk fix
+
 Uso:
     bago fix --preview             → muestra todos los fixes sin aplicar
     bago fix --apply               → aplica todos los autofixable (con validación)
@@ -16,10 +20,13 @@ Uso:
     bago fix --file <ruta>         → solo fixes de un archivo
     bago fix --interactive         → revisa y aprueba fix por fix
     bago fix --dry-run             → simula apply sin escribir disco
+    bago fix --external            → usa black/prettier como fixer externo
+    bago fix --target <dir>        → directorio para --external (default: .bago/tools/)
     bago fix --test                → tests integrados
 """
 import argparse, difflib, json, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
+from typing import Optional
 
 TOOLS_DIR = Path(__file__).parent
 sys.path.insert(0, str(TOOLS_DIR))
@@ -32,7 +39,7 @@ RED="\033[31m"; GREEN="\033[32m"; YELLOW="\033[33m"; CYAN="\033[36m"
 
 # ─── Patch generators ────────────────────────────────────────────────────────
 
-def generate_patch(finding: fe.Finding, src_lines: list) -> str | None:
+def generate_patch(finding: fe.Finding, src_lines: list) -> Optional[str]:
     """
     Generate a concrete unified diff for an autofixable Finding.
     Returns patch string or None if cannot generate.
@@ -59,7 +66,6 @@ def generate_patch(finding: fe.Finding, src_lines: list) -> str | None:
 
     # E302: missing 2 blank lines before function/class
     elif rule == "E302":
-        # Count existing blank lines before lineno
         blanks = 0
         i = lineno - 1
         while i >= 0 and not patched[i].strip():
@@ -78,12 +84,41 @@ def generate_patch(finding: fe.Finding, src_lines: list) -> str | None:
             return None
         patched[lineno] = new
 
-    # E501: line too long — add comment marker (not auto-fixable perfectly, but propose split)
+    # E711: comparison to None with == / !=
+    elif rule == "E711":
+        old = patched[lineno]
+        new = re.sub(r'(?<![!<>])== None\b', 'is None', old)
+        new = re.sub(r'!= None\b', 'is not None', new)
+        if old == new:
+            return None
+        patched[lineno] = new
+
+    # E712: comparison to True/False with == / !=
+    elif rule == "E712":
+        old = patched[lineno]
+        new = re.sub(r'(?<![!<>])== True\b', 'is True', old)
+        new = re.sub(r'(?<![!<>])== False\b', 'is False', old)
+        new = re.sub(r'!= True\b', 'is not True', new)
+        new = re.sub(r'!= False\b', 'is not False', new)
+        if old == new:
+            return None
+        patched[lineno] = new
+
+    # F401 / W0611: unused import — remove the entire import line
+    elif rule in ("F401", "W0611"):
+        old = patched[lineno]
+        stripped = old.strip()
+        # Only safe to remove simple single-name imports
+        if re.match(r'^import\s+\w+\s*$', stripped) or re.match(r'^from\s+\S+\s+import\s+\w+\s*$', stripped):
+            patched[lineno] = ""  # blank line (keeps line numbers stable)
+        else:
+            return None
+
+    # E501: line too long — not auto-fixable inline
     elif rule == "E501":
-        return None  # Too risky to auto-apply
+        return None
 
     else:
-        # Use finding.fix_patch if already computed
         if finding.fix_patch:
             return finding.fix_patch
         return None
@@ -146,6 +181,37 @@ def apply_patch(finding: fe.Finding, patch: str, dry_run: bool) -> tuple:
             patched_lines[lineno:lineno] = ["\n"] * needed
         else:
             return False, "Ya tiene suficientes líneas en blanco"
+    elif rule == "E711":
+        if 0 <= lineno < len(patched_lines):
+            old = patched_lines[lineno]
+            new = re.sub(r'(?<![!<>])== None\b', 'is None', old)
+            new = re.sub(r'!= None\b', 'is not None', new)
+            if old == new:
+                return False, "Sin cambio detectado"
+            patched_lines[lineno] = new
+        else:
+            return False, "Línea fuera de rango"
+    elif rule == "E712":
+        if 0 <= lineno < len(patched_lines):
+            old = patched_lines[lineno]
+            new = re.sub(r'(?<![!<>])== True\b', 'is True', old)
+            new = re.sub(r'(?<![!<>])== False\b', 'is False', new)
+            new = re.sub(r'!= True\b', 'is not True', new)
+            new = re.sub(r'!= False\b', 'is not False', new)
+            if old == new:
+                return False, "Sin cambio detectado"
+            patched_lines[lineno] = new
+        else:
+            return False, "Línea fuera de rango"
+    elif rule in ("F401", "W0611"):
+        if 0 <= lineno < len(patched_lines):
+            old = patched_lines[lineno].strip()
+            if re.match(r'^import\s+\w+\s*$', old) or re.match(r'^from\s+\S+\s+import\s+\w+\s*$', old):
+                patched_lines[lineno] = "\n"
+            else:
+                return False, "Import compuesto — skip"
+        else:
+            return False, "Línea fuera de rango"
     else:
         return False, f"Regla {rule} no tiene aplicador directo"
 
@@ -192,7 +258,7 @@ def revert_file(filepath: str, original: str):
 
 # ─── Main fix logic ───────────────────────────────────────────────────────────
 
-def collect_autofixable(rule_filter: str | None, file_filter: str | None) -> list:
+def collect_autofixable(rule_filter: Optional[str], file_filter: Optional[str]) -> list:
     db = fe.FindingsDB.latest()
     if db is None:
         return []
@@ -292,6 +358,75 @@ def run_apply(findings: list, dry_run: bool, interactive: bool) -> dict:
     return results
 
 
+# ─── External fixers (black / prettier / eslint --fix) ───────────────────────
+
+def run_external_fix_python(target: str, dry_run: bool) -> tuple:
+    """Run black on a Python file or directory. Returns (success, output)."""
+    if dry_run:
+        cmd = ["black", "--check", "--diff", target]
+    else:
+        cmd = ["black", target]
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        return r.returncode == 0 or (dry_run and r.returncode == 1), \
+               (r.stdout + r.stderr).strip()
+    except FileNotFoundError:
+        return False, "black no está instalado (pip install black)"
+    except Exception as e:
+        return False, str(e)
+
+
+def run_external_fix_js(target: str, dry_run: bool) -> tuple:
+    """Run prettier/eslint --fix on a JS/TS file or directory."""
+    # Try prettier first
+    prettier_flag = "--check" if dry_run else "--write"
+    try:
+        r = subprocess.run(
+            ["npx", "--yes", "prettier", prettier_flag, target],
+            capture_output=True, text=True, timeout=60
+        )
+        if r.returncode in (0, 1):  # 1 = needs formatting (dry-run)
+            return True, (r.stdout + r.stderr).strip()
+    except Exception:
+        pass
+    # Fallback: eslint --fix
+    try:
+        cmd = ["npx", "--yes", "eslint", "--ext", ".js,.ts,.jsx,.tsx"]
+        if not dry_run:
+            cmd.append("--fix")
+        cmd.append(target)
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        return r.returncode == 0, (r.stdout + r.stderr).strip()
+    except Exception as e:
+        return False, f"eslint/prettier no disponible: {e}"
+
+
+def run_external_fix(target: str, dry_run: bool) -> None:
+    """Auto-detect language and run appropriate external fixer."""
+    p = Path(target)
+    # Detect by extension or by scanning
+    is_js = any(p.glob("**/*.js")) if p.is_dir() else target.endswith((".js", ".ts", ".jsx", ".tsx"))
+    is_py = any(p.glob("**/*.py")) if p.is_dir() else target.endswith(".py")
+
+    mode = "DRY-RUN" if dry_run else "APPLY"
+    print(f"\n  {BOLD}External fix — {mode}{RESET}  target: {target}\n")
+
+    if is_py:
+        print(f"  {CYAN}→ black (Python){RESET}")
+        ok, out = run_external_fix_python(target, dry_run)
+        status = f"{GREEN}✓{RESET}" if ok else f"{RED}✗{RESET}"
+        print(f"  {status} {out[:300] if out else 'Sin output'}\n")
+
+    if is_js:
+        print(f"  {CYAN}→ prettier / eslint --fix (JS/TS){RESET}")
+        ok, out = run_external_fix_js(target, dry_run)
+        status = f"{GREEN}✓{RESET}" if ok else f"{RED}✗{RESET}"
+        print(f"  {status} {out[:300] if out else 'Sin output'}\n")
+
+    if not is_py and not is_js:
+        print(f"  {YELLOW}No se detectaron archivos Python/JS en {target}{RESET}\n")
+
+
 def run_tests():
     import tempfile as tf
     print("Ejecutando tests de autofix.py...")
@@ -355,6 +490,45 @@ def run_tests():
     print(f"\n  {passed_t}/{total} tests pasaron")
     if errors: sys.exit(1)
 
+    # ── Extended tests ──────────────────────────────────────────────────────
+    errors2 = 0
+    print("\nTests de reglas adicionales...")
+    tmp2 = Path(tf.mkdtemp())
+
+    # T6: generate_patch E711 == None → is None
+    f6 = fe.Finding(id="E6",severity="warning",file="c.py",line=1,col=0,rule="E711",
+                    source="flake8",message="E711",autofixable=True)
+    lines6 = ["if x == None:\n"]
+    patch6 = generate_patch(f6, lines6)
+    if patch6 and "is None" in patch6:
+        print("  OK: fix:patch_e711")
+    else:
+        errors2 += 1; print(f"  FAIL: fix:patch_e711 — {repr(patch6)}")
+
+    # T7: generate_patch F401 unused import removal
+    f7 = fe.Finding(id="F7",severity="warning",file="d.py",line=1,col=0,rule="F401",
+                    source="flake8",message="unused import",autofixable=True)
+    lines7 = ["import os\n"]
+    patch7 = generate_patch(f7, lines7)
+    if patch7 is not None:
+        print("  OK: fix:patch_f401")
+    else:
+        errors2 += 1; print(f"  FAIL: fix:patch_f401 — got None")
+
+    # T8: run_external_fix_python dry-run on a tmp dir (black may not be installed — ok if returns tuple)
+    py8 = tmp2 / "e.py"
+    py8.write_text("x=1\n")
+    ok8, out8 = run_external_fix_python(str(tmp2), dry_run=True)
+    if isinstance(ok8, bool):
+        print("  OK: fix:external_python_returns_tuple")
+    else:
+        errors2 += 1; print("  FAIL: fix:external_python_returns_tuple")
+
+    shutil.rmtree(tmp2)
+    total2 = 3; passed2 = total2 - errors2
+    print(f"\n  {passed2}/{total2} tests adicionales pasaron")
+    if errors2: sys.exit(1)
+
 
 def main():
     parser = argparse.ArgumentParser(prog="bago fix", add_help=False)
@@ -364,11 +538,19 @@ def main():
     parser.add_argument("--interactive", action="store_true")
     parser.add_argument("--rule",        default=None)
     parser.add_argument("--file",        dest="file_filter", default=None)
+    parser.add_argument("--external",    action="store_true",
+                        help="Usar black/prettier como fixer externo")
+    parser.add_argument("--target",      default=str(BAGO_ROOT / "tools"),
+                        help="Directorio/archivo para --external")
     parser.add_argument("--test",        action="store_true")
     args = parser.parse_args()
 
     if args.test:
         run_tests(); return
+
+    if args.external:
+        run_external_fix(args.target, dry_run=args.dry_run)
+        return
 
     findings = collect_autofixable(args.rule, args.file_filter)
 
@@ -387,7 +569,8 @@ def main():
     else:
         run_preview(findings)
         print(f"  Usa {BOLD}bago fix --apply{RESET} para aplicar todos los fixes.")
-        print(f"  Usa {BOLD}bago fix --interactive{RESET} para revisar uno por uno.\n")
+        print(f"  Usa {BOLD}bago fix --interactive{RESET} para revisar uno por uno.")
+        print(f"  Usa {BOLD}bago fix --external --target <dir>{RESET} para usar black/prettier.\n")
 
 if __name__ == "__main__":
     main()

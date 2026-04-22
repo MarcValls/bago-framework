@@ -211,6 +211,123 @@ def parse_bago_custom(output: str, root: str = "") -> list:
     return findings
 
 
+def parse_eslint(output: str, root: str = "") -> list:
+    """
+    ESLint --format=json output:
+    [{filePath, messages:[{ruleId,severity,message,line,column,fix}]}]
+    severity: 1=warning, 2=error
+    """
+    findings = []
+    try:
+        data = json.loads(output)
+        if not isinstance(data, list):
+            return findings
+        for file_obj in data:
+            filepath = file_obj.get("filePath", "")
+            if root and filepath.startswith(root):
+                filepath = filepath[len(root):].lstrip("/")
+            for msg in file_obj.get("messages", []):
+                sev_int = msg.get("severity", 1)
+                severity = "error" if sev_int == 2 else "warning"
+                rule  = msg.get("ruleId") or "eslint"
+                line  = msg.get("line", 0)
+                col   = msg.get("column", 0)
+                text  = msg.get("message", "")
+                has_fix = bool(msg.get("fix"))
+                fid   = _make_id("eslint", filepath, line, rule)
+                fix_sug = f"eslint --fix puede corregir esta regla ({rule})" if has_fix else ""
+                findings.append(Finding(
+                    id=fid, severity=severity,
+                    file=filepath, line=line, col=col,
+                    rule=rule, source="eslint", message=text,
+                    fix_suggestion=fix_sug, autofixable=has_fix,
+                    context_lines=_read_context(filepath, line),
+                ))
+    except (json.JSONDecodeError, TypeError, KeyError):
+        pass
+    return findings
+
+
+def parse_golangci(output: str, root: str = "") -> list:
+    """
+    golangci-lint --out-format=json output:
+    {"Issues":[{FromLinter,Text,Pos:{Filename,Line,Column}}]}
+    """
+    findings = []
+    try:
+        data = json.loads(output)
+        issues = data.get("Issues") or []
+        for issue in issues:
+            pos      = issue.get("Pos", {})
+            filepath = pos.get("Filename", "")
+            if root and filepath.startswith(root):
+                filepath = filepath[len(root):].lstrip("/")
+            line   = pos.get("Line", 0)
+            col    = pos.get("Column", 0)
+            linter = issue.get("FromLinter", "golangci")
+            text   = issue.get("Text", "")
+            # Map linter name to severity
+            severity = "error" if linter in ("errcheck", "govet", "staticcheck") else "warning"
+            fid = _make_id("golangci", filepath, line, linter)
+            fix_sug = issue.get("Replacement", {}).get("NewLines", "")
+            has_fix = bool(fix_sug)
+            findings.append(Finding(
+                id=fid, severity=severity,
+                file=filepath, line=line, col=col,
+                rule=linter, source="golangci", message=text,
+                fix_suggestion="\n".join(fix_sug) if isinstance(fix_sug, list) else str(fix_sug),
+                autofixable=has_fix,
+                context_lines=_read_context(filepath, line),
+            ))
+    except (json.JSONDecodeError, TypeError, KeyError):
+        pass
+    return findings
+
+
+def parse_clippy(output: str, root: str = "") -> list:
+    """
+    cargo clippy --message-format=json (stream of JSON objects, one per line).
+    Each line: {"reason":"compiler-message","message":{...}}
+    """
+    findings = []
+    for raw_line in output.splitlines():
+        raw_line = raw_line.strip()
+        if not raw_line:
+            continue
+        try:
+            obj = json.loads(raw_line)
+        except json.JSONDecodeError:
+            continue
+        if obj.get("reason") != "compiler-message":
+            continue
+        msg = obj.get("message", {})
+        level = msg.get("level", "warning")
+        severity = "error" if level == "error" else "warning"
+        code_obj = msg.get("code") or {}
+        rule = code_obj.get("code") or "clippy"
+        spans = msg.get("spans", [])
+        if not spans:
+            continue
+        span = spans[0]
+        filepath = span.get("file_name", "")
+        if root and filepath.startswith(root):
+            filepath = filepath[len(root):].lstrip("/")
+        line = span.get("line_start", 0)
+        col  = span.get("column_start", 0)
+        text = msg.get("rendered") or msg.get("message", "")
+        has_fix = bool(msg.get("suggested_replacement"))
+        fix_sug = msg.get("suggested_replacement", "")
+        fid = _make_id("clippy", filepath, line, rule)
+        findings.append(Finding(
+            id=fid, severity=severity,
+            file=filepath, line=line, col=col,
+            rule=rule, source="clippy", message=text.split("\n")[0],
+            fix_suggestion=fix_sug, autofixable=has_fix,
+            context_lines=_read_context(filepath, line),
+        ))
+    return findings
+
+
 # ─── Runner ─────────────────────────────────────────────────────────────────
 
 def run_linter(cmd: list, parser_fn, cwd: str = ".") -> tuple:
@@ -451,6 +568,62 @@ def run_tests():
     total = 7; passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors: sys.exit(1)
+
+    # ── Extended tests for new parsers ─────────────────────────────────────
+    errors2 = 0
+    print("\nTests de parsers multi-lenguaje...")
+
+    # T8: parse_eslint
+    eslint_json = json.dumps([{
+        "filePath": "/repo/src/app.js",
+        "messages": [
+            {"ruleId": "no-unused-vars", "severity": 2, "message": "'x' is defined but never used.", "line": 5, "column": 7, "fix": {"range": [0,1],"text":""}},
+            {"ruleId": "semi", "severity": 1, "message": "Missing semicolon.", "line": 10, "column": 20},
+        ]
+    }])
+    fe_list = parse_eslint(eslint_json)
+    if (len(fe_list) == 2 and fe_list[0].rule == "no-unused-vars"
+            and fe_list[0].severity == "error" and fe_list[0].autofixable
+            and fe_list[1].severity == "warning"):
+        print("  OK: engine:parse_eslint")
+    else:
+        errors2 += 1; print(f"  FAIL: engine:parse_eslint — {[(f.rule,f.severity,f.autofixable) for f in fe_list]}")
+
+    # T9: parse_golangci
+    gc_json = json.dumps({"Issues": [
+        {"FromLinter": "errcheck", "Text": "Error return value of x not checked.",
+         "Pos": {"Filename": "main.go", "Line": 15, "Column": 3}},
+        {"FromLinter": "golint", "Text": "exported function Foo should have comment",
+         "Pos": {"Filename": "foo.go", "Line": 7, "Column": 1}},
+    ]})
+    gc_list = parse_golangci(gc_json)
+    if (len(gc_list) == 2 and gc_list[0].source == "golangci"
+            and gc_list[0].severity == "error" and gc_list[1].severity == "warning"):
+        print("  OK: engine:parse_golangci")
+    else:
+        errors2 += 1; print(f"  FAIL: engine:parse_golangci — {[(f.rule,f.severity) for f in gc_list]}")
+
+    # T10: parse_clippy
+    clippy_line = json.dumps({
+        "reason": "compiler-message",
+        "message": {
+            "level": "warning",
+            "code": {"code": "clippy::needless_return"},
+            "message": "needless return",
+            "rendered": "warning: needless return",
+            "spans": [{"file_name": "src/lib.rs", "line_start": 42, "column_start": 5}],
+        }
+    })
+    cl_list = parse_clippy(clippy_line)
+    if (cl_list and cl_list[0].rule == "clippy::needless_return"
+            and cl_list[0].source == "clippy"):
+        print("  OK: engine:parse_clippy")
+    else:
+        errors2 += 1; print(f"  FAIL: engine:parse_clippy — {cl_list}")
+
+    total2 = 3; passed2 = total2 - errors2
+    print(f"\n  {passed2}/{total2} tests de parsers multi-lenguaje pasaron")
+    if errors2: sys.exit(1)
 
 
 if __name__ == "__main__":

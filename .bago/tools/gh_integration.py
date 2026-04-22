@@ -1,4 +1,3 @@
-from typing import Optional
 #!/usr/bin/env python3
 """
 bago gh — integración con GitHub: check runs y comentarios inline en PRs.
@@ -9,19 +8,21 @@ Usa la GitHub API (via token o gh CLI si disponible) para:
   - Filtrar por severidad antes de publicar
 
 Uso:
-    bago gh status                         → estado de integración (token, repo)
-    bago gh checks                         → crea/actualiza Check Run con último scan
-    bago gh checks --scan SCAN-20260421    → usa scan específico
-    bago gh checks --severity warning      → solo errores y warnings
-    bago gh pr <número>                    → comenta hallazgos en PR (inline review)
-    bago gh pr <número> --dry-run          → preview sin publicar
-    bago gh config --token TOKEN           → guarda token GitHub
-    bago gh config --repo owner/repo       → guarda repo destino
-    bago gh --test                         → tests integrados
+    bago gh status                              → estado de integración (token, repo)
+    bago gh checks                             → crea/actualiza Check Run con último scan
+    bago gh checks --scan SCAN-20260421        → usa scan específico
+    bago gh checks --severity warning          → solo errores y warnings
+    bago gh pr <número>                        → comenta hallazgos en PR (inline review)
+    bago gh pr <número> --dry-run              → preview sin publicar
+    bago gh pr <número> --min-severity error   → solo errores
+    bago gh config --token TOKEN               → guarda token GitHub
+    bago gh config --repo owner/repo           → guarda repo destino
+    bago gh --test                             → tests integrados
 """
-import argparse, json, os, sys, urllib.request, urllib.error
+import argparse, json, os, sys, time, urllib.request, urllib.error
 from pathlib import Path
 from datetime import datetime, timezone
+from typing import Optional
 
 TOOLS_DIR = Path(__file__).parent
 sys.path.insert(0, str(TOOLS_DIR))
@@ -101,8 +102,9 @@ class GitHubAPI:
         self.token = token
         self.repo  = repo
 
-    def _request(self, method: str, path: str, body: Optional[dict] = None) -> tuple:
-        """Returns (status_code, response_dict)."""
+    def _request(self, method: str, path: str, body: Optional[dict] = None,
+                 _retries: int = 3) -> tuple:
+        """Returns (status_code, response_dict). Retries on 429/5xx."""
         url  = f"{self.BASE}{path}"
         data = json.dumps(body).encode() if body else None
         req  = urllib.request.Request(url, data=data, method=method)
@@ -110,17 +112,29 @@ class GitHubAPI:
         req.add_header("Accept", "application/vnd.github+json")
         req.add_header("X-GitHub-Api-Version", "2022-11-28")
         req.add_header("Content-Type", "application/json")
-        try:
-            with urllib.request.urlopen(req, timeout=15) as resp:
-                return resp.status, json.loads(resp.read())
-        except urllib.error.HTTPError as e:
+        for attempt in range(_retries):
             try:
-                body_err = json.loads(e.read())
-            except Exception:
-                body_err = {"message": str(e)}
-            return e.code, body_err
-        except Exception as e:
-            return 0, {"message": str(e)}
+                with urllib.request.urlopen(req, timeout=20) as resp:
+                    return resp.status, json.loads(resp.read())
+            except urllib.error.HTTPError as e:
+                try:
+                    body_err = json.loads(e.read())
+                except Exception:
+                    body_err = {"message": str(e)}
+                if e.code == 429 and attempt < _retries - 1:
+                    retry_after = int(e.headers.get("Retry-After", "60"))
+                    time.sleep(min(retry_after, 60))
+                    continue
+                if e.code >= 500 and attempt < _retries - 1:
+                    time.sleep(5 * (attempt + 1))
+                    continue
+                return e.code, body_err
+            except Exception as e:
+                if attempt < _retries - 1:
+                    time.sleep(3)
+                    continue
+                return 0, {"message": str(e)}
+        return 0, {"message": "Max retries exceeded"}
 
     def create_check_run(self, name: str, head_sha: str, title: str,
                          summary: str, annotations: list, conclusion: str) -> tuple:
@@ -217,6 +231,46 @@ def finding_to_pr_comment(f: fe.Finding, repo_root: str = "") -> dict:
         "side":      "RIGHT",
         "body":      body,
     }
+
+
+def group_findings_by_file(findings: list, repo_root: str = "") -> dict:
+    """
+    Group findings by file path.
+    Returns dict: {relative_path: [Finding, ...]}
+    """
+    grouped: dict = {}
+    for f in findings:
+        path = f.file
+        if repo_root and path.startswith(repo_root):
+            path = path[len(repo_root):].lstrip("/")
+        grouped.setdefault(path, []).append(f)
+    return grouped
+
+
+def findings_to_file_summary(file_path: str, findings: list) -> str:
+    """Create a grouped Markdown block summarizing findings for one file."""
+    errors   = [f for f in findings if f.severity == "error"]
+    warnings = [f for f in findings if f.severity == "warning"]
+    infos    = [f for f in findings if f.severity in ("info", "hint")]
+    lines = [f"### `{file_path}`", ""]
+    if errors:
+        lines.append(f"🔴 **{len(errors)} error{'s' if len(errors)>1 else ''}**")
+        for f in errors[:5]:
+            lines.append(f"- L{f.line} `{f.rule}`: {f.message}")
+        if len(errors) > 5:
+            lines.append(f"- *(y {len(errors)-5} más...)*")
+    if warnings:
+        lines.append(f"🟡 **{len(warnings)} warning{'s' if len(warnings)>1 else ''}**")
+        for f in warnings[:3]:
+            lines.append(f"- L{f.line} `{f.rule}`: {f.message}")
+        if len(warnings) > 3:
+            lines.append(f"- *(y {len(warnings)-3} más...)*")
+    if infos:
+        lines.append(f"🔵 {len(infos)} info/hints")
+    fix_count = sum(1 for f in findings if f.autofixable)
+    if fix_count:
+        lines.append(f"\n✅ {fix_count} autofixable(s) — `bago fix --apply`")
+    return "\n".join(lines)
 
 
 # ─── Commands ────────────────────────────────────────────────────────────────
@@ -320,7 +374,20 @@ def cmd_pr(cfg: dict, pr_number: int, min_severity: str, dry_run: bool):
     sev_ord  = SEV_ORD.get(min_severity, 1)  # default: warnings+errors only
     findings = [f for f in db.findings if SEV_ORD.get(f.severity, 3) <= sev_ord]
     repo_root = str(BAGO_ROOT.parent) + "/"
-    comments = [finding_to_pr_comment(f, repo_root) for f in findings[:50]]
+
+    # Group by file for inline comments (one comment block per file, not per finding)
+    grouped   = group_findings_by_file(findings, repo_root)
+    comments  = []
+    for file_path, file_findings in sorted(grouped.items()):
+        # One inline comment per file at first finding's line
+        first_f  = sorted(file_findings, key=lambda x: x.line)[0]
+        body_txt = findings_to_file_summary(file_path, file_findings)
+        comments.append({
+            "path": file_path,
+            "line": first_f.line,
+            "side": "RIGHT",
+            "body": body_txt,
+        })
 
     s = db._summary()
     review_body = (
@@ -329,17 +396,20 @@ def cmd_pr(cfg: dict, pr_number: int, min_severity: str, dry_run: bool):
         f"| 🔴 Errors  | {s['by_severity'].get('error',0)} |\n"
         f"| 🟡 Warnings | {s['by_severity'].get('warning',0)} |\n"
         f"| 🔵 Info    | {s['by_severity'].get('info',0)} |\n\n"
-        f"**{s['autofixable']} hallazgos autofixables** — ejecuta `bago fix --apply`"
+        f"**{s['autofixable']} hallazgos autofixables** — ejecuta `bago fix --apply`\n\n"
+        f"*Filtro aplicado: `{min_severity}` y superiores — {len(findings)} hallazgos en "
+        f"{len(grouped)} archivos*"
     )
 
     if dry_run:
         print(f"\n  {DIM}[DRY-RUN]{RESET} Review que se publicaría en PR #{pr_number}:")
-        print(f"  Comentarios inline: {len(comments)}")
-        print(f"  Body preview:\n{review_body[:300]}\n")
+        print(f"  Archivos con comentarios: {len(comments)}")
+        print(f"  Hallazgos totales:        {len(findings)}")
+        print(f"  Body preview:\n{review_body[:400]}\n")
         return
 
     api = GitHubAPI(token, repo)
-    status, resp = api.create_pr_review(pr_number, review_body, comments)
+    status, resp = api.create_pr_review(pr_number, review_body, comments[:50])
 
     if status in (200, 201):
         print(f"\n  {GREEN}✅ Review publicado en PR #{pr_number}{RESET}\n")
@@ -412,7 +482,24 @@ def run_tests():
     else:
         ok("gh:sev_mapping")
 
-    total=6; passed=total-errors
+    # T7: group_findings_by_file groups correctly
+    f2 = fe.Finding(id="B",severity="warning",file="/repo/src/app.py",line=3,col=0,
+                    rule="W291",source="flake8",message="trailing ws",
+                    fix_suggestion=None,autofixable=True)
+    grouped = group_findings_by_file([f, f2], "/repo/")
+    if "src/main.py" in grouped and "src/app.py" in grouped:
+        ok("gh:group_by_file")
+    else:
+        fail("gh:group_by_file", str(list(grouped.keys())))
+
+    # T8: findings_to_file_summary returns markdown
+    summary = findings_to_file_summary("src/main.py", [f])
+    if "main.py" in summary and "error" in summary.lower():
+        ok("gh:file_summary_markdown")
+    else:
+        fail("gh:file_summary_markdown", summary[:100])
+
+    total=8; passed=total-errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors: sys.exit(1)
 
@@ -430,7 +517,8 @@ def main():
 
     p_pr = sub.add_parser("pr")
     p_pr.add_argument("pr_number", type=int)
-    p_pr.add_argument("--severity", default="warning")
+    p_pr.add_argument("--severity", "--min-severity", dest="severity", default="warning",
+                      choices=["error","warning","info","hint"])
     p_pr.add_argument("--dry-run",  action="store_true")
 
     p_cfg = sub.add_parser("config")

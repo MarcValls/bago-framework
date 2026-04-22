@@ -16,11 +16,13 @@ Uso:
     bago scan --json                   → output JSON completo
     bago scan --last                   → muestra el último scan guardado
     bago scan --autofixable            → muestra solo hallazgos con autofix disponible
+    bago scan --lang py|js|go|auto     → fuerza lenguaje (auto = detecta del target)
     bago scan --test                   → tests integrados
 """
 
 import argparse, json, subprocess, sys
 from pathlib import Path
+from typing import Optional
 
 TOOLS_DIR = Path(__file__).parent
 sys.path.insert(0, str(TOOLS_DIR))
@@ -32,58 +34,115 @@ SEV_COLOR    = {"error":"\033[31m","warning":"\033[33m","info":"\033[36m","hint"
 BOLD  = "\033[1m"; RESET = "\033[0m"; DIM = "\033[2m"; GREEN = "\033[32m"
 
 
-def run_scan(target: str, sources: list | None = None) -> fe.FindingsDB:
+def _detect_lang(target: str) -> str:
+    """Auto-detect dominant language from file extensions in target."""
+    p = Path(target)
+    if not p.is_dir():
+        suf = Path(target).suffix.lower()
+        return {"py": "py", ".js": "js", ".ts": "js", ".go": "go",
+                ".rs": "rust"}.get(suf, "py")
+    counts = {"py": 0, "js": 0, "go": 0, "rust": 0}
+    for f in p.rglob("*"):
+        if f.suffix in (".py",):      counts["py"]   += 1
+        elif f.suffix in (".js",".ts"): counts["js"] += 1
+        elif f.suffix == ".go":        counts["go"]  += 1
+        elif f.suffix == ".rs":        counts["rust"]+= 1
+    dominant = max(counts, key=lambda k: counts[k])
+    return dominant if counts[dominant] > 0 else "py"
+
+
+def run_scan(target: str, sources: Optional[list] = None,
+             lang: str = "auto") -> "fe.FindingsDB":
     db = fe.FindingsDB()
     db.meta["target"] = target
 
-    # Always run BAGO's own lint (no external deps)
-    bago_findings = fe.run_bago_lint(target)
-    db.add(bago_findings)
-    db.meta["sources"].append("bago")
+    if lang == "auto":
+        lang = _detect_lang(target)
 
-    linters = sources or ["flake8", "pylint", "mypy", "bandit"]
+    db.meta["lang"] = lang
 
-    if "flake8" in linters:
+    if lang == "py":
+        # Always run BAGO's own lint (no external deps)
+        bago_findings = fe.run_bago_lint(target)
+        db.add(bago_findings)
+        db.meta["sources"].append("bago")
+
+        linters = sources or ["flake8", "pylint", "mypy", "bandit"]
+
+        if "flake8" in linters:
+            findings, err = fe.run_linter(
+                ["python3", "-m", "flake8", "--max-line-length=120",
+                 "--format=%(path)s:%(row)d:%(col)d: %(code)s %(text)s", target],
+                fe.parse_flake8, cwd=str(BAGO_ROOT.parent)
+            )
+            if not err:
+                db.add(findings); db.meta["sources"].append("flake8")
+
+        if "pylint" in linters:
+            findings, err = fe.run_linter(
+                ["python3", "-m", "pylint", "--output-format=json",
+                 "--disable=C0114,C0115,C0116,R0903", target],
+                fe.parse_pylint, cwd=str(BAGO_ROOT.parent)
+            )
+            if not err:
+                db.add(findings); db.meta["sources"].append("pylint")
+
+        if "mypy" in linters:
+            findings, err = fe.run_linter(
+                ["python3", "-m", "mypy", "--ignore-missing-imports",
+                 "--no-error-summary", target],
+                fe.parse_mypy, cwd=str(BAGO_ROOT.parent)
+            )
+            if not err:
+                db.add(findings); db.meta["sources"].append("mypy")
+
+        if "bandit" in linters:
+            findings, err = fe.run_linter(
+                ["python3", "-m", "bandit", "-r", "-f", "json", "-q", target],
+                fe.parse_bandit, cwd=str(BAGO_ROOT.parent)
+            )
+            if not err:
+                db.add(findings); db.meta["sources"].append("bandit")
+
+    elif lang in ("js", "ts"):
         findings, err = fe.run_linter(
-            ["python3", "-m", "flake8", "--max-line-length=120",
-             "--format=%(path)s:%(row)d:%(col)d: %(code)s %(text)s", target],
-            fe.parse_flake8, cwd=str(BAGO_ROOT.parent)
+            ["npx", "--yes", "eslint", "--format=json", target],
+            fe.parse_eslint, cwd=str(BAGO_ROOT.parent)
         )
         if not err:
-            db.add(findings); db.meta["sources"].append("flake8")
+            db.add(findings); db.meta["sources"].append("eslint")
+        else:
+            # fallback: try eslint without npx
+            findings, err2 = fe.run_linter(
+                ["eslint", "--format=json", target],
+                fe.parse_eslint, cwd=str(BAGO_ROOT.parent)
+            )
+            if not err2:
+                db.add(findings); db.meta["sources"].append("eslint")
 
-    if "pylint" in linters:
+    elif lang == "go":
         findings, err = fe.run_linter(
-            ["python3", "-m", "pylint", "--output-format=json",
-             "--disable=C0114,C0115,C0116,R0903", target],
-            fe.parse_pylint, cwd=str(BAGO_ROOT.parent)
+            ["golangci-lint", "run", "--out-format=json", target],
+            fe.parse_golangci, cwd=str(BAGO_ROOT.parent)
         )
         if not err:
-            db.add(findings); db.meta["sources"].append("pylint")
+            db.add(findings); db.meta["sources"].append("golangci")
 
-    if "mypy" in linters:
+    elif lang == "rust":
         findings, err = fe.run_linter(
-            ["python3", "-m", "mypy", "--ignore-missing-imports",
-             "--no-error-summary", target],
-            fe.parse_mypy, cwd=str(BAGO_ROOT.parent)
+            ["cargo", "clippy", "--message-format=json", "--manifest-path",
+             str(Path(target) / "Cargo.toml")],
+            fe.parse_clippy, cwd=str(BAGO_ROOT.parent)
         )
         if not err:
-            db.add(findings); db.meta["sources"].append("mypy")
-
-    if "bandit" in linters:
-        findings, err = fe.run_linter(
-            ["python3", "-m", "bandit", "-r", "-f", "json", "-q", target],
-            fe.parse_bandit, cwd=str(BAGO_ROOT.parent)
-        )
-        if not err:
-            db.add(findings); db.meta["sources"].append("bandit")
+            db.add(findings); db.meta["sources"].append("clippy")
 
     db.save()
     return db
 
 
-def filter_findings(findings: list, severity: str | None, source: str | None,
-                    rule: str | None, file_filter: str | None,
+def filter_findings(findings: list, severity: Optional[str], source: Optional[str],
+                    rule: Optional[str], file_filter: Optional[str],
                     autofixable_only: bool) -> list:
     out = findings
     if severity:
@@ -236,6 +295,9 @@ def main():
     parser.add_argument("--json",        action="store_true")
     parser.add_argument("--last",        action="store_true")
     parser.add_argument("--autofixable", action="store_true")
+    parser.add_argument("--lang",        default="auto",
+                        choices=["auto","py","js","ts","go","rust"],
+                        help="Lenguaje a analizar (default: auto-detección)")
     parser.add_argument("--test",        action="store_true")
     args = parser.parse_args()
 
@@ -248,8 +310,9 @@ def main():
             print("Sin scans guardados. Ejecuta 'bago scan' primero.")
             sys.exit(1)
     else:
-        print(f"  Escaneando {args.target} ...")
-        db = run_scan(args.target)
+        lang = "js" if args.lang == "ts" else args.lang
+        print(f"  Escaneando {args.target} ... [lang={lang}]")
+        db = run_scan(args.target, lang=lang)
 
     findings = filter_findings(
         db.findings,
