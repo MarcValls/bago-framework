@@ -431,6 +431,7 @@
 ./state/iterations/ITER-0025.json
 ./state/iterations/ITER-0026.json
 ./state/iterations/ITER-0027.json
+./state/iterations/ITER-0028.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -668,6 +669,7 @@
 ./tools/bago_start.py
 ./tools/bago_utils.py
 ./tools/bago_watch.py
+./tools/ci_baseline.py
 ./tools/ci_generator.py
 ./tools/compare.py
 ./tools/competition_report.py
@@ -695,6 +697,7 @@
 ./tools/git_context.py
 ./tools/goals.py
 ./tools/habit.py
+./tools/health_report.py
 ./tools/health_score.py
 ./tools/hotspot.py
 ./tools/impact_engine.py

@@ -875,6 +875,24 @@ def test_config_check():
         _record("config_check:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_ci_baseline():
+    """ci_baseline.py --test pasa todos los tests."""
+    rc, out, _ = _run("ci_baseline.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("ci_baseline:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("ci_baseline:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_health_report():
+    """health_report.py --test pasa todos los tests."""
+    rc, out, _ = _run("health_report.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("health_report:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("health_report:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -929,6 +947,8 @@ ALL_TESTS = [
     (51, "rule_catalog",    test_rule_catalog),
     (52, "lint_report",     test_lint_report),
     (53, "config_check",    test_config_check),
+    (54, "ci_baseline",     test_ci_baseline),
+    (55, "health_report",   test_health_report),
 ]
 
 
