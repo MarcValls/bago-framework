@@ -1,0 +1,8 @@
+{
+  "id": "ITER-0067",
+  "timestamp": "2026-04-22T21:36:28+00:00",
+  "cmd": "bago secret-scan",
+  "workspace": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/TEST_BAGO_03(IMG)",
+  "working_mode": "external",
+  "notes": ""
+}
