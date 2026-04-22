@@ -26,6 +26,15 @@ from pathlib import Path
 from typing import Optional
 
 BAGO_ROOT = Path(__file__).parent.parent
+
+# Import chart_engine (optional — graceful fallback if missing)
+try:
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).parent))
+    from chart_engine import render_gauge, render_bar, render_doughnut, html_page as _html_page
+    _CHARTS_OK = True
+except Exception:
+    _CHARTS_OK = False
 TOOLS     = BAGO_ROOT / "tools"
 
 _RED  = "\033[0;31m"
@@ -254,15 +263,51 @@ def generate_markdown(target: str, lint_data: dict, cfg_data: dict,
 
 def generate_html(target: str, lint_data: dict, cfg_data: dict,
                   git_info: dict, title: Optional[str] = None) -> str:
-    md = generate_markdown(target, lint_data, cfg_data, git_info, title)
     findings   = lint_data.get("findings", [])
     cfg_issues = cfg_data.get("issues", [])
     score      = _compute_score(findings, cfg_issues)
+    now        = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    page_title = title or f"Health Report — {Path(target).resolve().name}"
 
-    score_color = "#27ae60" if score["score"] >= 90 else (
-                  "#f1c40f" if score["score"] >= 70 else (
-                  "#e67e22" if score["score"] >= 50 else "#e74c3c"))
+    # ── Interactive charts (if chart_engine available) ──────────────────
+    if _CHARTS_OK:
+        gauge_html = render_gauge(score["score"], "Health Score")
 
+        top_rules = _top_rules(findings, 10)
+        bar_html  = render_bar(
+            [r for r, _ in top_rules],
+            [c for _, c in top_rules],
+            title="Top Reglas (hallazgos)",
+            color="#e74c3c",
+            horizontal=True,
+            max_width=700,
+        ) if top_rules else "<p>Sin hallazgos de código.</p>"
+
+        donut_html = render_doughnut(
+            ["Errores", "Advertencias", "Info"],
+            [score["errors"], score["warnings"], score["infos"]],
+            title="Distribución de severidad",
+            colors=["#e74c3c", "#f1c40f", "#3498db"],
+        )
+        charts_section = f"""
+<h2>📊 Dashboard de Salud</h2>
+<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;margin:16px 0;">
+  <div style="flex:0 0 280px;">{gauge_html}</div>
+  <div style="flex:0 0 340px;">{donut_html}</div>
+</div>
+<h2>🔍 Top Reglas</h2>
+{bar_html}"""
+    else:
+        score_color = "#27ae60" if score["score"] >= 90 else (
+                      "#f1c40f" if score["score"] >= 70 else (
+                      "#e67e22" if score["score"] >= 50 else "#e74c3c"))
+        charts_section = (
+            f'<div style="display:inline-block;padding:16px 32px;border-radius:8px;'
+            f'background:{score_color};color:white;font-size:2em;font-weight:bold;margin:16px 0;">'
+            f'{score["score"]}/100 — {score["status"]}</div>'
+        )
+
+    # ── Findings table ──────────────────────────────────────────────────
     rows = []
     for f in findings[:50]:
         sev = f.get("severity", "info")
@@ -274,7 +319,6 @@ def generate_html(target: str, lint_data: dict, cfg_data: dict,
             f'<td><code>{f.get("rule","")}</code></td>'
             f'<td>{f.get("message","")[:80]}</td></tr>'
         )
-
     table = ""
     if rows:
         table = (
@@ -284,32 +328,47 @@ def generate_html(target: str, lint_data: dict, cfg_data: dict,
             "<tbody>" + "".join(rows) + "</tbody></table>"
         )
 
+    # ── Git info ────────────────────────────────────────────────────────
+    git_html = ""
+    if git_info:
+        dirty_badge = '⚠️ Sí' if git_info.get("dirty") else '✅ No'
+        git_html = (
+            f'<h2>🔀 Git</h2>'
+            f'<table><tbody>'
+            f'<tr><th>Rama</th><td><code>{git_info.get("branch","?")}</code></td></tr>'
+            f'<tr><th>Último commit</th><td>{git_info.get("commit","?")}</td></tr>'
+            f'<tr><th>Cambios sin commit</th><td>{dirty_badge}</td></tr>'
+            f'</tbody></table>'
+        )
+
     return f"""<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BAGO Health Report</title>
 <style>
-body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-       max-width: 1100px; margin: 40px auto; padding: 0 20px; background: #f8f9fa; }}
-h1 {{ color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 12px; }}
-h2 {{ color: #34495e; margin-top: 32px; }}
-.score-box {{ display: inline-block; padding: 16px 32px; border-radius: 8px;
-             background: {score_color}; color: white; font-size: 2em; font-weight: bold;
-             margin: 16px 0; }}
-table {{ border-collapse: collapse; width: 100%; margin: 16px 0; }}
-th {{ background: #2c3e50; color: white; padding: 8px 12px; text-align: left; }}
-td {{ padding: 6px 12px; border-bottom: 1px solid #ddd; }}
-tr:nth-child(even) {{ background: #f2f2f2; }}
-code {{ background: #ecf0f1; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }}
+:root{{--text-muted:#666;}}
+@media(prefers-color-scheme:dark){{body{{background:#1a1a2e;color:#e0e0e0;}}:root{{--text-muted:#aaa;}}}}
+body{{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      max-width:1100px;margin:40px auto;padding:0 20px;background:#f8f9fa;}}
+h1{{color:#2c3e50;border-bottom:2px solid #3498db;padding-bottom:12px;}}
+h2{{color:#34495e;margin-top:32px;}}
+table{{border-collapse:collapse;width:100%;margin:16px 0;}}
+th{{background:#2c3e50;color:white;padding:8px 12px;text-align:left;}}
+td{{padding:6px 12px;border-bottom:1px solid #ddd;}}
+tr:nth-child(even){{background:#f2f2f2;}}
+code{{background:#ecf0f1;padding:2px 6px;border-radius:3px;font-size:0.9em;}}
 </style>
 </head>
 <body>
 <h1>🏥 BAGO Health Report</h1>
-<div class="score-box">{score['score']}/100 — {score['status']}</div>
+<p style="color:var(--text-muted);">Generado por BAGO Framework · {now}</p>
+{charts_section}
+{git_html}
 {table}
 <hr>
-<small>Generado por BAGO Framework · {datetime.datetime.now().strftime("%Y-%m-%d %H:%M")}</small>
+<small style="color:var(--text-muted);">BAGO Framework — <code>bago health-report</code></small>
 </body>
 </html>"""
 
@@ -398,7 +457,7 @@ def _self_test() -> None:
 
     # T3 — html generado contiene structure básica
     html = generate_html("./", {"findings": SAMPLE_FINDINGS}, SAMPLE_CFG, {})
-    if "<!DOCTYPE html>" in html and "score-box" in html:
+    if "<!DOCTYPE html>" in html and "Health Report" in html and "Health Score" in html:
         ok("health_report:html_structure")
     else:
         fail("health_report:html_structure", "html incompleto")

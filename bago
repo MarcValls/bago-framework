@@ -534,6 +534,11 @@ def main():
             ["python3", str(TOOLS / "impact_map.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "chart-engine":
+        subprocess.run(
+            ["python3", str(TOOLS / "chart_engine.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -728,6 +733,7 @@ def main():
                 "hotspot":       "detecta hotspots: archivos con mas cambios + fallos + complejidad",
                 "fix":           "autofix serio: genera y aplica parches concretos con validacion",
                 "gh":            "integracion GitHub: check runs y comentarios en PRs",
+                "chart-engine":  "motor de gráficas interactivas Chart.js para reportes HTML dinámicos",
             }
             for k, desc in extra.items():
                 print(f"    bago {k:12s} → {desc}")

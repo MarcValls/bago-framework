@@ -32,6 +32,15 @@ BAGO_ROOT = Path(__file__).parent.parent
 _GREEN = "\033[0;32m"
 _RST   = "\033[0m"
 
+# Import chart_engine (optional — graceful fallback)
+try:
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).parent))
+    from chart_engine import render_line, render_doughnut
+    _CHARTS_OK = True
+except Exception:
+    _CHARTS_OK = False
+
 # Conventional commits prefix → grupo legible
 TYPE_MAP = {
     "feat":     "✨ Nuevas Funcionalidades",
@@ -172,8 +181,28 @@ def generate_markdown(commits: list[dict], title: str = "CHANGELOG",
     return "\n".join(lines)
 
 
+def _commits_per_week(commits: list[dict]) -> tuple[list[str], list[int]]:
+    """Agrupa commits por semana (ISO) y retorna (labels, counts)."""
+    week_counts: dict[str, int] = {}
+    for c in commits:
+        date_str = c.get("date", "")
+        if not date_str:
+            continue
+        try:
+            d = datetime.date.fromisoformat(date_str)
+            # ISO week label: YYYY-Www
+            iso = d.isocalendar()
+            week_key = f"{iso[0]}-W{iso[1]:02d}"
+            week_counts[week_key] = week_counts.get(week_key, 0) + 1
+        except ValueError:
+            continue
+    if not week_counts:
+        return [], []
+    sorted_weeks = sorted(week_counts.keys())
+    return sorted_weeks, [week_counts[w] for w in sorted_weeks]
+
+
 def generate_html(commits: list[dict], title: str = "CHANGELOG") -> str:
-    md = generate_markdown(commits, title, include_body=False)
     rows = []
     for c in commits[:100]:
         icon = {"feat": "✨", "fix": "🐛", "docs": "📝", "chore": "🔧"}.get(c["type"], "🗂️")
@@ -190,19 +219,67 @@ def generate_html(commits: list[dict], title: str = "CHANGELOG") -> str:
         "<tbody>" + "".join(rows) + "</tbody></table>"
     ) if rows else ""
 
+    # ── Interactive charts ──────────────────────────────────────────────
+    charts_html = ""
+    if _CHARTS_OK and commits:
+        # Line chart: commits per week
+        week_labels, week_counts = _commits_per_week(commits)
+        if week_labels:
+            line_chart = render_line(
+                week_labels,
+                [{"label": "Commits por semana", "data": week_counts, "color": "#3498db"}],
+                title="Actividad de commits por semana",
+            )
+        else:
+            line_chart = ""
+
+        # Doughnut: distribution by commit type
+        type_counts: dict[str, int] = {}
+        for c in commits:
+            type_counts[c["type"]] = type_counts.get(c["type"], 0) + 1
+        type_colors = {
+            "feat": "#27ae60", "fix": "#e74c3c", "docs": "#3498db",
+            "chore": "#95a5a6", "refactor": "#9b59b6", "test": "#1abc9c",
+            "other": "#bdc3c7",
+        }
+        t_labels = list(type_counts.keys())
+        t_values = [type_counts[k] for k in t_labels]
+        t_colors = [type_colors.get(k, "#bdc3c7") for k in t_labels]
+        donut_chart = render_doughnut(
+            t_labels, t_values, title="Tipos de commit",
+            colors=t_colors, max_width=380,
+        )
+        charts_html = (
+            f"<h2>📈 Actividad</h2>"
+            f'<div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;margin:16px 0;">'
+            f'<div style="flex:0 0 340px;">{donut_chart}</div>'
+            f'</div>'
+            + (f"<h2>📅 Commits por Semana</h2>{line_chart}" if line_chart else "")
+        )
+
     return f"""<!DOCTYPE html>
 <html lang="es">
-<head><meta charset="UTF-8"><title>{title}</title>
+<head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{title}</title>
 <style>
+:root{{--text-muted:#666;}}
+@media(prefers-color-scheme:dark){{body{{background:#1a1a2e;color:#e0e0e0;}}:root{{--text-muted:#aaa;}}}}
 body{{font-family:-apple-system,sans-serif;max-width:1100px;margin:40px auto;padding:0 20px;}}
 h1{{color:#2c3e50;border-bottom:2px solid #3498db;padding-bottom:12px;}}
+h2{{color:#34495e;margin-top:32px;}}
 table{{border-collapse:collapse;width:100%;}}
 th{{background:#2c3e50;color:white;padding:8px 12px;text-align:left;}}
 td{{padding:6px 12px;border-bottom:1px solid #ddd;}}
+tr:nth-child(even){{background:#f2f2f2;}}
 code{{background:#ecf0f1;padding:2px 6px;border-radius:3px;}}
 </style></head>
-<body><h1>📋 {title}</h1>{table}
-<hr><small>Generado con BAGO Framework</small></body></html>"""
+<body><h1>📋 {title}</h1>
+{charts_html}
+<h2>📜 Historial de commits</h2>
+{table}
+<hr><small style="color:var(--text-muted);">Generado con BAGO Framework — <code>bago changelog-gen --format html</code></small>
+</body></html>"""
 
 
 # ─── CLI ───────────────────────────────────────────────────────────────────

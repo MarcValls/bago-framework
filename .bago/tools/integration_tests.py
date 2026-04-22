@@ -983,6 +983,15 @@ def test_impact_map():
         _record("impact_map:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_chart_engine():
+    """chart_engine.py --test pasa todos los tests."""
+    rc, out, _ = _run("chart_engine.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("chart_engine:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("chart_engine:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1049,6 +1058,7 @@ ALL_TESTS = [
     (63, "secret_scan",     test_secret_scan),
     (64, "test_gen",        test_test_gen),
     (65, "impact_map",      test_impact_map),
+    (66, "chart_engine",    test_chart_engine),
 ]
 
 

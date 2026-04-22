@@ -436,6 +436,7 @@
 ./state/iterations/ITER-0030.json
 ./state/iterations/ITER-0031.json
 ./state/iterations/ITER-0032.json
+./state/iterations/ITER-0033.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -688,11 +689,13 @@
 ./tools/cosecha.py
 ./tools/changelog.py
 ./tools/changelog_gen.py
+./tools/chart_engine.py
 ./tools/check.py
 ./tools/dashboard_v2.py
 ./tools/dead_code.py
 ./tools/debt_ledger.py
 ./tools/diff.py
+./tools/doc_coverage.py
 ./tools/doctor.py
 ./tools/efficiency_meter.py
 ./tools/emit_ideas.py
