@@ -929,6 +929,33 @@ def test_complexity():
         _record("complexity:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_env_check():
+    """env_check.py --test pasa todos los tests."""
+    rc, out, _ = _run("env_check.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("env_check:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("env_check:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_file_watcher():
+    """file_watcher.py --test pasa todos los tests."""
+    rc, out, _ = _run("file_watcher.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("file_watcher:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("file_watcher:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_size_tracker():
+    """size_tracker.py --test pasa todos los tests."""
+    rc, out, _ = _run("size_tracker.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("size_tracker:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("size_tracker:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -989,6 +1016,9 @@ ALL_TESTS = [
     (57, "dead_code",       test_dead_code),
     (58, "branch_check",    test_branch_check),
     (59, "complexity",      test_complexity),
+    (60, "env_check",       test_env_check),
+    (61, "file_watcher",    test_file_watcher),
+    (62, "size_tracker",    test_size_tracker),
 ]
 
 

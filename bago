@@ -504,6 +504,21 @@ def main():
             ["python3", str(TOOLS / "complexity.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "env-check":
+        subprocess.run(
+            ["python3", str(TOOLS / "env_check.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "watch":
+        subprocess.run(
+            ["python3", str(TOOLS / "file_watcher.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "size-track":
+        subprocess.run(
+            ["python3", str(TOOLS / "size_tracker.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -689,6 +704,9 @@ def main():
                 "dead-code":     "detecta imports/funciones sin usar, TODOs, código comentado (Python)",
                 "branch-check":  "valida nombre de rama vs convenciones (gitflow/simple/jira/bago)",
                 "complexity":    "complejidad ciclomática por función — identifica candidatos a refactor",
+                "env-check":     "verifica variables de entorno requeridas (missing/empty/placeholder)",
+                "watch":         "vigila cambios en archivos, ejecuta cmd al detectarlos (--once para CI)",
+                "size-track":    "tracking de tamaño de archivos — detecta crecimiento inesperado",
                 "hotspot":       "detecta hotspots: archivos con mas cambios + fallos + complejidad",
                 "fix":           "autofix serio: genera y aplica parches concretos con validacion",
                 "gh":            "integracion GitHub: check runs y comentarios en PRs",
