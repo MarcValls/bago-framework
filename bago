@@ -539,6 +539,21 @@ def main():
             ["python3", str(TOOLS / "chart_engine.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "duplicate-check":
+        subprocess.run(
+            ["python3", str(TOOLS / "duplicate_check.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "pre-commit-gen":
+        subprocess.run(
+            ["python3", str(TOOLS / "pre_commit_gen.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "metrics-export":
+        subprocess.run(
+            ["python3", str(TOOLS / "metrics_export.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -734,6 +749,9 @@ def main():
                 "fix":           "autofix serio: genera y aplica parches concretos con validacion",
                 "gh":            "integracion GitHub: check runs y comentarios en PRs",
                 "chart-engine":  "motor de gráficas interactivas Chart.js para reportes HTML dinámicos",
+                "duplicate-check": "detecta bloques de código duplicados/casi-idénticos entre archivos",
+                "pre-commit-gen":  "genera .pre-commit-config.yaml con hooks BAGO + estándar industry",
+                "metrics-export":  "exporta métricas BAGO en formato JSON, Prometheus o CSV",
             }
             for k, desc in extra.items():
                 print(f"    bago {k:12s} → {desc}")

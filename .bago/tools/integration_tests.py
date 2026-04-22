@@ -992,6 +992,33 @@ def test_chart_engine():
         _record("chart_engine:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_duplicate_check():
+    """duplicate_check.py --test pasa todos los tests."""
+    rc, out, _ = _run("duplicate_check.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("duplicate_check:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("duplicate_check:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_pre_commit_gen():
+    """pre_commit_gen.py --test pasa todos los tests."""
+    rc, out, _ = _run("pre_commit_gen.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("pre_commit_gen:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("pre_commit_gen:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_metrics_export():
+    """metrics_export.py --test pasa todos los tests."""
+    rc, out, _ = _run("metrics_export.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("metrics_export:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("metrics_export:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1057,8 +1084,11 @@ ALL_TESTS = [
     (62, "size_tracker",    test_size_tracker),
     (63, "secret_scan",     test_secret_scan),
     (64, "test_gen",        test_test_gen),
-    (65, "impact_map",      test_impact_map),
-    (66, "chart_engine",    test_chart_engine),
+    (65, "impact_map",       test_impact_map),
+    (66, "chart_engine",     test_chart_engine),
+    (67, "duplicate_check",  test_duplicate_check),
+    (68, "pre_commit_gen",   test_pre_commit_gen),
+    (69, "metrics_export",   test_metrics_export),
 ]
 
 

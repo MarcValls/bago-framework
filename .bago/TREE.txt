@@ -437,6 +437,9 @@
 ./state/iterations/ITER-0031.json
 ./state/iterations/ITER-0032.json
 ./state/iterations/ITER-0033.json
+./state/iterations/ITER-0034.json
+./state/iterations/ITER-0035.json
+./state/iterations/ITER-0036.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -697,6 +700,7 @@
 ./tools/diff.py
 ./tools/doc_coverage.py
 ./tools/doctor.py
+./tools/duplicate_check.py
 ./tools/efficiency_meter.py
 ./tools/emit_ideas.py
 ./tools/env_check.py
@@ -724,6 +728,7 @@
 ./tools/launch_workflow_maestro.sh
 ./tools/lint.py
 ./tools/lint_report.py
+./tools/metrics_export.py
 ./tools/metrics_trends.py
 ./tools/multi_scan.py
 ./tools/notes.py
@@ -736,6 +741,7 @@
 ./tools/permission_check.py
 ./tools/permission_fixer.py
 ./tools/personality_panel.py
+./tools/pre_commit_gen.py
 ./tools/quick_status.py
 ./tools/reconcile_state.py
 ./tools/remind.py
