@@ -1,0 +1,5 @@
+{
+  "shim": true,
+  "canonical_manifest": ".bago/pack.json",
+  "version": "1.0.0"
+}

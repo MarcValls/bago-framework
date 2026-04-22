@@ -1,0 +1,25 @@
+{
+  "session_id": "SES-HARVEST-2026-04-21-004",
+  "task_type": "harvest",
+  "selected_workflow": "w9_cosecha",
+  "roles_activated": [
+    "role_auditor"
+  ],
+  "user_goal": "Cosecha contextual: Corregir la desalineacion entre auto_mode.py y context_detector.py para que bago",
+  "status": "closed",
+  "escenario": "ESCENARIO-003",
+  "created_at": "2026-04-21T02:05:38.526646+00:00",
+  "updated_at": "2026-04-21T02:05:38.526646+00:00",
+  "artifacts": [
+    ".bago/docs/migration/legacy/ORIGEN_Y_ALCANCE.md",
+    ".bago/state/changes/BAGO-CHG-063.json",
+    ".bago/state/evidences/BAGO-EVD-064.json",
+    ".bago/state/sessions/SES-HARVEST-2026-04-21-003.json"
+  ],
+  "decisions": [
+    "DECISIÓN: Corregir la desalineacion entre auto_mode.py y context_detector.py para que bago auto use el mismo conteo de senales HARVEST que el dashboard.",
+    "DESCARTE: Mantener la lectura de campos high_signals/low_signals inexistentes, porque producia una sugerencia incoherente y ocultaba la ruta interactiva correcta."
+  ],
+  "next_step": "Revalidar bago auto, validate_pack y audit_v2 para dejar el comportamiento automatico y la auditoria alineados.",
+  "summary": "Harvest W9. Decisión: Corregir la desalineacion entre auto_mode.py y context_detec. Próximo: Revalidar bago auto, validate_pack y audit_v2 para dejar el ."
+}

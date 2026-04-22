@@ -50,7 +50,7 @@ def _next_id(folder, prefix, pad=3):
 
 def _next_session_id():
     """Genera el ID de la siguiente sesión harvest."""
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     prefix = f"SES-HARVEST-{today}"
     existing = [f.stem for f in SESSIONS.glob(f"{prefix}-*.json")]
     nums = [int(e.split("-")[-1]) for e in existing if e.split("-")[-1].isdigit()]
@@ -111,7 +111,7 @@ def _detect_modified_files():
 
 def run():
     now = datetime.now(timezone.utc).isoformat()
-    today_str = datetime.now().strftime("%Y-%m-%d")
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     # ── Modo no-interactivo (agente pasa las 3 respuestas como args) ──────────
     non_interactive = (

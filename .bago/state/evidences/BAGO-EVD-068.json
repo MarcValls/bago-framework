@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-068",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-067",
+    "SES-HARVEST-2026-04-21-006"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-21-006",
+  "details": "Decisión: auditoria nuclear | Descarte: framework | Próximo paso: bago auto | Ficheros afectados: .bago/state/changes/BAGO-CHG-066.json, .bago/state/evidences/BAGO-EVD-067.json, .bago/state/sessions/SES-HARVEST-2026-04-21-005.json",
+  "status": "recorded",
+  "recorded_at": "2026-04-21T04:23:57.175208+00:00"
+}

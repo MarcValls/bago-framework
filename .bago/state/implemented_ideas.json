@@ -1,0 +1,74 @@
+{
+  "implemented": [
+    {
+      "title": "Handoff idea → W2",
+      "idea_index": 1,
+      "done_at": "2026-04-18T16:00:00+00:00",
+      "session": "sprint-ideas-gen1"
+    },
+    {
+      "title": "Resumen único de estabilidad",
+      "idea_index": 2,
+      "done_at": "2026-04-18T16:30:00+00:00",
+      "session": "sprint-ideas-gen1"
+    },
+    {
+      "title": "Gate canónico de ideas",
+      "idea_index": 3,
+      "done_at": "2026-04-18T17:00:00+00:00",
+      "session": "sprint-ideas-gen1"
+    },
+    {
+      "title": "Opener de sesión desde task",
+      "idea_index": 1,
+      "done_at": "2026-04-19T14:00:00+00:00",
+      "session": "sprint-ideas-gen2"
+    },
+    {
+      "title": "Banner muestra task activa",
+      "idea_index": 2,
+      "done_at": "2026-04-19T14:30:00+00:00",
+      "session": "sprint-ideas-gen2"
+    },
+    {
+      "title": "Registro de ideas implementadas",
+      "idea_index": 3,
+      "done_at": "2026-04-19T15:00:00+00:00",
+      "session": "sprint-ideas-gen2"
+    },
+    {
+      "title": "Ideas orientadas a baseline",
+      "idea_index": 4,
+      "done_at": "2026-04-19T15:15:00+00:00",
+      "session": "sprint-ideas-gen2"
+    },
+    {
+      "title": "Alinear README con selector",
+      "idea_index": 5,
+      "done_at": "2026-04-19T15:30:00+00:00",
+      "session": "sprint-ideas-gen2"
+    },
+    {
+      "title": "Medidor de eficiencia inter-versiones",
+      "idea_index": 1,
+      "done_at": "2026-04-19T20:20:00+00:00",
+      "session": "sprint-v03-pack"
+    },
+    {
+      "title": "Cierre automático de sesión",
+      "idea_index": 1,
+      "done_at": "2026-04-21T01:52:31.597808+00:00"
+    },
+    {
+      "title": "Alerta de task obsoleta",
+      "idea_index": 1,
+      "done_at": "2026-04-21T04:06:48.075777+00:00"
+    },
+    {
+      "title": "TEMP gate validation",
+      "idea_index": null,
+      "done_at": "2026-04-21T14:13:01.701285+00:00"
+    }
+  ],
+  "updated_at": "2026-04-21T14:13:01.701325+00:00"
+}

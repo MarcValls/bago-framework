@@ -1,0 +1,22 @@
+{
+  "change_id": "BAGO-CHG-075",
+  "type": "architecture",
+  "severity": "minor",
+  "title": "Sprint 180 Fase 5 completa: config, check, archive + suite integración 36/36",
+  "motivation": "Completar el ciclo de herramientas CLI con gestión de configuración, checklist pre-sesión y archivado, y ampliar la suite de integración de 22 a 36 tests cubriendo todos los tools del Sprint 180",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/config.py",
+    ".bago/tools/check.py",
+    ".bago/tools/archive.py",
+    ".bago/tools/integration_tests.py",
+    "bago"
+  ],
+  "details": "Nuevos comandos: bago config list/get/set/reset (5/5 tests), bago check (5/5 tests), bago archive list/run/restore (5/5 tests). Suite de integración ampliada de 9 a 23 tests cubriendo todos los 24 tools del Sprint 180. 36/36 integration tests ALL PASS.",
+  "tests": "python3 bago test → 36/36 ALL PASS. python3 bago validate → GO. python3 bago health → 100/100",
+  "sprint_ref": "SPRINT-004",
+  "related_evidence": [],
+  "created_at": "2026-04-21T23:54:20.453123",
+  "updated_at": "2026-04-21T23:54:20.453147",
+  "author": "sprint-180-agent"
+}

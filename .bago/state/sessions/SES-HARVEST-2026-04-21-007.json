@@ -1,0 +1,35 @@
+{
+  "session_id": "SES-HARVEST-2026-04-21-007",
+  "task_type": "harvest",
+  "selected_workflow": "w9_cosecha",
+  "roles_activated": [
+    "role_auditor"
+  ],
+  "user_goal": "Cosecha contextual: NECESITO BOOTSTRAP Y GENERACIÓN DE IDEAS",
+  "status": "closed",
+  "escenario": "ESCENARIO-003",
+  "created_at": "2026-04-21T13:42:44.831292+00:00",
+  "updated_at": "2026-04-21T13:42:44.831292+00:00",
+  "artifacts": [
+    ".bago/docs/DECISIONES.md",
+    ".bago/prompts/00_BOOTSTRAP_PROYECTO.md",
+    ".bago/docs/operation/CONTRATO_FRONTERA_LLM.md",
+    ".bago/state/changes/BAGO-CHG-067.json",
+    ".bago/state/context_map.json",
+    ".bago/state/evidences/BAGO-EVD-068.json",
+    ".bago/state/sessions/SES-HARVEST-2026-04-21-006.json",
+    ".bago/state/sessions/SES-W1-2026-04-21-001.json",
+    ".bago/state/sessions/SES-W7-2026-04-21-001.json",
+    ".bago/tools/bago_chat_server.py",
+    ".bago/tools/context_map.py",
+    ".bago/tools/target_selector.py",
+    "W2_IMPLEMENTACION_CONTROLADA",
+    "W9_COSECHA"
+  ],
+  "decisions": [
+    "DECISIÓN: NECESITO BOOTSTRAP Y GENERACIÓN DE IDEAS",
+    "DESCARTE: NO DESCARTE NINGUNA MEJORA EN EL REPO"
+  ],
+  "next_step": "IDEAS",
+  "summary": "Harvest W9. Decisión: NECESITO BOOTSTRAP Y GENERACIÓN DE IDEAS. Próximo: IDEAS."
+}

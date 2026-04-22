@@ -1,0 +1,20 @@
+{
+  "slug": "v03-template-seed",
+  "display_name": "Template seed 2.5-stable con ideas evolution + task cycle",
+  "description": "Pack limpio 2.5-stable: cadena evolutiva de ideas (3 generaciones), ciclo completo de tareas W2 (accept→session→done), registro de ideas implementadas, banner dinámico con task activa.",
+  "created_at": "2026-04-19T20:10:00",
+  "distribution_mode": "template_seed",
+  "chg_count": 0,
+  "bago_script": "v3 (task + stability + session)",
+  "bago_version": "2.5-stable",
+  "new_in_v3": [
+    "bago task / bago task --done",
+    "bago stability",
+    "bago session / bago session --dry",
+    "Ideas evolution chain (gen 1 → 2 → 3)",
+    "implemented_ideas.json registry",
+    "Banner muestra task W2 activa",
+    "BAGO_REFERENCIA_COMPLETA.md (18 secciones)"
+  ],
+  "notes": "Usar esta cleanversion para distribuir o iniciar proyectos nuevos con BAGO 2.5-stable."
+}

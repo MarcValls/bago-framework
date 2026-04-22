@@ -1,0 +1,20 @@
+{
+  "change_id": "CHG-010",
+  "title": "CAoS — 13 correcciones UX de controles (bloque 1-3)",
+  "type": "architecture",
+  "severity": "minor",
+  "status": "applied",
+  "motivation": "Audit de controles detectó 7 incoherencias + 5 nuevas mejoras UX. Resultó en 13 fixes: VerbMenu cleanup, cursor residual, dead code, interact delay proporcional, onEnter timing, flags stale closure, viewport clamping, right-click deselect, narrative/dialogue conflict, auto-dismiss narrative, keyboard support en diálogos, extracción HotspotOverlay DRY.",
+  "files_changed": [
+    "src/components/game/SceneView.tsx",
+    "src/components/game/DialoguePanel.tsx",
+    "src/components/game/HotspotOverlay.tsx",
+    "src/components/ui/HUD.tsx",
+    "src/components/r3f/ActorSystem.tsx",
+    "src/state/store.ts"
+  ],
+  "commit": "2a31953",
+  "branch": "alpha-0",
+  "created_at": "2026-04-22",
+  "updated_at": "2026-04-22"
+}

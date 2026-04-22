@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-060",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-059",
+    "SES-HARVEST-2026-04-19-001"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-19-001",
+  "details": "Decisión: Se identificó y corrigió el KO de BAGO causado por mismatch inventory.evidences (42→41). Se verificó health 100/100 y se desbloqueó el gate de ideas. | Descarte: Se descartó editar global_state.json manualmente — se usó reconcile_state.py --fix para garantizar consistencia reproducible. | Próximo paso: Implementar plantilla handoff W2 (idea #1, score 90): convierte idea seleccionada en tarea lista con alcance, archivos y criterio de salida. | Ficheros afectados: .bago/CHECKSUMS.sha256, .bago/TREE.txt, TESTS/",
+  "status": "recorded",
+  "recorded_at": "2026-04-19T16:05:45.207641+00:00"
+}

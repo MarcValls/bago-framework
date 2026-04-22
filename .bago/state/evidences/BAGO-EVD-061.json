@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-061",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-060",
+    "SES-HARVEST-2026-04-21-001"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-21-001",
+  "details": "Decisión: Analisis completo | Descarte: bago framework porque quiero trabajar en modo bago no sobre bago | Próximo paso: Auditoria completa | Ficheros afectados: .bago/tools/bago_banner.py, .bago/tools/emit_ideas.py, bago",
+  "status": "recorded",
+  "recorded_at": "2026-04-20T22:42:52.408593+00:00"
+}

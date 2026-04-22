@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-062",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-061",
+    "SES-HARVEST-2026-04-21-002"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-21-002",
+  "details": "Decisión: analizar el contexto analizar paquets, directorios, subdirectorios, archivos y su contenido | Descarte: trabajar sobre el framwork bago | Próximo paso: Crear un juego | Ficheros afectados: .github/extensions/bash-runner/extension.mjs, cleanversion/BAGO_2.4-v2rc_clean_20260418_161154_coherent.zip, cleanversion/BAGO_2.4-v2rc_clean_20260418_161154_patched.zip",
+  "status": "recorded",
+  "recorded_at": "2026-04-20T23:01:46.620928+00:00"
+}

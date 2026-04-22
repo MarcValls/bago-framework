@@ -1,0 +1,74 @@
+{
+  "contract_id": "CONTRACT-001",
+  "title": "Baseline — Estado presente verificado",
+  "type": "baseline",
+  "created_at": "2026-04-21T22:46:13.694763+00:00",
+  "deadline": "2026-04-21T22:46:13.694763+00:00",
+  "description": "Fotografía exacta del sistema en el momento de firma. Es la referencia de regresión para los contratos C-002 y C-003. No puede violarse: si falla, el sistema ha retrocedido.",
+  "conditions": [
+    {
+      "id": "C001-001",
+      "description": "44/44 integration tests passing",
+      "type": "test_count",
+      "params": {
+        "min": 44
+      },
+      "critical": true
+    },
+    {
+      "id": "C001-002",
+      "description": "bago validate retorna GO",
+      "type": "validate_go",
+      "params": {},
+      "critical": true
+    },
+    {
+      "id": "C001-003",
+      "description": "health >= 100/100",
+      "type": "health_score",
+      "params": {
+        "min": 100
+      },
+      "critical": true
+    },
+    {
+      "id": "C001-004",
+      "description": "≥81 tools Python en .bago/tools/",
+      "type": "tools_count",
+      "params": {
+        "min": 81
+      },
+      "critical": false
+    },
+    {
+      "id": "C001-005",
+      "description": "findings_engine.py existe",
+      "type": "file_exists",
+      "params": {
+        "files": [
+          ".bago/tools/findings_engine.py",
+          ".bago/tools/scan.py",
+          ".bago/tools/hotspot.py",
+          ".bago/tools/autofix.py"
+        ]
+      },
+      "critical": true
+    },
+    {
+      "id": "C001-006",
+      "description": "≥60 cambios (CHG) registrados",
+      "type": "chg_count",
+      "params": {
+        "min": 60
+      },
+      "critical": false
+    },
+    {
+      "id": "C001-007",
+      "description": "al menos 1 sprint abierto",
+      "type": "sprint_open",
+      "params": {},
+      "critical": false
+    }
+  ]
+}

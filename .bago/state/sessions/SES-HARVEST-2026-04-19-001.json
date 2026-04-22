@@ -1,0 +1,24 @@
+{
+  "session_id": "SES-HARVEST-2026-04-19-001",
+  "task_type": "harvest",
+  "selected_workflow": "w9_cosecha",
+  "roles_activated": [
+    "role_auditor"
+  ],
+  "user_goal": "Cosecha contextual: Se identificó y corrigió el KO de BAGO causado por mismatch inventory.evidences ",
+  "status": "closed",
+  "escenario": "ESCENARIO-003",
+  "created_at": "2026-04-19T16:05:45.207641+00:00",
+  "updated_at": "2026-04-19T16:05:45.207641+00:00",
+  "artifacts": [
+    ".bago/CHECKSUMS.sha256",
+    ".bago/TREE.txt",
+    "TESTS/"
+  ],
+  "decisions": [
+    "DECISIÓN: Se identificó y corrigió el KO de BAGO causado por mismatch inventory.evidences (42→41). Se verificó health 100/100 y se desbloqueó el gate de ideas.",
+    "DESCARTE: Se descartó editar global_state.json manualmente — se usó reconcile_state.py --fix para garantizar consistencia reproducible."
+  ],
+  "next_step": "Implementar plantilla handoff W2 (idea #1, score 90): convierte idea seleccionada en tarea lista con alcance, archivos y criterio de salida.",
+  "summary": "Harvest W9. Decisión: Se identificó y corrigió el KO de BAGO causado por mismatch . Próximo: Implementar plantilla handoff W2 (idea #1, score 90): convie."
+}

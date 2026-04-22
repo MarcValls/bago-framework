@@ -1,0 +1,19 @@
+{
+  "change_id": "BAGO-CHG-074",
+  "type": "architecture",
+  "severity": "minor",
+  "title": "Sprint 180 Fase 5: bago insights — motor de insights automaticos",
+  "motivation": "Cerrar el ciclo analitico del pack con insights automaticos accionables derivados de los datos reales de sesiones, cambios y metricas",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/insights.py",
+    "bago"
+  ],
+  "details": "Nuevo comando bago insights. Categorias: PRODUCCION (artefactos/decisiones), PATRON (workflow/rol/cadencia), RIESGO (estados legacy, cambios sin tests), TENDENCIA (comparativa 2 semanas), RECOMENDACION (snapshot, changelog, lint). Filtros --cat, --top, --json. 5/5 tests integrados.",
+  "tests": "python3 .bago/tools/insights.py --test → 5/5 tests pasaron. python3 bago insights → 7 insights reales generados. python3 bago validate → GO manifest/state/pack. python3 bago health → 100/100",
+  "sprint_ref": "SPRINT-004",
+  "related_evidence": [],
+  "created_at": "2026-04-21T23:47:30.180566",
+  "updated_at": "2026-04-21T23:47:30.180681",
+  "author": "sprint-180-agent"
+}

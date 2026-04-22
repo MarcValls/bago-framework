@@ -1,0 +1,50 @@
+{
+  "rule_id": "BAGO-RULE-CDTR-001",
+  "name": "Code Health Drives Technical Results",
+  "version": "1.0.0",
+  "type": "governance",
+  "permanent": true,
+  "created_at": "2026-04-21T22:49:47.059940+00:00",
+  "canon_ref": "core/canon/REGLA_SALUD_RENDIMIENTO.md",
+  "enforcement": {
+    "KO": [
+      {
+        "id": "CDTR-E01",
+        "description": "Critical security findings unacknowledged >7 days",
+        "check": "security_critical_unacked",
+        "block_validate": true
+      }
+    ],
+    "GO_WITH_RESERVATIONS": [
+      {
+        "id": "CDTR-E02",
+        "description": "health_score < 70 without improvement sprint",
+        "check": "health_below_70_no_sprint",
+        "block_validate": false
+      },
+      {
+        "id": "CDTR-E03",
+        "description": "quarterly_drag > 5000 without paydown plan",
+        "check": "high_drag_no_plan",
+        "block_validate": false
+      }
+    ],
+    "ADVISORY": [
+      {
+        "id": "CDTR-A01",
+        "description": "Debt growing between consecutive scans",
+        "check": "debt_growing"
+      },
+      {
+        "id": "CDTR-A02",
+        "description": "Top hotspot score > 50 unchanged > 30 days",
+        "check": "hotspot_stale"
+      }
+    ]
+  },
+  "metrics": {
+    "velocity_formula": "(health/100)^0.6",
+    "debt_interest_quarterly": 0.15,
+    "security_model": "FAIR_simplified"
+  }
+}

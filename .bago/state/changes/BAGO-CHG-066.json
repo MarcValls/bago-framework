@@ -1,0 +1,25 @@
+{
+  "change_id": "BAGO-CHG-066",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Cosecha contextual W9: \".\"",
+  "motivation": "Formalizar exploración libre. Decisión: \".\". Descarte: \".\".",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/stability_summary.py",
+    ".bago/state/changes/BAGO-CHG-064.json",
+    ".bago/state/changes/BAGO-CHG-065.json",
+    ".bago/state/changes/CHG-013.md",
+    ".bago/state/evidences/BAGO-EVD-065.json",
+    ".bago/state/evidences/BAGO-EVD-066.json",
+    ".bago/state/sessions/SES-HARVEST-2026-04-21-004.json",
+    ".bago/tools/bago_debug.py",
+    ".bago/tools/bago_on.py",
+    ".bago/tools/repo_on.py",
+    ".bago/tools/repo_runner.py"
+  ],
+  "related_evidence": "BAGO-EVD-067",
+  "created_at": "2026-04-21T04:08:00.327335+00:00",
+  "updated_at": "2026-04-21T04:08:00.327335+00:00",
+  "author": "role_auditor"
+}

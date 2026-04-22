@@ -1,0 +1,39 @@
+{
+  "change_id": "CHG-011",
+  "title": "CAoS: 12 ideas cosecha implementadas (IDEA-009 a IDEA-020)",
+  "type": "architecture",
+  "severity": "major",
+  "status": "applied",
+  "motivation": "Implementación de 12 ideas cosechadas (IDEA-009 a IDEA-020): SFX one-shot, sequences, letterbox cinematic bars, NPC portraits, autosave, TitleCard overlay, touch support, custom SVG cursors, ambient particles, item detail modal, NPC patrol paths y verb keyboard shortcuts.",
+  "files_changed": [
+    "src/types/game.ts",
+    "src/state/store.ts",
+    "src/components/game/AudioManager.tsx",
+    "src/components/game/GameShell.tsx",
+    "src/components/game/DialoguePanel.tsx",
+    "src/components/ui/HUD.tsx",
+    "src/components/game/HotspotOverlay.tsx",
+    "src/components/game/SceneView.tsx",
+    "src/components/game/InventoryPanel.tsx"
+  ],
+  "ideas_implemented": [
+    "IDEA-009: SFX one-shot (pendingSfx en store + AudioManager)",
+    "IDEA-010: Sequences (applyInteractionResult encadena array)",
+    "IDEA-011: Letterbox cinematic bars (GameShell + AnimatePresence)",
+    "IDEA-012: Portrait en DialoguePanel (componente NPC por speaker ID)",
+    "IDEA-013: AutoSave en changeRoom + botón Save en HUD",
+    "IDEA-014: TitleCard overlay (GameShell, 2.5s auto-clear)",
+    "IDEA-015: Touch support (tap + long press 500ms → VerbMenu)",
+    "IDEA-016: Custom SVG cursors via CSS data-uri injection",
+    "IDEA-017: AmbientParticles (rain/dust/smoke/ember CSS keyframes)",
+    "IDEA-018: Item detail modal con lore en InventoryPanel",
+    "IDEA-019: NPC patrol path animation (patrolPath/patrolSpeed)",
+    "IDEA-020: Verb keyboard shortcuts L/I/P/T en VerbMenu activo"
+  ],
+  "commit": "eb7312a",
+  "branch": "alpha-0",
+  "tsc": "0 errores en src/",
+  "stats": "9 files, 423 insertions, 75 deletions",
+  "created_at": "2026-04-22T00:00:00Z",
+  "updated_at": "2026-04-22T00:00:00Z"
+}

@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% block title %}BAGO · Evolución de Capacidades{% endblock %}
+{% block breadcrumb %}📈 Evolución de Capacidades{% endblock %}
+
+{% block content %}
+<style>
+  .evo-hero { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:20px; margin-bottom:32px; }
+  .evo-hero-text h1 { font-size:2rem; }
+  .evo-hero-text p  { margin-top:8px; max-width:560px; }
+
+  .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:36px; }
+  .kpi { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px 20px; }
+  .kpi-label { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.07em; }
+  .kpi-val   { font-size:2.1rem; font-weight:800; margin:8px 0 4px; }
+  .kpi-sub   { color:var(--muted); font-size:.82rem; }
+  .kpi-green { color:var(--accent); }
+  .kpi-blue  { color:var(--accent2); }
+  .kpi-warn  { color:var(--warn); }
+
+  .chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:36px; }
+  @media(max-width:760px){ .chart-grid{ grid-template-columns:1fr; } }
+  .chart-box { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; }
+  .chart-box h3 { margin-bottom:16px; color:var(--accent2); font-size:.95rem; text-transform:uppercase; letter-spacing:.06em; }
+  .chart-wrap { position:relative; height:240px; }
+
+  /* Version table */
+  .ver-table-wrap { background:var(--card); border:1px solid var(--line); border-radius:16px; overflow:hidden; margin-bottom:36px; }
+  .ver-table-wrap table { font-size:.88rem; }
+  .ver-table-wrap th { background:rgba(56,189,248,.06); font-size:.78rem; padding:10px 14px; }
+  .ver-table-wrap td { padding:10px 14px; }
+  .ver-live td { background:rgba(34,197,94,.05); }
+  .delta-up   { color:var(--accent);  font-weight:700; }
+  .delta-down { color:var(--danger);  font-weight:700; }
+  .delta-eq   { color:var(--muted); }
+  .idx-bar { display:inline-block; height:6px; border-radius:3px; background:var(--accent); vertical-align:middle; margin-left:6px; }
+
+  /* Ideas timeline */
+  .ideas-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; margin-bottom:36px; }
+  .idea-card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .idea-card .idea-title { font-weight:600; font-size:.92rem; margin-bottom:6px; }
+  .idea-card .idea-meta  { color:var(--muted); font-size:.78rem; }
+  .idea-sprint { display:inline-block; padding:2px 8px; border-radius:999px; font-size:.72rem; font-weight:700;
+                 background:rgba(56,189,248,.12); color:var(--accent2); border:1px solid rgba(56,189,248,.2); margin-bottom:6px; }
+
+  /* New tools list */
+  .tools-section { margin-bottom:36px; }
+  .tools-ver-block { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 20px; margin-bottom:12px; }
+  .tools-ver-block h4 { color:var(--accent2); font-size:.88rem; font-weight:700; margin-bottom:10px; }
+  .tool-chip { display:inline-block; margin:3px 4px; padding:3px 10px; border-radius:999px; font-size:.78rem; font-weight:600;
+               background:rgba(34,197,94,.1); color:#4ade80; border:1px solid rgba(34,197,94,.2); }
+  .cmd-chip  { display:inline-block; margin:3px 4px; padding:3px 10px; border-radius:999px; font-size:.78rem; font-weight:600;
+               background:rgba(245,158,11,.1); color:#fbbf24; border:1px solid rgba(245,158,11,.25); }
+
+  /* Health bar */
+  .health-bar-wrap { display:flex; align-items:center; gap:12px; margin-top:4px; }
+  .health-bar { flex:1; max-width:200px; height:8px; background:var(--line); border-radius:4px; overflow:hidden; }
+  .health-fill { height:100%; border-radius:4px; background:var(--accent); }
+</style>
+
+{# ── Build chart data ── #}
+{% set versions = data.versions %}
+{% set ideas    = data.ideas %}
+
+<div class="evo-hero">
+  <div class="evo-hero-text">
+    <h1>Evolución de Capacidades BAGO</h1>
+    <p>Comparativa estructurada de métricas entre todas las versiones disponibles. De 2.3-clean a {{ data.live_version }}.</p>
+  </div>
+  <a href="/" class="btn btn-secondary" style="margin-top:6px">← Packs</a>
+</div>
+
+{# ── KPIs ── #}
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-label">Versión activa</div>
+    <div class="kpi-val kpi-blue">{{ data.live_version }}</div>
+    <div class="kpi-sub">{{ versions|length }} snapshots</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Health score</div>
+    <div class="kpi-val kpi-green">{{ data.live_health }}<span style="font-size:1rem;font-weight:400">/100</span></div>
+    <div class="health-bar-wrap">
+      <div class="health-bar"><div class="health-fill" style="width:{{ data.live_health }}%"></div></div>
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Herramientas</div>
+    {% set live = versions|selectattr("slug","eq","live")|first %}
+    <div class="kpi-val kpi-green">{{ live.tools or '—' }}</div>
+    <div class="kpi-sub">archivos .py en tools/</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Comandos CLI</div>
+    <div class="kpi-val kpi-blue">{{ live.commands }}</div>
+    <div class="kpi-sub">bago [cmd]</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Ideas implementadas</div>
+    <div class="kpi-val kpi-warn">{{ ideas|length }}</div>
+    <div class="kpi-sub">registered in ideas log</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">CHGs registrados</div>
+    <div class="kpi-val">{{ data.live_chgs }}</div>
+    <div class="kpi-sub">BAGO-CHG-*.json</div>
+  </div>
+</div>
+
+{# ── Charts ── #}
+<div class="chart-grid">
+  <div class="chart-box">
+    <h3>Comandos CLI por versión</h3>
+    <div class="chart-wrap"><canvas id="chartCmds"></canvas></div>
+  </div>
+  <div class="chart-box">
+    <h3>Herramientas (.py) por versión</h3>
+    <div class="chart-wrap"><canvas id="chartTools"></canvas></div>
+  </div>
+  <div class="chart-box">
+    <h3>Índice de eficiencia (/100)</h3>
+    <div class="chart-wrap"><canvas id="chartIdx"></canvas></div>
+  </div>
+  <div class="chart-box">
+    <h3>Docs + Workflows por versión</h3>
+    <div class="chart-wrap"><canvas id="chartDocs"></canvas></div>
+  </div>
+</div>
+
+{# ── Version comparison table ── #}
+<h2>Tabla comparativa de versiones</h2>
+<div class="ver-table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Versión</th><th>Sprint</th><th>CMD</th><th>Tools</th><th>Docs</th><th>WF</th><th>Eficiencia</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in versions %}
+      {% set is_live = v.slug == "live" %}
+      {% set prev = versions[loop.index0 - 1] if loop.index0 > 0 else None %}
+      <tr class="{{ 'ver-live' if is_live else '' }}">
+        <td>
+          <strong>{{ v.version }}</strong>
+          {% if is_live %}<span class="tag" style="margin-left:6px">ACTIVO</span>{% endif %}
+        </td>
+        <td style="color:var(--muted);font-size:.82rem">{{ v.sprint }}</td>
+
+        {# CMD delta #}
+        <td>
+          {{ v.commands }}
+          {% if prev and prev.commands is not none %}
+            {% set d = v.commands - prev.commands %}
+            {% if d > 0 %}<span class="delta-up">↑+{{ d }}</span>
+            {% elif d < 0 %}<span class="delta-down">↓{{ d }}</span>
+            {% else %}<span class="delta-eq">=</span>{% endif %}
+          {% endif %}
+        </td>
+
+        {# Tools delta #}
+        <td>
+          {% if v.tools is not none %}
+            {{ v.tools }}
+            {% if prev and prev.tools is not none %}
+              {% set d = v.tools - prev.tools %}
+              {% if d > 0 %}<span class="delta-up">↑+{{ d }}</span>
+              {% elif d < 0 %}<span class="delta-down">↓{{ d }}</span>
+              {% else %}<span class="delta-eq">=</span>{% endif %}
+            {% endif %}
+          {% else %}<span style="color:var(--muted)">—</span>{% endif %}
+        </td>
+
+        {# Docs delta #}
+        <td>
+          {% if v.docs is not none %}
+            {{ v.docs }}
+            {% if prev and prev.docs is not none %}
+              {% set d = v.docs - prev.docs %}
+              {% if d > 0 %}<span class="delta-up">↑+{{ d }}</span>
+              {% elif d < 0 %}<span class="delta-down">↓{{ d }}</span>
+              {% else %}<span class="delta-eq">=</span>{% endif %}
+            {% endif %}
+          {% else %}<span style="color:var(--muted)">—</span>{% endif %}
+        </td>
+
+        {# Workflows #}
+        <td>{{ v.workflows if v.workflows is not none else '—' }}</td>
+
+        {# Efficiency index bar #}
+        <td>
+          <span style="font-weight:700;color:{{ 'var(--accent)' if is_live else 'var(--text)' }}">{{ v.efficiency|round|int }}</span>
+          <span class="idx-bar" style="width:{{ (v.efficiency * 1.2)|round|int }}px"></span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{# ── New tools & commands per version ── #}
+<h2>Novedades por versión</h2>
+<div class="tools-section">
+  {% for v in versions %}
+  {% if v.new_tools or v.new_cmds %}
+  <div class="tools-ver-block">
+    <h4>{{ v.version }} — {{ v.sprint }}</h4>
+    {% if v.new_cmds %}
+    <div style="margin-bottom:8px">
+      <span style="color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em">Nuevos comandos</span><br/>
+      {% for c in v.new_cmds %}<span class="cmd-chip">bago {{ c }}</span>{% endfor %}
+    </div>
+    {% endif %}
+    {% if v.new_tools %}
+    <div>
+      <span style="color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em">Nuevas herramientas</span><br/>
+      {% for t in v.new_tools %}<span class="tool-chip">{{ t }}</span>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+
+{# ── Ideas implementadas ── #}
+{% if ideas %}
+<h2>Ideas implementadas ({{ ideas|length }})</h2>
+<div class="ideas-grid">
+  {% for idea in ideas %}
+  <div class="idea-card">
+    {% if idea.session %}<div class="idea-sprint">{{ idea.session }}</div>{% endif %}
+    <div class="idea-title">{{ idea.title }}</div>
+    <div class="idea-meta">
+      {% if idea.done_at %}✅ {{ idea.done_at[:10] }}{% endif %}
+      {% if idea.idea_index %} · #{{ idea.idea_index }}{% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{# ── Chart.js scripts ── #}
+<script>
+(function(){
+  const VERSIONS = {{ versions | tojson }};
+
+  const labels = VERSIONS.map(v => v.version);
+  const cmds   = VERSIONS.map(v => v.commands || 0);
+  const tools  = VERSIONS.map(v => v.tools || 0);
+  const docs   = VERSIONS.map(v => v.docs  || 0);
+  const wfs    = VERSIONS.map(v => v.workflows || 0);
+  const idxs   = VERSIONS.map(v => v.efficiency || 0);
+
+  const GRID_COLOR  = 'rgba(51,65,85,0.5)';
+  const TEXT_COLOR  = '#94a3b8';
+  const GREEN       = 'rgba(34,197,94,0.85)';
+  const BLUE        = 'rgba(56,189,248,0.85)';
+  const WARN        = 'rgba(245,158,11,0.85)';
+  const PURPLE      = 'rgba(167,139,250,0.85)';
+
+  Chart.defaults.color = TEXT_COLOR;
+  Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+  Chart.defaults.font.size = 12;
+
+  function baseOpts(title) {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#1e293b', titleColor: '#e2e8f0', bodyColor: '#94a3b8' }
+      },
+      scales: {
+        x: { grid: { color: GRID_COLOR }, ticks: { color: TEXT_COLOR, maxRotation: 35 } },
+        y: { grid: { color: GRID_COLOR }, ticks: { color: TEXT_COLOR }, beginAtZero: true }
+      }
+    };
+  }
+
+  // Chart 1: Comandos
+  new Chart(document.getElementById('chartCmds'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: 'Comandos CLI', data: cmds, backgroundColor: labels.map((l,i) => i===labels.length-1 ? GREEN : BLUE), borderRadius: 6, borderSkipped: false }]
+    },
+    options: baseOpts('Comandos CLI')
+  });
+
+  // Chart 2: Tools
+  new Chart(document.getElementById('chartTools'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: 'Herramientas', data: tools, backgroundColor: labels.map((l,i) => i===labels.length-1 ? GREEN : WARN), borderRadius: 6, borderSkipped: false }]
+    },
+    options: baseOpts('Herramientas')
+  });
+
+  // Chart 3: Efficiency index — line
+  new Chart(document.getElementById('chartIdx'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Índice', data: idxs,
+        borderColor: GREEN, backgroundColor: 'rgba(34,197,94,0.1)',
+        pointBackgroundColor: labels.map((l,i) => i===labels.length-1 ? GREEN : '#1e293b'),
+        pointBorderColor: GREEN,
+        pointRadius: 5, tension: 0.35, fill: true
+      }]
+    },
+    options: { ...baseOpts(), plugins: { ...baseOpts().plugins, legend: { display: false } },
+      scales: { ...baseOpts().scales, y: { ...baseOpts().scales.y, max: 100 } }
+    }
+  });
+
+  // Chart 4: Docs + Workflows stacked
+  new Chart(document.getElementById('chartDocs'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Docs (.md)', data: docs, backgroundColor: BLUE, borderRadius: 4, borderSkipped: false },
+        { label: 'Workflows', data: wfs, backgroundColor: PURPLE, borderRadius: 4, borderSkipped: false }
+      ]
+    },
+    options: {
+      ...baseOpts(),
+      plugins: { ...baseOpts().plugins, legend: { display: true, labels: { color: TEXT_COLOR, boxWidth: 12 } } },
+      scales: { ...baseOpts().scales, x: { ...baseOpts().scales.x, stacked: false }, y: { ...baseOpts().scales.y, stacked: false } }
+    }
+  });
+})();
+</script>
+{% endblock %}

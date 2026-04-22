@@ -10,7 +10,7 @@ Uso:
 """
 
 import json, re, subprocess, sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 # ─── Rutas ────────────────────────────────────────────────────────────────────
@@ -114,6 +114,42 @@ def _working_mode():
     except Exception:
         return "?"
 
+
+def _repo_context():
+    try:
+        return json.loads((STATE / "repo_context.json").read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _repo_surface():
+    ctx = _repo_context()
+    if ctx.get("working_mode") != "external":
+        return None
+    repo_root = Path(ctx.get("repo_root", "")).resolve() if ctx.get("repo_root") else None
+    if not repo_root or not repo_root.exists():
+        return None
+
+    manifests = [
+        name for name in ("package.json", "pyproject.toml", "Cargo.toml", "go.mod")
+        if (repo_root / name).exists()
+    ]
+    try:
+        r = subprocess.run(
+            ["git", "-C", str(repo_root), "status", "--short"],
+            capture_output=True, text=True, cwd=str(BAGO_ROOT.parent)
+        )
+        dirty = len([line for line in r.stdout.splitlines() if line.strip()]) if r.returncode == 0 else 0
+    except Exception:
+        dirty = 0
+
+    return {
+        "name": repo_root.name,
+        "path": str(repo_root),
+        "manifests": manifests,
+        "dirty": dirty,
+    }
+
 def _detector_verdict():
     try:
         import importlib.util
@@ -126,7 +162,26 @@ def _detector_verdict():
     except Exception:
         return None, 0, 2
 
+def _active_task():
+    """Devuelve (title, status, days_open) si hay pending_w2_task.json, o None.
+    days_open es None si no hay campo accepted_at."""
+    try:
+        data = json.loads((STATE / "pending_w2_task.json").read_text(encoding="utf-8"))
+        title  = data.get("idea_title", "—")
+        status = data.get("status", "pending")
+        days_open = None
+        accepted_at_str = data.get("accepted_at")
+        if accepted_at_str:
+            accepted_at = datetime.fromisoformat(accepted_at_str)
+            if accepted_at.tzinfo is None:
+                accepted_at = accepted_at.replace(tzinfo=timezone.utc)
+            days_open = (datetime.now(timezone.utc) - accepted_at).days
+        return title, status, days_open
+    except Exception:
+        return None
+
 def _last_session():
+    """Devuelve (session_id, workflow) de la última sesión cerrada."""
     try:
         gs = json.loads((STATE / "global_state.json").read_text())
         return gs.get("last_completed_session_id", ""), gs.get("last_completed_workflow", "")
@@ -143,7 +198,9 @@ def print_banner(mini=False):
     scenarios      = _active_scenarios()
     last_sid, last_wf = _last_session()
     verdict, score, max_score = _detector_verdict()
-    now_str = datetime.now().strftime("%Y-%m-%d  %H:%M")
+    active_task    = _active_task()
+    repo_surface   = _repo_surface()
+    now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d  %H:%M")
 
     print()
     print(TOP)
@@ -194,20 +251,51 @@ def print_banner(mini=False):
             v_str = DIM("✔  CLEAN")
         print(_box(INDENT + DIM("detector W9: ") + v_str))
 
+    if repo_surface:
+        repo_label = YELLOW(repo_surface["name"])
+        print(_box(INDENT + DIM("repo ext: ") + repo_label))
+        manifest_str = ", ".join(repo_surface["manifests"]) if repo_surface["manifests"] else "sin manifiesto soportado"
+        signal = f"dirty={repo_surface['dirty']}  ·  {manifest_str}"
+        print(_box(INDENT + DIM("repo señal: ") + DIM(signal)))
+
     # ── Última sesión ─────────────────────────────────────────────────────────
     if last_sid:
         print(_box(INDENT + DIM("última ses: ") + DIM(last_sid) + "  " + DIM(last_wf)))
+
+    # ── Task W2 activa ────────────────────────────────────────────────────────
+    if active_task is not None:
+        title, tstatus, days_open = active_task
+        icon = "✅" if tstatus == "done" else "⏳"
+        task_color = GREEN if tstatus == "done" else YELLOW
+        task_line = DIM("task W2: ") + task_color(f"{icon} {title}")
+        if days_open is not None and days_open > 3 and tstatus != "done":
+            task_line += "  " + RED(f"⚠️  STALE ({days_open}d)")
+        print(_box(INDENT + task_line))
 
     if not mini:
         print(SEP)
         # ── Comandos ─────────────────────────────────────────────────────────
         cmds = [
-            ("bago",           "muestra este cartel"),
-            ("bago dashboard", "pack_dashboard"),
-            ("bago ideas",     "emit_ideas"),
-            ("bago cosecha",   "protocolo W9"),
-            ("bago detector",  "context_detector"),
-            ("bago validate",  "validate_pack"),
+            ("bago",                "[pack] muestra este cartel"),
+            ("bago on",             "[pack] activa modo BAGO"),
+            ("bago dashboard",      "[pack] pack_dashboard"),
+            ("bago debug",          "[dual] bugs reparables del pack"),
+            ("bago debug --repo .", "[dual] bugs del proyecto intervenido"),
+            ("bago repo-on <path>", "[repo] activa repo externo"),
+            ("bago repo-debug .",   "[repo] alias explícito repo"),
+            ("bago repo-lint .",    "[repo] lint explícito"),
+            ("bago repo-test .",    "[repo] test explícito"),
+            ("bago repo-build .",   "[repo] build explícito"),
+            ("bago ideas",          "[pack] emit_ideas"),
+            ("bago task",           "[pack] tarea W2 registrada"),
+            ("bago session",        "[pack] abre sesión W2 desde handoff"),
+            ("bago stability",      "[pack] resumen estabilidad"),
+            ("bago cosecha",        "[pack] protocolo W9"),
+            ("bago detector",       "[pack] context_detector"),
+            ("bago validate",       "[pack] validate_pack"),
+            ("bago map",            "[pack] mapa de contextos distribuidos"),
+            ("bago chat",           "[pack] chat web con Ollama + roles"),
+            ("bago chat --mock",    "[pack] chat demo sin LLM (prueba de UI)"),
         ]
         col_w = max(len(c) for c, _ in cmds)
         for cmd, desc in cmds:

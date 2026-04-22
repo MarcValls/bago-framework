@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-070",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-069",
+    "TEMP gate validation"
+  ],
+  "summary": "Cierre W2 automático: TEMP gate validation",
+  "details": "La tarea W2 quedó marcada como done, se generó un CHG de gobernanza y se actualizó global_state con el nuevo inventario. Archivos candidatos de la tarea: .bago/tools/show_task.py, .bago/tools/generate_task_closure.py. Gate de cierre: GO. Tests ejecutados: true=>0. Validación humana: Recorrido humano completado sin fricciones",
+  "status": "recorded",
+  "recorded_at": "2026-04-21T14:13:01.673564+00:00"
+}

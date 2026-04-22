@@ -1,206 +1,455 @@
 #!/usr/bin/env python3
 """
-pack_dashboard.py — Estado del pack BAGO en una pantalla.
-Uso: python3 .bago/tools/pack_dashboard.py [--full]
+pack_dashboard.py — BAGO Cockpit v2
+Dashboard unificado: health ring, riesgos, deuda, velocity, contratos, hotspots.
+Uso: python3 .bago/tools/pack_dashboard.py [--full] [--json] [--compact]
 """
-import json
-import importlib.util
-import subprocess
-import sys
+import json, subprocess, sys, re, os
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
-ROOT = Path(__file__).parent.parent
-STATE = ROOT / "state"
-TOOLS = ROOT / "tools"
+ROOT   = Path(__file__).parent.parent
+STATE  = ROOT / "state"
+TOOLS  = ROOT / "tools"
+W      = 62   # ancho total del panel
+
+# ─── helpers visuales ─────────────────────────────────────────────────────────
+
+def _bar(val, maxv=100, width=20, fill="█", empty="░"):
+    n = max(0, min(width, int(width * val / max(maxv, 1))))
+    return fill * n + empty * (width - n)
+
+def _ring(score):
+    """Semicírculo ASCII de salud."""
+    if score >= 90: color = "🟢"
+    elif score >= 70: color = "🟡"
+    else: color = "🔴"
+    return f"{color} {score:3d}/100"
+
+def _sparkline(values):
+    """Mini sparkline de 8 chars."""
+    bars = " ▁▂▃▄▅▆▇█"
+    if not values: return "—"
+    mn, mx = min(values), max(values)
+    span = mx - mn or 1
+    return "".join(bars[max(0, min(8, int((v - mn) / span * 8)))] for v in values[-8:])
+
+def _pad(text, width):
+    """Pad/truncate text to exactly width chars."""
+    text = str(text)
+    visible = re.sub(r"\[[0-9;]*m", "", text)
+    n = len(visible)
+    if n < width:
+        return text + " " * (width - n)
+    return text[:width]
+
+def _row(content, width=W):
+    """Fila de dashboard con bordes."""
+    inner = width - 4
+    return f"║  {_pad(content, inner)}  ║"
+
+def _divider():
+    return "╠" + "═" * (W - 2) + "╣"
+
+def _header(title):
+    inner = W - 4
+    t = title.center(inner)
+    return f"║  {t}  ║"
+
+def _top():
+    return "╔" + "═" * (W - 2) + "╗"
+
+def _bottom():
+    return "╚" + "═" * (W - 2) + "╝"
+
+# ─── cargadores de datos ──────────────────────────────────────────────────────
 
 def _count(folder):
-    return len(list((STATE / folder).glob("*.json")))
-
-def _validate():
-    try:
-        r = subprocess.run(
-            ["python3", str(TOOLS / "validate_pack.py")],
-            capture_output=True, text=True, cwd=ROOT.parent
-        )
-        out = r.stdout.strip().splitlines()
-        last = out[-1] if out else "?"
-        return "GO" if "GO pack" in last else f"KO ({last})"
-    except Exception as e:
-        return f"ERROR ({e})"
+    d = STATE / folder
+    return len(list(d.glob("*.json"))) if d.exists() else 0
 
 def _load_global():
     p = STATE / "global_state.json"
     d = json.loads(p.read_text()) if p.exists() else {}
     if not d.get("pack_version"):
-        pack_p = ROOT / "pack.json"
-        if pack_p.exists():
-            pack = json.loads(pack_p.read_text())
-            d["pack_version"] = pack.get("version", "?")
+        pp = ROOT / "pack.json"
+        if pp.exists():
+            d["pack_version"] = json.loads(pp.read_text()).get("version", "?")
     return d
 
-def _escenario_002():
-    excl = {"state/sessions/", "state/changes/", "state/evidences/", "TREE.txt", "CHECKSUMS.sha256"}
-    on_u, on_n, off_u, off_n = 0, 0, 0, 0
-    for f in (STATE / "sessions").glob("*.json"):
-        s = json.loads(f.read_text())
-        if s.get("escenario") != "ESCENARIO-002" or s.get("status") != "closed":
-            continue
-        arts = [a for a in s.get("artifacts", []) if not any(a.startswith(e) for e in excl)]
-        if s.get("bago_mode") == "on":
-            on_u += len(arts); on_n += 1
-        else:
-            off_u += len(arts); off_n += 1
-    return on_n, on_u, off_n, off_u
-
-def _avg_production(last_n=5):
-    excl = {"state/sessions/", "state/changes/", "state/evidences/", "TREE.txt", "CHECKSUMS.sha256"}
-    sessions = []
-    for f in (STATE / "sessions").glob("*.json"):
-        s = json.loads(f.read_text())
-        if s.get("status") != "closed":
-            continue
-        arts = [a for a in s.get("artifacts", []) if not any(a.startswith(e) for e in excl)]
-        sessions.append((s.get("updated_at", ""), len(arts)))
-    sessions.sort(reverse=True)
-    subset = sessions[:last_n]
-    if not subset:
-        return 0.0
-    return round(sum(u for _, u in subset) / len(subset), 1)
-
-def _context_detector():
-    """Ejecuta context_detector y devuelve (verdict, score, threshold, n_signals)."""
-    detector = TOOLS / "context_detector.py"
-    if not detector.exists():
-        return None, 0, 0, 0
+def _run_tool(args, timeout=10):
     try:
-        spec = importlib.util.spec_from_file_location("context_detector", detector)
-        mod  = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
-        result = mod.evaluate()
-        return (
-            result.get("verdict", "?"),
-            result.get("score", 0),
-            result.get("threshold", 2),
-            len(result.get("signals", []))
+        r = subprocess.run(
+            [sys.executable] + [str(a) for a in args],
+            capture_output=True, text=True, timeout=timeout,
+            cwd=ROOT.parent
         )
+        return r.stdout.strip(), r.returncode
+    except Exception as e:
+        return str(e), -1
+
+def _health():
+    """Lee health via import directo (evita subprocess lento)."""
+    try:
+        sys.path.insert(0, str(TOOLS))
+        import health_score as hs
+        # score_* functions return (pts, max_pts, detail) → r[0]=earned, r[1]=max
+        results = [
+            hs.score_integridad(),
+            hs.score_disciplina_workflow(),
+            hs.score_captura_decisiones(),
+            hs.score_estado_stale(),
+            hs.score_consistencia_inventario(),
+        ]
+        total   = sum(r[0] for r in results)
+        max_tot = sum(r[1] for r in results)
+        label = "🟢 Excelente" if total >= 90 else ("🟡 Aceptable" if total >= 50 else "🔴 Crítico")
+        return total, label
     except Exception:
-        return "ERR", 0, 0, 0
+        return 0, "?"
 
-def _escenario_003_stats():
-    """Cuenta cosechas W9 completadas en ESCENARIO-003."""
-    harvests = []
-    for f in (STATE / "sessions").glob("*.json"):
-        s = json.loads(f.read_text())
-        if (s.get("escenario") == "ESCENARIO-003"
-                and s.get("status") == "closed"
-                and s.get("task_type") == "harvest"):
-            harvests.append(s)
-    n = len(harvests)
-    if n == 0:
-        return n, 0.0, 0.0
-    avg_dec = round(sum(len(s.get("decisions", [])) for s in harvests) / n, 1)
-    avg_art = round(sum(len([a for a in s.get("artifacts", [])
-                              if "state/" not in a]) for s in harvests) / n, 1)
-    return n, avg_dec, avg_art
+def _validate():
+    out, rc = _run_tool([TOOLS / "validate_pack.py"])
+    if "GO pack" in out: return "✅ GO"
+    if rc == 0: return "✅ GO"
+    return "❌ KO"
 
-def main():
-    full = "--full" in sys.argv
-    g = _load_global()
-    pack_status = _validate()
-    inv = g.get("inventory", {})
-    on_n, on_u, off_n, off_u = _escenario_002()
-    avg = _avg_production()
-    verdict, score, threshold, n_signals = _context_detector()
-    e003_n, e003_dec, e003_art = _escenario_003_stats()
+def _detector():
+    try:
+        sys.path.insert(0, str(TOOLS))
+        from context_detector import evaluate
+        r = evaluate()
+        verdict = r.get("verdict", "CLEAN")
+        score   = r.get("score", 0)
+        thresh  = r.get("threshold", 2)
+        return verdict, score, thresh
+    except Exception:
+        return "CLEAN", 0, 2
 
-    on_avg  = round(on_u  / on_n,  1) if on_n  else 0
-    off_avg = round(off_u / off_n, 1) if off_n else 0
-    delta   = round(on_avg - off_avg, 1)
-    leader  = "ON ✅" if delta > 0 else ("OFF 🔴" if delta < 0 else "EMPATE")
+def _top_risks():
+    try:
+        out, _ = _run_tool([TOOLS / "risk_matrix.py", "--json"], timeout=8)
+        data = json.loads(out)
+        risks = data.get("risks", [])
+        return sorted(risks, key=lambda r: r.get("score", 0), reverse=True)[:3]
+    except Exception:
+        return []
 
-    status_icon = "✅" if pack_status == "GO" else "❌"
-    total_ses = _count("sessions")
+def _debt_summary():
+    try:
+        out, _ = _run_tool([TOOLS / "debt_ledger.py", "--json"], timeout=8)
+        data = json.loads(out)
+        total_h   = data.get("total_hours", 0)
+        total_eur = data.get("total_cost", 0)
+        items_cnt = data.get("items", 0)
+        by_q      = data.get("by_quadrant", {})
+        return total_h, total_eur, items_cnt, by_q
+    except Exception:
+        return 0, 0, 0, {}
 
-    # Línea del detector
-    verdict_icons = {"HARVEST": "🌾 HARVEST", "WATCH": "👁  WATCH  ", "CLEAN": "✅ CLEAN  ", "ERR": "⚠️  ERROR  "}
-    v_str = verdict_icons.get(verdict, f"?  {verdict:<7}")
-    bar_filled = min(int(10 * score / max(threshold, 1)), 10)
-    bar = "█" * bar_filled + "░" * (10 - bar_filled)
+def _velocity_data():
+    """Lee velocity directo desde sesiones (sin subprocess)."""
+    try:
+        sessions_dir = STATE / "sessions"
+        closed = []
+        for f in sessions_dir.glob("*.json"):
+            try:
+                d = json.loads(f.read_text())
+                if d.get("status") == "closed":
+                    closed.append(d)
+            except Exception:
+                pass
+        if not closed:
+            return {}
+        # últimas 8 sesiones — contar artefactos
+        closed.sort(key=lambda d: d.get("created_at", ""), reverse=True)
+        recent = closed[:10]
+        arts   = [len(d.get("artifacts", [])) for d in recent][::-1]
+        trend  = "↑" if len(arts) >= 2 and arts[-1] > arts[0] else ("↓" if len(arts) >= 2 and arts[-1] < arts[0] else "→")
+        return {"artifacts_per_session": arts, "sessions_per_week": [], "trend": trend}
+    except Exception:
+        return {}
 
-    # Escenario-003 estado
-    active_scenarios = g.get("active_scenarios", [])
-    e003_active = "ESCENARIO-003" in active_scenarios
+def _contracts():
+    """Lee contratos directamente desde state/contracts/ (evita subprocess que cuelga)."""
+    contracts_dir = STATE / "contracts"
+    results = []
+    now = datetime.now(timezone.utc)
+    for f in sorted(contracts_dir.glob("CONTRACT-*.json")):
+        try:
+            c = json.loads(f.read_text())
+            cid    = c.get("contract_id", f.stem)
+            conds  = c.get("conditions", [])
+            total  = len(conds)
+            # Check conditions met (quick check: file_exists only)
+            met = sum(1 for cond in conds if cond.get("type") == "file_exists"
+                      and ROOT.parent.joinpath(cond.get("path","")).exists())
+            ddl = c.get("deadline")
+            status = "fulfilled" if met == total else "pending"
+            results.append({
+                "id": cid, "status": status,
+                "conditions_met": met, "conditions_total": total,
+                "deadline": ddl,
+            })
+        except Exception:
+            pass
+    return results
 
-    print()
-    print("╔══════════════════════════════════════════════════════╗")
-    print("║              BAGO PACK DASHBOARD                    ║")
-    print("╠══════════════════════════════════════════════════════╣")
-    print(f"║  Pack:      {status_icon} {pack_status:<41}║")
-    print(f"║  Versión:   {g.get('pack_version','?'):<43}║")
-    print("╠══════════════════════════════════════════════════════╣")
-    print(f"║  Inventario   sessions={inv.get('sessions','?')} ({total_ses} archivos) "
-          f"changes={inv.get('changes','?')} evidences={inv.get('evidences','?')}  ║")
-    print("╠══════════════════════════════════════════════════════╣")
-    print(f"║  Producción últimas 5 sesiones:   {avg} útiles/sesión       ║")
-    print("╠══════════════════════════════════════════════════════╣")
-    print(f"║  ESCENARIO-002  ON({on_n})={on_avg}/ses  OFF({off_n})={off_avg}/ses"
-          f"  Δ={delta:+.1f}  {leader:<6}║")
-    print("╠══════════════════════════════════════════════════════╣")
-    e3_tag = "🔬 ACTIVO" if e003_active else "CERRADO  "
-    print(f"║  ESCENARIO-003  {e3_tag}  cosechas={e003_n}  dec/harvest={e003_dec}  ║")
-    print("╠══════════════════════════════════════════════════════╣")
-    if verdict:
-        print(f"║  Detector W9:  {v_str}  [{bar}] {score}/{threshold}        ║")
-        if verdict == "HARVEST":
-            print( "║  → python3 .bago/tools/cosecha.py                   ║")
-    print("╠══════════════════════════════════════════════════════╣")
-    lc = g.get("last_completed_session_id", "—")
-    print(f"║  Última sesión: {lc:<37}║")
-    print(f"║  Workflow:      {g.get('last_completed_workflow','—'):<37}║")
-    active = g.get("active_session_id") or "—"
-    print(f"║  Activa ahora:  {active:<37}║")
-    print("╚══════════════════════════════════════════════════════╝")
-    print()
+def _hotspots():
+    try:
+        out, _ = _run_tool([TOOLS / "hotspot.py", "--json", "--top", "3"], timeout=15)
+        data = json.loads(out)
+        return data.get("hotspots", [])[:3]
+    except Exception:
+        return []
+
+def _sprint():
+    sdir = STATE / "sprints"
+    open_s = []
+    for f in sdir.glob("*.json"):
+        try:
+            d = json.loads(f.read_text())
+            if d.get("status") == "open":
+                open_s.append(d)
+        except Exception:
+            pass
+    return open_s[-1] if open_s else None
+
+def _last_session():
+    gs = _load_global()
+    sid = gs.get("last_completed_session_id", "—")
+    wf  = gs.get("last_completed_workflow", "—")
+    return sid, wf
+
+# ─── secciones del dashboard ──────────────────────────────────────────────────
+
+def section_header(gs):
+    ver = gs.get("pack_version") or gs.get("bago_version", "?")
+    val = _validate()
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    lines = [
+        _header(f"⚡ BAGO COCKPIT v2  —  {ver}"),
+        _row(f"Pack: {val:<12}  Fecha: {now}"),
+    ]
+    return lines
+
+def section_health():
+    score, label = _health()
+    bar  = _bar(score)
+    ring = _ring(score)
+    lines = [
+        _header("── SALUD DEL SISTEMA ──"),
+        _row(f"Score:  {ring}  [{bar}]"),
+        _row(f"Estado: {label}"),
+    ]
+    return lines, score
+
+def section_inventory():
+    gs = _load_global()
+    inv = gs.get("inventory", {})
+    sessions  = inv.get("sessions", _count("sessions"))
+    changes   = inv.get("changes", _count("changes"))
+    evidences = inv.get("evidences", _count("evidences"))
+    tools_dir = ROOT / "tools"
+    tools_n   = len(list(tools_dir.glob("*.py")))
+    return [
+        _header("── INVENTARIO ──"),
+        _row(f"Sesiones: {sessions:<6} Cambios: {changes:<6} Evidencias: {evidences}"),
+        _row(f"Tools: {tools_n} .py  │  Sprints abiertos: {_count_open_sprints()}"),
+    ]
+
+def _count_open_sprints():
+    return sum(1 for f in (STATE/"sprints").glob("*.json")
+               if json.loads(f.read_text()).get("status") == "open")
+
+def section_detector():
+    verdict, score, thresh = _detector()
+    icons = {"HARVEST": "🌾", "WATCH": "👁", "CLEAN": "✅"}
+    icon  = icons.get(verdict, "?")
+    bar   = _bar(score, maxv=thresh * 1.5 or 1, width=16)
+    return [
+        _header("── DETECTOR W9 ──"),
+        _row(f"{icon} {verdict:<10} [{bar}]  {score}/{thresh} señales"),
+    ]
+
+def section_risks():
+    risks = _top_risks()
+    if not risks:
+        return [_row("  (sin datos de riesgos — ejecuta bago risk)")]
+    lines = [_header("── TOP 3 RIESGOS ──")]
+    icons = {5:"🔴",4:"🟠",3:"🟡",2:"🟢",1:"🔵"}
+    for r in risks:
+        sco = r.get("score", 0)
+        ico = icons.get(min(5, int(sco)), "⚪")
+        name = r.get("name", r.get("id", "?"))[:30]
+        lines.append(_row(f"{ico} {name:<32} score={sco:.1f}"))
+    return lines
+
+def section_debt():
+    total_h, total_eur, items_cnt, by_q = _debt_summary()
+    lines = [
+        _header("── DEUDA TÉCNICA ──"),
+        _row(f"Coste estimado: {total_h:.1f} h/sem  │  Total: ~€{total_eur:.0f}"),
+        _row(f"Ítems de deuda: {items_cnt}"),
+    ]
+    for q_name, q_data in list(by_q.items())[:2]:
+        count = q_data.get("count", 0)
+        hours = q_data.get("hours", 0)
+        lines.append(_row(f"  · {q_name[:34]:<36} {count} ítem(s)  {hours:.1f}h"))
+    return lines
+
+def section_velocity():
+    data = _velocity_data()
+    if not data:
+        return [_row("  (sin datos de velocidad — ejecuta bago velocity)")]
+    sessions = data.get("sessions_per_week", [])
+    artifacts = data.get("artifacts_per_session", [])
+    sp = _sparkline(sessions)
+    ap = _sparkline(artifacts)
+    trend = data.get("trend", "—")
+    return [
+        _header("── VELOCIDAD ──"),
+        _row(f"Sesiones/sem:   {sp}  (tendencia: {trend})"),
+        _row(f"Artefactos/ses: {ap}"),
+    ]
+
+def section_contracts():
+    contracts = _contracts()
+    if not contracts:
+        return [_row("  (sin contratos — ejecuta bago contract create)")]
+    lines = [_header("── CONTRATOS ──")]
+    now = datetime.now(timezone.utc)
+    for c in contracts[:3]:
+        cid    = c.get("id", "?")
+        status = c.get("status", "?")
+        cond   = c.get("conditions_met", 0)
+        total  = c.get("conditions_total", 0)
+        ddl    = c.get("deadline")
+        if ddl:
+            try:
+                dl = datetime.fromisoformat(ddl.replace("Z", "+00:00"))
+                delta = dl - now
+                h = int(delta.total_seconds() // 3600)
+                secs_left = f"{h}h restantes" if delta.total_seconds() > 0 else "VENCIDO"
+            except Exception:
+                secs_left = ddl[:16]
+        else:
+            secs_left = "sin deadline"
+        ico = "✅" if status == "fulfilled" else ("⚠️" if cond == total else "🔲")
+        lines.append(_row(f"{ico} {cid:<14} {cond}/{total} cond  {secs_left}"))
+    return lines
+
+def section_hotspots():
+    spots = _hotspots()
+    if not spots:
+        return [_row("  (sin hotspots — ejecuta bago hotspot)")]
+    lines = [_header("── HOTSPOTS ──")]
+    for h in spots:
+        f = h.get("file", "?")
+        score = h.get("score", 0)
+        fname = Path(f).name[:36]
+        bar = _bar(score, maxv=20, width=10)
+        lines.append(_row(f"  🔥 {fname:<38} [{bar}]"))
+    return lines
+
+def section_sprint():
+    sp = _sprint()
+    if not sp:
+        return [_row("  (sin sprint activo)")]
+    name = sp.get("name", sp.get("sprint_id", "?"))[:40]
+    goals = sp.get("goals", [])
+    lines = [
+        _header("── SPRINT ACTIVO ──"),
+        _row(f"{name}"),
+    ]
+    for g in goals[:3]:
+        lines.append(_row(f"  · {str(g)[:52]}"))
+    return lines
+
+def section_last_session():
+    sid, wf = _last_session()
+    return [
+        _header("── ÚLTIMA SESIÓN ──"),
+        _row(f"ID: {sid}"),
+        _row(f"Workflow: {wf}"),
+    ]
+
+# ─── render principal ─────────────────────────────────────────────────────────
+
+def render(full=False, compact=False, as_json=False):
+    gs = _load_global()
+
+    health_lines, score = section_health()
+    inv_lines = section_inventory()
+    det_lines = section_detector()
+    risks_lines = section_risks()
+    debt_lines  = section_debt()
+    vel_lines   = section_velocity()
+    cont_lines  = section_contracts()
+    hot_lines   = section_hotspots()
+    sprint_lines = section_sprint()
+    sess_lines  = section_last_session()
+
+    if as_json:
+        # Machine-readable summary
+        data = {
+            "health_score": score,
+            "validate": _validate(),
+            "detector": _detector()[0],
+            "inventory": {
+                "sessions": _count("sessions"),
+                "changes":  _count("changes"),
+                "evidences":_count("evidences"),
+            },
+            "top_risks": _top_risks(),
+            "debt_cost_per_hour": _debt_summary()[0],
+            "contracts": _contracts(),
+            "sprint": _sprint(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+        }
+        print(json.dumps(data, indent=2, ensure_ascii=False, default=str))
+        return
+
+    out = [_top()]
+    out += section_header(gs)
+    out.append(_divider())
+    out += health_lines
+    out.append(_divider())
+    out += inv_lines
+
+    if not compact:
+        out.append(_divider())
+        out += det_lines
+        out.append(_divider())
+        out += sprint_lines
+
+    if full or not compact:
+        out.append(_divider())
+        out += risks_lines
+        out.append(_divider())
+        out += debt_lines
+        out.append(_divider())
+        out += vel_lines
+        out.append(_divider())
+        out += cont_lines
 
     if full:
-        print("  Detalle ESCENARIO-002:")
-        excl = {"state/sessions/", "state/changes/", "state/evidences/", "TREE.txt", "CHECKSUMS.sha256"}
-        for f in sorted((STATE / "sessions").glob("*.json")):
-            s = json.loads(f.read_text())
-            if s.get("escenario") != "ESCENARIO-002" or s.get("status") != "closed":
-                continue
-            arts = [a for a in s.get("artifacts", []) if not any(a.startswith(e) for e in excl)]
-            mode = s.get("bago_mode", "?")
-            ronda = s.get("ronda", "?")
-            roles = len(s.get("roles_activated", []))
-            print(f"    R{ronda} {mode.upper():<3} | útiles={len(arts)} | roles={roles} | {s['session_id']}")
-        print()
+        out.append(_divider())
+        out += hot_lines
 
-        if e003_n > 0:
-            print("  Detalle ESCENARIO-003 (cosechas):")
-            for f in sorted((STATE / "sessions").glob("SES-HARVEST-*.json")):
-                s = json.loads(f.read_text())
-                if s.get("status") != "closed":
-                    continue
-                dec = len(s.get("decisions", []))
-                arts = len([a for a in s.get("artifacts", []) if "state/" not in a])
-                print(f"    {s['session_id']}  dec={dec}  útiles={arts}")
-            print()
+    out.append(_divider())
+    out += sess_lines
+    out.append(_bottom())
 
-        print("  Señales del detector:")
-        try:
-            spec = importlib.util.spec_from_file_location("context_detector", TOOLS / "context_detector.py")
-            mod  = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(mod)
-            result = mod.evaluate()
-            for sig in result.get("signals", []):
-                w = {"very_high": "🔴", "high": "🟠", "medium": "🟡"}.get(sig["weight"], "⚪")
-                print(f"    {w} {sig['desc']}")
-            if not result.get("signals"):
-                print("    Sin señales activas.")
-        except Exception as e:
-            print(f"    Error al leer detector: {e}")
-        print()
+    print("\n".join(out))
+
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    p = argparse.ArgumentParser(description="BAGO Cockpit Dashboard v2")
+    p.add_argument("--full",    action="store_true", help="Muestra hotspots y secciones extra")
+    p.add_argument("--compact", action="store_true", help="Solo salud + inventario")
+    p.add_argument("--json",    action="store_true", help="Salida JSON machine-readable")
+    args = p.parse_args()
+    render(full=args.full, compact=args.compact, as_json=args.json)

@@ -1,0 +1,43 @@
+{
+  "change_id": "BAGO-CHG-070",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Sprint 180 — 7 nuevas herramientas CLI para el framework BAGO",
+  "motivation": "Sesion de maxima duracion (180 min) para crear artefactos utiles y codigo real. Se identificaron 7 gaps en el framework y se cerraron todos con herramientas testeadas.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/sprint_manager.py",
+    ".bago/tools/bago_search.py",
+    ".bago/tools/timeline.py",
+    ".bago/tools/report_generator.py",
+    ".bago/tools/metrics_trends.py",
+    ".bago/tools/doctor.py",
+    ".bago/tools/git_context.py",
+    "bago"
+  ],
+  "details": {
+    "sprint_manager": "Gestor de sprints SPRINT-NNN.json con new/list/close/status/active/show/link",
+    "bago_search": "Full-text search sobre sessions/changes/evidences con filtros avanzados",
+    "timeline": "Timeline ASCII semanal con emojis de workflow y conteo de artefactos",
+    "report_generator": "Generador de reportes Markdown con modos full/summary y filtros temporales",
+    "metrics_trends": "Tendencias rolling 4-8 semanas con sparklines ASCII",
+    "doctor": "Diagnostico integral: sintaxis Python, JSON validity, cross-refs, integridad de sesiones",
+    "git_context": "Captura estado git (branch, staged, log, autores) con inyeccion en context_map",
+    "bago_script": "Integrados 7 nuevos comandos: sprint, search, timeline, report, metrics, doctor, git"
+  },
+  "tests": {
+    "sprint_manager": "6/6",
+    "bago_search": "5/5",
+    "timeline": "5/5",
+    "report_generator": "3/3",
+    "metrics_trends": "4/4",
+    "doctor": "4/4",
+    "git_context": "5/5",
+    "total": "32/32"
+  },
+  "sprint_ref": "SPRINT-001",
+  "related_evidence": "BAGO-EVD-071",
+  "created_at": "2026-04-21T21:08:52.439893+00:00",
+  "updated_at": "2026-04-21T21:08:52.439893+00:00",
+  "author": "role_generador + role_organizer"
+}

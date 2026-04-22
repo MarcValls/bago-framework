@@ -50,10 +50,20 @@ def _build_evidence(task: dict, change_id: str, evidence_id: str, now: str) -> d
     title = str(task.get("idea_title", "Cierre automático de sesión")).strip()
     summary = f"Cierre W2 automático: {title}"
     files = ", ".join(str(path) for path in task.get("archivos_candidatos", [])) or "sin archivos candidatos"
+    gate = task.get("completion_gate", {}) or {}
+    gate_status = gate.get("status", "KO")
+    human_check = gate.get("human_check", "")
+    tests = gate.get("tests", [])
+    tests_text = ", ".join(
+        f"{item.get('cmd', '')}=>{item.get('exit_code', '?')}" for item in tests
+    ) or "sin tests"
     details = (
         "La tarea W2 quedó marcada como done, se generó un CHG de gobernanza "
         "y se actualizó global_state con el nuevo inventario. "
-        f"Archivos candidatos de la tarea: {files}."
+        f"Archivos candidatos de la tarea: {files}. "
+        f"Gate de cierre: {gate_status}. "
+        f"Tests ejecutados: {tests_text}. "
+        f"Validación humana: {human_check}"
     )
     return {
         "evidence_id": evidence_id,

@@ -1,9 +1,9 @@
 {
-  "bago_host_root": "/home/runner/work/bago-framework/bago-framework",
-  "note": "test note",
-  "recorded_at": "2026-04-21T15:56:26+00:00",
-  "repo_fingerprint": "dc41973e9acaa94ed92d02232a58bd567fea9886c751674bf7e9ad9459bcfc32",
-  "repo_root": "/home/runner/work/bago-framework/bago-framework",
-  "role": "external_repo_pointer",
+  "bago_host_root": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA",
+  "note": "Sincronizado desde auto_mode · BAGO_CAJAFISICA",
+  "recorded_at": "2026-04-21T22:23:29+00:00",
+  "repo_fingerprint": "36320eddf09ceda2f267771570027890b501a20bd474df1b13fbafba98f7dcbf",
+  "repo_root": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA",
+  "role": "self",
   "working_mode": "self"
 }

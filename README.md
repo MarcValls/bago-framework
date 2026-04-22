@@ -1,8 +1,10 @@
 # BAGO Framework
 
 > Sistema operativo de trabajo técnico para programación con IA
->
-> **v2.5** · 30 herramientas · 12 workflows · Gobernanza de sesión integrada
+
+![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%2037%2F37-brightgreen) ![tools](https://img.shields.io/badge/tools-87-blue) ![version](https://img.shields.io/badge/versión-2.5--stable-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
+
+**`health 🟢 100/100`** · **`tests ✅ 37/37`** · **`tools 🔧 87`** · **`versión 2.5-stable`** · 12 workflows · Gobernanza de sesión integrada
 
 ---
 
@@ -19,34 +21,118 @@ BAGO amplifica el trabajo con IA resolviendo:
 
 ---
 
-## ⚡ Inicio rápido (3 pasos)
+## ⚡ Quick Start — 5 pasos
 
 ```bash
-# 1. Configura el entorno
+# 1. Instala BAGO y sincroniza el entorno
 ./bago setup
 
-# 2. Explora ideas priorizadas
-./bago ideas
+# 2. Verifica la salud del pack (esperado: 100/100 🟢)
+./bago health
 
-# 3. Abre una sesión de trabajo
+# 3. Abre o gestiona el sprint activo
+./bago sprint status
+
+# 4. Abre una sesión de trabajo con contexto precargado
 ./bago session
+
+# 5. Cosecha el trabajo realizado (protocolo W9)
+./bago detector       # ¿Hay contexto acumulado para cosechar?
+./bago cosecha        # Inicia el protocolo W9
 ```
 
-**¿Primera vez?** Ejecuta `./bago start` para menú interactivo.
+> **¿Primera vez?** → `./bago start`  
+> **¿Diagnosticar?** → `./bago doctor`  
+> **¿Ver todos los comandos?** → `./bago help --all`
 
 ---
 
-## 📚 Comandos principales
+## 📚 Tabla de comandos por fase
 
-| Comando | Descripción |
-|---------|-------------|
-| `./bago start` | Menú interactivo — empieza aquí |
-| `./bago ideas` | Lista y acepta ideas priorizadas |
-| `./bago session` | Abre sesión con contexto precargado |
-| `./bago status` | Dashboard rápido del estado |
-| `./bago setup` | Sincroniza contexto e instala extensiones |
+### Comandos principales (siempre visibles)
 
-Ver todos: `./bago help --all`
+| Comando | Herramienta | Descripción |
+|---------|-------------|-------------|
+| `bago start` | `bago_start.py` | Menú interactivo — empieza aquí |
+| `bago ideas` | `emit_ideas.py` | Ver y aceptar ideas priorizadas |
+| `bago session` | `session_opener.py` | Abrir sesión con contexto precargado |
+| `bago status` | `quick_status.py` | Estado rápido del proyecto |
+
+### Gobernanza y validación
+
+| Comando | Herramienta | Descripción |
+|---------|-------------|-------------|
+| `bago health` | `health_score.py` | Score 0-100 con 5 dimensiones |
+| `bago audit` | `audit_v2.py` | Auditoría integral del pack |
+| `bago validate` | `validate_pack.py` | Validación profunda del pack |
+| `bago stale` | `stale_detector.py` | Detector de reporting stale |
+| `bago workflow` | `workflow_selector.py` | Selector interactivo W0-W9 |
+| `bago v2` | `v2_close_checklist.py` | Checklist GO/KO de cierre V2 |
+| `bago cosecha` | `cosecha.py` | Protocolo W9 de cosecha contextual |
+| `bago detector` | `context_detector.py` | Detector de contexto acumulado |
+
+### Fase 1 — Análisis y productividad (S1–S7)
+
+| Comando | Herramienta | Descripción |
+|---------|-------------|-------------|
+| `bago sprint` | `sprint_manager.py` | Gestión de sprints SPRINT-NNN.json |
+| `bago search` | `bago_search.py` | Full-text search sobre sessions/changes |
+| `bago timeline` | `timeline.py` | Timeline ASCII semanal con workflows |
+| `bago report` | `report_generator.py` | Reportes Markdown con filtros temporales |
+| `bago metrics` | `metrics_trends.py` | Tendencias rolling + sparklines ASCII |
+| `bago doctor` | `doctor.py` | Diagnóstico integral del pack |
+| `bago git` | `git_context.py` | Contexto git (branch/log/autores) + inject |
+
+### Fase 2 — Exportación y estado (S8–S15)
+
+| Comando | Herramienta | Descripción |
+|---------|-------------|-------------|
+| `bago export` | `export.py` | HTML dark-theme + CSV con SVG chart |
+| `bago watch` | `watch.py` | Monitor en tiempo real del estado BAGO |
+| `bago test` | `integration_tests.py` | Suite de integración (36/36 tests) |
+| `bago changelog` | `changelog.py` | CHANGELOG desde BAGO-CHG-*.json |
+| `bago snapshot` | `snapshot.py` | ZIP point-in-time de state/ |
+| `bago diff` | `diff.py` | Delta de state/ vs último snapshot |
+| `bago session-stats` | `session_details.py` | Top sesiones por producción (alias: `ss`) |
+| `bago compare` | `compare.py` | Comparativa wf/periodo/rol lado a lado |
+
+### Fase 3 — Organización (S16–S20)
+
+| Comando | Herramienta | Descripción |
+|---------|-------------|-------------|
+| `bago goals` | `goals.py` | Gestión de objetivos con link/close/progress |
+| `bago lint` | `lint.py` | Linter de calidad del pack |
+| `bago summary` | `summary.py` | Resumen ejecutivo Markdown de sesión/sprint |
+| `bago tags` | `tags.py` | Etiquetado con índice y búsqueda rápida |
+| `bago flow` | `flow.py` | Flowchart ASCII de pipelines W0-W9 |
+
+### Fase 5 — Inteligencia y rutinas (S24–S33)
+
+| Comando | Herramienta | Descripción |
+|---------|-------------|-------------|
+| `bago insights` | `insights.py` | Motor de insights automáticos (5 categorías) |
+| `bago config` | `config.py` | Gestión de configuración del pack.json |
+| `bago check` | `check.py` | Checklist pre-sesión personalizable |
+| `bago archive` | `archive.py` | Archivado de sesiones cerradas antiguas |
+| `bago stats` | `stats.py` | Dashboard agregado con sparklines de actividad |
+| `bago remind` | `remind.py` | Recordatorios con due-date y sprint_ref |
+| `bago habit` | `habit.py` | Detector de hábitos positivos/mejora/patrones |
+| `bago review` | `review.py` | Informe de revisión periódica Markdown |
+
+### Fase 6 — Velocidad y continuidad (S34–S35+)
+
+| Comando | Herramienta | Estado | Descripción |
+|---------|-------------|--------|-------------|
+| `bago velocity` | `velocity.py` | ✅ Activo | Métricas de velocidad por período con proyección |
+| `bago patch` | `patch.py` | ✅ Activo | Corrección automática de inconsistencias |
+| `bago notes` | `notes.py` | ✅ Activo | Notas ligeras por sesión: add/list/show/delete |
+| `bago template` | `template.py` | ✅ Activo | Plantillas para nuevas sesiones con campos prefilled |
+| `bago scan` | `scan.py` | ✅ Activo | Análisis estático multi-linter con hallazgos unificados |
+| `bago hotspot` | `hotspot.py` | ✅ Activo | Detección de hotspots de complejidad |
+| `bago fix` | `autofix.py` | ✅ Activo | Autofix con validación y parches concretos |
+| `bago gh` | `gh_integration.py` | ✅ Activo | Integración GitHub: check runs y comentarios en PRs |
+
+> Ver docs individuales: [`.bago/docs/tools/`](.bago/docs/tools/)
 
 ---
 
@@ -117,21 +203,114 @@ python3 .bago/tools/bago_chat_server.py
 
 ---
 
-## 🛠 Arquitectura (nivel alto)
+## 🛠 Arquitectura
+
+### Visión de alto nivel
 
 ```
 bago-framework/
-├── bago                    # Script CLI principal
-├── menu.html               # Interfaz web
+├── bago                          # Script CLI principal (punto de entrada)
+├── menu.html                     # Interfaz web (BAGO Viewer)
+├── Makefile                      # Targets: banner, pack, validate, install
 ├── .bago/
-│   ├── tools/              # 30+ herramientas Python
-│   ├── workflows/          # W0-W9 workflows canónicos
-│   ├── prompts/            # Prompts reutilizables
-│   ├── state/              # Estado persistente (JSON)
-│   ├── core/               # Contratos y cerebro
-│   └── extensions/         # Extensiones Copilot CLI
-└── cleanversion/           # Versiones empaquetadas
+│   ├── tools/                    # 87 herramientas Python (un archivo por comando)
+│   │   ├── health_score.py       # bago health
+│   │   ├── audit_v2.py           # bago audit
+│   │   ├── insights.py           # bago insights
+│   │   ├── velocity.py           # bago velocity
+│   │   └── ...                   # un .py por cada subcomando
+│   ├── workflows/                # W0-W9 workflows canónicos (Markdown)
+│   ├── prompts/                  # Prompts reutilizables para IA
+│   ├── state/                    # Estado persistente (JSON + Markdown)
+│   │   ├── sessions/             # SES-*.json — una por sesión
+│   │   ├── changes/              # BAGO-CHG-*.json — registro de cambios
+│   │   ├── sprints/              # SPRINT-*.json — gestión de sprints
+│   │   ├── goals/                # GOAL-*.json — objetivos y progreso
+│   │   ├── reminders/            # REM-*.json — recordatorios
+│   │   └── snapshots/            # SNAP-*.zip — snapshots point-in-time
+│   ├── core/                     # Contratos y cerebro del sistema
+│   ├── config/                   # Configuración: pack.json, checklist.json
+│   ├── docs/                     # Documentación técnica
+│   │   ├── tools/                # Doc por cada herramienta
+│   │   ├── CHANGELOG.md          # Historial de versiones
+│   │   ├── ARCHITECTURE.md       # Este documento
+│   │   └── CONTRIBUTING.md       # Guía de contribución
+│   └── extensions/               # Extensiones Copilot CLI
+└── cleanversion/                 # Versiones empaquetadas (ZIP)
 ```
+
+### Capas del sistema
+
+| Capa | Componente | Responsabilidad |
+|------|-----------|-----------------|
+| **CLI** | `bago` script | Despacha subcomandos → herramientas Python |
+| **Tools** | `.bago/tools/*.py` | Lógica de cada comando, lee/escribe state/ |
+| **State** | `.bago/state/` | Fuente de verdad: sesiones, cambios, sprints |
+| **Docs** | `.bago/docs/` | Documentación técnica y referencia |
+| **Config** | `.bago/config/` | pack.json con modo, idioma, preferencias |
+| **Viewer** | `menu.html` | Interfaz web que consume el servidor `bago chat` |
+
+### Flujo de datos típico
+
+```
+bago session → session_opener.py → crea SES-*.json en state/sessions/
+bago task --done → show_task.py → actualiza pending_w2_task.json
+bago cosecha → cosecha.py → genera BAGO-CHG-*.json + BAGO-EVD-*.json
+bago health → health_score.py → lee state/ y calcula score 0-100
+bago insights → insights.py → analiza SES-*.json + CHG-*.json → 5 categorías
+bago velocity → velocity.py → rolling windows sobre SES-*.json → proyección
+```
+
+### Formatos de datos en state/
+
+| Archivo | Descripción |
+|---------|-------------|
+| `SES-*.json` | Sesión de trabajo: workflow, decisiones, artefactos, métricas |
+| `BAGO-CHG-*.json` | Cambio registrado: tipo, descripción, evidencias, archivos |
+| `SPRINT-*.json` | Sprint: nombre, objetivo, fechas, velocidad, items |
+| `GOAL-*.json` | Objetivo: título, criterio, progreso, sesiones vinculadas |
+| `REM-*.json` | Recordatorio: texto, due-date, sprint_ref, estado |
+| `SNAP-*.zip` | Snapshot ZIP point-in-time del directorio state/ |
+
+---
+
+## 🔗 Integración GitHub — Operativo ✅
+
+Pipeline completo de análisis de código con integración directa en GitHub, **producción-ready** con soporte multi-lenguaje (Python, JS/TS, Go, Rust):
+
+| Comando | Herramienta | Estado | Descripción |
+|---------|-------------|--------|-------------|
+| `./bago scan` | `scan.py` | ✅ Activo | Análisis multi-linter (flake8/pylint/mypy/ESLint/golangci/clippy) con hallazgos unificados |
+| `./bago hotspot` | `hotspot.py` | ✅ Activo | Hotspots: frecuencia de cambios + errores + complejidad + historial CI |
+| `./bago fix` | `autofix.py` | ✅ Activo | Autofix: parches concretos (E711/E712/F401/W291/BAGO-W001) + black/prettier bulk |
+| `./bago gh` | `gh_integration.py` | ✅ Activo | GitHub Check Runs + PR review agrupado por archivo, retry en 429/5xx |
+
+### Pipeline operativo
+
+```bash
+# Analiza el proyecto (auto-detecta py/js/go/rust)
+bago scan ./ --lang auto
+
+# Identifica los archivos más problemáticos (commits + errores + CI)
+bago hotspot ./ --ci --heatmap
+
+# Aplica fixes automáticos con validación post-fix
+bago fix --apply
+bago fix --external --target ./src   # black / prettier
+
+# Publica en GitHub
+bago gh checks                       # Check Run con anotaciones
+bago gh pr 42 --min-severity error   # PR review agrupado por archivo
+```
+
+### Lenguajes soportados
+
+| Lenguaje | Scanner | Hotspot | Autofix externo |
+|----------|---------|---------|----------------|
+| Python   | flake8 + pylint + mypy + bandit + bago-lint | ✅ | `black` |
+| JS / TS  | ESLint (via npx) | ✅ | `prettier` + `eslint --fix` |
+| Go       | golangci-lint | ✅ | — |
+| Rust     | cargo clippy | — | — |
 
 ---
 
@@ -159,9 +338,11 @@ Cada cleanversion incluye su propio pack BAGO con modo de distribución específ
 
 ## ⚙️ Requisitos
 
-- Python 3.8+
+- Python 3.9+
+- Git (para `bago hotspot --ci` y `bago git`)
 - Navegador moderno (para BAGO Viewer)
 - Terminal con soporte ANSI (para colores)
+- Opcional: `black`, `prettier`, `golangci-lint`, `cargo` para fixers externos
 
 ---
 

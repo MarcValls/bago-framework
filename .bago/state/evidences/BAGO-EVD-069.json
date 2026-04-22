@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-069",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-068",
+    "SES-HARVEST-2026-04-21-007"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-21-007",
+  "details": "Decisión: NECESITO BOOTSTRAP Y GENERACIÓN DE IDEAS | Descarte: NO DESCARTE NINGUNA MEJORA EN EL REPO | Próximo paso: IDEAS | Ficheros afectados: .bago/docs/DECISIONES.md, .bago/prompts/00_BOOTSTRAP_PROYECTO.md, .bago/docs/operation/CONTRATO_FRONTERA_LLM.md",
+  "status": "recorded",
+  "recorded_at": "2026-04-21T13:42:44.831292+00:00"
+}

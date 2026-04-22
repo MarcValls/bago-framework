@@ -10,7 +10,7 @@ Uso:
   python3 .bago/tools/context_detector.py --watch  (monitoreo continuo)
 """
 
-import json, re, subprocess, sys
+import json, os, re, subprocess, sys
 from pathlib import Path
 from datetime import datetime, timezone
 
@@ -36,6 +36,11 @@ COGNITIVE_KEYWORDS = [
 ]
 
 HARVEST_THRESHOLD = 2   # señales de peso alto mínimas para sugerir cosecha
+SKIP_DIRS = {
+    ".bago", ".git", "node_modules", "dist", "build", "coverage",
+    ".next", ".turbo", ".venv", "venv", "__pycache__", ".pytest_cache",
+}
+MAX_FILE_BYTES = 256_000
 
 
 # ─── Señales técnicas ─────────────────────────────────────────────────────────
@@ -121,18 +126,33 @@ def _scan_cognitive(max_files=40, extensions=(".md", ".txt", ".py", ".ts", ".js"
         if p.exists() and p.suffix in extensions:
             candidates.append(p)
 
-    # Completar con ficheros recientes si hacen falta
+    # Completar con ficheros recientes si hacen falta, evitando directorios pesados.
     if len(candidates) < max_files:
-        for ext in extensions:
-            for p in sorted(REPO_ROOT.rglob(f"*{ext}"),
-                            key=lambda x: x.stat().st_mtime, reverse=True):
-                if p not in candidates and ".bago" not in str(p):
-                    candidates.append(p)
-                    if len(candidates) >= max_files:
-                        break
+        recent_files = []
+        for root, dirnames, filenames in os.walk(REPO_ROOT):
+            dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
+            for filename in filenames:
+                path = Path(root) / filename
+                if path.suffix not in extensions:
+                    continue
+                if path in candidates:
+                    continue
+                try:
+                    stat = path.stat()
+                except Exception:
+                    continue
+                if stat.st_size > MAX_FILE_BYTES:
+                    continue
+                recent_files.append((stat.st_mtime, path))
+        for _, path in sorted(recent_files, key=lambda item: item[0], reverse=True):
+            candidates.append(path)
+            if len(candidates) >= max_files:
+                break
 
     for p in candidates:
         try:
+            if p.stat().st_size > MAX_FILE_BYTES:
+                continue
             text = p.read_text(errors="ignore")
             for pattern in COGNITIVE_KEYWORDS:
                 for m in re.finditer(pattern, text, re.IGNORECASE):
@@ -292,7 +312,7 @@ if __name__ == "__main__":
             if result["verdict"] == "HARVEST":
                 print_report(result)
             else:
-                print(f"\r[{datetime.now().strftime('%H:%M:%S')}] {result['verdict']} "
+                print(f"\r[{datetime.now(timezone.utc).strftime('%H:%M:%S')}] {result['verdict']} "
                       f"(score={result['score']}/{result['threshold']}) — "
                       f"{result['message'][:50]}   ", end="", flush=True)
             time.sleep(interval)

@@ -22,6 +22,7 @@ Uso:
   ./bago efficiency           → medidor de eficiencia inter-versiones
   ./bago cosecha              → cosecha.py
   ./bago detector             → context_detector.py
+  ./bago recolecta            → context_collector.py (pregunta directorio/s)
   ./bago validate             → validate_pack.py
   ./bago dashboard --full     → dashboard extendido
   ./bago health               → health_score.py
@@ -71,6 +72,7 @@ COMMANDS_ADVANCED = {
     "efficiency":  ["python3", str(TOOLS / "efficiency_meter.py")],
     "auto":        ["python3", str(TOOLS / "auto_mode.py")],
     "map":         ["python3", str(TOOLS / "context_map.py")],
+    "recolecta":   ["python3", str(TOOLS / "context_collector.py")],
     "chat":        ["python3", str(TOOLS / "bago_chat_server.py")],
     "repo-on":     ["python3", str(TOOLS / "repo_on.py")],
     "repo-debug":  ["python3", str(TOOLS / "bago_debug.py"), "--repo"],
@@ -78,7 +80,6 @@ COMMANDS_ADVANCED = {
     "repo-test":   ["python3", str(TOOLS / "repo_runner.py"), "test"],
     "repo-build":  ["python3", str(TOOLS / "repo_runner.py"), "build"],
     "workspace":   ["python3", str(TOOLS / "workspace_selector.py")],
-    "evolution":   ["python3", str(TOOLS / "iteration_logger.py"), "summary"],
 }
 
 # Combinar todos los comandos
@@ -247,7 +248,192 @@ def main():
     # Registrar la iteración (silencioso, no bloquea)
     _log_iteration(f"bago {cmd}")
 
-    if cmd == "setup":
+    if cmd == "sprint":
+        subprocess.run(
+            ["python3", str(TOOLS / "sprint_manager.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "search":
+        subprocess.run(
+            ["python3", str(TOOLS / "bago_search.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "timeline":
+        subprocess.run(
+            ["python3", str(TOOLS / "timeline.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "report":
+        subprocess.run(
+            ["python3", str(TOOLS / "report_generator.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "metrics":
+        subprocess.run(
+            ["python3", str(TOOLS / "metrics_trends.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "doctor":
+        subprocess.run(
+            ["python3", str(TOOLS / "doctor.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "git":
+        subprocess.run(
+            ["python3", str(TOOLS / "git_context.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "export":
+        subprocess.run(
+            ["python3", str(TOOLS / "export.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "watch":
+        subprocess.run(
+            ["python3", str(TOOLS / "watch.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "watch-state":
+        subprocess.run(
+            ["python3", str(TOOLS / "bago_watch.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "test":
+        subprocess.run(
+            ["python3", str(TOOLS / "integration_tests.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "changelog":
+        subprocess.run(
+            ["python3", str(TOOLS / "changelog.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "snapshot":
+        subprocess.run(
+            ["python3", str(TOOLS / "snapshot.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "diff":
+        subprocess.run(
+            ["python3", str(TOOLS / "diff.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd in ("session-stats", "ss"):
+        subprocess.run(
+            ["python3", str(TOOLS / "session_details.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "compare":
+        subprocess.run(
+            ["python3", str(TOOLS / "compare.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "goals":
+        subprocess.run(
+            ["python3", str(TOOLS / "goals.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "lint":
+        subprocess.run(
+            ["python3", str(TOOLS / "lint.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "summary":
+        subprocess.run(
+            ["python3", str(TOOLS / "summary.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "tags":
+        subprocess.run(
+            ["python3", str(TOOLS / "tags.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "flow":
+        subprocess.run(
+            ["python3", str(TOOLS / "flow.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "insights":
+        subprocess.run(
+            ["python3", str(TOOLS / "insights.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "config":
+        subprocess.run(
+            ["python3", str(TOOLS / "config.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "check":
+        subprocess.run(
+            ["python3", str(TOOLS / "check.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "archive":
+        subprocess.run(
+            ["python3", str(TOOLS / "archive.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "stats":
+        subprocess.run(
+            ["python3", str(TOOLS / "stats.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "remind":
+        subprocess.run(
+            ["python3", str(TOOLS / "remind.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "habit":
+        subprocess.run(
+            ["python3", str(TOOLS / "habit.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "review":
+        subprocess.run(
+            ["python3", str(TOOLS / "review.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "velocity":
+        subprocess.run(
+            ["python3", str(TOOLS / "velocity.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "patch":
+        subprocess.run(
+            ["python3", str(TOOLS / "patch.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "notes":
+        subprocess.run(
+            ["python3", str(TOOLS / "notes.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "template":
+        subprocess.run(
+            ["python3", str(TOOLS / "template.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "scan":
+        subprocess.run(
+            ["python3", str(TOOLS / "scan.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "hotspot":
+        subprocess.run(
+            ["python3", str(TOOLS / "hotspot.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "fix":
+        subprocess.run(
+            ["python3", str(TOOLS / "autofix.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "gh":
+        subprocess.run(
+            ["python3", str(TOOLS / "gh_integration.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "setup":
         subprocess.run(
             ["python3", str(TOOLS / "repo_context_guard.py"), "sync"],
             cwd=str(BAGO_ROOT.parent)
@@ -257,6 +443,81 @@ def main():
         _cmd_versions()
     elif cmd == "extensions":
         _cmd_extensions()
+    elif cmd == "gh":
+        subprocess.run(
+            ["python3", str(TOOLS / "gh_integration.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "risk":
+        subprocess.run(["python3", str(TOOLS / "risk_matrix.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "debt":
+        subprocess.run(["python3", str(TOOLS / "debt_ledger.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "impact":
+        subprocess.run(["python3", str(TOOLS / "impact_engine.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "contract":
+        subprocess.run(["python3", str(TOOLS / "contracts.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "sprint":
+        subprocess.run(["python3", str(TOOLS / "sprint_manager.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "sessions":
+        subprocess.run(["python3", str(TOOLS / "session_stats.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "cosecha":
+        subprocess.run(["python3", str(TOOLS / "cosecha.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "dashboard":
+        subprocess.run(["python3", str(TOOLS / "pack_dashboard.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "status":
+        subprocess.run(["python3", str(TOOLS / "quick_status.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "health":
+        subprocess.run(["python3", str(TOOLS / "health_score.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "auto":
+        subprocess.run(["python3", str(TOOLS / "auto_mode.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "chat":
+        subprocess.run(["python3", str(TOOLS / "bago_chat_server.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "debug":
+        subprocess.run(["python3", str(TOOLS / "bago_debug.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "start":
+        subprocess.run(["python3", str(TOOLS / "bago_start.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "context":
+        subprocess.run(["python3", str(TOOLS / "context_map.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "audit2":
+        subprocess.run(["python3", str(TOOLS / "audit_v2.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "evolution":
+        subprocess.run(["python3", str(TOOLS / "generate_bago_evolution_report.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "efficiency":
+        subprocess.run(["python3", str(TOOLS / "efficiency_meter.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "artifacts":
+        subprocess.run(["python3", str(TOOLS / "artifact_counter.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "personality":
+        subprocess.run(["python3", str(TOOLS / "personality_panel.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "preflight":
+        subprocess.run(["python3", str(TOOLS / "session_preflight.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "open":
+        subprocess.run(["python3", str(TOOLS / "session_opener.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "details":
+        subprocess.run(["python3", str(TOOLS / "session_details.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "stability":
+        subprocess.run(["python3", str(TOOLS / "stability_summary.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "stale":
+        subprocess.run(["python3", str(TOOLS / "stale_detector.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "reconcile":
+        subprocess.run(["python3", str(TOOLS / "reconcile_state.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "vertice":
+        subprocess.run(["python3", str(TOOLS / "vertice_activator.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "workflow":
+        subprocess.run(["python3", str(TOOLS / "workflow_selector.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "target":
+        subprocess.run(["python3", str(TOOLS / "target_selector.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "ci":
+        subprocess.run(["python3", str(TOOLS / "ci_generator.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "ask":
+        subprocess.run(["python3", str(TOOLS / "bago_ask.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "testgen":
+        subprocess.run(["python3", str(TOOLS / "testgen.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "competition":
+        subprocess.run(["python3", str(TOOLS / "competition_report.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "workspace":
+        subprocess.run(["python3", str(TOOLS / "workspace_selector.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "iterations":
+        subprocess.run(["python3", str(TOOLS / "iteration_logger.py"), "summary"] + rest, cwd=str(BAGO_ROOT.parent))
     elif cmd in COMMANDS:
         subprocess.run(COMMANDS[cmd] + rest, cwd=str(BAGO_ROOT.parent))
     elif cmd in ("help", "--help", "-h"):
@@ -282,6 +543,47 @@ def main():
             print("\n  Comandos avanzados:")
             for k in sorted(COMMANDS_ADVANCED.keys()):
                 print(f"    bago {k}")
+            print("\n  Comandos de análisis y productividad (Sprint 180):")
+            extra = {
+                "sprint":    "gestionar sprints (new/list/status/close/show/link)",
+                "search":    "buscar en sesiones, cambios y evidencias",
+                "timeline":  "timeline ASCII semanal de sesiones",
+                "report":    "generar reporte Markdown (full/summary)",
+                "metrics":   "tendencias de métricas con sparklines",
+                "doctor":    "diagnóstico integral del pack",
+                "git":       "contexto git del repo activo",
+                "export":    "exportar sesiones a HTML/CSV",
+                "watch":     "monitor en tiempo real del estado BAGO",
+                "test":      "suite de integración completa (22 tests)",
+                "changelog": "generar CHANGELOG desde cambios registrados",
+                "snapshot":  "crear ZIP point-in-time del estado BAGO",
+                "diff":          "delta de state/ desde el último snapshot",
+                "session-stats": "top sesiones por producción + desglose por ID",
+                "compare":       "comparativa de workflows, periodos o roles",
+                "goals":         "gestionar objetivos del pack con seguimiento",
+                "lint":          "linter de calidad del pack con sugerencias",
+                "summary":       "resumen ejecutivo Markdown de sesion/sprint",
+                "tags":          "etiquetas para sesiones y cambios, busqueda rapida",
+                "flow":          "flowchart ASCII del pipeline de un workflow",
+                "insights":      "motor de insights automaticos desde los datos del pack",
+                "config":        "lee y actualiza la configuracion del pack",
+                "check":         "ejecuta checklist pre-sesion personalizable",
+                "archive":       "archiva sesiones cerradas antiguas",
+                "stats":         "dashboard agregado de estadísticas del pack",
+                "remind":        "gestiona recordatorios ligados a sesiones y sprints",
+                "habit":         "detector de habitos de trabajo desde patrones de sesiones",
+                "review":        "genera informe de revision periodica (semanal/mensual)",
+                "velocity":      "metricas de velocidad de trabajo con sparklines y proyeccion",
+                "patch":         "corrige inconsistencias conocidas del pack (legacy-status, missing-tests...)",
+                "notes":         "notas ligeras por sesion: add/list/show/delete",
+                "template":      "plantillas para nuevas sesiones con campos prefilled",
+                "scan":          "analiza el codigo con multiples linters y genera hallazgos unificados",
+                "hotspot":       "detecta hotspots: archivos con mas cambios + fallos + complejidad",
+                "fix":           "autofix serio: genera y aplica parches concretos con validacion",
+                "gh":            "integracion GitHub: check runs y comentarios en PRs",
+            }
+            for k, desc in extra.items():
+                print(f"    bago {k:12s} → {desc}")
         else:
             print(f"\n  Usa 'bago help --all' para ver todos los comandos")
         print()
