@@ -1,9 +1,9 @@
 {
   "bago_host_root": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA",
   "note": "Sincronizado desde auto_mode · BAGO_CAJAFISICA",
-  "recorded_at": "2026-04-21T22:23:29+00:00",
-  "repo_fingerprint": "36320eddf09ceda2f267771570027890b501a20bd474df1b13fbafba98f7dcbf",
-  "repo_root": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA",
+  "recorded_at": "2026-04-22T14:17:41+00:00",
+  "repo_fingerprint": "c74a878805c73ae8db2cba393f36e202a02abdeb43c614214daaeddbad4f8f7c",
+  "repo_root": "/Users/INTELIA_Manager/Documents/INTELIA_Manager_2026/Contabilidad/TPV_Contabilidad 2",
   "role": "self",
-  "working_mode": "self"
+  "working_mode": "external"
 }
