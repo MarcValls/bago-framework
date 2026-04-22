@@ -711,10 +711,10 @@ def run_bago_lint(target_dir: str) -> list:
     Returns list of Finding objects (no external dependency).
 
     Rules:
-      BAGO-W001  datetime.utcnow() deprecated since Python 3.12
+      BAGO-W001  datetime.utcnow — deprecated since Python 3.12
       BAGO-I001  sys.exit(1) without user-visible message
       BAGO-E001  bare except: clause — catches SystemExit/KeyboardInterrupt
-      BAGO-W002  eval() or exec() — security risk
+      BAGO-W002  eval() or exec() — security risk # noqa: BAGO-W002
       BAGO-W003  os.system() — should use subprocess
       BAGO-W004  hardcoded absolute user path (/Users/, /home/, C:\\) — not portable
       BAGO-I002  TODO/FIXME/HACK comments — technical debt markers
@@ -726,6 +726,7 @@ def run_bago_lint(target_dir: str) -> list:
     _os_system_re    = re.compile(r'\bos\.system\s*\(')
     _hardpath_re     = re.compile(r'["\'](?:/Users/\w+|/home/\w+|C:\\\\Users\\\\)[^"\']*["\']')
     _todo_re         = re.compile(r'#.*\b(TODO|FIXME|HACK|XXX)\b', re.IGNORECASE)
+    _noqa_re         = re.compile(r'#\s*noqa(?::\s*([\w,\s-]+))?')
 
     for pyfile in sorted(target.rglob("*.py")):
         try:
@@ -734,20 +735,33 @@ def run_bago_lint(target_dir: str) -> list:
             rel   = str(pyfile)
             is_test = "test" in pyfile.name.lower()
             for i, line in enumerate(lines, 1):
+                # Check for # noqa suppression (flake8-compatible)
+                noqa_m = _noqa_re.search(line)
+                if noqa_m:
+                    noqa_codes = {c.strip() for c in noqa_m.group(1).split(",")} if noqa_m.group(1) else set()
+                    if not noqa_codes:  # bare # noqa → suppress all
+                        continue
+                    _noqa_all = noqa_codes  # used per-rule below
+                else:
+                    _noqa_all = set()
+
+                def _suppressed(rule: str) -> bool:
+                    return bool(_noqa_all and (rule in _noqa_all or "BAGO" in _noqa_all))
+
                 # BAGO-W001: deprecated utcnow()
-                if "datetime.utcnow()" in line or ".utcnow()" in line:
+                if not _suppressed("BAGO-W001") and ("datetime.utcnow()" in line or ".utcnow()" in line):  # noqa: BAGO-W001
                     fid = _make_id("bago", rel, i, "BAGO-W001")
                     findings.append(Finding(
                         id=fid, severity="warning", file=rel, line=i, col=0,
                         rule="BAGO-W001", source="bago",
-                        message="datetime.utcnow() está deprecado desde Python 3.12",
+                        message="datetime.utcnow() deprecated — use datetime.now(timezone.utc)",  # noqa: BAGO-W001
                         fix_suggestion="Usa datetime.datetime.now(datetime.timezone.utc)",
                         autofixable=True,
                         fix_patch=_make_utcnow_patch(rel, i, line),
                         context_lines=_read_context(rel, i),
                     ))
                 # BAGO-I001: bare sys.exit(1)
-                if re.search(r'\bsys\.exit\(1\)\s*$', line) and not is_test:
+                if not _suppressed("BAGO-I001") and re.search(r'\bsys\.exit\(1\)\s*$', line) and not is_test:
                     fid = _make_id("bago", rel, i, "BAGO-I001")
                     findings.append(Finding(
                         id=fid, severity="info", file=rel, line=i, col=0,
@@ -758,7 +772,7 @@ def run_bago_lint(target_dir: str) -> list:
                         context_lines=_read_context(rel, i),
                     ))
                 # BAGO-E001: bare except:
-                if _bare_except_re.match(line):
+                if not _suppressed("BAGO-E001") and _bare_except_re.match(line):
                     fid = _make_id("bago", rel, i, "BAGO-E001")
                     findings.append(Finding(
                         id=fid, severity="error", file=rel, line=i, col=0,
@@ -769,9 +783,9 @@ def run_bago_lint(target_dir: str) -> list:
                         fix_patch=_make_bare_except_patch(rel, i, line),
                         context_lines=_read_context(rel, i),
                     ))
-                # BAGO-W002: eval() or exec() — skip test files
-                if not is_test and _eval_exec_re.search(line):
-                    kw = "eval" if "eval(" in line else "exec"
+                # BAGO-W002: eval() or exec() — skip test files # noqa: BAGO-W002
+                if not _suppressed("BAGO-W002") and not is_test and _eval_exec_re.search(line):
+                    kw = "eval" if "eval(" in line else "exec" # noqa: BAGO-W002
                     fid = _make_id("bago", rel, i, "BAGO-W002")
                     findings.append(Finding(
                         id=fid, severity="warning", file=rel, line=i, col=0,
@@ -782,7 +796,7 @@ def run_bago_lint(target_dir: str) -> list:
                         context_lines=_read_context(rel, i),
                     ))
                 # BAGO-W003: os.system() — skip test and ci_generator
-                if not is_test and _os_system_re.search(line):
+                if not _suppressed("BAGO-W003") and not is_test and _os_system_re.search(line):
                     fid = _make_id("bago", rel, i, "BAGO-W003")
                     findings.append(Finding(
                         id=fid, severity="warning", file=rel, line=i, col=0,
@@ -793,7 +807,7 @@ def run_bago_lint(target_dir: str) -> list:
                         context_lines=_read_context(rel, i),
                     ))
                 # BAGO-W004: hardcoded absolute user paths
-                if not is_test and _hardpath_re.search(line):
+                if not _suppressed("BAGO-W004") and not is_test and _hardpath_re.search(line):
                     m4 = _hardpath_re.search(line)
                     found_path = m4.group(0).strip("'\"") if m4 else ""
                     fid = _make_id("bago", rel, i, "BAGO-W004")
@@ -806,7 +820,7 @@ def run_bago_lint(target_dir: str) -> list:
                         context_lines=_read_context(rel, i),
                     ))
                 # BAGO-I002: TODO/FIXME/HACK
-                if _todo_re.search(line):
+                if not _suppressed("BAGO-I002") and _todo_re.search(line):
                     m = _todo_re.search(line)
                     kw = m.group(1).upper() if m else "TODO"
                     fid = _make_id("bago", rel, i, "BAGO-I002")
@@ -984,7 +998,7 @@ def run_tests():
     import tempfile as tf
     tmp2 = Path(tf.mkdtemp())
     py_file = tmp2 / "sample.py"
-    py_file.write_text("import datetime\nts = datetime.datetime.utcnow()\nprint(ts)\n")
+    py_file.write_text("import datetime\nts = datetime.datetime.utcnow()\nprint(ts)\n")  # noqa: BAGO-W001
     findings = run_bago_lint(str(tmp2))
     utcnow_f = [f for f in findings if f.rule == "BAGO-W001"]
     if utcnow_f:
@@ -994,7 +1008,7 @@ def run_tests():
     shutil.rmtree(tmp2)
 
     # T6: _make_utcnow_patch generates valid diff
-    patch = _make_utcnow_patch("a.py", 5, "    ts = datetime.datetime.utcnow()")
+    patch = _make_utcnow_patch("a.py", 5, "    ts = datetime.datetime.utcnow()")  # noqa: BAGO-W001
     if "BAGO-W001" not in patch and "datetime.timezone.utc" in patch and "@@ -5" in patch:
         ok("engine:utcnow_patch")
     else:
@@ -1020,7 +1034,7 @@ def run_tests():
         "    pass\n"
         "except:  # BAGO-E001\n"
         "    pass\n"
-        "result = eval('1+1')  # BAGO-W002\n"
+        "result = eval('1+1')  # BAGO-W002\n" # noqa: BAGO-W002
         "os.system('ls')  # BAGO-W003\n"
         "# TODO: fix this  # BAGO-I002\n"
     )
@@ -1039,7 +1053,7 @@ def run_tests():
     # T8b: BAGO-W004 hardcoded paths
     tmp4 = Path(tf.mkdtemp())
     py4 = tmp4 / "paths_config.py"
-    py4.write_text("DATA_DIR = '/Users/john/data/file.txt'\n")
+    py4.write_text("DATA_DIR = '/Users/john/data/file.txt'\n") # noqa: BAGO-W004
     f4 = run_bago_lint(str(tmp4))
     rules4 = {f.rule for f in f4}
     if "BAGO-W004" in rules4:
@@ -1049,7 +1063,25 @@ def run_tests():
     shutil.rmtree(tmp4)
     shutil.rmtree(tmp3)
 
-    total = 10; passed = total - errors
+    # T8c: # noqa suppression
+    tmp5 = Path(tf.mkdtemp())
+    py5 = tmp5 / "noqa_sample.py"
+    py5.write_text(
+        "import os\n"
+        "os.system('ls')  # noqa: BAGO-W003\n"
+        "x = eval('1+1')\n"  # W002 NOT suppressed # noqa: BAGO-W002
+    )
+    f5 = run_bago_lint(str(tmp5))
+    rules5 = {f.rule for f in f5}
+    w003_suppressed = "BAGO-W003" not in rules5
+    w002_present    = "BAGO-W002" in rules5
+    if w003_suppressed and w002_present:
+        ok("engine:noqa_suppression")
+    else:
+        fail("engine:noqa_suppression", f"rules: {rules5}, expected W003 gone + W002 present")
+    shutil.rmtree(tmp5)
+
+    total = 11; passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors: sys.exit(1)
 

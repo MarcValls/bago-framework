@@ -353,7 +353,7 @@ def run_tests():
     # T1: run_bago_lint finds utcnow issues in tools
     tmp = Path(tempfile.mkdtemp())
     (tmp / "sample.py").write_text(
-        "import datetime\nts = datetime.datetime.utcnow()\n"
+        "import datetime\nts = datetime.datetime.utcnow()\n" # noqa: BAGO-W001
     )
     findings = fe.run_bago_lint(str(tmp))
     if any(f.rule == "BAGO-W001" for f in findings):

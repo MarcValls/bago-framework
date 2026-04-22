@@ -741,7 +741,7 @@ def test_bago_lint_autofix():
         tmp = _Path(_tf.mkdtemp())
         (tmp / "fixable.py").write_text(
             "import datetime\n"
-            "ts = datetime.datetime.utcnow()\n"
+            "ts = datetime.datetime.utcnow()\n" # noqa: BAGO-W001
             "try:\n    pass\nexcept:\n    pass\n"
         )
         findings = run_bago_lint(str(tmp))

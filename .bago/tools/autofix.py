@@ -62,7 +62,7 @@ def generate_patch(finding: fe.Finding, src_lines: list) -> Optional[str]:
     original = list(src_lines)
     patched  = list(src_lines)
 
-    # BAGO-W001: datetime.utcnow() → datetime.now(datetime.timezone.utc)
+    # BAGO-W001: datetime.utcnow() → datetime.now(datetime.timezone.utc) # noqa: BAGO-W001
     if rule == "BAGO-W001":
         old = patched[lineno]
         new = re.sub(r'datetime\.datetime\.utcnow\(\)',
@@ -447,7 +447,7 @@ def run_tests():
     # T1: generate_patch BAGO-W001
     f = fe.Finding(id="X",severity="warning",file="a.py",line=1,col=0,rule="BAGO-W001",
                    source="bago",message="test",autofixable=True)
-    lines = ["    ts = datetime.datetime.utcnow()\n"]
+    lines = ["    ts = datetime.datetime.utcnow()\n"] # noqa: BAGO-W001
     patch = generate_patch(f, lines)
     if patch and "datetime.timezone.utc" in patch:
         ok("fix:patch_utcnow")
@@ -467,7 +467,7 @@ def run_tests():
     # T3: apply_patch dry-run does not modify file
     tmp = Path(tf.mkdtemp())
     py  = tmp / "sample.py"
-    py.write_text("    ts = datetime.datetime.utcnow()\n")
+    py.write_text("    ts = datetime.datetime.utcnow()\n") # noqa: BAGO-W001
     f3 = fe.Finding(id="Z",severity="warning",file=str(py),line=1,col=0,rule="BAGO-W001",
                     source="bago",message="test",autofixable=True)
     src_before = py.read_text()
