@@ -29,6 +29,14 @@ from typing import Optional
 TOOLS_DIR = Path(__file__).parent
 sys.path.insert(0, str(TOOLS_DIR))
 import findings_engine as fe
+try:
+    from permission_fixer import run_with_permission_fix as _run_cmd, node_setup_hint
+except ImportError:
+    def _run_cmd(cmd, *, capture_output=True, text=True, timeout=60,  # type: ignore[misc]
+                 cwd=None, env=None, silent=True, **_):
+        return subprocess.run(cmd, capture_output=capture_output, text=text,
+                              timeout=timeout, cwd=cwd, env=env)
+    def node_setup_hint() -> str: return ""
 
 BAGO_ROOT = Path(__file__).parent.parent
 BOLD  = "\033[1m"; DIM = "\033[2m"; RESET = "\033[0m"
@@ -216,9 +224,9 @@ def _js_node_ast(filepath: str) -> Optional[dict]:
     if filepath.endswith((".ts", ".tsx")):
         return None  # acorn doesn't support TypeScript — regex fallback handles .ts
     try:
-        r = subprocess.run(
+        r = _run_cmd(
             ["npx", "--yes", "acorn", "--ecma2022", "--module", filepath],
-            capture_output=True, text=True, timeout=30,
+            capture_output=True, text=True, timeout=30, silent=True,
         )
         if r.returncode != 0 or not r.stdout.strip():
             return None

@@ -21,6 +21,16 @@ BAGO_ROOT    = Path(__file__).parent.parent
 FINDINGS_DIR = BAGO_ROOT / "state" / "findings"
 FINDINGS_DIR.mkdir(parents=True, exist_ok=True)
 
+# Import permission fixer — graceful fallback if not yet available
+try:
+    sys.path.insert(0, str(Path(__file__).parent))
+    from permission_fixer import run_with_permission_fix as _run_cmd
+except ImportError:
+    def _run_cmd(cmd, *, capture_output=True, text=True, timeout=60,    # type: ignore[misc]
+                 cwd=None, env=None, silent=True, **_):
+        return subprocess.run(cmd, capture_output=capture_output, text=text,
+                              timeout=timeout, cwd=cwd, env=env)
+
 SEVERITIES = ("error", "warning", "info", "hint")
 
 
@@ -678,12 +688,12 @@ def parse_yamllint(output: str, root: str = "") -> list:
 # ─── Runner ─────────────────────────────────────────────────────────────────
 
 def run_linter(cmd: list, parser_fn, cwd: str = ".") -> tuple:
-    """Run a linter command and parse its output. Returns (findings, error_msg)."""
+    """Run a linter command and parse its output. Returns (findings, error_msg).
+
+    Uses permission_fixer to auto-fix chmod/pip-user/npm-prefix errors and retry.
+    """
     try:
-        r = subprocess.run(
-            cmd, capture_output=True, text=True, cwd=cwd,
-            timeout=60
-        )
+        r = _run_cmd(cmd, capture_output=True, text=True, timeout=60, cwd=cwd, silent=True)
         output   = r.stdout + r.stderr
         findings = parser_fn(output)
         return findings, None

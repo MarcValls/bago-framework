@@ -46,6 +46,16 @@ from pathlib import Path
 BAGO_ROOT = Path(__file__).resolve().parent / ".bago"
 TOOLS     = BAGO_ROOT / "tools"
 
+# Import permission fixer for auto-fix on subprocess errors
+try:
+    sys.path.insert(0, str(TOOLS))
+    from permission_fixer import run_with_permission_fix as _run_cmd, ensure_executable
+except ImportError:
+    def _run_cmd(cmd, *, capture_output=False, text=True, timeout=120,  # type: ignore[misc]
+                 cwd=None, env=None, silent=False, **_):
+        return subprocess.run(cmd, cwd=cwd, env=env)
+    def ensure_executable(path: str) -> bool: return False
+
 # Comandos principales (visibles siempre)
 COMMANDS_MAIN = {
     "start":     ["python3", str(TOOLS / "bago_start.py")],
@@ -443,8 +453,8 @@ def main():
         pkg_json = BAGO_ROOT.parent / "package.json"
         if pkg_json.exists():
             print("  📦 Instalando dependencias JS (npm install)...")
-            r_npm = subprocess.run(["npm", "install"], cwd=str(BAGO_ROOT.parent),
-                                   capture_output=True, text=True)
+            r_npm = _run_cmd(["npm", "install"], cwd=str(BAGO_ROOT.parent),
+                             capture_output=True, text=True, silent=False)
             if r_npm.returncode == 0:
                 print("  ✅ npm install completado — acorn disponible para análisis JS/TS preciso")
             else:
