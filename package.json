@@ -4,7 +4,9 @@
   "description": "BAGO — Balanced Agile Governance Operations framework",
   "private": true,
   "devDependencies": {
-    "acorn": "^8.14.0"
+    "acorn": "^8.14.0",
+    "@typescript-eslint/typescript-estree": "^8.0.0",
+    "typescript": "^5.0.0"
   },
   "scripts": {
     "setup": "npm install",

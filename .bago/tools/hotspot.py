@@ -217,12 +217,12 @@ def _count_js_ast_nodes(node: object) -> tuple:
 def _js_node_ast(filepath: str) -> Optional[dict]:
     """Parse JS file with npx acorn → accurate AST function/class count.
 
-    Uses 'npx --yes acorn' so acorn is auto-downloaded on first use (no manual
-    install needed). Skips TypeScript files (acorn doesn't support TS syntax).
+    Uses 'npx --yes acorn' so acorn is auto-downloaded on first use.
+    TypeScript files are routed to _ts_node_ast() instead.
     Returns None if Node.js is unavailable or parsing fails → caller uses regex.
     """
     if filepath.endswith((".ts", ".tsx")):
-        return None  # acorn doesn't support TypeScript — regex fallback handles .ts
+        return _ts_node_ast(filepath)
     try:
         r = _run_cmd(
             ["npx", "--yes", "acorn", "--ecma2022", "--module", filepath],
@@ -235,6 +235,57 @@ def _js_node_ast(filepath: str) -> Optional[dict]:
         return {"functions": fn, "classes": cl}
     except Exception:
         return None
+
+
+def _ts_node_ast(filepath: str) -> Optional[dict]:
+    """Parse TypeScript/TSX with @typescript-eslint/typescript-estree via ts_ast.js.
+
+    ts_ast.js must exist in the same directory as this file and requires
+    @typescript-eslint/typescript-estree to be installed (via npm install).
+    Returns None on any failure → caller falls back to enhanced regex.
+    """
+    ts_script = Path(__file__).parent / "ts_ast.js"
+    if not ts_script.exists():
+        return None
+    try:
+        r = _run_cmd(
+            ["node", str(ts_script), filepath],
+            capture_output=True, text=True, timeout=30, silent=True,
+        )
+        if r.returncode != 0 or not r.stdout.strip():
+            return None
+        ast_data = json.loads(r.stdout)
+        fn, cl = _count_ts_ast_nodes(ast_data)
+        return {"functions": fn, "classes": cl}
+    except Exception:
+        return None
+
+
+def _count_ts_ast_nodes(node: object) -> tuple:
+    """Count (functions, classes) in a TypeScript ESTree AST.
+
+    Same as _count_js_ast_nodes but also handles TypeScript-specific nodes:
+    - TSMethodSignature (interface method signature — NOT a body, skip)
+    - TSFunctionType (type annotation — NOT a body, skip)
+    - MethodDefinition inside ClassBody IS counted via its FunctionExpression value.
+    We intentionally do NOT count TSMethodSignature/TSFunctionType because they
+    are type declarations without executable bodies.
+    """
+    if not isinstance(node, dict):
+        return 0, 0
+    fn = cl = 0
+    t = node.get("type", "")
+    if t in ("FunctionDeclaration", "FunctionExpression", "ArrowFunctionExpression"):
+        fn += 1
+    if t in ("ClassDeclaration", "ClassExpression"):
+        cl += 1
+    for val in node.values():
+        if isinstance(val, dict):
+            f2, c2 = _count_ts_ast_nodes(val);  fn += f2; cl += c2
+        elif isinstance(val, list):
+            for item in val:
+                f2, c2 = _count_ts_ast_nodes(item); fn += f2; cl += c2
+    return fn, cl
 
 
 def analyze_js_complexity(filepath: str) -> dict:
@@ -522,8 +573,31 @@ def run_tests():
     else:
         errors2 += 1; print(f"  FAIL: hotspot:ci_failures_dict — {type(ci)}")
 
+    # T10: TypeScript AST via typescript-estree (if available)
+    ts_src = (
+        "interface IGreeter { greet(name: string): void; }\n"
+        "class Greeter implements IGreeter {\n"
+        "  private name: string;\n"
+        "  constructor(name: string) { this.name = name; }\n"
+        "  greet(name: string): void { console.log('hi'); }\n"
+        "  private helper = (x: number): number => x * 2;\n"
+        "}\n"
+        "export function createGreeter(n: string): IGreeter { return new Greeter(n); }\n"
+        "export const greetAll = async (names: string[]): Promise<void> => {};\n"
+    )
+    ts_file = tmp2 / "greeter.ts"
+    ts_file.write_text(ts_src)
+    ct = analyze_js_complexity(str(ts_file))
+    # Should detect: constructor, greet, helper arrow, createGreeter, greetAll = 5 funcs, 1 class
+    ts_ast_ok = ct["functions"] >= 4 and ct["classes"] >= 1 and ct["loc"] >= 7
+    if ts_ast_ok:
+        mode = "AST" if _ts_node_ast(str(ts_file)) else "regex"
+        print(f"  OK: hotspot:ts_complexity ({mode}) — {ct['functions']} fns, {ct['classes']} class")
+    else:
+        errors2 += 1; print(f"  FAIL: hotspot:ts_complexity — {ct}")
+
     shutil.rmtree(tmp2)
-    total2 = 4; passed2 = total2 - errors2
+    total2 = 5; passed2 = total2 - errors2
     print(f"\n  {passed2}/{total2} tests multi-lenguaje pasaron")
     if errors2: sys.exit(1)
 
