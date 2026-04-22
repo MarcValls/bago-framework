@@ -830,6 +830,15 @@ def test_js_ast_scanner():
         _record("js_ast:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_permission_check():
+    """permission_check.py --test pasa todos los tests."""
+    rc, out, _ = _run("permission_check.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("permission_check:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("permission_check:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -879,6 +888,7 @@ ALL_TESTS = [
     (46, "diff_findings",   test_diff_findings),
     (47, "multi_scan",      test_multi_scan),
     (48, "js_ast_scanner",  test_js_ast_scanner),
+    (49, "permission_check", test_permission_check),
 ]
 
 

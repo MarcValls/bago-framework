@@ -415,6 +415,7 @@
 ./state/iterations/ITER-0018.json
 ./state/iterations/ITER-0019.json
 ./state/iterations/ITER-0020.json
+./state/iterations/ITER-0021.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -697,6 +698,7 @@
 ./tools/perf/README.md
 ./tools/perf/render_perf_charts.py
 ./tools/perf/stress_bago_agents.py
+./tools/permission_check.py
 ./tools/permission_fixer.py
 ./tools/personality_panel.py
 ./tools/quick_status.py

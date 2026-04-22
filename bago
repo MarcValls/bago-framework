@@ -449,6 +449,11 @@ def main():
             )
         else:
             print("ERROR: node no encontrado o js_ast_scanner.js ausente")
+    elif cmd == "permission-check":
+        subprocess.run(
+            ["python3", str(TOOLS / "permission_check.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -623,6 +628,7 @@ def main():
                 "bago-lint":     "linter propio sin dependencias: BAGO-E001/W001-W004/I001-I002 + --fix",
                 "multi-scan":    "escanea TODOS los lenguajes del proyecto en una sola pasada",
                 "ast-scan":      "linter JS/TS basado en AST (acorn) — detecta arrow fn, eval, debugger, ==",
+                "permission-check": "verifica y corrige permisos +x de todos los ejecutables BAGO",
                 "hotspot":       "detecta hotspots: archivos con mas cambios + fallos + complejidad",
                 "fix":           "autofix serio: genera y aplica parches concretos con validacion",
                 "gh":            "integracion GitHub: check runs y comentarios en PRs",
