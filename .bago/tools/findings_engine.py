@@ -654,6 +654,7 @@ def parse_yamllint(output: str, root: str = "") -> list:
     """
     findings = []
     pattern = re.compile(
+        # filepath        line   col   level              message (non-greedy)  rule (no parens inside)
         r"^(.+?):(\d+):(\d+):\s+\[(error|warning)\]\s+(.+?)\s+\(([^)]+)\)\s*$",
         re.MULTILINE,
     )

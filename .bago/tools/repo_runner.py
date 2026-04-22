@@ -123,6 +123,12 @@ def _cargo_operation(repo_root: Path, operation: str) -> tuple[bool, str, list[s
     return False, "", [f"No hay runner Cargo disponible para '{operation}'."]
 
 
+def _is_not_found(text: str) -> bool:
+    """Return True when subprocess output indicates the executable was not found."""
+    low = text.lower()
+    return "not found" in low or "no such file" in low or "Could not find command" in text
+
+
 def _go_operation(repo_root: Path, operation: str) -> tuple[bool, str, list[str]]:
     if operation == "lint":
         cmd, label = ["go", "vet", "./..."], "go vet ./..."
@@ -233,7 +239,7 @@ def _ruby_operation(repo_root: Path, operation: str) -> tuple[bool, str, list[st
             text = (err or out or "").strip()
             if rc == 0:
                 return True, test_label, ["test OK"]
-            if "Could not find command" in text or "No such file" in text:
+            if _is_not_found(text):
                 continue
             tail = text.splitlines()[-1] if text else "test falló"
             return False, test_label, [tail]
@@ -261,7 +267,7 @@ def _php_operation(repo_root: Path, operation: str) -> tuple[bool, str, list[str
             text = (err or out or "").strip()
             if rc == 0:
                 return True, label, ["lint OK"]
-            if "not found" in text.lower() or "no such file" in text.lower():
+            if _is_not_found(text):
                 continue
             tail = text.splitlines()[-1] if text else "lint falló"
             return False, label, [tail]
@@ -277,7 +283,7 @@ def _php_operation(repo_root: Path, operation: str) -> tuple[bool, str, list[str
             text = (err or out or "").strip()
             if rc == 0:
                 return True, label, ["test OK"]
-            if "not found" in text.lower() or "no such file" in text.lower():
+            if _is_not_found(text):
                 continue
             tail = text.splitlines()[-1] if text else "test falló"
             return False, label, [tail]
@@ -344,8 +350,9 @@ def _run_operation(operation: str, repo_root: Path) -> dict[str, object]:
         or (repo_root / "build.gradle").exists()
         or (repo_root / "build.gradle.kts").exists()
     ):
-        # Kotlin projects use Gradle too — prefer kotlin runner when .kt sources exist
-        if any(repo_root.rglob("*.kt")):
+        # Kotlin projects use Gradle too — prefer kotlin runner when .kt sources exist.
+        # Use next() to stop scanning once the first .kt file is found (avoids full tree walk).
+        if next(repo_root.rglob("*.kt"), None) is not None:
             ok, runner, details = _kotlin_operation(repo_root, operation)
             kind = "kotlin"
         else:

@@ -52,7 +52,8 @@ def _detect_lang(target: str) -> str:
 
     # Manifest-based detection (deterministic, takes priority)
     if (p / "pom.xml").exists() or (p / "build.gradle").exists() or (p / "build.gradle.kts").exists():
-        return "kotlin" if any(p.rglob("*.kt")) else "java"
+        # Use next() to avoid scanning the full tree unnecessarily
+        return "kotlin" if next(p.rglob("*.kt"), None) is not None else "java"
     if any(p.glob("*.csproj")) or any(p.glob("*.sln")):
         return "csharp"
     if (p / "Gemfile").exists():
@@ -220,13 +221,15 @@ def run_scan(target: str, sources: Optional[list] = None,
             db.add(findings); db.meta["sources"].append("swiftlint")
 
     elif lang == "kotlin":
-        kt_glob = str(Path(target) / "**" / "*.kt")
-        findings, err = fe.run_linter(
-            ["ktlint", "--reporter=json", kt_glob],
-            fe.parse_ktlint, cwd=str(BAGO_ROOT.parent)
-        )
-        if not err:
-            db.add(findings); db.meta["sources"].append("ktlint")
+        # Expand glob here so subprocess receives actual file paths (shell won't expand it)
+        kt_files = [str(f) for f in Path(target).rglob("*.kt")]
+        if kt_files:
+            findings, err = fe.run_linter(
+                ["ktlint", "--reporter=json"] + kt_files,
+                fe.parse_ktlint, cwd=str(BAGO_ROOT.parent)
+            )
+            if not err:
+                db.add(findings); db.meta["sources"].append("ktlint")
 
     elif lang == "shell":
         shell_files = (
