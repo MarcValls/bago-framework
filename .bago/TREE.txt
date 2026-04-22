@@ -406,6 +406,7 @@
 ./state/iterations/ITER-0009.json
 ./state/iterations/ITER-0010.json
 ./state/iterations/ITER-0011.json
+./state/iterations/ITER-0012.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json

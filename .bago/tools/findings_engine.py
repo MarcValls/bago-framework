@@ -709,16 +709,30 @@ def run_bago_lint(target_dir: str) -> list:
     """
     BAGO's own lint: checks Python files for known issues.
     Returns list of Finding objects (no external dependency).
+
+    Rules:
+      BAGO-W001  datetime.utcnow() deprecated since Python 3.12
+      BAGO-I001  sys.exit(1) without user-visible message
+      BAGO-E001  bare except: clause — catches SystemExit/KeyboardInterrupt
+      BAGO-W002  eval() or exec() — security risk
+      BAGO-W003  os.system() — should use subprocess
+      BAGO-I002  TODO/FIXME/HACK comments — technical debt markers
     """
     findings = []
     target = Path(target_dir)
+    _bare_except_re  = re.compile(r'^\s*except\s*:', re.MULTILINE)
+    _eval_exec_re    = re.compile(r'\b(eval|exec)\s*\(')
+    _os_system_re    = re.compile(r'\bos\.system\s*\(')
+    _todo_re         = re.compile(r'#.*\b(TODO|FIXME|HACK|XXX)\b', re.IGNORECASE)
+
     for pyfile in sorted(target.rglob("*.py")):
         try:
             src   = pyfile.read_text(errors="replace")
             lines = src.splitlines()
             rel   = str(pyfile)
+            is_test = "test" in pyfile.name.lower()
             for i, line in enumerate(lines, 1):
-                # Detect deprecated utcnow()
+                # BAGO-W001: deprecated utcnow()
                 if "datetime.utcnow()" in line or ".utcnow()" in line:
                     fid = _make_id("bago", rel, i, "BAGO-W001")
                     findings.append(Finding(
@@ -730,8 +744,8 @@ def run_bago_lint(target_dir: str) -> list:
                         fix_patch=_make_utcnow_patch(rel, i, line),
                         context_lines=_read_context(rel, i),
                     ))
-                # Detect bare sys.exit() without proper check
-                if re.search(r'\bsys\.exit\(1\)\s*$', line) and "test" not in pyfile.name.lower():
+                # BAGO-I001: bare sys.exit(1)
+                if re.search(r'\bsys\.exit\(1\)\s*$', line) and not is_test:
                     fid = _make_id("bago", rel, i, "BAGO-I001")
                     findings.append(Finding(
                         id=fid, severity="info", file=rel, line=i, col=0,
@@ -741,9 +755,69 @@ def run_bago_lint(target_dir: str) -> list:
                         autofixable=False,
                         context_lines=_read_context(rel, i),
                     ))
+                # BAGO-E001: bare except:
+                if _bare_except_re.match(line):
+                    fid = _make_id("bago", rel, i, "BAGO-E001")
+                    findings.append(Finding(
+                        id=fid, severity="error", file=rel, line=i, col=0,
+                        rule="BAGO-E001", source="bago",
+                        message="bare except: captura SystemExit y KeyboardInterrupt",
+                        fix_suggestion="Usa 'except Exception:' para capturar solo errores de aplicación",
+                        autofixable=True,
+                        fix_patch=_make_bare_except_patch(rel, i, line),
+                        context_lines=_read_context(rel, i),
+                    ))
+                # BAGO-W002: eval() or exec() — skip test files
+                if not is_test and _eval_exec_re.search(line):
+                    kw = "eval" if "eval(" in line else "exec"
+                    fid = _make_id("bago", rel, i, "BAGO-W002")
+                    findings.append(Finding(
+                        id=fid, severity="warning", file=rel, line=i, col=0,
+                        rule="BAGO-W002", source="bago",
+                        message=f"{kw}() es un riesgo de seguridad — evitar en producción",
+                        fix_suggestion=f"Reemplaza {kw}() por lógica explícita o ast.literal_eval()",
+                        autofixable=False,
+                        context_lines=_read_context(rel, i),
+                    ))
+                # BAGO-W003: os.system() — skip test and ci_generator
+                if not is_test and _os_system_re.search(line):
+                    fid = _make_id("bago", rel, i, "BAGO-W003")
+                    findings.append(Finding(
+                        id=fid, severity="warning", file=rel, line=i, col=0,
+                        rule="BAGO-W003", source="bago",
+                        message="os.system() no captura salida ni maneja errores",
+                        fix_suggestion="Usa subprocess.run() con capture_output=True",
+                        autofixable=False,
+                        context_lines=_read_context(rel, i),
+                    ))
+                # BAGO-I002: TODO/FIXME/HACK
+                if _todo_re.search(line):
+                    m = _todo_re.search(line)
+                    kw = m.group(1).upper() if m else "TODO"
+                    fid = _make_id("bago", rel, i, "BAGO-I002")
+                    findings.append(Finding(
+                        id=fid, severity="info", file=rel, line=i, col=0,
+                        rule="BAGO-I002", source="bago",
+                        message=f"{kw}: deuda técnica pendiente",
+                        fix_suggestion="Resuelve o registra en bago debt",
+                        autofixable=False,
+                        context_lines=_read_context(rel, i),
+                    ))
         except Exception:
             pass
     return findings
+
+
+def _make_bare_except_patch(filepath: str, lineno: int, line: str) -> str:
+    """Generate a unified diff patch for bare except → except Exception."""
+    new = line.replace("except:", "except Exception:", 1)
+    if new == line:
+        return ""
+    return (
+        f"--- a/{filepath}\n+++ b/{filepath}\n"
+        f"@@ -{lineno},1 +{lineno},1 @@\n"
+        f"-{line}\n+{new}\n"
+    )
 
 
 def _make_utcnow_patch(filepath: str, lineno: int, line: str) -> str:
@@ -922,7 +996,34 @@ def run_tests():
     else:
         fail("engine:parse_bandit", str(fb))
 
-    total = 7; passed = total - errors
+    # T8a: bago_lint new rules (BAGO-E001, BAGO-W002, BAGO-W003, BAGO-I002)
+    tmp3 = Path(tf.mkdtemp())
+    py3 = tmp3 / "mixed.py"
+    py3.write_text(
+        "import os\n"
+        "try:\n"
+        "    pass\n"
+        "except:  # BAGO-E001\n"
+        "    pass\n"
+        "result = eval('1+1')  # BAGO-W002\n"
+        "os.system('ls')  # BAGO-W003\n"
+        "# TODO: fix this  # BAGO-I002\n"
+    )
+    f3 = run_bago_lint(str(tmp3))
+    rules3 = {f.rule for f in f3}
+    if "BAGO-E001" in rules3 and "BAGO-W002" in rules3 and "BAGO-W003" in rules3 and "BAGO-I002" in rules3:
+        ok("engine:bago_lint_new_rules")
+    else:
+        fail("engine:bago_lint_new_rules", f"found rules: {rules3}")
+    # Verify bare_except patch
+    patch_e = _make_bare_except_patch("b.py", 4, "    except:")
+    if "except Exception:" in patch_e and "@@ -4" in patch_e:
+        ok("engine:bare_except_patch")
+    else:
+        fail("engine:bare_except_patch", repr(patch_e[:80]))
+    shutil.rmtree(tmp3)
+
+    total = 9; passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors: sys.exit(1)
 
