@@ -221,19 +221,38 @@ bago gh     →  publicación en check runs y comentarios de PRs GitHub
 - `state/findings/BAGO-FINDING-*.json` — hallazgo individual con severidad/linter/archivo/línea
 - `state/patches/BAGO-PATCH-*.json` — parche generado con diff + estado de validación
 
-## Contadores totales (actualizado — CHG-080)
+## Sprint 180 — Fase 7 / Herramientas #91–#97 (2026-04-22)
+
+**Análisis estático avanzado y tooling del framework**
+
+| # | Herramienta | Comando | Self-tests |
+|---|-------------|---------|------------|
+| 91 | `bago_lint_cli.py` | `bago bago-lint` | 5/5 ✅ |
+| 92 | `multi_scan.py` | `bago multi-scan` | 5/5 ✅ |
+| 93 | `js_ast_scanner.js` | _(interno multi-scan)_ | 10/10 ✅ |
+| 94 | `permission_check.py` | `bago permission-check` | 5/5 ✅ |
+| 95 | `install_deps.py` | `bago install-deps` | 5/5 ✅ |
+| 96 | `rule_catalog.py` | `bago rule-catalog` | 6/6 ✅ |
+| 97 | `lint_report.py` | `bago lint-report` | 6/6 ✅ |
+
+- Reglas totales: 17 (7 BAGO-* Python + 10 JS-* TypeScript/JavaScript)
+- Catálogos generados: `RULE_CATALOG.md` y `RULE_CATALOG.html`
+- Docs individuales: 7 nuevos archivos en `.bago/docs/tools/`
+- Tests de integración: **64/64 ✅ ALL PASS**
+
+## Contadores totales (actualizado — CHG-081)
 
 | Categoría | Cantidad |
 |-----------|----------|
-| Herramientas CLI implementadas | 90 total |
-| Tests de integración pasando | 55/55 |
+| Herramientas CLI implementadas | 95 total |
+| Tests de integración pasando | 64/64 |
 | Workflows canónicos (W0-W9) | 12 |
 | Sesiones registradas | 44 |
-| Cambios registrados | 46 |
+| Cambios registrados | 47 |
 | Health score | 100/100 🟢 |
-| Docs de herramientas | 31 archivos en `.bago/docs/tools/` |
+| Docs de herramientas | 38 archivos en `.bago/docs/tools/` |
 
 ## Última actualización
 
-- fecha: 2026-04-22 Sprint 180 completo + CHG-079 + CHG-080
-- nota: SPRINT-005 activo — 90 herramientas, 55/55 tests, health=100/100 🟢
+- fecha: 2026-04-22 Sprint 180 completo + CHG-079 + CHG-080 + CHG-081
+- nota: SPRINT-005 activo — 95 herramientas, 64/64 tests, health=100/100 🟢

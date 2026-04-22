@@ -562,6 +562,22 @@ Registro de ideas ya implementadas. Cada entrada:
 | `perf/stress_bago_agents.py` | Test de estrés de agentes |
 | `perf/render_perf_charts.py` | Genera gráficas de rendimiento |
 
+### Análisis estático avanzado — herramientas #91–#97
+
+Suite completa de linting estático multi-lenguaje con catálogo de reglas y reporting integrado.
+
+| Herramienta | Comando | Descripción |
+|---|---|---|
+| `bago_lint_cli.py` | `bago bago-lint` | Linter nativo Python: 7 reglas BAGO-*, `--fix`, `--preview`, `--json`, `--since` |
+| `multi_scan.py` | `bago multi-scan` | Scanner simultáneo py/js/go/rust con aggregación unificada de hallazgos |
+| `js_ast_scanner.js` | _(interno)_ | Linter AST para JS/TS vía acorn: 10 reglas JS-*, supresión `// noqa` |
+| `permission_check.py` | `bago permission-check` | Verifica y aplica +x en todos los ejecutables del framework |
+| `install_deps.py` | `bago install-deps` | Comprueba e instala dependencias opcionales de linters (pip/npm) |
+| `rule_catalog.py` | `bago rule-catalog` | Genera catálogo Markdown/HTML de las 17 reglas BAGO-* y JS-* |
+| `lint_report.py` | `bago lint-report` | Convierte JSON de bago-lint/multi-scan en informe Markdown estructurado |
+
+**Reglas cubiertas:** 7 Python (`BAGO-E001`, `BAGO-W001`–`W004`, `BAGO-I001`–`I002`) + 10 JS/TS (`JS-E001`, `JS-W001`–`W005`, `JS-I001`–`I004`). Dos reglas autofixables: `BAGO-E001` y `BAGO-W001`.
+
 ---
 
 ## 9. Sistema de ideas y handoff

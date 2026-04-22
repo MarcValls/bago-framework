@@ -4,7 +4,7 @@ Esta carpeta contiene **95 herramientas** del framework BAGO (94 Python + 1 Java
 
 > **Inventario completo:** ver `.bago/docs/tools/` (31 archivos de documentación individual).
 > **Referencia rápida:** ver `.bago/docs/BAGO_REFERENCIA_COMPLETA.md`.
-> **Tests:** `python3 .bago/tools/integration_tests.py` → 63/63 ALL PASS.
+> **Tests:** `python3 .bago/tools/integration_tests.py` → 64/64 ALL PASS.
 
 ## Herramientas por categoría (95 total)
 
@@ -29,6 +29,8 @@ Esta carpeta contiene **95 herramientas** del framework BAGO (94 Python + 1 Java
 - `bago_lint_cli.py` — CLI dedicado: bago bago-lint con 7 reglas, --fix, --preview, --json, --since (tool #91)
 - `multi_scan.py` — Scanner multi-lenguaje simultáneo (py/js/go/rust), --since, --summary (tool #92)
 - `js_ast_scanner.js` — Linter AST JS/TS vía acorn, 10 reglas, noqa, supera regex (tool #93)
+- `rule_catalog.py` — Catálogo Markdown/HTML de las 17 reglas BAGO-* y JS-* (tool #96)
+- `lint_report.py` — Convierte JSON de bago-lint/multi-scan en informe Markdown (tool #97)
 - `risk_matrix.py` — Matriz de riesgo cuantificada (Security/Reliability/Maintainability)
 - `debt_ledger.py` — Ledger de deuda técnica en horas y € (cuadrantes Reckless/Prudent)
 - `impact_engine.py` — Impacto de negocio: velocidad, €/trimestre

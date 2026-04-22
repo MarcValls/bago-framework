@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>BAGO Rule Catalog</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ddd; padding: .5rem .75rem; text-align: left; }
+  th { background: #f5f5f5; }
+  .rule { border: 1px solid #e0e0e0; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+  .rule h3 { margin: 0 0 .5rem; }
+  .meta { color: #555; font-size: .9em; }
+  .fix { background: #d4edda; color: #155724; padding: 2px 6px; border-radius: 4px; font-size: .8em; }
+  .noqa { background: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 4px; font-size: .8em; font-family: monospace; }
+  pre { background: #f8f8f8; padding: .75rem; border-radius: 4px; overflow-x: auto; }
+  code { font-family: 'Fira Code', monospace; font-size: .9em; }
+  h2 { border-bottom: 2px solid #007acc; padding-bottom: .25rem; margin-top: 2rem; }
+</style>
+</head>
+<body>
+<h1>BAGO Rule Catalog</h1>
+<p><b>17 reglas</b> (7 Python · 10 JS/TS)</p>
+<h2>Índice rápido</h2>
+<table>
+<thead><tr><th>Código</th><th>Severidad</th><th>Categoría</th><th>Título</th><th>Autofix</th></tr></thead>
+<tbody>
+<tr><td><code>BAGO-E001</code></td><td>🔴 error</td><td>Fiabilidad</td><td>Bare except clause</td><td>✅</td></tr>
+<tr><td><code>BAGO-W001</code></td><td>🟡 warning</td><td>Fiabilidad</td><td>datetime.utcnow() deprecated</td><td>✅</td></tr>
+<tr><td><code>BAGO-W002</code></td><td>🟡 warning</td><td>Seguridad</td><td>eval() / exec() usage</td><td>—</td></tr>
+<tr><td><code>BAGO-W003</code></td><td>🟡 warning</td><td>Fiabilidad</td><td>os.system() — use subprocess</td><td>—</td></tr>
+<tr><td><code>BAGO-W004</code></td><td>🟡 warning</td><td>Fiabilidad</td><td>Hardcoded absolute path</td><td>—</td></tr>
+<tr><td><code>BAGO-I001</code></td><td>🔵 info</td><td>Mantenibilidad</td><td>sys.exit(1) without visible message</td><td>—</td></tr>
+<tr><td><code>BAGO-I002</code></td><td>🔵 info</td><td>Mantenibilidad</td><td>TODO/FIXME/HACK comment</td><td>—</td></tr>
+<tr><td><code>JS-E001</code></td><td>🔴 error</td><td>Seguridad</td><td>eval() / Function() constructor</td><td>—</td></tr>
+<tr><td><code>JS-W001</code></td><td>🟡 warning</td><td>Mantenibilidad</td><td>console.log() en código de producción</td><td>—</td></tr>
+<tr><td><code>JS-W002</code></td><td>🟡 warning</td><td>Mantenibilidad</td><td>debugger statement</td><td>—</td></tr>
+<tr><td><code>JS-W003</code></td><td>🟡 warning</td><td>Fiabilidad</td><td>Loose equality == / !=</td><td>—</td></tr>
+<tr><td><code>JS-W004</code></td><td>🟡 warning</td><td>Seguridad</td><td>setTimeout/setInterval con string</td><td>—</td></tr>
+<tr><td><code>JS-W005</code></td><td>🟡 warning</td><td>Fiabilidad</td><td>Empty catch block</td><td>—</td></tr>
+<tr><td><code>JS-I001</code></td><td>🔵 info</td><td>Mantenibilidad</td><td>TODO/FIXME comment</td><td>—</td></tr>
+<tr><td><code>JS-I002</code></td><td>🔵 info</td><td>Mantenibilidad</td><td>Arrow function con >5 parámetros</td><td>—</td></tr>
+<tr><td><code>JS-I003</code></td><td>🔵 info</td><td>Mantenibilidad</td><td>Ternario anidado</td><td>—</td></tr>
+<tr><td><code>JS-I004</code></td><td>🔵 info</td><td>Mantenibilidad</td><td>Async function sin await</td><td>—</td></tr>
+
+</tbody>
+</table>
+<h2>Referencia detallada</h2>
+
+<div class='rule' id='BAGO-E001'>
+  <h3><code>BAGO-E001</code> — Bare except clause</h3>
+  <p class='meta'>
+    🔴 <b>error</b> &nbsp;·&nbsp;
+    Fiabilidad &nbsp;·&nbsp;
+    fuente: <code>bago</code>
+    <span class='fix'>✅ autofix</span> <span class='noqa'># noqa: BAGO-E001</span>
+  </p>
+  <p>La cláusula `except:` sin tipo captura `SystemExit` y `KeyboardInterrupt`, lo que impide interrumpir el programa con Ctrl-C y oculta errores inesperados.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>try:
+    risky()
+except:
+    pass</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>try:
+    risky()
+except Exception as e:
+    log(e)</code></pre>
+</div>
+
+<div class='rule' id='BAGO-W001'>
+  <h3><code>BAGO-W001</code> — datetime.utcnow() deprecated</h3>
+  <p class='meta'>
+    🟡 <b>warning</b> &nbsp;·&nbsp;
+    Fiabilidad &nbsp;·&nbsp;
+    fuente: <code>bago</code>
+    <span class='fix'>✅ autofix</span> <span class='noqa'># noqa: BAGO-W001</span>
+  </p>
+  <p>`datetime.utcnow()` devuelve un `datetime` naive en UTC, lo que induce confusión con zonas horarias. Deprecated desde Python 3.12.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>ts = datetime.utcnow()</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>ts = datetime.now(timezone.utc)</code></pre>
+</div>
+
+<div class='rule' id='BAGO-W002'>
+  <h3><code>BAGO-W002</code> — eval() / exec() usage</h3>
+  <p class='meta'>
+    🟡 <b>warning</b> &nbsp;·&nbsp;
+    Seguridad &nbsp;·&nbsp;
+    fuente: <code>bago</code>
+     <span class='noqa'># noqa: BAGO-W002</span>
+  </p>
+  <p>`eval()` y `exec()` ejecutan código arbitrario. Si la entrada proviene de fuentes externas, es una vulnerabilidad crítica RCE.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>result = eval(user_input)</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code># Usa ast.literal_eval() para datos estructurados
+result = ast.literal_eval(data)</code></pre>
+</div>
+
+<div class='rule' id='BAGO-W003'>
+  <h3><code>BAGO-W003</code> — os.system() — use subprocess</h3>
+  <p class='meta'>
+    🟡 <b>warning</b> &nbsp;·&nbsp;
+    Fiabilidad &nbsp;·&nbsp;
+    fuente: <code>bago</code>
+     <span class='noqa'># noqa: BAGO-W003</span>
+  </p>
+  <p>`os.system()` no captura stdout/stderr, no permite control de código de retorno y es más vulnerable a inyección de shell.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>os.system("ls -la")</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>subprocess.run(["ls", "-la"], check=True)</code></pre>
+</div>
+
+<div class='rule' id='BAGO-W004'>
+  <h3><code>BAGO-W004</code> — Hardcoded absolute path</h3>
+  <p class='meta'>
+    🟡 <b>warning</b> &nbsp;·&nbsp;
+    Fiabilidad &nbsp;·&nbsp;
+    fuente: <code>bago</code>
+     <span class='noqa'># noqa: BAGO-W004</span>
+  </p>
+  <p>Rutas absolutas hardcodeadas (`/Users/`, `/home/`, `C:\\`) impiden portabilidad entre máquinas y entornos CI.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>config = "/Users/marc/project/config.json"</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>config = Path(__file__).parent / "config.json"</code></pre>
+</div>
+
+<div class='rule' id='BAGO-I001'>
+  <h3><code>BAGO-I001</code> — sys.exit(1) without visible message</h3>
+  <p class='meta'>
+    🔵 <b>info</b> &nbsp;·&nbsp;
+    Mantenibilidad &nbsp;·&nbsp;
+    fuente: <code>bago</code>
+     <span class='noqa'># noqa: BAGO-I001</span>
+  </p>
+  <p>Salir con código 1 sin mensaje previo dificulta el diagnóstico en CI/CD. El usuario/operador no sabe qué falló.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>sys.exit(1)</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>print("ERROR: no se encontró config.json", file=sys.stderr)
+sys.exit(1)</code></pre>
+</div>
+
+<div class='rule' id='BAGO-I002'>
+  <h3><code>BAGO-I002</code> — TODO/FIXME/HACK comment</h3>
+  <p class='meta'>
+    🔵 <b>info</b> &nbsp;·&nbsp;
+    Mantenibilidad &nbsp;·&nbsp;
+    fuente: <code>bago</code>
+     <span class='noqa'># noqa: BAGO-I002</span>
+  </p>
+  <p>Comentarios `TODO`, `FIXME` o `HACK` son deuda técnica visible. Documenta en un ticket y elimina el comentario o conviértelo en un issue rastreable.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code># TODO: manejar el caso de archivo vacío</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code># Ver issue #123: manejar archivo vacío</code></pre>
+</div>
+
+<div class='rule' id='JS-E001'>
+  <h3><code>JS-E001</code> — eval() / Function() constructor</h3>
+  <p class='meta'>
+    🔴 <b>error</b> &nbsp;·&nbsp;
+    Seguridad &nbsp;·&nbsp;
+    fuente: <code>js_ast</code>
+     <span class='noqa'># noqa: JS-E001</span>
+  </p>
+  <p>`eval()` y `new Function(string)` ejecutan JavaScript arbitrario en tiempo de ejecución. Equivalente a RCE si la cadena viene de una fuente externa.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>const fn = new Function('return ' + userInput);</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>// Parsea JSON con JSON.parse(), usa funciones estáticas</code></pre>
+</div>
+
+<div class='rule' id='JS-W001'>
+  <h3><code>JS-W001</code> — console.log() en código de producción</h3>
+  <p class='meta'>
+    🟡 <b>warning</b> &nbsp;·&nbsp;
+    Mantenibilidad &nbsp;·&nbsp;
+    fuente: <code>js_ast</code>
+     <span class='noqa'># noqa: JS-W001</span>
+  </p>
+  <p>Las llamadas a `console.log/debug/error` exponen información interna en producción. Usa un logger configurable.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>console.log('Usuario:', user.id);</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>logger.debug('Usuario:', user.id);</code></pre>
+</div>
+
+<div class='rule' id='JS-W002'>
+  <h3><code>JS-W002</code> — debugger statement</h3>
+  <p class='meta'>
+    🟡 <b>warning</b> &nbsp;·&nbsp;
+    Mantenibilidad &nbsp;·&nbsp;
+    fuente: <code>js_ast</code>
+     <span class='noqa'># noqa: JS-W002</span>
+  </p>
+  <p>La sentencia `debugger` pausa la ejecución en DevTools. Olvidarla en producción degrada la experiencia del usuario.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>debugger;</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>// Eliminar antes del commit</code></pre>
+</div>
+
+<div class='rule' id='JS-W003'>
+  <h3><code>JS-W003</code> — Loose equality == / !=</h3>
+  <p class='meta'>
+    🟡 <b>warning</b> &nbsp;·&nbsp;
+    Fiabilidad &nbsp;·&nbsp;
+    fuente: <code>js_ast</code>
+     <span class='noqa'># noqa: JS-W003</span>
+  </p>
+  <p>`==` aplica coerción de tipos (`'' == false // true`). Esto produce bugs sutiles. Usa siempre `===` y `!==`.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>if (value == null) return;</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>if (value === null || value === undefined) return;</code></pre>
+</div>
+
+<div class='rule' id='JS-W004'>
+  <h3><code>JS-W004</code> — setTimeout/setInterval con string</h3>
+  <p class='meta'>
+    🟡 <b>warning</b> &nbsp;·&nbsp;
+    Seguridad &nbsp;·&nbsp;
+    fuente: <code>js_ast</code>
+     <span class='noqa'># noqa: JS-W004</span>
+  </p>
+  <p>Pasar una cadena como primer argumento a `setTimeout` o `setInterval` es equivalente a `eval()` y comparte sus riesgos.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>setTimeout("doSomething()", 100);</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>setTimeout(() => doSomething(), 100);</code></pre>
+</div>
+
+<div class='rule' id='JS-W005'>
+  <h3><code>JS-W005</code> — Empty catch block</h3>
+  <p class='meta'>
+    🟡 <b>warning</b> &nbsp;·&nbsp;
+    Fiabilidad &nbsp;·&nbsp;
+    fuente: <code>js_ast</code>
+     <span class='noqa'># noqa: JS-W005</span>
+  </p>
+  <p>Un bloque `catch {}` vacío silencia errores completamente. Al menos loguea el error para facilitar el diagnóstico.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>try { risky(); } catch (e) {}</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>try { risky(); } catch (e) { logger.error(e); }</code></pre>
+</div>
+
+<div class='rule' id='JS-I001'>
+  <h3><code>JS-I001</code> — TODO/FIXME comment</h3>
+  <p class='meta'>
+    🔵 <b>info</b> &nbsp;·&nbsp;
+    Mantenibilidad &nbsp;·&nbsp;
+    fuente: <code>js_ast</code>
+     <span class='noqa'># noqa: JS-I001</span>
+  </p>
+  <p>Comentario de deuda técnica. Ver BAGO-I002 para guía.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>// TODO: refactorizar esta función</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>// Ver issue #456</code></pre>
+</div>
+
+<div class='rule' id='JS-I002'>
+  <h3><code>JS-I002</code> — Arrow function con >5 parámetros</h3>
+  <p class='meta'>
+    🔵 <b>info</b> &nbsp;·&nbsp;
+    Mantenibilidad &nbsp;·&nbsp;
+    fuente: <code>js_ast</code>
+     <span class='noqa'># noqa: JS-I002</span>
+  </p>
+  <p>Las arrow functions con muchos parámetros son difíciles de leer y testear. Considera agrupar parámetros en un objeto.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>const fn = (a, b, c, d, e, f) => a + b;</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>const fn = ({ a, b, c, d, e, f }) => a + b;</code></pre>
+</div>
+
+<div class='rule' id='JS-I003'>
+  <h3><code>JS-I003</code> — Ternario anidado</h3>
+  <p class='meta'>
+    🔵 <b>info</b> &nbsp;·&nbsp;
+    Mantenibilidad &nbsp;·&nbsp;
+    fuente: <code>js_ast</code>
+     <span class='noqa'># noqa: JS-I003</span>
+  </p>
+  <p>Los ternarios anidados (`a ? b : c ? d : e`) son difíciles de leer. Usa `if/else` o un `switch`.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>const x = a ? b : c ? d : e;</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>let x;
+if (a) { x = b; } else if (c) { x = d; } else { x = e; }</code></pre>
+</div>
+
+<div class='rule' id='JS-I004'>
+  <h3><code>JS-I004</code> — Async function sin await</h3>
+  <p class='meta'>
+    🔵 <b>info</b> &nbsp;·&nbsp;
+    Mantenibilidad &nbsp;·&nbsp;
+    fuente: <code>js_ast</code>
+     <span class='noqa'># noqa: JS-I004</span>
+  </p>
+  <p>Una función marcada `async` que no contiene `await` es engañosa — devuelve una Promise innecesariamente.</p>
+  <p><b>❌ Incorrecto:</b></p><pre><code>async function getUser() { return db.find(id); }</code></pre>
+  <p><b>✅ Correcto:</b></p><pre><code>function getUser() { return db.find(id); }</code></pre>
+</div>
+
+</body>
+</html>

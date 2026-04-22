@@ -5,6 +5,34 @@
 
 ---
 
+## [2.6] — Sprint 180 (2026-04-22)
+
+### Added
+
+**Herramientas #91–#97 — Análisis estático avanzado y tooling del framework**
+- Tool #91: `bago bago-lint` → `bago_lint_cli.py` — CLI dedicado bago-lint con 7 reglas, `--fix`, `--preview`, `--json`, `--since`
+- Tool #92: `bago multi-scan` → `multi_scan.py` — Scanner multi-lenguaje simultáneo (py/js/go/rust), `--since`, `--summary`
+- Tool #93: `js_ast_scanner.js` — Linter AST JS/TS vía acorn: 10 reglas, noqa, más preciso que regex
+- Tool #94: `bago permission-check` → `permission_check.py` — Verifica y corrige +x en todos los ejecutables BAGO
+- Tool #95: `bago install-deps` → `install_deps.py` — Verifica e instala dependencias opcionales (pip/npm/go/rust)
+- Tool #96: `bago rule-catalog` → `rule_catalog.py` — Catálogo Markdown/HTML de todas las reglas BAGO-* y JS-* (17 total)
+- Tool #97: `bago lint-report` → `lint_report.py` — Convierte JSON de bago-lint / multi-scan en informe Markdown estructurado
+- Documentación individual para cada tool en `.bago/docs/tools/` (7 nuevos archivos)
+- `.bago/docs/RULE_CATALOG.md` y `.bago/docs/RULE_CATALOG.html` — catálogos generados automáticamente
+
+### Changed
+
+- `README.md`: contadores actualizados — 95 herramientas, 64/64 tests, versión 2.6
+- Suite de integración: **64/64 ✅ ALL PASS**
+- `BAGO_REFERENCIA_COMPLETA.md`: sección 8 ampliada con herramientas #91–#97
+- `ESTADO_BAGO_ACTUAL.md`: actualizado a 95 tools, 64/64 tests, Sprint 180 Fase 7
+
+### Fixed
+
+- Permisos +x aplicados automáticamente en todos los ejecutables BAGO via `permission_check.py`
+
+---
+
 ## [2.5-stable] — Sprint 180 (2026-04-22)
 
 ### Added
