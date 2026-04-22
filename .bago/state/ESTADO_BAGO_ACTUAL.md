@@ -225,7 +225,7 @@ bago gh     →  publicación en check runs y comentarios de PRs GitHub
 
 | Categoría | Cantidad |
 |-----------|----------|
-| Herramientas CLI implementadas | 89 total |
+| Herramientas CLI implementadas | 90 total |
 | Tests de integración pasando | 55/55 |
 | Workflows canónicos (W0-W9) | 12 |
 | Sesiones registradas | 44 |
@@ -236,4 +236,4 @@ bago gh     →  publicación en check runs y comentarios de PRs GitHub
 ## Última actualización
 
 - fecha: 2026-04-22 Sprint 180 completo + CHG-079 + CHG-080
-- nota: SPRINT-005 activo — 89 herramientas, 55/55 tests, health=100/100 🟢
+- nota: SPRINT-005 activo — 90 herramientas, 55/55 tests, health=100/100 🟢

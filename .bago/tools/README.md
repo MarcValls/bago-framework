@@ -1,12 +1,12 @@
 # tools
 
-Esta carpeta contiene **89 herramientas** Python del framework BAGO.
+Esta carpeta contiene **90 herramientas** Python del framework BAGO.
 
 > **Inventario completo:** ver `.bago/docs/tools/` (31 archivos de documentación individual).
 > **Referencia rápida:** ver `.bago/docs/BAGO_REFERENCIA_COMPLETA.md`.
 > **Tests:** `python3 .bago/tools/integration_tests.py` → 55/55 ALL PASS.
 
-## Herramientas por categoría (89 total)
+## Herramientas por categoría (90 total)
 
 ### Validación y salud del pack
 - `validate_manifest.py` — Integridad y esquema de `pack.json`

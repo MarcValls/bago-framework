@@ -651,7 +651,64 @@ def _self_test():
                 else:
                     print(f"  OK: generate_js_test_file — describe block found")
 
-    n = 4
+    # Test 5: Go analysis
+    with tempfile.TemporaryDirectory() as td:
+        tdp = Path(td)
+        (tdp / "util.go").write_text(
+            'package util\n\nfunc Greet(name string) string { return "hi" }\n'
+            'func (s *Server) Start(port int) error { return nil }\n'
+            'type Server struct{ host string }\n'
+        )
+        go_files = discover_files(tdp, "go")
+        if not go_files:
+            errors.append("discover_files go: no go files found")
+        else:
+            a = analyze_go_file(go_files[0])
+            if not a["funcs"]:
+                errors.append("analyze_go: no exported funcs found")
+            elif not a["methods"]:
+                errors.append("analyze_go: no methods found")
+            elif not a["structs"]:
+                errors.append("analyze_go: no structs found")
+            else:
+                print(f"  OK: analyze_go_file — {len(a['funcs'])} func, "
+                      f"{len(a['methods'])} method, {len(a['structs'])} struct")
+                content = generate_go_test_file(a)
+                if "func Test" not in content or 'import "testing"' not in content:
+                    errors.append("generate_go: missing Test funcs or testing import")
+                else:
+                    print(f"  OK: generate_go_test_file — {content.count('func Test')} test funcs")
+
+    # Test 6: Rust analysis
+    with tempfile.TemporaryDirectory() as td:
+        tdp = Path(td)
+        (tdp / "lib.rs").write_text(
+            'pub fn add(a: i32, b: i32) -> i32 { a + b }\n'
+            'fn helper() -> bool { true }\n'
+            'pub struct Config { pub value: u32 }\n'
+            'impl Config { pub fn new(v: u32) -> Self { Config { value: v } } }\n'
+        )
+        rs_files = discover_files(tdp, "rs")
+        if not rs_files:
+            errors.append("discover_files rust: no rs files found")
+        else:
+            a = analyze_rust_file(rs_files[0])
+            if not a["pub_funcs"]:
+                errors.append("analyze_rust: no pub funcs found")
+            elif not a["priv_funcs"]:
+                errors.append("analyze_rust: no priv funcs found")
+            elif not a["structs"]:
+                errors.append("analyze_rust: no structs found")
+            else:
+                print(f"  OK: analyze_rust_file — {len(a['pub_funcs'])} pub, "
+                      f"{len(a['priv_funcs'])} priv, {len(a['structs'])} struct")
+                content = generate_rust_test_file(a)
+                if "#[cfg(test)]" not in content or "#[test]" not in content:
+                    errors.append("generate_rust: missing #[cfg(test)] or #[test]")
+                else:
+                    print(f"  OK: generate_rust_test_file — {content.count('#[test]')} test attrs")
+
+    n = 6
     passed = n - len(errors)
     print(f"\n  {passed}/{n} tests pasaron")
     if errors:
