@@ -327,6 +327,34 @@ def analyze_go_complexity(filepath: str) -> dict:
         return {"loc": 0, "functions": 0, "classes": 0, "max_nesting": 0}
 
 
+def analyze_rust_complexity(filepath: str) -> dict:
+    """Rust complexity: LOC + pub/priv function count + impl blocks + struct count.
+
+    Uses regex — reliable for Rust's regular syntax. Counts:
+    - pub fn / pub async fn / pub unsafe fn  → public functions
+    - fn (non-pub, non-test)                 → private functions
+    - structs (pub or private)               → classes proxy
+    """
+    try:
+        src   = Path(filepath).read_text(errors="replace")
+        lines = src.splitlines()
+        loc   = sum(1 for l in lines if l.strip()
+                    and not l.strip().startswith("//")
+                    and not l.strip().startswith("///"))
+        pub_fns = len(re.findall(
+            r'^\s*pub\s+(?:async\s+|unsafe\s+|extern\s+"[^"]+"\s+)?fn\s+\w+',
+            src, re.MULTILINE))
+        all_fns = len(re.findall(r'^\s*(?:pub\s+)?(?:async\s+|unsafe\s+)?fn\s+\w+',
+                                  src, re.MULTILINE))
+        test_fns = len(re.findall(r'^\s*fn\s+test_\w+', src, re.MULTILINE))
+        total_fns = max(0, all_fns - test_fns)
+        structs = len(re.findall(r'^\s*(?:pub(?:\s*\([^)]*\))?\s+)?struct\s+\w+',
+                                  src, re.MULTILINE))
+        return {"loc": loc, "functions": total_fns, "classes": structs, "max_nesting": 0}
+    except Exception:
+        return {"loc": 0, "functions": 0, "classes": 0, "max_nesting": 0}
+
+
 def _analyze_file(filepath: str, lang: str) -> dict:
     if lang == "py":
         return analyze_complexity(filepath)
@@ -334,6 +362,8 @@ def _analyze_file(filepath: str, lang: str) -> dict:
         return analyze_js_complexity(filepath)
     elif lang == "go":
         return analyze_go_complexity(filepath)
+    elif lang == "rust":
+        return analyze_rust_complexity(filepath)
     return analyze_complexity(filepath)
 
 
@@ -596,8 +626,25 @@ def run_tests():
     else:
         errors2 += 1; print(f"  FAIL: hotspot:ts_complexity — {ct}")
 
+    # T11: analyze_rust_complexity
+    rs_file = tmp2 / "lib.rs"
+    rs_file.write_text(
+        "pub struct Config { pub value: u32 }\n"
+        "struct Internal { data: Vec<u8> }\n"
+        "pub fn process(cfg: &Config) -> u32 { cfg.value }\n"
+        "pub async fn fetch(url: &str) -> String { url.to_string() }\n"
+        "fn helper() -> bool { true }\n"
+        "fn test_helper() { assert!(true); }\n"   # should NOT count (test)
+    )
+    cr = analyze_rust_complexity(str(rs_file))
+    # Expected: 3 fns (process, fetch, helper — test_helper excluded), 2 structs
+    if cr["functions"] == 3 and cr["classes"] == 2 and cr["loc"] >= 5:
+        print(f"  OK: hotspot:rust_complexity — {cr['functions']} fns, {cr['classes']} structs")
+    else:
+        errors2 += 1; print(f"  FAIL: hotspot:rust_complexity — {cr}")
+
     shutil.rmtree(tmp2)
-    total2 = 5; passed2 = total2 - errors2
+    total2 = 6; passed2 = total2 - errors2
     print(f"\n  {passed2}/{total2} tests multi-lenguaje pasaron")
     if errors2: sys.exit(1)
 
