@@ -354,7 +354,18 @@ bago gh pr 42 --min-severity error   # PR review agrupado por archivo
 | Python   | flake8 + pylint + mypy + bandit + bago-lint | ✅ | `black` |
 | JS / TS  | ESLint (via npx) | ✅ | `prettier` + `eslint --fix` |
 | Go       | golangci-lint | ✅ | — |
-| Rust     | cargo clippy | — | — |
+| Rust     | cargo clippy | ✅ ¹ | — |
+| Java     | checkstyle | — | — |
+| C#       | dotnet build | — | — |
+| Ruby     | rubocop | — | — |
+| PHP      | phpcs + phpstan | — | — |
+| Swift    | swiftlint | — | — |
+| Kotlin   | ktlint | — | — |
+| Shell    | shellcheck | — | — |
+| Terraform | tflint | — | — |
+| YAML     | yamllint | — | — |
+
+> ¹ Rust hotspot: git history + findings (sin análisis de complejidad AST)
 
 ---
 

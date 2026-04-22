@@ -6,7 +6,8 @@ hallazgos de análisis estático y complejidad del código.
 Score = (commits × 3) + (findings_errors × 5) + (findings_warnings × 2)
         + (loc // 50) + (functions × 0.5) + (ci_failures × 8)
 
-Soporta Python (.py), JavaScript/TypeScript (.js/.ts) y Go (.go).
+Soporta Python (.py), JavaScript/TypeScript (.js/.ts), Go (.go) y Rust (.rs).
+Para Rust: análisis basado en git history + findings (sin complejidad AST).
 
 Uso:
     bago hotspot                  → hotspot en .bago/tools/
@@ -60,6 +61,8 @@ def _glob_by_lang(target_dir: str, lang: str) -> list:
         files = [f for f in files if "node_modules" not in str(f)]
     elif lang == "go":
         files = [f for f in p.rglob("*.go") if "vendor" not in str(f)]
+    elif lang == "rust":
+        files = list(p.rglob("*.rs"))
     else:
         files = list(p.rglob("*.py"))
     return sorted(files)
