@@ -1064,6 +1064,24 @@ def test_naming_check():
         _record("naming_check:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_type_check():
+    """type_check.py --test pasa todos los tests."""
+    rc, out, _ = _run("type_check.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("type_check:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("type_check:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_license_check():
+    """license_check.py --test pasa todos los tests."""
+    rc, out, _ = _run("license_check.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("license_check:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("license_check:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1139,6 +1157,8 @@ ALL_TESTS = [
     (72, "api_check",        test_api_check),
     (73, "coverage_gate",    test_coverage_gate),
     (74, "naming_check",     test_naming_check),
+    (75, "type_check",       test_type_check),
+    (76, "license_check",    test_license_check),
 ]
 
 

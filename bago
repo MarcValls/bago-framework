@@ -579,6 +579,16 @@ def main():
             ["python3", str(TOOLS / "naming_check.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "type-check":
+        subprocess.run(
+            ["python3", str(TOOLS / "type_check.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "license-check":
+        subprocess.run(
+            ["python3", str(TOOLS / "license_check.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -782,6 +792,8 @@ def main():
                 "api-check":        "valida rutas Flask/FastAPI y OpenAPI: duplicados, sin doc, sin tipos",
                 "coverage-gate":    "quality gate de cobertura pytest: threshold + detección de regresión",
                 "naming-check":     "PEP 8 naming: snake_case, PascalCase, UPPER_SNAKE — NAME-W001..I002",
+                "type-check":       "type hints: funciones sin anotaciones, uso de Any — TYPE-W001..I001",
+                "license-check":    "verifica cabeceras de licencia/copyright — LIC-W001..I001 con --add-header",
             }
             for k, desc in extra.items():
                 print(f"    bago {k:12s} → {desc}")
