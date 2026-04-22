@@ -6,10 +6,13 @@ Modelo canónico de Finding:
   id, severity, file, line, col, rule, source, message,
   fix_suggestion, autofixable, fix_patch, context_lines
 
-Parsea salida de: flake8, pylint, mypy, pyflakes, bandit, custom-bago
+Parsea salida de: flake8, pylint, mypy, pyflakes, bandit, custom-bago,
+  checkstyle (Java), dotnet build (C#), rubocop (Ruby), phpcs/phpstan (PHP),
+  swiftlint (Swift), ktlint (Kotlin), shellcheck (Shell),
+  tflint (Terraform), yamllint (YAML)
 Persiste en state/findings/SCAN-{timestamp}.json
 """
-import json, re, subprocess, sys, datetime, hashlib
+import json, re, subprocess, sys, datetime, hashlib, xml.etree.ElementTree as ET
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Optional
@@ -328,6 +331,349 @@ def parse_clippy(output: str, root: str = "") -> list:
     return findings
 
 
+def parse_checkstyle(output: str, root: str = "") -> list:
+    """
+    Checkstyle XML output (default format):
+    <checkstyle><file name="..."><error line="..." column="..." severity="..." message="..." source="..."/></file></checkstyle>
+    """
+    findings = []
+    try:
+        root_el = ET.fromstring(output.strip())
+        sev_map = {"error": "error", "warning": "warning", "info": "info", "ignore": "hint"}
+        for file_el in root_el.findall("file"):
+            filepath = file_el.get("name", "")
+            if root and filepath.startswith(root):
+                filepath = filepath[len(root):].lstrip("/")
+            for error_el in file_el.findall("error"):
+                line = int(error_el.get("line", 0))
+                col  = int(error_el.get("column", 0))
+                sev  = sev_map.get(error_el.get("severity", "warning"), "warning")
+                msg  = error_el.get("message", "")
+                src  = error_el.get("source", "checkstyle")
+                rule = src.split(".")[-1] if "." in src else src
+                fid  = _make_id("checkstyle", filepath, line, rule)
+                findings.append(Finding(
+                    id=fid, severity=sev,
+                    file=filepath, line=line, col=col,
+                    rule=rule, source="checkstyle", message=msg,
+                    context_lines=_read_context(filepath, line),
+                ))
+    except Exception:
+        pass
+    return findings
+
+
+def parse_dotnet_build(output: str, root: str = "") -> list:
+    """
+    dotnet build / dotnet format MSBuild diagnostic output:
+    filepath(line,col): error|warning CODE: message [project]
+    """
+    findings = []
+    pattern = re.compile(
+        r"^\s*(.+?)\((\d+),(\d+)\):\s+(error|warning)\s+(CS\w+):\s+(.+?)(?:\s+\[.+?\])?\s*$",
+        re.MULTILINE,
+    )
+    sev_map = {"error": "error", "warning": "warning"}
+    for m in pattern.finditer(output):
+        filepath, line, col, level, code, msg = m.groups()
+        filepath = filepath.strip()
+        if root and filepath.startswith(root):
+            filepath = filepath[len(root):].lstrip("/")
+        sev = sev_map.get(level, "warning")
+        fid = _make_id("dotnet", filepath, int(line), code)
+        findings.append(Finding(
+            id=fid, severity=sev,
+            file=filepath, line=int(line), col=int(col),
+            rule=code, source="dotnet", message=msg.strip(),
+            context_lines=_read_context(filepath, int(line)),
+        ))
+    return findings
+
+
+def parse_rubocop(output: str, root: str = "") -> list:
+    """
+    RuboCop --format=json output:
+    {"files":[{"path":"...","offenses":[{"severity":"...","message":"...","cop_name":"...",
+      "correctable":true,"location":{"line":N,"column":N}}]}]}
+    """
+    findings = []
+    try:
+        data = json.loads(output)
+        sev_map = {
+            "fatal": "error", "error": "error", "warning": "warning",
+            "convention": "info", "refactor": "hint", "info": "info",
+        }
+        for file_obj in data.get("files", []):
+            filepath = file_obj.get("path", "")
+            if root and filepath.startswith(root):
+                filepath = filepath[len(root):].lstrip("/")
+            for offense in file_obj.get("offenses", []):
+                sev         = sev_map.get(offense.get("severity", "warning"), "warning")
+                msg         = offense.get("message", "")
+                rule        = offense.get("cop_name", "rubocop")
+                loc         = offense.get("location", {})
+                line        = loc.get("line", 0)
+                col         = loc.get("column", 0)
+                correctable = bool(offense.get("correctable", False))
+                fid         = _make_id("rubocop", filepath, line, rule)
+                fix_sug = "rubocop --autocorrect puede corregir esta ofensa" if correctable else ""
+                findings.append(Finding(
+                    id=fid, severity=sev,
+                    file=filepath, line=line, col=col,
+                    rule=rule, source="rubocop", message=msg,
+                    fix_suggestion=fix_sug, autofixable=correctable,
+                    context_lines=_read_context(filepath, line),
+                ))
+    except (json.JSONDecodeError, TypeError, KeyError):
+        pass
+    return findings
+
+
+def parse_phpcs(output: str, root: str = "") -> list:
+    """
+    PHP_CodeSniffer --report=json output:
+    {"files":{"path":{"errors":N,"warnings":N,"messages":[
+      {"message":"...","source":"...","severity":N,"type":"ERROR"|"WARNING","line":N,"column":N}
+    ]}}}
+    """
+    findings = []
+    try:
+        data = json.loads(output)
+        for filepath, file_data in data.get("files", {}).items():
+            fp = filepath
+            if root and fp.startswith(root):
+                fp = fp[len(root):].lstrip("/")
+            for msg in file_data.get("messages", []):
+                sev_str = msg.get("type", "WARNING").upper()
+                sev  = "error" if sev_str == "ERROR" else "warning"
+                text = msg.get("message", "")
+                src  = msg.get("source", "phpcs")
+                rule = src.split(".")[-1] if "." in src else src
+                line = msg.get("line", 0)
+                col  = msg.get("column", 0)
+                fid  = _make_id("phpcs", fp, line, rule)
+                findings.append(Finding(
+                    id=fid, severity=sev,
+                    file=fp, line=line, col=col,
+                    rule=rule, source="phpcs", message=text,
+                    context_lines=_read_context(fp, line),
+                ))
+    except (json.JSONDecodeError, TypeError, KeyError):
+        pass
+    return findings
+
+
+def parse_phpstan(output: str, root: str = "") -> list:
+    """
+    PHPStan --error-format=json output:
+    {"totals":{...},"files":{"path":{"errors":N,"messages":[{"message":"...","line":N}]}},"errors":[]}
+    """
+    findings = []
+    try:
+        data = json.loads(output)
+        for filepath, file_data in data.get("files", {}).items():
+            fp = filepath
+            if root and fp.startswith(root):
+                fp = fp[len(root):].lstrip("/")
+            for msg in file_data.get("messages", []):
+                text = msg.get("message", "")
+                line = msg.get("line", 0)
+                fid  = _make_id("phpstan", fp, line, "phpstan")
+                findings.append(Finding(
+                    id=fid, severity="error",
+                    file=fp, line=line, col=0,
+                    rule="phpstan", source="phpstan", message=text,
+                    context_lines=_read_context(fp, line),
+                ))
+        for err in data.get("errors", []):
+            msg = err.get("message", str(err)) if isinstance(err, dict) else str(err)
+            fid = _make_id("phpstan", "", 0, "phpstan-global")
+            findings.append(Finding(
+                id=fid, severity="error",
+                file="", line=0, col=0,
+                rule="phpstan-global", source="phpstan", message=msg,
+            ))
+    except (json.JSONDecodeError, TypeError, KeyError):
+        pass
+    return findings
+
+
+def parse_swiftlint(output: str, root: str = "") -> list:
+    """
+    SwiftLint --reporter=json output:
+    [{"file":"...","line":N,"character":N,"severity":"Warning"|"Error",
+      "reason":"...","rule_id":"...","type":"..."}]
+    """
+    findings = []
+    try:
+        data = json.loads(output)
+        if not isinstance(data, list):
+            return findings
+        sev_map = {"Error": "error", "Warning": "warning",
+                   "error": "error", "warning": "warning"}
+        for item in data:
+            filepath = item.get("file", "")
+            if root and filepath.startswith(root):
+                filepath = filepath[len(root):].lstrip("/")
+            line = item.get("line", 0)
+            col  = item.get("character", 0)
+            sev  = sev_map.get(item.get("severity", "Warning"), "warning")
+            msg  = item.get("reason", "")
+            rule = item.get("rule_id", "swiftlint")
+            fid  = _make_id("swiftlint", filepath, line, rule)
+            findings.append(Finding(
+                id=fid, severity=sev,
+                file=filepath, line=line, col=col,
+                rule=rule, source="swiftlint", message=msg,
+                context_lines=_read_context(filepath, line),
+            ))
+    except (json.JSONDecodeError, TypeError, KeyError):
+        pass
+    return findings
+
+
+def parse_ktlint(output: str, root: str = "") -> list:
+    """
+    ktlint --reporter=json output:
+    [{"file":"...","errors":[{"line":N,"column":N,"message":"...","rule":"..."}]}]
+    """
+    findings = []
+    try:
+        data = json.loads(output)
+        if not isinstance(data, list):
+            return findings
+        for file_obj in data:
+            filepath = file_obj.get("file", "")
+            if root and filepath.startswith(root):
+                filepath = filepath[len(root):].lstrip("/")
+            for error in file_obj.get("errors", []):
+                line = error.get("line", 0)
+                col  = error.get("column", 0)
+                msg  = error.get("message", "")
+                rule = error.get("rule", "ktlint")
+                fid  = _make_id("ktlint", filepath, line, rule)
+                findings.append(Finding(
+                    id=fid, severity="warning",
+                    file=filepath, line=line, col=col,
+                    rule=rule, source="ktlint", message=msg,
+                    context_lines=_read_context(filepath, line),
+                ))
+    except (json.JSONDecodeError, TypeError, KeyError):
+        pass
+    return findings
+
+
+def parse_shellcheck(output: str, root: str = "") -> list:
+    """
+    ShellCheck --format=json output:
+    [{"file":"...","line":N,"column":N,"level":"error"|"warning"|"info"|"style",
+      "code":N,"message":"...","fix":null|{...}}]
+    """
+    findings = []
+    try:
+        data = json.loads(output)
+        if not isinstance(data, list):
+            return findings
+        sev_map = {"error": "error", "warning": "warning",
+                   "info": "info", "style": "hint"}
+        for item in data:
+            filepath = item.get("file", "")
+            if root and filepath.startswith(root):
+                filepath = filepath[len(root):].lstrip("/")
+            line    = item.get("line", 0)
+            col     = item.get("column", 0)
+            sev     = sev_map.get(item.get("level", "warning"), "warning")
+            msg     = item.get("message", "")
+            code    = f"SC{item.get('code', 0)}"
+            has_fix = item.get("fix") is not None
+            fid     = _make_id("shellcheck", filepath, line, code)
+            fix_sug = f"shellcheck --apply-fix puede corregir {code}" if has_fix else ""
+            findings.append(Finding(
+                id=fid, severity=sev,
+                file=filepath, line=line, col=col,
+                rule=code, source="shellcheck", message=msg,
+                fix_suggestion=fix_sug, autofixable=has_fix,
+                context_lines=_read_context(filepath, line),
+            ))
+    except (json.JSONDecodeError, TypeError, KeyError):
+        pass
+    return findings
+
+
+def parse_tflint(output: str, root: str = "") -> list:
+    """
+    tflint --format=json output:
+    {"issues":[{"rule":{"name":"...","severity":"error"|"warning"|"notice"},
+      "message":"...","range":{"filename":"...","start":{"line":N,"column":N}}}],"errors":[]}
+    """
+    findings = []
+    try:
+        data = json.loads(output)
+        sev_map = {"error": "error", "warning": "warning", "notice": "info"}
+        for issue in data.get("issues", []):
+            rule_obj  = issue.get("rule", {})
+            rule_name = rule_obj.get("name", "tflint")
+            sev       = sev_map.get(rule_obj.get("severity", "warning"), "warning")
+            msg       = issue.get("message", "")
+            rng       = issue.get("range", {})
+            filepath  = rng.get("filename", "")
+            if root and filepath.startswith(root):
+                filepath = filepath[len(root):].lstrip("/")
+            start = rng.get("start", {})
+            line  = start.get("line", 0)
+            col   = start.get("column", 0)
+            fid   = _make_id("tflint", filepath, line, rule_name)
+            findings.append(Finding(
+                id=fid, severity=sev,
+                file=filepath, line=line, col=col,
+                rule=rule_name, source="tflint", message=msg,
+                context_lines=_read_context(filepath, line),
+            ))
+        for err in data.get("errors", []):
+            msg = err.get("message", str(err)) if isinstance(err, dict) else str(err)
+            fid = _make_id("tflint", "", 0, "tflint-error")
+            findings.append(Finding(
+                id=fid, severity="error",
+                file="", line=0, col=0,
+                rule="tflint-error", source="tflint", message=msg,
+            ))
+    except (json.JSONDecodeError, TypeError, KeyError):
+        pass
+    return findings
+
+
+def parse_yamllint(output: str, root: str = "") -> list:
+    """
+    yamllint -f parsable output:
+    filepath:line:col: [error|warning] message (rule-name)
+    Example: ./config.yml:3:3: [warning] wrong indentation: expected 4 but found 2 (indentation)
+             ./config.yml:7:1: [error] too many blank lines (2 > 1) (empty-lines)
+    The rule name is always the last parenthesised token at end of line.
+    Using a non-greedy message group and [^)]+ for the rule avoids mis-matching
+    embedded parentheses in the message body.
+    """
+    findings = []
+    pattern = re.compile(
+        r"^(.+?):(\d+):(\d+):\s+\[(error|warning)\]\s+(.+?)\s+\(([^)]+)\)\s*$",
+        re.MULTILINE,
+    )
+    sev_map = {"error": "error", "warning": "warning"}
+    for m in pattern.finditer(output):
+        filepath, line, col, level, msg, rule = m.groups()
+        filepath = filepath.strip()
+        if root and filepath.startswith(root):
+            filepath = filepath[len(root):].lstrip("/")
+        sev = sev_map.get(level, "warning")
+        fid = _make_id("yamllint", filepath, int(line), rule)
+        findings.append(Finding(
+            id=fid, severity=sev,
+            file=filepath, line=int(line), col=int(col),
+            rule=rule, source="yamllint", message=msg.strip(),
+            context_lines=_read_context(filepath, int(line)),
+        ))
+    return findings
+
+
 # ─── Runner ─────────────────────────────────────────────────────────────────
 
 def run_linter(cmd: list, parser_fn, cwd: str = ".") -> tuple:
@@ -624,6 +970,159 @@ def run_tests():
     total2 = 3; passed2 = total2 - errors2
     print(f"\n  {passed2}/{total2} tests de parsers multi-lenguaje pasaron")
     if errors2: sys.exit(1)
+
+    # ── Tests for Phase 1-3 parsers ───────────────────────────────────────
+    errors3 = 0
+    print("\nTests de parsers Fase 1-3...")
+
+    # T11: parse_checkstyle (Java)
+    cs_xml = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<checkstyle version="10.0">'
+        '<file name="/repo/src/Main.java">'
+        '<error line="5" column="1" severity="error" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.MissingJavadocMethodCheck"/>'
+        '<error line="12" column="3" severity="warning" message="Line is too long (110 > 100)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>'
+        '</file>'
+        '</checkstyle>'
+    )
+    cs_list = parse_checkstyle(cs_xml)
+    if (len(cs_list) == 2 and cs_list[0].source == "checkstyle"
+            and cs_list[0].severity == "error" and cs_list[1].severity == "warning"
+            and cs_list[0].rule == "MissingJavadocMethodCheck"):
+        print("  OK: engine:parse_checkstyle")
+    else:
+        errors3 += 1; print(f"  FAIL: engine:parse_checkstyle — {[(f.rule, f.severity) for f in cs_list]}")
+
+    # T12: parse_dotnet_build (C#)
+    dotnet_out = (
+        "Build FAILED.\n"
+        "  /repo/Src/Program.cs(10,5): error CS0103: The name 'foo' does not exist [App.csproj]\n"
+        "  /repo/Src/Program.cs(15,1): warning CS0219: Variable 'x' assigned but never used [App.csproj]\n"
+    )
+    dn_list = parse_dotnet_build(dotnet_out)
+    if (len(dn_list) == 2 and dn_list[0].rule == "CS0103" and dn_list[0].severity == "error"
+            and dn_list[1].rule == "CS0219" and dn_list[1].severity == "warning"):
+        print("  OK: engine:parse_dotnet_build")
+    else:
+        errors3 += 1; print(f"  FAIL: engine:parse_dotnet_build — {[(f.rule, f.severity) for f in dn_list]}")
+
+    # T13: parse_rubocop (Ruby)
+    rubocop_json = json.dumps({"files": [{"path": "/repo/lib/app.rb", "offenses": [
+        {"severity": "convention", "message": "Line is too long. [110/100]",
+         "cop_name": "Layout/LineLength", "correctable": False,
+         "location": {"line": 5, "column": 101}},
+        {"severity": "error", "message": "Use snake_case for method names.",
+         "cop_name": "Naming/MethodName", "correctable": True,
+         "location": {"line": 12, "column": 7}},
+    ]}], "summary": {"offense_count": 2}})
+    rb_list = parse_rubocop(rubocop_json)
+    if (len(rb_list) == 2 and rb_list[0].source == "rubocop"
+            and rb_list[0].severity == "info" and rb_list[1].severity == "error"
+            and rb_list[1].autofixable):
+        print("  OK: engine:parse_rubocop")
+    else:
+        errors3 += 1; print(f"  FAIL: engine:parse_rubocop — {[(f.severity, f.autofixable) for f in rb_list]}")
+
+    # T14: parse_phpcs (PHP)
+    phpcs_json = json.dumps({"files": {"/repo/src/App.php": {"errors": 1, "warnings": 1, "messages": [
+        {"message": "Missing function doc comment", "source": "PEAR.Commenting.FunctionComment.Missing",
+         "severity": 5, "type": "ERROR", "line": 8, "column": 1},
+        {"message": "Line exceeds 120 characters", "source": "Generic.Files.LineLength.TooLong",
+         "severity": 5, "type": "WARNING", "line": 20, "column": 121},
+    ]}}})
+    pc_list = parse_phpcs(phpcs_json)
+    if (len(pc_list) == 2 and pc_list[0].source == "phpcs"
+            and pc_list[0].severity == "error" and pc_list[1].severity == "warning"):
+        print("  OK: engine:parse_phpcs")
+    else:
+        errors3 += 1; print(f"  FAIL: engine:parse_phpcs — {[(f.severity, f.rule) for f in pc_list]}")
+
+    # T15: parse_phpstan (PHP)
+    phpstan_json = json.dumps({"totals": {"errors": 1, "file_errors": 1},
+                               "files": {"/repo/src/Foo.php": {"errors": 1, "messages": [
+                                   {"message": "Call to undefined method Bar::baz()", "line": 14, "ignorable": True}
+                               ]}}, "errors": []})
+    ps_list = parse_phpstan(phpstan_json)
+    if (len(ps_list) == 1 and ps_list[0].source == "phpstan"
+            and ps_list[0].severity == "error" and ps_list[0].line == 14):
+        print("  OK: engine:parse_phpstan")
+    else:
+        errors3 += 1; print(f"  FAIL: engine:parse_phpstan — {ps_list}")
+
+    # T16: parse_swiftlint (Swift)
+    sl_json = json.dumps([
+        {"file": "/repo/Sources/App.swift", "line": 7, "character": 5,
+         "severity": "Error", "reason": "Force cast is not allowed.", "rule_id": "force_cast", "type": "Force Cast"},
+        {"file": "/repo/Sources/App.swift", "line": 22, "character": 1,
+         "severity": "Warning", "reason": "Line should be 120 characters or less.", "rule_id": "line_length", "type": "Line Length"},
+    ])
+    sw_list = parse_swiftlint(sl_json)
+    if (len(sw_list) == 2 and sw_list[0].source == "swiftlint"
+            and sw_list[0].severity == "error" and sw_list[1].severity == "warning"
+            and sw_list[0].rule == "force_cast"):
+        print("  OK: engine:parse_swiftlint")
+    else:
+        errors3 += 1; print(f"  FAIL: engine:parse_swiftlint — {[(f.severity, f.rule) for f in sw_list]}")
+
+    # T17: parse_ktlint (Kotlin)
+    kt_json = json.dumps([{"file": "/repo/src/main/kotlin/App.kt", "errors": [
+        {"line": 3, "column": 1, "message": "Unnecessary semicolon", "rule": "no-semi"},
+        {"line": 10, "column": 5, "message": "Missing newline after '{'", "rule": "brace-style"},
+    ]}])
+    kt_list = parse_ktlint(kt_json)
+    if (len(kt_list) == 2 and kt_list[0].source == "ktlint"
+            and kt_list[0].rule == "no-semi" and kt_list[1].rule == "brace-style"):
+        print("  OK: engine:parse_ktlint")
+    else:
+        errors3 += 1; print(f"  FAIL: engine:parse_ktlint — {[(f.rule,) for f in kt_list]}")
+
+    # T18: parse_shellcheck (Shell)
+    sc_json = json.dumps([
+        {"file": "deploy.sh", "line": 5, "column": 3, "level": "error",
+         "code": 2086, "message": "Double quote to prevent globbing and word splitting.", "fix": {"replacements": []}},
+        {"file": "deploy.sh", "line": 12, "column": 1, "level": "warning",
+         "code": 2034, "message": "foo appears unused.", "fix": None},
+    ])
+    sh_list = parse_shellcheck(sc_json)
+    if (len(sh_list) == 2 and sh_list[0].source == "shellcheck"
+            and sh_list[0].severity == "error" and sh_list[0].rule == "SC2086"
+            and sh_list[0].autofixable and not sh_list[1].autofixable):
+        print("  OK: engine:parse_shellcheck")
+    else:
+        errors3 += 1; print(f"  FAIL: engine:parse_shellcheck — {[(f.rule, f.severity, f.autofixable) for f in sh_list]}")
+
+    # T19: parse_tflint (Terraform)
+    tf_json = json.dumps({"issues": [
+        {"rule": {"name": "terraform_deprecated_interpolation", "severity": "warning"},
+         "message": "Interpolation-only expressions are deprecated.",
+         "range": {"filename": "main.tf", "start": {"line": 8, "column": 3}}},
+        {"rule": {"name": "aws_instance_invalid_type", "severity": "error"},
+         "message": "\"t1.micro\" is an invalid value as instance_type.",
+         "range": {"filename": "main.tf", "start": {"line": 15, "column": 5}}},
+    ], "errors": []})
+    tfl_list = parse_tflint(tf_json)
+    if (len(tfl_list) == 2 and tfl_list[0].source == "tflint"
+            and tfl_list[0].severity == "warning" and tfl_list[1].severity == "error"):
+        print("  OK: engine:parse_tflint")
+    else:
+        errors3 += 1; print(f"  FAIL: engine:parse_tflint — {[(f.severity,) for f in tfl_list]}")
+
+    # T20: parse_yamllint (YAML)
+    yl_out = (
+        "./config.yml:3:3: [warning] wrong indentation: expected 4 but found 2 (indentation)\n"
+        "./config.yml:7:1: [error] too many blank lines (2 > 1) (empty-lines)\n"
+    )
+    yl_list = parse_yamllint(yl_out)
+    if (len(yl_list) == 2 and yl_list[0].source == "yamllint"
+            and yl_list[0].severity == "warning" and yl_list[0].rule == "indentation"
+            and yl_list[1].severity == "error" and yl_list[1].rule == "empty-lines"):
+        print("  OK: engine:parse_yamllint")
+    else:
+        errors3 += 1; print(f"  FAIL: engine:parse_yamllint — {[(f.severity, f.rule) for f in yl_list]}")
+
+    total3 = 10; passed3 = total3 - errors3
+    print(f"\n  {passed3}/{total3} tests de parsers Fase 1-3 pasaron")
+    if errors3: sys.exit(1)
 
 
 if __name__ == "__main__":

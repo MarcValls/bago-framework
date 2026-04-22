@@ -9,7 +9,7 @@
   "active_scenarios": [],
   "active_workflows": [],
   "history_migration_status": "completed_with_preserved_legacy",
-  "updated_at": "2026-04-21T23:24:40.192498+00:00",
+  "updated_at": "2026-04-22T10:32:55.998721+00:00",
   "v2_status": "stable",
   "notes": "W1+W2 completos sobre visor ER. 22/22 tests verdes. 6 tests corregidos (bugs de test post-refactor). Producción intacta.",
   "last_completed_session_id": "SES-HARVEST-2026-04-21-007",

@@ -3,6 +3,12 @@
 """
 repo_runner.py — Ejecuta operaciones explícitas sobre el proyecto intervenido.
 
+Tipos de proyecto soportados:
+  node (package.json), python (pyproject.toml), rust (Cargo.toml), go (go.mod),
+  java (pom.xml / build.gradle), kotlin (build.gradle + *.kt),
+  csharp (*.csproj / *.sln), ruby (Gemfile), php (composer.json),
+  swift (Package.swift)
+
 Uso:
   python3 .bago/tools/repo_runner.py lint [PATH]
   python3 .bago/tools/repo_runner.py test [PATH]
@@ -132,6 +138,178 @@ def _go_operation(repo_root: Path, operation: str) -> tuple[bool, str, list[str]
     return False, label, [tail]
 
 
+def _java_operation(repo_root: Path, operation: str) -> tuple[bool, str, list[str]]:
+    """Maven or Gradle (plain Java)."""
+    use_gradle = (repo_root / "build.gradle").exists() or (repo_root / "build.gradle.kts").exists()
+    use_maven  = (repo_root / "pom.xml").exists()
+
+    if use_gradle:
+        wrapper    = repo_root / "gradlew"
+        gradle_cmd = [str(wrapper) if wrapper.exists() else "gradle"]
+        if operation == "lint":
+            cmd, label = gradle_cmd + ["checkstyleMain", "--quiet"], "gradle checkstyleMain"
+        elif operation == "test":
+            cmd, label = gradle_cmd + ["test", "--quiet"], "gradle test"
+        else:
+            cmd, label = gradle_cmd + ["build", "--quiet"], "gradle build"
+    elif use_maven:
+        if operation == "lint":
+            cmd, label = ["mvn", "checkstyle:check", "-q"], "mvn checkstyle:check"
+        elif operation == "test":
+            cmd, label = ["mvn", "test", "-q"], "mvn test"
+        else:
+            cmd, label = ["mvn", "package", "-q"], "mvn package"
+    else:
+        return False, "", ["No se encontró pom.xml ni build.gradle."]
+
+    rc, out, err = _run(cmd, cwd=repo_root, timeout=300)
+    text = (err or out or "").strip()
+    if rc == 0:
+        return True, label, [f"{operation} OK"]
+    tail = text.splitlines()[-1] if text else f"{operation} falló"
+    return False, label, [tail]
+
+
+def _kotlin_operation(repo_root: Path, operation: str) -> tuple[bool, str, list[str]]:
+    """Gradle-based Kotlin projects."""
+    wrapper    = repo_root / "gradlew"
+    gradle_cmd = [str(wrapper) if wrapper.exists() else "gradle"]
+    if operation == "lint":
+        cmd, label = gradle_cmd + ["ktlintCheck", "--quiet"], "gradle ktlintCheck"
+    elif operation == "test":
+        cmd, label = gradle_cmd + ["test", "--quiet"], "gradle test"
+    else:
+        cmd, label = gradle_cmd + ["build", "--quiet"], "gradle build"
+
+    rc, out, err = _run(cmd, cwd=repo_root, timeout=300)
+    text = (err or out or "").strip()
+    if rc == 0:
+        return True, label, [f"{operation} OK"]
+    tail = text.splitlines()[-1] if text else f"{operation} falló"
+    return False, label, [tail]
+
+
+def _dotnet_operation(repo_root: Path, operation: str) -> tuple[bool, str, list[str]]:
+    """dotnet CLI for C# projects."""
+    if operation == "lint":
+        cmd   = ["dotnet", "format", "--verify-no-changes"]
+        label = "dotnet format --verify-no-changes"
+    elif operation == "test":
+        cmd   = ["dotnet", "test", "--nologo", "-q"]
+        label = "dotnet test --nologo -q"
+    else:
+        cmd   = ["dotnet", "build", "--nologo", "-q"]
+        label = "dotnet build --nologo -q"
+
+    rc, out, err = _run(cmd, cwd=repo_root, timeout=300)
+    text = (err or out or "").strip()
+    if rc == 0:
+        return True, label, [f"{operation} OK"]
+    tail = text.splitlines()[-1] if text else f"{operation} falló"
+    return False, label, [tail]
+
+
+def _ruby_operation(repo_root: Path, operation: str) -> tuple[bool, str, list[str]]:
+    """Bundler-based Ruby projects."""
+    use_bundler = (repo_root / "Gemfile.lock").exists()
+    prefix      = ["bundle", "exec"] if use_bundler else []
+
+    if operation == "lint":
+        cmd   = prefix + ["rubocop", "-q"]
+        label = " ".join(cmd)
+        rc, out, err = _run(cmd, cwd=repo_root, timeout=300)
+        text = (err or out or "").strip()
+        if rc == 0:
+            return True, label, ["lint OK"]
+        tail = text.splitlines()[-1] if text else "lint falló"
+        return False, label, [tail]
+
+    if operation == "test":
+        for test_cmd, test_label in [
+            (prefix + ["rspec", "--format", "progress"], " ".join(prefix + ["rspec"])),
+            (prefix + ["rake", "test"], " ".join(prefix + ["rake", "test"])),
+        ]:
+            rc, out, err = _run(test_cmd, cwd=repo_root, timeout=300)
+            text = (err or out or "").strip()
+            if rc == 0:
+                return True, test_label, ["test OK"]
+            if "Could not find command" in text or "No such file" in text:
+                continue
+            tail = text.splitlines()[-1] if text else "test falló"
+            return False, test_label, [tail]
+        return False, "", ["No se encontró runner de test Ruby (rspec/rake)."]
+
+    # build → bundle install
+    cmd, label = ["bundle", "install"], "bundle install"
+    rc, out, err = _run(cmd, cwd=repo_root, timeout=300)
+    text = (err or out or "").strip()
+    if rc == 0:
+        return True, label, ["build OK"]
+    tail = text.splitlines()[-1] if text else "build falló"
+    return False, label, [tail]
+
+
+def _php_operation(repo_root: Path, operation: str) -> tuple[bool, str, list[str]]:
+    """Composer-based PHP projects."""
+    if operation == "lint":
+        candidates = [
+            (["./vendor/bin/phpcs", "."], "./vendor/bin/phpcs ."),
+            (["phpcs", "."], "phpcs ."),
+        ]
+        for cmd, label in candidates:
+            rc, out, err = _run(cmd, cwd=repo_root, timeout=300)
+            text = (err or out or "").strip()
+            if rc == 0:
+                return True, label, ["lint OK"]
+            if "not found" in text.lower() or "no such file" in text.lower():
+                continue
+            tail = text.splitlines()[-1] if text else "lint falló"
+            return False, label, [tail]
+        return False, "", ["No hay runner de lint PHP disponible (phpcs)."]
+
+    if operation == "test":
+        candidates = [
+            (["./vendor/bin/phpunit"], "./vendor/bin/phpunit"),
+            (["composer", "run-script", "test"], "composer run-script test"),
+        ]
+        for cmd, label in candidates:
+            rc, out, err = _run(cmd, cwd=repo_root, timeout=300)
+            text = (err or out or "").strip()
+            if rc == 0:
+                return True, label, ["test OK"]
+            if "not found" in text.lower() or "no such file" in text.lower():
+                continue
+            tail = text.splitlines()[-1] if text else "test falló"
+            return False, label, [tail]
+        return False, "", ["No hay runner de test PHP disponible (phpunit)."]
+
+    # build → composer install
+    cmd, label = ["composer", "install", "--no-interaction"], "composer install --no-interaction"
+    rc, out, err = _run(cmd, cwd=repo_root, timeout=300)
+    text = (err or out or "").strip()
+    if rc == 0:
+        return True, label, ["build OK"]
+    tail = text.splitlines()[-1] if text else "build falló"
+    return False, label, [tail]
+
+
+def _swift_operation(repo_root: Path, operation: str) -> tuple[bool, str, list[str]]:
+    """Swift Package Manager projects."""
+    if operation == "lint":
+        cmd, label = ["swiftlint", "lint", "--quiet"], "swiftlint lint --quiet"
+    elif operation == "test":
+        cmd, label = ["swift", "test"], "swift test"
+    else:
+        cmd, label = ["swift", "build"], "swift build"
+
+    rc, out, err = _run(cmd, cwd=repo_root, timeout=300)
+    text = (err or out or "").strip()
+    if rc == 0:
+        return True, label, [f"{operation} OK"]
+    tail = text.splitlines()[-1] if text else f"{operation} falló"
+    return False, label, [tail]
+
+
 def _resolve_target(path_arg: str | None) -> Path:
     if path_arg:
         return Path(path_arg).resolve()
@@ -161,6 +339,30 @@ def _run_operation(operation: str, repo_root: Path) -> dict[str, object]:
     elif (repo_root / "go.mod").exists():
         ok, runner, details = _go_operation(repo_root, operation)
         kind = "go"
+    elif (
+        (repo_root / "pom.xml").exists()
+        or (repo_root / "build.gradle").exists()
+        or (repo_root / "build.gradle.kts").exists()
+    ):
+        # Kotlin projects use Gradle too — prefer kotlin runner when .kt sources exist
+        if any(repo_root.rglob("*.kt")):
+            ok, runner, details = _kotlin_operation(repo_root, operation)
+            kind = "kotlin"
+        else:
+            ok, runner, details = _java_operation(repo_root, operation)
+            kind = "java"
+    elif any(repo_root.glob("*.csproj")) or any(repo_root.glob("*.sln")):
+        ok, runner, details = _dotnet_operation(repo_root, operation)
+        kind = "csharp"
+    elif (repo_root / "Gemfile").exists():
+        ok, runner, details = _ruby_operation(repo_root, operation)
+        kind = "ruby"
+    elif (repo_root / "composer.json").exists():
+        ok, runner, details = _php_operation(repo_root, operation)
+        kind = "php"
+    elif (repo_root / "Package.swift").exists():
+        ok, runner, details = _swift_operation(repo_root, operation)
+        kind = "swift"
     else:
         ok, runner, details, kind = False, "", ["No se detectó manifiesto soportado."], "unknown"
 
