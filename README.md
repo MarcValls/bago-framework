@@ -2,9 +2,9 @@
 
 > Sistema operativo de trabajo técnico para programación con IA
 
-![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%2036%2F36-brightgreen) ![tools](https://img.shields.io/badge/tools-33%2B-blue) ![version](https://img.shields.io/badge/versión-2.5--stable-blue)
+![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%2037%2F37-brightgreen) ![tools](https://img.shields.io/badge/tools-87-blue) ![version](https://img.shields.io/badge/versión-2.5--stable-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
 
-**`health 🟢 100/100`** · **`tests ✅ 36/36`** · **`tools 🔧 33+`** · **`versión 2.5-stable`** · 12 workflows · Gobernanza de sesión integrada
+**`health 🟢 100/100`** · **`tests ✅ 37/37`** · **`tools 🔧 87`** · **`versión 2.5-stable`** · 12 workflows · Gobernanza de sesión integrada
 
 ---
 
@@ -127,10 +127,10 @@ BAGO amplifica el trabajo con IA resolviendo:
 | `bago patch` | `patch.py` | ✅ Activo | Corrección automática de inconsistencias |
 | `bago notes` | `notes.py` | ✅ Activo | Notas ligeras por sesión: add/list/show/delete |
 | `bago template` | `template.py` | ✅ Activo | Plantillas para nuevas sesiones con campos prefilled |
-| `bago scan` | `scan.py` | 🔜 Próximo | Análisis estático multi-linter con hallazgos unificados |
-| `bago hotspot` | `hotspot.py` | 🔜 Próximo | Detección de hotspots de complejidad |
-| `bago fix` | `autofix.py` | 🔜 Próximo | Autofix con validación y parches concretos |
-| `bago gh` | `gh_integration.py` | 🔜 Próximo | Integración GitHub: check runs y comentarios en PRs |
+| `bago scan` | `scan.py` | ✅ Activo | Análisis estático multi-linter con hallazgos unificados |
+| `bago hotspot` | `hotspot.py` | ✅ Activo | Detección de hotspots de complejidad |
+| `bago fix` | `autofix.py` | ✅ Activo | Autofix con validación y parches concretos |
+| `bago gh` | `gh_integration.py` | ✅ Activo | Integración GitHub: check runs y comentarios en PRs |
 
 > Ver docs individuales: [`.bago/docs/tools/`](.bago/docs/tools/)
 
@@ -213,7 +213,7 @@ bago-framework/
 ├── menu.html                     # Interfaz web (BAGO Viewer)
 ├── Makefile                      # Targets: banner, pack, validate, install
 ├── .bago/
-│   ├── tools/                    # 50+ herramientas Python (un archivo por comando)
+│   ├── tools/                    # 87 herramientas Python (un archivo por comando)
 │   │   ├── health_score.py       # bago health
 │   │   ├── audit_v2.py           # bago audit
 │   │   ├── insights.py           # bago insights
@@ -274,28 +274,43 @@ bago velocity → velocity.py → rolling windows sobre SES-*.json → proyecci�
 
 ---
 
-## 🔗 Integración GitHub (próximamente)
+## 🔗 Integración GitHub — Operativo ✅
 
-Las siguientes herramientas están en desarrollo para integración directa con repositorios GitHub:
+Pipeline completo de análisis de código con integración directa en GitHub, **producción-ready** con soporte multi-lenguaje (Python, JS/TS, Go, Rust):
 
 | Comando | Herramienta | Estado | Descripción |
 |---------|-------------|--------|-------------|
-| `./bago scan` | `scan.py` | 🔜 Próximo | Analiza código con múltiples linters y genera hallazgos unificados |
-| `./bago hotspot` | `hotspot.py` | 🔜 Próximo | Detecta archivos con más cambios + fallos + complejidad |
-| `./bago fix` | `autofix.py` | 🔜 Próximo | Autofix serio: genera y aplica parches con validación |
-| `./bago gh` | `gh_integration.py` | 🔜 Próximo | Integración GitHub: check runs y comentarios en PRs |
+| `./bago scan` | `scan.py` | ✅ Activo | Análisis multi-linter (flake8/pylint/mypy/ESLint/golangci/clippy) con hallazgos unificados |
+| `./bago hotspot` | `hotspot.py` | ✅ Activo | Hotspots: frecuencia de cambios + errores + complejidad + historial CI |
+| `./bago fix` | `autofix.py` | ✅ Activo | Autofix: parches concretos (E711/E712/F401/W291/BAGO-W001) + black/prettier bulk |
+| `./bago gh` | `gh_integration.py` | ✅ Activo | GitHub Check Runs + PR review agrupado por archivo, retry en 429/5xx |
 
-### Pipeline planificado
+### Pipeline operativo
 
+```bash
+# Analiza el proyecto (auto-detecta py/js/go/rust)
+bago scan ./ --lang auto
+
+# Identifica los archivos más problemáticos (commits + errores + CI)
+bago hotspot ./ --ci --heatmap
+
+# Aplica fixes automáticos con validación post-fix
+bago fix --apply
+bago fix --external --target ./src   # black / prettier
+
+# Publica en GitHub
+bago gh checks                       # Check Run con anotaciones
+bago gh pr 42 --min-severity error   # PR review agrupado por archivo
 ```
-bago scan  →  hallazgos unificados
-     ↓
-bago hotspot →  análisis de densidad de cambios
-     ↓
-bago fix    →  parches generados y validados
-     ↓
-bago gh     →  publicación en PRs y check runs GitHub
-```
+
+### Lenguajes soportados
+
+| Lenguaje | Scanner | Hotspot | Autofix externo |
+|----------|---------|---------|----------------|
+| Python   | flake8 + pylint + mypy + bandit + bago-lint | ✅ | `black` |
+| JS / TS  | ESLint (via npx) | ✅ | `prettier` + `eslint --fix` |
+| Go       | golangci-lint | ✅ | — |
+| Rust     | cargo clippy | — | — |
 
 ---
 
@@ -323,9 +338,11 @@ Cada cleanversion incluye su propio pack BAGO con modo de distribución específ
 
 ## ⚙️ Requisitos
 
-- Python 3.8+
+- Python 3.9+
+- Git (para `bago hotspot --ci` y `bago git`)
 - Navegador moderno (para BAGO Viewer)
 - Terminal con soporte ANSI (para colores)
+- Opcional: `black`, `prettier`, `golangci-lint`, `cargo` para fixers externos
 
 ---
 
