@@ -195,7 +195,7 @@ BAGO amplifica el trabajo con IA resolviendo:
 | `bago ci-report` | `ci_report.py` | Reporte CI agregado: 10 scanners, score 0-100, markdown para PR |
 | `bago tool-guardian` | `tool_guardian.py` | Valida coherencia del framework: tests, routing, integración, docstrings |
 | `bago pre-push` | `pre_push_guard.py` | Guard pre-push: CHECKSUMS, suite, version sync en un comando |
-| `bago tool-search` | `tool_search.py` | Búsqueda semántica sobre los 135 tools: `bago tool-search "secretos"` |
+| `bago tool-search` | `tool_search.py` | Búsqueda semántica sobre los 136 tools: `bago tool-search "secretos"` |
 | `bago legacy-fix` | `legacy_fixer.py` | Scaffolding de `--test` en tools legacy sin auto-tests |
 | `bago commit-ready` | `commit_readiness.py` | Gate pre-commit: syntax, secrets, merge conflicts, debug prints, size |
 | `bago auto-register` | `auto_register.py` | Registra un tool en integration_tests + bago script + CHECKSUMS en 1 cmd |
@@ -258,7 +258,7 @@ python3 .bago/tools/bago_chat_server.py
 
 - **Para usuarios:** [`.bago/README.md`](.bago/README.md) — Visión técnica del sistema
 - **Para agentes IA:** [`.bago/AGENT_START.md`](.bago/AGENT_START.md) — Punto de entrada canónico
-- **Workflows:** [`.bago/workflows/`](.bago/workflows/) — W1 a W9
+- **Workflows:** [`.bago/workflows/`](.bago/workflows/) — W0 a W9
 - **Prompts reutilizables:** [`.bago/prompts/`](.bago/prompts/) — Bootstrap, análisis, tareas
 
 ---
@@ -285,7 +285,7 @@ bago-framework/
 ├── menu.html                     # Interfaz web (BAGO Viewer)
 ├── Makefile                      # Targets: banner, pack, validate, install
 ├── .bago/
-│   ├── tools/                    # 135 herramientas Python/JS (un archivo por comando)
+│   ├── tools/                    # 136 herramientas Python/JS (un archivo por comando)
 │   │   ├── health_score.py       # bago health
 │   │   ├── audit_v2.py           # bago audit
 │   │   ├── insights.py           # bago insights
