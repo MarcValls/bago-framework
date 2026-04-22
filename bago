@@ -519,6 +519,21 @@ def main():
             ["python3", str(TOOLS / "size_tracker.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "secret-scan":
+        subprocess.run(
+            ["python3", str(TOOLS / "secret_scan.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "test-gen":
+        subprocess.run(
+            ["python3", str(TOOLS / "test_gen.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "impact-map":
+        subprocess.run(
+            ["python3", str(TOOLS / "impact_map.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -707,6 +722,9 @@ def main():
                 "env-check":     "verifica variables de entorno requeridas (missing/empty/placeholder)",
                 "watch":         "vigila cambios en archivos, ejecuta cmd al detectarlos (--once para CI)",
                 "size-track":    "tracking de tamaño de archivos — detecta crecimiento inesperado",
+                "secret-scan":   "escanea credenciales/secrets: API keys, tokens, passwords en código",
+                "test-gen":      "genera stubs de tests pytest/unittest desde código Python via AST",
+                "impact-map":    "mapa de impacto: dependencias directas/transitivas de un archivo",
                 "hotspot":       "detecta hotspots: archivos con mas cambios + fallos + complejidad",
                 "fix":           "autofix serio: genera y aplica parches concretos con validacion",
                 "gh":            "integracion GitHub: check runs y comentarios en PRs",

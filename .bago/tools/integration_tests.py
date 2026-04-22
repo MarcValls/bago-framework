@@ -956,6 +956,33 @@ def test_size_tracker():
         _record("size_tracker:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_secret_scan():
+    """secret_scan.py --test pasa todos los tests."""
+    rc, out, _ = _run("secret_scan.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("secret_scan:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("secret_scan:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_test_gen():
+    """test_gen.py --test pasa todos los tests."""
+    rc, out, _ = _run("test_gen.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("test_gen:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("test_gen:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_impact_map():
+    """impact_map.py --test pasa todos los tests."""
+    rc, out, _ = _run("impact_map.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("impact_map:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("impact_map:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1019,6 +1046,9 @@ ALL_TESTS = [
     (60, "env_check",       test_env_check),
     (61, "file_watcher",    test_file_watcher),
     (62, "size_tracker",    test_size_tracker),
+    (63, "secret_scan",     test_secret_scan),
+    (64, "test_gen",        test_test_gen),
+    (65, "impact_map",      test_impact_map),
 ]
 
 

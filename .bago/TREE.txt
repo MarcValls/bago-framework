@@ -435,6 +435,7 @@
 ./state/iterations/ITER-0029.json
 ./state/iterations/ITER-0030.json
 ./state/iterations/ITER-0031.json
+./state/iterations/ITER-0032.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -710,6 +711,7 @@
 ./tools/health_score.py
 ./tools/hotspot.py
 ./tools/impact_engine.py
+./tools/impact_map.py
 ./tools/insights.py
 ./tools/inspect_workflow.py
 ./tools/install_deps.py
@@ -742,6 +744,7 @@
 ./tools/risk_matrix.py
 ./tools/rule_catalog.py
 ./tools/scan.py
+./tools/secret_scan.py
 ./tools/session_details.py
 ./tools/session_opener.py
 ./tools/session_preflight.py
@@ -758,6 +761,7 @@
 ./tools/tags.py
 ./tools/target_selector.py
 ./tools/template.py
+./tools/test_gen.py
 ./tools/testgen.py
 ./tools/timeline.py
 ./tools/ts_ast.js
