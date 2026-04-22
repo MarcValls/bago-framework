@@ -4,8 +4,42 @@
 
 ---
 
+## [3.0] — 2026-04-22 🚀
 
-## [Unreleased] — 2026-04-22
+### 🎯 Release v3.0 — Auto-gobernanza e Inteligencia de Framework
+
+BAGO v3.0 introduce **18 nuevas herramientas** (tools #118–135) organizadas en dos capas:
+
+#### Capa de Análisis Estático (tools #118–124)
+- `api_check.py` (#118) — Valida consistencia de APIs REST: paths, params, auth, versioning
+- `coverage_gate.py` (#119) — Gate de cobertura de tests configurable (umbral por tool)
+- `naming_check.py` (#120) — Convenciones de nombres: snake_case, constantes, max length
+- `type_check.py` (#121) — Type hints Python: detecta funciones sin anotación, retornos implícitos
+- `license_check.py` (#122) — Cabeceras de licencia/copyright con `--add-header` auto-repair
+- `dep_audit.py` (#123) — Auditoría de requirements.txt/pyproject.toml: CVEs, rangos abiertos
+- `readme_check.py` (#124) — Valida estructura README: secciones requeridas, links rotos, placeholders
+
+#### Capa de Auto-gobernanza (tools #125–135)
+- `ci_report.py` (#125) — Reporte CI agregado: 10 scanners, score 0–100, markdown listo para PR
+- `tool_guardian.py` (#126) — Validación de coherencia del framework: tests, routing, integración
+- `pre_push_guard.py` (#127) — Guard pre-push: CHECKSUMS, suite, version sync en 1 comando
+- `tool_search.py` (#128) — Búsqueda semántica sobre los 135 tools por descripción o código
+- `legacy_fixer.py` (#129) — Scaffolding automático de `--test` en tools legacy sin auto-tests
+- `commit_readiness.py` (#130) — Gate pre-commit: syntax, secrets, merge conflicts, debug prints
+- `auto_register.py` (#131) — Registra un tool en integration_tests + bago script + CHECKSUMS en 1 cmd
+- `intent_router.py` (#132) — NLP intent → ejecución automática del tool correcto (12 intents)
+- `orchestrator.py` (#133) — Workflows encadenados con progress bar: preprod, security, quality, selfcheck
+- `auto_heal.py` (#134) — BAGO detecta y repara su propia incoherencia automáticamente (R001–R005)
+- `bago_config.py` (#135) — Config centralizada compartida: thresholds y preferencias por tool
+
+### 📊 Métricas v3.0
+- **Tools:** 135 (vs 117 en v2.x)
+- **Suite:** 102/102 ✅ (89 grupos)
+- **Tag git:** `v3.0`
+- **Commits:** `5f4a60e` → `8338a00`
+
+---
+
 
 ### ✨ Nuevas Funcionalidades
 

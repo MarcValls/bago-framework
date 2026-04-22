@@ -2,9 +2,9 @@
 
 > Sistema operativo de trabajo técnico para programación con IA
 
-![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%2064%2F64-brightgreen) ![tools](https://img.shields.io/badge/tools-95-blue) ![version](https://img.shields.io/badge/versión-2.6-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
+![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%20102%2F102-brightgreen) ![tools](https://img.shields.io/badge/tools-135-blue) ![version](https://img.shields.io/badge/versión-3.0-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
 
-**`health 🟢 100/100`** · **`tests ✅ 64/64`** · **`tools 🔧 95`** · **`versión 2.6`** · 12 workflows · Gobernanza de sesión integrada
+**`health 🟢 100/100`** · **`tests ✅ 102/102`** · **`tools 🔧 135`** · **`versión 3.0`** · 12 workflows · Auto-gobernanza e inteligencia de intent integrada
 
 ---
 
@@ -176,6 +176,34 @@ BAGO amplifica el trabajo con IA resolviendo:
 | `bago fix` | `autofix.py` | ✅ Activo | Autofix con validación y parches concretos |
 | `bago gh` | `gh_integration.py` | ✅ Activo | Integración GitHub: check runs y comentarios en PRs |
 
+### Fase 7 — Análisis estático de código (S36–S42) ← v3.0
+
+| Comando | Herramienta | Descripción |
+|---------|-------------|-------------|
+| `bago api-check` | `api_check.py` | Valida consistencia de APIs: paths, params, auth, versioning |
+| `bago coverage-gate` | `coverage_gate.py` | Gate de cobertura de tests: bloquea merge si baja del umbral |
+| `bago naming-check` | `naming_check.py` | Verifica convenciones de nombres: snake_case, max length, constantes |
+| `bago type-check` | `type_check.py` | Valida type hints Python: funciones sin anotación, retornos implícitos |
+| `bago license-check` | `license_check.py` | Verifica cabeceras de licencia/copyright con `--add-header` auto-repair |
+| `bago dep-audit` | `dep_audit.py` | Auditoría de requirements.txt/pyproject.toml: CVEs, rangos abiertos |
+| `bago readme-check` | `readme_check.py` | Valida estructura del README: secciones, links rotos, placeholders |
+
+### Fase 8 — Auto-gobernanza del framework (S43–S49) ← v3.0
+
+| Comando | Herramienta | Descripción |
+|---------|-------------|-------------|
+| `bago ci-report` | `ci_report.py` | Reporte CI agregado: 10 scanners, score 0-100, markdown para PR |
+| `bago tool-guardian` | `tool_guardian.py` | Valida coherencia del framework: tests, routing, integración, docstrings |
+| `bago pre-push` | `pre_push_guard.py` | Guard pre-push: CHECKSUMS, suite, version sync en un comando |
+| `bago tool-search` | `tool_search.py` | Búsqueda semántica sobre los 135 tools: `bago tool-search "secretos"` |
+| `bago legacy-fix` | `legacy_fixer.py` | Scaffolding de `--test` en tools legacy sin auto-tests |
+| `bago commit-ready` | `commit_readiness.py` | Gate pre-commit: syntax, secrets, merge conflicts, debug prints, size |
+| `bago auto-register` | `auto_register.py` | Registra un tool en integration_tests + bago script + CHECKSUMS en 1 cmd |
+| `bago intent` | `intent_router.py` | NLP intent → ejecución automática del tool correcto (12 intents) |
+| `bago orchestrate` | `orchestrator.py` | Workflows encadenados: preprod, security, quality, selfcheck, onboarding |
+| `bago auto-heal` | `auto_heal.py` | BAGO detecta y repara su propia incoherencia (R001-R005) |
+| `bago config` | `bago_config.py` | Config centralizada compartida: thresholds, rutas, preferencias por tool |
+
 > Ver docs individuales: [`.bago/docs/tools/`](.bago/docs/tools/)
 
 ---
@@ -257,7 +285,7 @@ bago-framework/
 ├── menu.html                     # Interfaz web (BAGO Viewer)
 ├── Makefile                      # Targets: banner, pack, validate, install
 ├── .bago/
-│   ├── tools/                    # 95 herramientas Python/JS (un archivo por comando)
+│   ├── tools/                    # 135 herramientas Python/JS (un archivo por comando)
 │   │   ├── health_score.py       # bago health
 │   │   ├── audit_v2.py           # bago audit
 │   │   ├── insights.py           # bago insights
@@ -427,7 +455,7 @@ Cada cleanversion incluye su propio pack BAGO con modo de distribución específ
 
 - **Documentación técnica:** [`.bago/README.md`](.bago/README.md)
 - **GitHub:** [MarcValls/bago-framework](https://github.com/MarcValls/bago-framework)
-- **Versión actual:** 2.5 (2.4-v2rc en pack.json)
+- **Versión actual:** 3.0 (v3.0 tag en git)
 
 ---
 
