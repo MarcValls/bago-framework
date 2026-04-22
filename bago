@@ -624,6 +624,11 @@ def main():
             ["python3", str(TOOLS / "legacy_fixer.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "commit-ready":
+        subprocess.run(
+            ["python3", str(TOOLS / "commit_readiness.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,

@@ -457,6 +457,7 @@
 ./state/iterations/ITER-0049.json
 ./state/iterations/ITER-0050.json
 ./state/iterations/ITER-0051.json
+./state/iterations/ITER-0052.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -701,6 +702,7 @@
 ./tools/ci_generator.py
 ./tools/ci_report.py
 ./tools/code_review.py
+./tools/commit_readiness.py
 ./tools/compare.py
 ./tools/competition_report.py
 ./tools/complexity.py

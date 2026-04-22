@@ -1146,6 +1146,15 @@ def test_legacy_fixer():
         _record("legacy_fixer:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_commit_readiness():
+    """commit_readiness.py --test pasa todos los tests."""
+    rc, out, _ = _run("commit_readiness.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("commit_readiness:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("commit_readiness:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1230,6 +1239,7 @@ ALL_TESTS = [
     (81, "pre_push_guard",   test_pre_push_guard),
     (82, "tool_search",      test_tool_search),
     (83, "legacy_fixer",     test_legacy_fixer),
+    (84, "commit_readiness", test_commit_readiness),
 ]
 
 
