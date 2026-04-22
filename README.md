@@ -351,9 +351,9 @@ bago gh pr 42 --min-severity error   # PR review agrupado por archivo
 
 | Lenguaje | Scanner | Hotspot | Autofix externo |
 |----------|---------|---------|----------------|
-| Python   | flake8 + pylint + mypy + bandit + bago-lint | ✅ | `black` |
-| JS / TS  | ESLint (via npx) | ✅ | `prettier` + `eslint --fix` |
-| Go       | golangci-lint | ✅ | — |
+| Python   | flake8 + pylint + mypy + bandit + bago-lint | ✅ AST nativo | `black` |
+| JS / TS  | ESLint (via npx) | ✅ AST real ² | `prettier` + `eslint --fix` |
+| Go       | golangci-lint | ✅ regex | — |
 | Rust     | cargo clippy | ✅ ¹ | — |
 | Java     | checkstyle | — | — |
 | C#       | dotnet build | — | — |
@@ -365,7 +365,8 @@ bago gh pr 42 --min-severity error   # PR review agrupado por archivo
 | Terraform | tflint | — | — |
 | YAML     | yamllint | — | — |
 
-> ¹ Rust hotspot: git history + findings (sin análisis de complejidad AST)
+> ¹ Rust hotspot: git history + findings (sin análisis de complejidad AST)  
+> ² JS usa **acorn** (AST real, ecma2022); TS/TSX usa **@typescript-eslint/typescript-estree** (AST real con soporte de tipos, genéricos y decoradores). Ambos requieren Node.js + `npm install` (automático con `bago setup`).
 
 ---
 

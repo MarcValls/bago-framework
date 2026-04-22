@@ -32,6 +32,15 @@ TOOLS_DIR = Path(__file__).parent
 sys.path.insert(0, str(TOOLS_DIR))
 import findings_engine as fe
 
+# Import permission fixer — graceful fallback if not available
+try:
+    from permission_fixer import run_with_permission_fix as _run_cmd
+except ImportError:
+    def _run_cmd(cmd, *, capture_output=True, text=True, timeout=60,  # type: ignore[misc]
+                 cwd=None, env=None, silent=True, **_):
+        return subprocess.run(cmd, capture_output=capture_output, text=text,
+                              timeout=timeout, cwd=cwd, env=env)
+
 BAGO_ROOT = Path(__file__).parent.parent
 BOLD="\033[1m"; DIM="\033[2m"; RESET="\033[0m"
 RED="\033[31m"; GREEN="\033[32m"; YELLOW="\033[33m"; CYAN="\033[36m"
@@ -241,10 +250,10 @@ def validate_after_fix(filepath: str) -> tuple:
         return True, "Fuera de tools/ — skip test"
 
     try:
-        r = subprocess.run(
+        r = _run_cmd(
             ["python3", str(py), "--test"],
             capture_output=True, text=True, timeout=30,
-            cwd=str(BAGO_ROOT.parent)
+            cwd=str(BAGO_ROOT.parent), silent=True,
         )
         passed = r.returncode == 0
         return passed, (r.stdout + r.stderr).strip()
@@ -367,7 +376,7 @@ def run_external_fix_python(target: str, dry_run: bool) -> tuple:
     else:
         cmd = ["black", target]
     try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        r = _run_cmd(cmd, capture_output=True, text=True, timeout=60, silent=True)
         return r.returncode == 0 or (dry_run and r.returncode == 1), \
                (r.stdout + r.stderr).strip()
     except FileNotFoundError:
@@ -381,9 +390,9 @@ def run_external_fix_js(target: str, dry_run: bool) -> tuple:
     # Try prettier first
     prettier_flag = "--check" if dry_run else "--write"
     try:
-        r = subprocess.run(
+        r = _run_cmd(
             ["npx", "--yes", "prettier", prettier_flag, target],
-            capture_output=True, text=True, timeout=60
+            capture_output=True, text=True, timeout=60, silent=True,
         )
         if r.returncode in (0, 1):  # 1 = needs formatting (dry-run)
             return True, (r.stdout + r.stderr).strip()
@@ -395,7 +404,7 @@ def run_external_fix_js(target: str, dry_run: bool) -> tuple:
         if not dry_run:
             cmd.append("--fix")
         cmd.append(target)
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        r = _run_cmd(cmd, capture_output=True, text=True, timeout=60, silent=True)
         return r.returncode == 0, (r.stdout + r.stderr).strip()
     except Exception as e:
         return False, f"eslint/prettier no disponible: {e}"

@@ -714,6 +714,7 @@
 ./tools/template.py
 ./tools/testgen.py
 ./tools/timeline.py
+./tools/ts_ast.js
 ./tools/v2_close_checklist.py
 ./tools/validate_manifest.py
 ./tools/validate_pack.py
