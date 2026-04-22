@@ -893,6 +893,24 @@ def test_health_report():
         _record("health_report:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_changelog_gen():
+    """changelog_gen.py --test pasa todos los tests."""
+    rc, out, _ = _run("changelog_gen.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("changelog_gen:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("changelog_gen:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_dead_code():
+    """dead_code.py --test pasa todos los tests."""
+    rc, out, _ = _run("dead_code.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("dead_code:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("dead_code:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -949,7 +967,10 @@ ALL_TESTS = [
     (53, "config_check",    test_config_check),
     (54, "ci_baseline",     test_ci_baseline),
     (55, "health_report",   test_health_report),
+    (56, "changelog_gen",   test_changelog_gen),
+    (57, "dead_code",       test_dead_code),
 ]
+
 
 
 def main():

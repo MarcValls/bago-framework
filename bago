@@ -484,6 +484,16 @@ def main():
             ["python3", str(TOOLS / "health_report.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "changelog-gen":
+        subprocess.run(
+            ["python3", str(TOOLS / "changelog_gen.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "dead-code":
+        subprocess.run(
+            ["python3", str(TOOLS / "dead_code.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -665,6 +675,8 @@ def main():
                 "config-check":  "valida pack.json contra esquema BAGO (campos, tipos, versión, refs)",
                 "ci-baseline":   "guarda/compara baseline de findings para CI (exit 1 si hay regresión)",
                 "health-report": "reporte integral Markdown/HTML: config + lint + git + score 0-100",
+                "changelog-gen": "genera CHANGELOG.md desde git log con conventional commits",
+                "dead-code":     "detecta imports/funciones sin usar, TODOs, código comentado (Python)",
                 "hotspot":       "detecta hotspots: archivos con mas cambios + fallos + complejidad",
                 "fix":           "autofix serio: genera y aplica parches concretos con validacion",
                 "gh":            "integracion GitHub: check runs y comentarios en PRs",

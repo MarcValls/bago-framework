@@ -432,6 +432,7 @@
 ./state/iterations/ITER-0026.json
 ./state/iterations/ITER-0027.json
 ./state/iterations/ITER-0028.json
+./state/iterations/ITER-0029.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -681,8 +682,10 @@
 ./tools/contracts.py
 ./tools/cosecha.py
 ./tools/changelog.py
+./tools/changelog_gen.py
 ./tools/check.py
 ./tools/dashboard_v2.py
+./tools/dead_code.py
 ./tools/debt_ledger.py
 ./tools/diff.py
 ./tools/doctor.py
