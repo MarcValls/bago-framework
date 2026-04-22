@@ -11,3 +11,4 @@ BAGO_*_tester_*.zip
 _finish_session.sh
 .bago/state/global_state.backup.json
 LaunchBAGO.app/
+node_modules/

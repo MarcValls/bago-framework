@@ -152,45 +152,81 @@ _JS_FN_RE = re.compile(
     r'\w+\s*\([^)]*\)\s*\{)',                                                   # name(args) {
     re.MULTILINE,
 )
-_JS_CLASS_RE   = re.compile(r'(?<!\w)(?:abstract\s+)?class\s+\w+', re.MULTILINE)
-_JS_SIMPLE_ARROW = re.compile(r'(?:const|let|var)\s+\w+\s*=\s*(?:async\s+)?\w+\s*=>\s*\S')  # f = x => expr
+_JS_CLASS_RE    = re.compile(r'(?<!\w)(?:abstract\s+)?class\s+\w+', re.MULTILINE)
+_JS_SIMPLE_ARROW = re.compile(r'(?:const|let|var)\s+\w+\s*=\s*(?:async\s+)?\w+\s*=>\s*\S')
+
+
+def _node_available() -> bool:
+    """Return True if Node.js is available on PATH."""
+    try:
+        subprocess.run(["node", "--version"], capture_output=True, timeout=5, check=True)
+        return True
+    except Exception:
+        return False
+
+
+def node_setup_hint() -> str:
+    """Return a human-readable hint for installing Node.js if missing."""
+    if _node_available():
+        return ""
+    import platform
+    sys_name = platform.system()
+    if sys_name == "Darwin":
+        cmd = "brew install node"
+    elif sys_name == "Linux":
+        cmd = "sudo apt install nodejs npm   # o: nvm install --lts"
+    else:
+        cmd = "https://nodejs.org"
+    return (
+        f"\n  ℹ  Node.js no encontrado — análisis JS/TS usa regex (menos preciso).\n"
+        f"     Para análisis AST real: {cmd}\n"
+        f"     Después: cd {BAGO_ROOT.parent} && npm install\n"
+    )
+
+
+def _count_js_ast_nodes(node: object) -> tuple:
+    """Recursively count (functions, classes) in an acorn AST dict.
+    Counts each function/arrow/expression exactly once at its own node level.
+    """
+    if not isinstance(node, dict):
+        return 0, 0
+    fn = cl = 0
+    t = node.get("type", "")
+    # Every callable is a FunctionDeclaration, FunctionExpression, or ArrowFunctionExpression
+    if t in ("FunctionDeclaration", "FunctionExpression", "ArrowFunctionExpression"):
+        fn += 1
+    if t in ("ClassDeclaration", "ClassExpression"):
+        cl += 1
+    for val in node.values():
+        if isinstance(val, dict):
+            f2, c2 = _count_js_ast_nodes(val);  fn += f2; cl += c2
+        elif isinstance(val, list):
+            for item in val:
+                f2, c2 = _count_js_ast_nodes(item); fn += f2; cl += c2
+    return fn, cl
 
 
 def _js_node_ast(filepath: str) -> Optional[dict]:
-    """Try Node.js + acorn for accurate JS/TS AST analysis. Returns None if unavailable."""
-    import tempfile, os
-    script = (
-        "const p=process.argv[2];"
-        "try{"
-        "const a=require('acorn'),s=require('fs').readFileSync(p,'utf8');"
-        "let fn=0,cl=0;"
-        "function w(n){"
-        "if(!n||typeof n!=='object')return;"
-        "const t=n.type;"
-        "if(t==='FunctionDeclaration'||t==='FunctionExpression'||t==='ArrowFunctionExpression')fn++;"
-        "if(t==='MethodDefinition'&&n.kind==='method')fn++;"
-        "if(t==='Property'&&n.value&&(n.value.type==='FunctionExpression'||n.value.type==='ArrowFunctionExpression'))fn++;"
-        "if(t==='ClassDeclaration'||t==='ClassExpression')cl++;"
-        "Object.values(n).forEach(v=>{if(Array.isArray(v))v.forEach(w);else if(v&&typeof v==='object'&&v.type)w(v);});}"
-        "const ast=a.parse(s,{ecmaVersion:2022,sourceType:'module'});"
-        "w(ast);console.log(JSON.stringify({functions:fn,classes:cl}));"
-        "}catch(e){process.exit(1);}"
-    )
-    tmp = None
+    """Parse JS file with npx acorn → accurate AST function/class count.
+
+    Uses 'npx --yes acorn' so acorn is auto-downloaded on first use (no manual
+    install needed). Skips TypeScript files (acorn doesn't support TS syntax).
+    Returns None if Node.js is unavailable or parsing fails → caller uses regex.
+    """
+    if filepath.endswith((".ts", ".tsx")):
+        return None  # acorn doesn't support TypeScript — regex fallback handles .ts
     try:
-        with tempfile.NamedTemporaryFile(suffix=".js", mode="w", delete=False) as f:
-            f.write(script); tmp = f.name
-        r = subprocess.run(["node", tmp, filepath],
-                           capture_output=True, text=True, timeout=10)
-        if r.returncode == 0 and r.stdout.strip():
-            return json.loads(r.stdout.strip())
+        r = subprocess.run(
+            ["npx", "--yes", "acorn", "--ecma2022", "--module", filepath],
+            capture_output=True, text=True, timeout=30,
+        )
+        if r.returncode != 0 or not r.stdout.strip():
+            return None
+        ast_data = json.loads(r.stdout)
+        fn, cl = _count_js_ast_nodes(ast_data)
+        return {"functions": fn, "classes": cl}
     except Exception:
-        pass
-    finally:
-        if tmp:
-            try: os.unlink(tmp)
-            except: pass
-    return None
+        return None
 
 
 def analyze_js_complexity(filepath: str) -> dict:

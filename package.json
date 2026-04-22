@@ -1,0 +1,17 @@
+{
+  "name": "bago-framework",
+  "version": "2.5.0",
+  "description": "BAGO — Balanced Agile Governance Operations framework",
+  "private": true,
+  "devDependencies": {
+    "acorn": "^8.14.0"
+  },
+  "scripts": {
+    "setup": "npm install",
+    "test": "echo 'Run: python3 .bago/tools/integration_tests.py'"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}

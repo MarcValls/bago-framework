@@ -439,6 +439,17 @@ def main():
             cwd=str(BAGO_ROOT.parent)
         )
         _install_extensions()
+        # Install JS deps if package.json present (provides acorn for JS/TS analysis)
+        pkg_json = BAGO_ROOT.parent / "package.json"
+        if pkg_json.exists():
+            print("  📦 Instalando dependencias JS (npm install)...")
+            r_npm = subprocess.run(["npm", "install"], cwd=str(BAGO_ROOT.parent),
+                                   capture_output=True, text=True)
+            if r_npm.returncode == 0:
+                print("  ✅ npm install completado — acorn disponible para análisis JS/TS preciso")
+            else:
+                print(f"  ⚠️  npm install falló: {r_npm.stderr.strip()[:120]}")
+                print("     Análisis JS/TS usará regex como fallback (funcional pero menos preciso)")
     elif cmd == "versions":
         _cmd_versions()
     elif cmd == "extensions":
