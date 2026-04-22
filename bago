@@ -614,6 +614,16 @@ def main():
             ["python3", str(TOOLS / "pre_push_guard.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "tool-search":
+        subprocess.run(
+            ["python3", str(TOOLS / "tool_search.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "legacy-fix":
+        subprocess.run(
+            ["python3", str(TOOLS / "legacy_fixer.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -824,6 +834,8 @@ def main():
                 "ci-report":        "reporte CI unificado: agrega todos los scanners, score 0-100, listo para PR",
                 "tool-guardian":    "guardian del framework: detecta tools sin --test, sin registro, sin routing",
                 "pre-push":         "guardián pre-push: CHECKSUMS + version sync + suite + guardian en un comando",
+                "tool-search":      "busca el tool BAGO correcto: bago tool-search 'secretos hardcoded'",
+                "legacy-fix":       "scaffold --test en tools legacy; --dry-run para previsualizar",
             }
             for k, desc in extra.items():
                 print(f"    bago {k:12s} → {desc}")

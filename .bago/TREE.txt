@@ -456,6 +456,7 @@
 ./state/iterations/ITER-0048.json
 ./state/iterations/ITER-0049.json
 ./state/iterations/ITER-0050.json
+./state/iterations/ITER-0051.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -748,6 +749,7 @@
 ./tools/iteration_logger.py
 ./tools/js_ast_scanner.js
 ./tools/launch_workflow_maestro.sh
+./tools/legacy_fixer.py
 ./tools/license_check.py
 ./tools/lint.py
 ./tools/lint_report.py
@@ -801,6 +803,7 @@
 ./tools/testgen.py
 ./tools/timeline.py
 ./tools/tool_guardian.py
+./tools/tool_search.py
 ./tools/ts_ast.js
 ./tools/type_check.py
 ./tools/v2_close_checklist.py
