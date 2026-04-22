@@ -9,7 +9,7 @@
   "active_scenarios": [],
   "active_workflows": [],
   "history_migration_status": "completed_with_preserved_legacy",
-  "updated_at": "2026-04-22T21:20:37.903273+00:00",
+  "updated_at": "2026-04-22T22:26:57.012780+00:00",
   "v2_status": "stable",
   "notes": "v3.0 release — 125 tools (91/91 ✅). Sprint 180 activo. Suite completa: static analysis, security, CI/CD, dynamic charts, doc coverage, type hints, license, dep-audit, readme-check.",
   "last_completed_session_id": "SES-HARVEST-2026-04-22-001",
