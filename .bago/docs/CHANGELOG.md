@@ -37,7 +37,30 @@
 
 **Fase 4 — Sprint 180 (S21–S23)**
 - `bago detector` → `context_detector.py` — Detector de contexto acumulado (ampliado)
-- Subtools internos: `forecast.py`, `mirror.py`, `link.py`, `deps.py`, `pattern.py`, `estimate.py`
+- Subtools internos — motor de análisis estático (soporte para `scan`/`hotspot`/`fix`/`gh`):
+  - `findings_engine.py` — Motor de hallazgos unificado: parsing de linters, modelo canónico de Finding (id, severity, file, line, rule, fix_suggestion, autofixable, fix_patch)
+  - `risk_matrix.py` — Matriz de riesgo: categorías Security/Reliability/Maintainability/VelocityDrag × Probabilidad/Impacto → Exposición cuantificada
+  - `debt_ledger.py` — Ledger de deuda técnica: cuantifica en horas y € con cuadrantes Reckless/Prudent × Deliberate/Inadvertent
+  - `impact_engine.py` — Motor de impacto: traduce health score y deuda técnica en métricas de negocio (multiplicador de velocidad, €/trimestre)
+- Subtools internos — gestión de estado y contexto:
+  - `state_store.py` — Capa de abstracción de almacenamiento: desacopla las tools del backend concreto
+  - `context_collector.py` — Recolecta y resume contexto operativo de uno o varios directorios
+  - `context_map.py` — Mapa de contexto distribuido: descubre instalaciones `.bago/` bajo una raíz y construye un mapa jerárquico
+  - `reconcile_state.py` — Reconcilia el inventario en `global_state.json` con los archivos reales en `state/`
+  - `artifact_counter.py` — Mide la producción de artefactos útiles por sesión (excluye artefactos de protocolo)
+- Subtools internos — validación y contratos:
+  - `validate_manifest.py` — Valida integridad y esquema del manifiesto `pack.json`
+  - `validate_state.py` — Valida consistencia del estado: sessions/changes/evidences
+  - `contracts.py` — Sistema de contratos de estado verificables con deadline y auditoría
+  - `session_preflight.py` — Preflight W7: verifica reglas ESCENARIO-001 antes de abrir sesión
+- Subtools internos — gobernanza y utilidades:
+  - `repo_context_guard.py` — Guard de contexto: detecta `match`/`mismatch`/`new` al cambiar de repo
+  - `target_selector.py` — Selector seguro de directorio objetivo con candidatos priorizados y opción manual
+  - `vertice_activator.py` — Evaluador de señales para activar revisión Vértice (sesiones W0 sin decisiones, etc.)
+  - `bago_utils.py` — Utilidades compartidas: print_ok/fail/skip, runner de tests inline para todos los tools
+  - `session_stats.py` — Estadísticas agregadas de sesiones por tipo de tarea, workflow y rol
+  - `stability_summary.py` — Resume informes de sandbox (smoke/VM/soak) y validadores canónicos
+  - `efficiency_meter.py` — Compara métricas de salud y productividad entre cleanversions
 
 **Fase 5 — Sprint 180 (S24–S33)**
 - `bago insights` → `insights.py` — Motor de insights automáticos (5 categorías: PRODUCCION/PATRON/RIESGO/TENDENCIA/RECOMENDACION)
