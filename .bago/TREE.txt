@@ -454,6 +454,8 @@
 ./state/iterations/ITER-0046.json
 ./state/iterations/ITER-0047.json
 ./state/iterations/ITER-0048.json
+./state/iterations/ITER-0049.json
+./state/iterations/ITER-0050.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -696,6 +698,7 @@
 ./tools/branch_check.py
 ./tools/ci_baseline.py
 ./tools/ci_generator.py
+./tools/ci_report.py
 ./tools/code_review.py
 ./tools/compare.py
 ./tools/competition_report.py
@@ -763,6 +766,7 @@
 ./tools/permission_fixer.py
 ./tools/personality_panel.py
 ./tools/pre_commit_gen.py
+./tools/pre_push_guard.py
 ./tools/quick_status.py
 ./tools/readme_check.py
 ./tools/reconcile_state.py
@@ -796,6 +800,7 @@
 ./tools/test_gen.py
 ./tools/testgen.py
 ./tools/timeline.py
+./tools/tool_guardian.py
 ./tools/ts_ast.js
 ./tools/type_check.py
 ./tools/v2_close_checklist.py

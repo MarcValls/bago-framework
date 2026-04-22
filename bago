@@ -599,6 +599,21 @@ def main():
             ["python3", str(TOOLS / "readme_check.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "ci-report":
+        subprocess.run(
+            ["python3", str(TOOLS / "ci_report.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "tool-guardian":
+        subprocess.run(
+            ["python3", str(TOOLS / "tool_guardian.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "pre-push":
+        subprocess.run(
+            ["python3", str(TOOLS / "pre_push_guard.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -806,6 +821,9 @@ def main():
                 "license-check":    "verifica cabeceras de licencia/copyright — LIC-W001..I001 con --add-header",
                 "dep-audit":        "auditoría dependencias: versiones inseguras, CVEs offline, ranges abiertos",
                 "readme-check":     "valida README.md: secciones, placeholders, enlaces rotos — README-W001..I002",
+                "ci-report":        "reporte CI unificado: agrega todos los scanners, score 0-100, listo para PR",
+                "tool-guardian":    "guardian del framework: detecta tools sin --test, sin registro, sin routing",
+                "pre-push":         "guardián pre-push: CHECKSUMS + version sync + suite + guardian en un comando",
             }
             for k, desc in extra.items():
                 print(f"    bago {k:12s} → {desc}")

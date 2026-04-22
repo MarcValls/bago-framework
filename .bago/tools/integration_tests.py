@@ -1101,6 +1101,33 @@ def test_readme_check():
         _record("readme_check:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_ci_report():
+    """ci_report.py --test pasa todos los tests."""
+    rc, out, _ = _run("ci_report.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("ci_report:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("ci_report:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_tool_guardian():
+    """tool_guardian.py --test pasa todos los tests."""
+    rc, out, _ = _run("tool_guardian.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("tool_guardian:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("tool_guardian:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_pre_push_guard():
+    """pre_push_guard.py --test pasa todos los tests."""
+    rc, out, _ = _run("pre_push_guard.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("pre_push_guard:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("pre_push_guard:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1180,6 +1207,9 @@ ALL_TESTS = [
     (76, "license_check",    test_license_check),
     (77, "dep_audit",        test_dep_audit),
     (78, "readme_check",     test_readme_check),
+    (79, "ci_report",        test_ci_report),
+    (80, "tool_guardian",    test_tool_guardian),
+    (81, "pre_push_guard",   test_pre_push_guard),
 ]
 
 
