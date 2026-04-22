@@ -1,0 +1,10 @@
+{
+  "slug": "v02-template-seed",
+  "display_name": "Template seed con prompt de arranque",
+  "description": "Pack limpio con bago script v2: al primer arranque pregunta si evolucionar el framework o iniciar proyecto nuevo. Ruta de destino opcional (Enter = directorio actual).",
+  "created_at": "2026-04-19T14:54:00",
+  "distribution_mode": "template_seed",
+  "chg_count": 0,
+  "bago_script": "v2 (prompt de arranque)",
+  "notes": "Usar esta cleanversion para distribuir o iniciar proyectos nuevos."
+}

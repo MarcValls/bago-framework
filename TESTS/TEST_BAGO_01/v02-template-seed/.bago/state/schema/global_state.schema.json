@@ -1,0 +1,113 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BAGO Global State",
+  "type": "object",
+  "required": [
+    "bago_version",
+    "canon_version",
+    "system_health",
+    "active_session_id",
+    "active_task_type",
+    "active_roles",
+    "updated_at"
+  ],
+  "properties": {
+    "bago_version": {
+      "type": "string"
+    },
+    "canon_version": {
+      "type": "string"
+    },
+    "system_health": {
+      "type": "string",
+      "enum": ["stable", "degraded", "under_change"]
+    },
+    "active_session_id": {
+      "type": ["string", "null"]
+    },
+    "active_task_type": {
+      "type": ["string", "null"]
+    },
+    "active_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "open_changes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "active_workflows": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "history_migration_status": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "last_completed_session_id": {
+      "type": ["string", "null"]
+    },
+    "last_completed_task_type": {
+      "type": ["string", "null"]
+    },
+    "last_completed_workflow": {
+      "type": ["string", "null"]
+    },
+    "last_completed_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "last_completed_change_id": {
+      "type": ["string", "null"]
+    },
+    "last_completed_evidence_id": {
+      "type": ["string", "null"]
+    },
+    "inventory": {
+      "type": "object",
+      "required": ["sessions", "changes", "evidences"],
+      "properties": {
+        "sessions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "changes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidences": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "last_validation": {
+      "type": "object",
+      "required": ["manifest", "state", "pack", "recorded_at"],
+      "properties": {
+        "manifest": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "pack": {
+          "type": "string"
+        },
+        "recorded_at": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

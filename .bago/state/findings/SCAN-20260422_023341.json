@@ -1,0 +1,2291 @@
+{
+  "meta": {
+    "scan_id": "SCAN-20260422_023341",
+    "created_at": "2026-04-22T02:33:41.210830+00:00",
+    "sources": [
+      "bago",
+      "flake8",
+      "pylint",
+      "mypy",
+      "bandit"
+    ],
+    "target": ".bago/tools"
+  },
+  "summary": {
+    "total": 111,
+    "autofixable": 8,
+    "by_severity": {
+      "error": 0,
+      "warning": 8,
+      "info": 103,
+      "hint": 0
+    },
+    "by_source": {
+      "bago": 111
+    },
+    "top_files": [
+      [
+        ".bago/tools/template.py",
+        9
+      ],
+      [
+        ".bago/tools/gh_integration.py",
+        8
+      ],
+      [
+        ".bago/tools/config.py",
+        7
+      ],
+      [
+        ".bago/tools/goals.py",
+        6
+      ],
+      [
+        ".bago/tools/findings_engine.py",
+        5
+      ],
+      [
+        ".bago/tools/summary.py",
+        5
+      ],
+      [
+        ".bago/tools/autofix.py",
+        4
+      ],
+      [
+        ".bago/tools/ci_generator.py",
+        4
+      ],
+      [
+        ".bago/tools/diff.py",
+        4
+      ],
+      [
+        ".bago/tools/snapshot.py",
+        4
+      ]
+    ]
+  },
+  "findings": [
+    {
+      "id": "FIND-4CA01FF9",
+      "severity": "info",
+      "file": ".bago/tools/archive.py",
+      "line": 105,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 103 |     if not ARCHIVE_DIR.exists():",
+        " 104 |         print(\"  No existe el directorio de archivo.\")",
+        " 105 |         sys.exit(1)",
+        " 106 |     # Try exact match first",
+        " 107 |     candidates = list(ARCHIVE_DIR.glob(f\"*{session_id}*.json\"))"
+      ]
+    },
+    {
+      "id": "FIND-9311A20D",
+      "severity": "info",
+      "file": ".bago/tools/archive.py",
+      "line": 110,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 108 |     if not candidates:",
+        " 109 |         print(f\"  No se encontró '{session_id}' en el archivo.\")",
+        " 110 |         sys.exit(1)",
+        " 111 |     for f in candidates:",
+        " 112 |         dest = SESSIONS_DIR / f.name"
+      ]
+    },
+    {
+      "id": "FIND-5CB23F18",
+      "severity": "info",
+      "file": ".bago/tools/archive.py",
+      "line": 173,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 171 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 172 |     if errors:",
+        " 173 |         sys.exit(1)",
+        " 174 | ",
+        " 175 | "
+      ]
+    },
+    {
+      "id": "FIND-F3D422DE",
+      "severity": "info",
+      "file": ".bago/tools/artifact_counter.py",
+      "line": 124,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 122 |     if not sessions:",
+        " 123 |         print(\"No se encontraron sesiones.\")",
+        " 124 |         sys.exit(1)",
+        " 125 | ",
+        " 126 |     report(sessions, verbose=args.verbose)"
+      ]
+    },
+    {
+      "id": "FIND-387B8C0B",
+      "severity": "warning",
+      "file": ".bago/tools/autofix.py",
+      "line": 49,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() está deprecado desde Python 3.12",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a/.bago/tools/autofix.py\n+++ b/.bago/tools/autofix.py\n@@ -49,1 +49,1 @@\n-    # BAGO-W001: datetime.utcnow() → datetime.now(datetime.timezone.utc)\n+    # BAGO-W001: datetime.datetime.now(datetime.timezone.utc) → datetime.now(datetime.timezone.utc)\n",
+      "context_lines": [
+        "  47 |     patched  = list(src_lines)",
+        "  48 | ",
+        "  49 |     # BAGO-W001: datetime.utcnow() → datetime.now(datetime.timezone.utc)",
+        "  50 |     if rule == \"BAGO-W001\":",
+        "  51 |         old = patched[lineno]"
+      ]
+    },
+    {
+      "id": "FIND-7F55D58E",
+      "severity": "warning",
+      "file": ".bago/tools/autofix.py",
+      "line": 306,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() está deprecado desde Python 3.12",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a/.bago/tools/autofix.py\n+++ b/.bago/tools/autofix.py\n@@ -306,1 +306,1 @@\n-    lines = [\"    ts = datetime.datetime.utcnow()\\n\"]\n+    lines = [\"    ts = datetime.datetime.datetime.now(datetime.timezone.utc)\\n\"]\n",
+      "context_lines": [
+        " 304 |     f = fe.Finding(id=\"X\",severity=\"warning\",file=\"a.py\",line=1,col=0,rule=\"BAGO-W001\",",
+        " 305 |                    source=\"bago\",message=\"test\",autofixable=True)",
+        " 306 |     lines = [\"    ts = datetime.datetime.utcnow()\\n\"]",
+        " 307 |     patch = generate_patch(f, lines)",
+        " 308 |     if patch and \"datetime.timezone.utc\" in patch:"
+      ]
+    },
+    {
+      "id": "FIND-05306B32",
+      "severity": "warning",
+      "file": ".bago/tools/autofix.py",
+      "line": 326,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() está deprecado desde Python 3.12",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a/.bago/tools/autofix.py\n+++ b/.bago/tools/autofix.py\n@@ -326,1 +326,1 @@\n-    py.write_text(\"    ts = datetime.datetime.utcnow()\\n\")\n+    py.write_text(\"    ts = datetime.datetime.datetime.now(datetime.timezone.utc)\\n\")\n",
+      "context_lines": [
+        " 324 |     tmp = Path(tf.mkdtemp())",
+        " 325 |     py  = tmp / \"sample.py\"",
+        " 326 |     py.write_text(\"    ts = datetime.datetime.utcnow()\\n\")",
+        " 327 |     f3 = fe.Finding(id=\"Z\",severity=\"warning\",file=str(py),line=1,col=0,rule=\"BAGO-W001\",",
+        " 328 |                     source=\"bago\",message=\"test\",autofixable=True)"
+      ]
+    },
+    {
+      "id": "FIND-96CEA9DD",
+      "severity": "info",
+      "file": ".bago/tools/autofix.py",
+      "line": 356,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 354 |     total=5; passed_t=total-errors",
+        " 355 |     print(f\"\\n  {passed_t}/{total} tests pasaron\")",
+        " 356 |     if errors: sys.exit(1)",
+        " 357 | ",
+        " 358 | "
+      ]
+    },
+    {
+      "id": "FIND-9530A706",
+      "severity": "info",
+      "file": ".bago/tools/bago_ask.py",
+      "line": 361,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 359 |     if errors:",
+        " 360 |         for e in errors: print(f\"  FAIL: {e}\")",
+        " 361 |         sys.exit(1)",
+        " 362 | ",
+        " 363 | "
+      ]
+    },
+    {
+      "id": "FIND-53038F45",
+      "severity": "info",
+      "file": ".bago/tools/check.py",
+      "line": 192,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 190 |     if critical_failed:",
+        " 191 |         print(f\"\\n  ⛔ {len(critical_failed)} check(s) crítico(s) fallaron.\")",
+        " 192 |         sys.exit(1)",
+        " 193 |     elif passed_count < total:",
+        " 194 |         print(f\"\\n  ⚠️  {total - passed_count} warning(s) — revisa antes de continuar.\\n\")"
+      ]
+    },
+    {
+      "id": "FIND-3CD2C269",
+      "severity": "info",
+      "file": ".bago/tools/check.py",
+      "line": 259,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 257 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 258 |     if errors:",
+        " 259 |         sys.exit(1)",
+        " 260 | ",
+        " 261 | "
+      ]
+    },
+    {
+      "id": "FIND-F4F09F06",
+      "severity": "info",
+      "file": ".bago/tools/ci_generator.py",
+      "line": 87,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  85 |                   for f in critical[:10]:",
+        "  86 |                       print(f\\\"  [{f.get('severity','')}] {f.get('file','')}:{f.get('line','')} — {f.get('rule','')}\\\")",
+        "  87 |                   sys.exit(1)",
+        "  88 |               print(f'✅ No critical findings')",
+        "  89 |           except Exception as e:"
+      ]
+    },
+    {
+      "id": "FIND-8420E010",
+      "severity": "info",
+      "file": ".bago/tools/ci_generator.py",
+      "line": 168,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 166 |           if critical:",
+        " 167 |               print(f'FAIL: {len(critical)} critical findings')",
+        " 168 |               sys.exit(1)",
+        " 169 |           print('OK: No critical findings')",
+        " 170 |       except Exception as e:"
+      ]
+    },
+    {
+      "id": "FIND-1FDA6A89",
+      "severity": "info",
+      "file": ".bago/tools/ci_generator.py",
+      "line": 223,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 221 |         for f in critical[:5]:",
+        " 222 |             print(f\\\"    {f.get('file','')}:{f.get('line','')} — {f.get('message','')}\\\")",
+        " 223 |         sys.exit(1)",
+        " 224 |     warns = len([f for f in findings if str(f.get('severity','')).lower() == 'warning'])",
+        " 225 |     print(f'  ✅ scan OK ({warns} warnings, 0 critical)')"
+      ]
+    },
+    {
+      "id": "FIND-0EB1A5AA",
+      "severity": "info",
+      "file": ".bago/tools/ci_generator.py",
+      "line": 363,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 361 |     if errors:",
+        " 362 |         for e in errors: print(f\"  FAIL: {e}\")",
+        " 363 |         sys.exit(1)",
+        " 364 | ",
+        " 365 | "
+      ]
+    },
+    {
+      "id": "FIND-91AB5633",
+      "severity": "info",
+      "file": ".bago/tools/compare.py",
+      "line": 155,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 153 |         except ValueError as e:",
+        " 154 |             print(f\"  ERROR: {e}\")",
+        " 155 |             sys.exit(1)",
+        " 156 | ",
+        " 157 |         def in_period(s, start, end):"
+      ]
+    },
+    {
+      "id": "FIND-BB413F8C",
+      "severity": "info",
+      "file": ".bago/tools/compare.py",
+      "line": 175,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 173 |     else:",
+        " 174 |         print(\"  ERROR: especifica --wf A B  |  --period P1 P2  |  --role R1 R2\")",
+        " 175 |         sys.exit(1)",
+        " 176 | ",
+        " 177 | "
+      ]
+    },
+    {
+      "id": "FIND-CF0ACEDB",
+      "severity": "info",
+      "file": ".bago/tools/compare.py",
+      "line": 239,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 237 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 238 |     if errors:",
+        " 239 |         sys.exit(1)",
+        " 240 | ",
+        " 241 | "
+      ]
+    },
+    {
+      "id": "FIND-C1A5A16F",
+      "severity": "info",
+      "file": ".bago/tools/config.py",
+      "line": 80,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  78 |     if key not in DEFAULTS:",
+        "  79 |         print(f\"Clave desconocida: {key}\", file=sys.stderr)",
+        "  80 |         sys.exit(1)",
+        "  81 |     val = pack.get(key, DEFAULTS[key][\"default\"])",
+        "  82 |     print(val)"
+      ]
+    },
+    {
+      "id": "FIND-58AB08C8",
+      "severity": "info",
+      "file": ".bago/tools/config.py",
+      "line": 88,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  86 |     if key not in DEFAULTS:",
+        "  87 |         print(f\"Clave desconocida: {key}\", file=sys.stderr)",
+        "  88 |         sys.exit(1)",
+        "  89 |     meta = DEFAULTS[key]",
+        "  90 |     if not meta.get(\"writable\", True):"
+      ]
+    },
+    {
+      "id": "FIND-CF0FE9C9",
+      "severity": "info",
+      "file": ".bago/tools/config.py",
+      "line": 92,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  90 |     if not meta.get(\"writable\", True):",
+        "  91 |         print(f\"'{key}' es de solo lectura\", file=sys.stderr)",
+        "  92 |         sys.exit(1)",
+        "  93 |     val = _coerce(key, val_str)",
+        "  94 |     if \"choices\" in meta and val not in meta[\"choices\"]:"
+      ]
+    },
+    {
+      "id": "FIND-420CCA68",
+      "severity": "info",
+      "file": ".bago/tools/config.py",
+      "line": 96,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  94 |     if \"choices\" in meta and val not in meta[\"choices\"]:",
+        "  95 |         print(f\"Valor inválido '{val}'. Opciones: {meta['choices']}\", file=sys.stderr)",
+        "  96 |         sys.exit(1)",
+        "  97 |     old = pack.get(key, meta[\"default\"])",
+        "  98 |     pack[key] = val"
+      ]
+    },
+    {
+      "id": "FIND-35D3D31B",
+      "severity": "info",
+      "file": ".bago/tools/config.py",
+      "line": 106,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 104 |     if key not in DEFAULTS:",
+        " 105 |         print(f\"Clave desconocida: {key}\", file=sys.stderr)",
+        " 106 |         sys.exit(1)",
+        " 107 |     meta = DEFAULTS[key]",
+        " 108 |     if not meta.get(\"writable\", True):"
+      ]
+    },
+    {
+      "id": "FIND-C1B743D4",
+      "severity": "info",
+      "file": ".bago/tools/config.py",
+      "line": 110,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 108 |     if not meta.get(\"writable\", True):",
+        " 109 |         print(f\"'{key}' es de solo lectura\", file=sys.stderr)",
+        " 110 |         sys.exit(1)",
+        " 111 |     old = pack.get(key, meta[\"default\"])",
+        " 112 |     pack[key] = meta[\"default\"]"
+      ]
+    },
+    {
+      "id": "FIND-0E352726",
+      "severity": "info",
+      "file": ".bago/tools/config.py",
+      "line": 193,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 191 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 192 |     if errors:",
+        " 193 |         sys.exit(1)",
+        " 194 | ",
+        " 195 | "
+      ]
+    },
+    {
+      "id": "FIND-78385020",
+      "severity": "info",
+      "file": ".bago/tools/contracts.py",
+      "line": 325,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 323 |     else:",
+        " 324 |         print(f\"  {RED}{BOLD}❌ CONTRATOS VIOLADOS — REQUIEREN ATENCIÓN{RESET}\\n\")",
+        " 325 |         sys.exit(1)",
+        " 326 | ",
+        " 327 | "
+      ]
+    },
+    {
+      "id": "FIND-B5F51AFD",
+      "severity": "info",
+      "file": ".bago/tools/contracts.py",
+      "line": 399,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 397 |     total = 6; passed_n = total - errors",
+        " 398 |     print(f\"\\n  {passed_n}/{total} tests pasaron\")",
+        " 399 |     if errors: sys.exit(1)",
+        " 400 | ",
+        " 401 | "
+      ]
+    },
+    {
+      "id": "FIND-024C43F9",
+      "severity": "info",
+      "file": ".bago/tools/debt_ledger.py",
+      "line": 271,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 269 |     total = 6; passed = total - errors",
+        " 270 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 271 |     if errors: sys.exit(1)",
+        " 272 | ",
+        " 273 | "
+      ]
+    },
+    {
+      "id": "FIND-389B7CC1",
+      "severity": "info",
+      "file": ".bago/tools/debt_ledger.py",
+      "line": 291,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 289 |     if db is None:",
+        " 290 |         print(f\"{RED}✗ Sin scan. Ejecuta 'bago scan' primero.{RESET}\")",
+        " 291 |         sys.exit(1)",
+        " 292 | ",
+        " 293 |     findings = db.findings"
+      ]
+    },
+    {
+      "id": "FIND-8BE876DF",
+      "severity": "info",
+      "file": ".bago/tools/diff.py",
+      "line": 85,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  83 |         if not zip_path.exists():",
+        "  84 |             print(f\"  ERROR: snapshot no encontrado: {zip_path}\")",
+        "  85 |             sys.exit(1)",
+        "  86 |     else:",
+        "  87 |         zip_path = _get_latest_snapshot()"
+      ]
+    },
+    {
+      "id": "FIND-9889EAA8",
+      "severity": "info",
+      "file": ".bago/tools/diff.py",
+      "line": 90,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  88 |         if zip_path is None:",
+        "  89 |             print(\"  ERROR: no hay snapshots. Crea uno con: bago snapshot\")",
+        "  90 |             sys.exit(1)",
+        "  91 | ",
+        "  92 |     snap_id = zip_path.stem"
+      ]
+    },
+    {
+      "id": "FIND-2F537034",
+      "severity": "info",
+      "file": ".bago/tools/diff.py",
+      "line": 107,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 105 |         except ValueError:",
+        " 106 |             print(f\"  ERROR: formato de fecha inválido: {args.since} (usar YYYY-MM-DD)\")",
+        " 107 |             sys.exit(1)",
+        " 108 |         def was_modified_since(rel_path: str) -> bool:",
+        " 109 |             p = BAGO_ROOT / rel_path"
+      ]
+    },
+    {
+      "id": "FIND-E54BDCDC",
+      "severity": "info",
+      "file": ".bago/tools/diff.py",
+      "line": 228,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 226 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 227 |     if errors:",
+        " 228 |         sys.exit(1)",
+        " 229 | ",
+        " 230 | "
+      ]
+    },
+    {
+      "id": "FIND-EB59E3F5",
+      "severity": "warning",
+      "file": ".bago/tools/findings_engine.py",
+      "line": 248,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() está deprecado desde Python 3.12",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a/.bago/tools/findings_engine.py\n+++ b/.bago/tools/findings_engine.py\n@@ -248,1 +248,1 @@\n-                if \"datetime.utcnow()\" in line or \".utcnow()\" in line:\n+                if \"datetime.datetime.now(datetime.timezone.utc)\" in line or \".utcnow()\" in line:\n",
+      "context_lines": [
+        " 246 |             for i, line in enumerate(lines, 1):",
+        " 247 |                 # Detect deprecated utcnow()",
+        " 248 |                 if \"datetime.utcnow()\" in line or \".utcnow()\" in line:",
+        " 249 |                     fid = _make_id(\"bago\", rel, i, \"BAGO-W001\")",
+        " 250 |                     findings.append(Finding("
+      ]
+    },
+    {
+      "id": "FIND-E3458A0F",
+      "severity": "warning",
+      "file": ".bago/tools/findings_engine.py",
+      "line": 253,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() está deprecado desde Python 3.12",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a/.bago/tools/findings_engine.py\n+++ b/.bago/tools/findings_engine.py\n@@ -253,1 +253,1 @@\n-                        message=\"datetime.utcnow() está deprecado desde Python 3.12\",\n+                        message=\"datetime.datetime.now(datetime.timezone.utc) está deprecado desde Python 3.12\",\n",
+      "context_lines": [
+        " 251 |                         id=fid, severity=\"warning\", file=rel, line=i, col=0,",
+        " 252 |                         rule=\"BAGO-W001\", source=\"bago\",",
+        " 253 |                         message=\"datetime.utcnow() está deprecado desde Python 3.12\",",
+        " 254 |                         fix_suggestion=\"Usa datetime.datetime.now(datetime.timezone.utc)\",",
+        " 255 |                         autofixable=True,"
+      ]
+    },
+    {
+      "id": "FIND-1C7DBE5C",
+      "severity": "warning",
+      "file": ".bago/tools/findings_engine.py",
+      "line": 424,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() está deprecado desde Python 3.12",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a/.bago/tools/findings_engine.py\n+++ b/.bago/tools/findings_engine.py\n@@ -424,1 +424,1 @@\n-    py_file.write_text(\"import datetime\\nts = datetime.datetime.utcnow()\\nprint(ts)\\n\")\n+    py_file.write_text(\"import datetime\\nts = datetime.datetime.datetime.now(datetime.timezone.utc)\\nprint(ts)\\n\")\n",
+      "context_lines": [
+        " 422 |     tmp2 = Path(tf.mkdtemp())",
+        " 423 |     py_file = tmp2 / \"sample.py\"",
+        " 424 |     py_file.write_text(\"import datetime\\nts = datetime.datetime.utcnow()\\nprint(ts)\\n\")",
+        " 425 |     findings = run_bago_lint(str(tmp2))",
+        " 426 |     utcnow_f = [f for f in findings if f.rule == \"BAGO-W001\"]"
+      ]
+    },
+    {
+      "id": "FIND-C39C7EF1",
+      "severity": "warning",
+      "file": ".bago/tools/findings_engine.py",
+      "line": 434,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() está deprecado desde Python 3.12",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a/.bago/tools/findings_engine.py\n+++ b/.bago/tools/findings_engine.py\n@@ -434,1 +434,1 @@\n-    patch = _make_utcnow_patch(\"a.py\", 5, \"    ts = datetime.datetime.utcnow()\")\n+    patch = _make_utcnow_patch(\"a.py\", 5, \"    ts = datetime.datetime.datetime.now(datetime.timezone.utc)\")\n",
+      "context_lines": [
+        " 432 | ",
+        " 433 |     # T6: _make_utcnow_patch generates valid diff",
+        " 434 |     patch = _make_utcnow_patch(\"a.py\", 5, \"    ts = datetime.datetime.utcnow()\")",
+        " 435 |     if \"BAGO-W001\" not in patch and \"datetime.timezone.utc\" in patch and \"@@ -5\" in patch:",
+        " 436 |         ok(\"engine:utcnow_patch\")"
+      ]
+    },
+    {
+      "id": "FIND-9CA2D7C6",
+      "severity": "info",
+      "file": ".bago/tools/findings_engine.py",
+      "line": 453,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 451 |     total = 7; passed = total - errors",
+        " 452 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 453 |     if errors: sys.exit(1)",
+        " 454 | ",
+        " 455 | "
+      ]
+    },
+    {
+      "id": "FIND-604A4ABF",
+      "severity": "info",
+      "file": ".bago/tools/flow.py",
+      "line": 238,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 236 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 237 |     if errors:",
+        " 238 |         sys.exit(1)",
+        " 239 | ",
+        " 240 | import pathlib"
+      ]
+    },
+    {
+      "id": "FIND-E5A1B5FA",
+      "severity": "info",
+      "file": ".bago/tools/gh_integration.py",
+      "line": 253,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 251 |     if not token:",
+        " 252 |         print(f\"{RED}✗ Sin token. Usa: bago gh config --token TOKEN{RESET}\")",
+        " 253 |         sys.exit(1)",
+        " 254 |     if not repo:",
+        " 255 |         print(f\"{RED}✗ Sin repo. Usa: bago gh config --repo owner/repo{RESET}\")"
+      ]
+    },
+    {
+      "id": "FIND-A5EACA78",
+      "severity": "info",
+      "file": ".bago/tools/gh_integration.py",
+      "line": 256,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 254 |     if not repo:",
+        " 255 |         print(f\"{RED}✗ Sin repo. Usa: bago gh config --repo owner/repo{RESET}\")",
+        " 256 |         sys.exit(1)",
+        " 257 |     if not sha:",
+        " 258 |         print(f\"{RED}✗ No se puede obtener el SHA del HEAD{RESET}\")"
+      ]
+    },
+    {
+      "id": "FIND-CF707C9E",
+      "severity": "info",
+      "file": ".bago/tools/gh_integration.py",
+      "line": 259,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 257 |     if not sha:",
+        " 258 |         print(f\"{RED}✗ No se puede obtener el SHA del HEAD{RESET}\")",
+        " 259 |         sys.exit(1)",
+        " 260 | ",
+        " 261 |     db = fe.FindingsDB.load(scan_id) if scan_id else fe.FindingsDB.latest()"
+      ]
+    },
+    {
+      "id": "FIND-1919D7E1",
+      "severity": "info",
+      "file": ".bago/tools/gh_integration.py",
+      "line": 264,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 262 |     if db is None:",
+        " 263 |         print(f\"{RED}✗ Sin scan disponible. Ejecuta 'bago scan' primero.{RESET}\")",
+        " 264 |         sys.exit(1)",
+        " 265 | ",
+        " 266 |     sev_ord = SEV_ORD.get(min_severity, 3)"
+      ]
+    },
+    {
+      "id": "FIND-07705CC8",
+      "severity": "info",
+      "file": ".bago/tools/gh_integration.py",
+      "line": 310,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 308 |     if not token:",
+        " 309 |         print(f\"{RED}✗ Sin token. Usa: bago gh config --token TOKEN{RESET}\")",
+        " 310 |         sys.exit(1)",
+        " 311 |     if not repo:",
+        " 312 |         print(f\"{RED}✗ Sin repo. Usa: bago gh config --repo owner/repo{RESET}\")"
+      ]
+    },
+    {
+      "id": "FIND-040E719C",
+      "severity": "info",
+      "file": ".bago/tools/gh_integration.py",
+      "line": 313,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 311 |     if not repo:",
+        " 312 |         print(f\"{RED}✗ Sin repo. Usa: bago gh config --repo owner/repo{RESET}\")",
+        " 313 |         sys.exit(1)",
+        " 314 | ",
+        " 315 |     db = fe.FindingsDB.latest()"
+      ]
+    },
+    {
+      "id": "FIND-B4FFB4BA",
+      "severity": "info",
+      "file": ".bago/tools/gh_integration.py",
+      "line": 318,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 316 |     if db is None:",
+        " 317 |         print(f\"{RED}✗ Sin scan. Ejecuta 'bago scan' primero.{RESET}\")",
+        " 318 |         sys.exit(1)",
+        " 319 | ",
+        " 320 |     sev_ord  = SEV_ORD.get(min_severity, 1)  # default: warnings+errors only"
+      ]
+    },
+    {
+      "id": "FIND-4809AC2B",
+      "severity": "info",
+      "file": ".bago/tools/gh_integration.py",
+      "line": 417,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 415 |     total=6; passed=total-errors",
+        " 416 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 417 |     if errors: sys.exit(1)",
+        " 418 | ",
+        " 419 | "
+      ]
+    },
+    {
+      "id": "FIND-392D45EF",
+      "severity": "info",
+      "file": ".bago/tools/git_context.py",
+      "line": 335,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 333 |     if not git_root:",
+        " 334 |         print(\"  ERROR: no se encontro repositorio git en {}\".format(start))",
+        " 335 |         sys.exit(1)",
+        " 336 | ",
+        " 337 |     since_str = _since_str(args.since) if args.since else None"
+      ]
+    },
+    {
+      "id": "FIND-7C162C83",
+      "severity": "info",
+      "file": ".bago/tools/goals.py",
+      "line": 58,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  56 |     if not path.exists():",
+        "  57 |         print(f\"  ERROR: objetivo no encontrado: {goal_id}\")",
+        "  58 |         sys.exit(1)",
+        "  59 |     return json.loads(path.read_text())",
+        "  60 | "
+      ]
+    },
+    {
+      "id": "FIND-901457E5",
+      "severity": "info",
+      "file": ".bago/tools/goals.py",
+      "line": 82,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  80 |     if not args.title:",
+        "  81 |         print(\"  ERROR: indica el título del objetivo\")",
+        "  82 |         sys.exit(1)",
+        "  83 |     goal_id = _next_goal_id()",
+        "  84 |     cat = args.cat if args.cat in CATEGORIES else \"other\""
+      ]
+    },
+    {
+      "id": "FIND-AA5195F7",
+      "severity": "info",
+      "file": ".bago/tools/goals.py",
+      "line": 136,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 134 |     if not args.goal_id:",
+        " 135 |         print(\"  ERROR: indica el ID del objetivo\")",
+        " 136 |         sys.exit(1)",
+        " 137 |     g = _load_goal(args.goal_id)",
+        " 138 |     icon = STATUS_ICON.get(g.get(\"status\", \"\"), \"?\")"
+      ]
+    },
+    {
+      "id": "FIND-BE00406A",
+      "severity": "info",
+      "file": ".bago/tools/goals.py",
+      "line": 165,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 163 |     if not args.goal_id:",
+        " 164 |         print(\"  ERROR: indica el ID del objetivo\")",
+        " 165 |         sys.exit(1)",
+        " 166 |     g = _load_goal(args.goal_id)",
+        " 167 |     g[\"status\"] = STATUS_CLOSED"
+      ]
+    },
+    {
+      "id": "FIND-DBEC6DCE",
+      "severity": "info",
+      "file": ".bago/tools/goals.py",
+      "line": 178,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 176 |     if not args.goal_id or not args.ref:",
+        " 177 |         print(\"  ERROR: indica GOAL-ID y el REF (sesión o cambio)\")",
+        " 178 |         sys.exit(1)",
+        " 179 |     g = _load_goal(args.goal_id)",
+        " 180 |     ref = args.ref"
+      ]
+    },
+    {
+      "id": "FIND-B98180D5",
+      "severity": "info",
+      "file": ".bago/tools/goals.py",
+      "line": 335,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 333 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 334 |     if errors:",
+        " 335 |         sys.exit(1)",
+        " 336 | ",
+        " 337 | # Need pathlib imported at module level for tests"
+      ]
+    },
+    {
+      "id": "FIND-9C996C0D",
+      "severity": "info",
+      "file": ".bago/tools/habit.py",
+      "line": 322,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 320 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 321 |     if errors:",
+        " 322 |         sys.exit(1)",
+        " 323 | ",
+        " 324 | "
+      ]
+    },
+    {
+      "id": "FIND-034A6C7D",
+      "severity": "info",
+      "file": ".bago/tools/hotspot.py",
+      "line": 252,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 250 |     total=5; passed=total-errors",
+        " 251 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 252 |     if errors: sys.exit(1)",
+        " 253 | ",
+        " 254 | "
+      ]
+    },
+    {
+      "id": "FIND-72DCD006",
+      "severity": "info",
+      "file": ".bago/tools/impact_engine.py",
+      "line": 330,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 328 |     total = 6; passed = total - errors",
+        " 329 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 330 |     if errors: sys.exit(1)",
+        " 331 | ",
+        " 332 | "
+      ]
+    },
+    {
+      "id": "FIND-9EA5E5D8",
+      "severity": "info",
+      "file": ".bago/tools/insights.py",
+      "line": 427,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 425 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 426 |     if errors:",
+        " 427 |         sys.exit(1)",
+        " 428 | ",
+        " 429 | "
+      ]
+    },
+    {
+      "id": "FIND-244693D9",
+      "severity": "info",
+      "file": ".bago/tools/lint.py",
+      "line": 231,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 229 |     print()",
+        " 230 |     if errors:",
+        " 231 |         sys.exit(1)",
+        " 232 | ",
+        " 233 | "
+      ]
+    },
+    {
+      "id": "FIND-C51B4E3F",
+      "severity": "info",
+      "file": ".bago/tools/lint.py",
+      "line": 301,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 299 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 300 |     if errors:",
+        " 301 |         sys.exit(1)",
+        " 302 | ",
+        " 303 | "
+      ]
+    },
+    {
+      "id": "FIND-0860E005",
+      "severity": "info",
+      "file": ".bago/tools/notes.py",
+      "line": 42,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  40 |     if not f.exists():",
+        "  41 |         print(f\"Nota '{note_id}' no encontrada.\")",
+        "  42 |         sys.exit(1)",
+        "  43 |     return json.loads(f.read_text())",
+        "  44 | "
+      ]
+    },
+    {
+      "id": "FIND-294AE6AE",
+      "severity": "info",
+      "file": ".bago/tools/notes.py",
+      "line": 111,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 109 |     if not f.exists():",
+        " 110 |         print(f\"Nota '{note_id}' no encontrada.\")",
+        " 111 |         sys.exit(1)",
+        " 112 |     f.unlink()",
+        " 113 |     print(f\"  Nota {note_id} eliminada.\")"
+      ]
+    },
+    {
+      "id": "FIND-1C9BB3EF",
+      "severity": "info",
+      "file": ".bago/tools/notes.py",
+      "line": 187,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 185 |     total = 5; passed = total - errors",
+        " 186 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 187 |     if errors: sys.exit(1)",
+        " 188 | ",
+        " 189 | "
+      ]
+    },
+    {
+      "id": "FIND-3BFE7F04",
+      "severity": "info",
+      "file": ".bago/tools/patch.py",
+      "line": 227,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 225 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 226 |     if errors:",
+        " 227 |         sys.exit(1)",
+        " 228 | ",
+        " 229 | "
+      ]
+    },
+    {
+      "id": "FIND-ADAD9066",
+      "severity": "info",
+      "file": ".bago/tools/patch.py",
+      "line": 265,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 263 |         if name not in PATCHES:",
+        " 264 |             print(f\"Parche '{name}' no encontrado. Disponibles: {list(PATCHES.keys())}\")",
+        " 265 |             sys.exit(1)",
+        " 266 |         print(f\"\\n  {BOLD}{name}{RESET}  [{mode}]\")",
+        " 267 |         result = PATCHES[name](apply=apply)"
+      ]
+    },
+    {
+      "id": "FIND-7671CA77",
+      "severity": "info",
+      "file": ".bago/tools/reconcile_state.py",
+      "line": 35,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  33 |     if not GLOBAL_STATE.exists():",
+        "  34 |         print(\"❌ global_state.json no encontrado\")",
+        "  35 |         sys.exit(1)",
+        "  36 |     return json.loads(GLOBAL_STATE.read_text(encoding=\"utf-8\"))",
+        "  37 | "
+      ]
+    },
+    {
+      "id": "FIND-8E4764CD",
+      "severity": "info",
+      "file": ".bago/tools/remind.py",
+      "line": 74,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  72 |     if not REMINDERS_DIR.exists():",
+        "  73 |         print(\"  No hay recordatorios.\")",
+        "  74 |         sys.exit(1)",
+        "  75 |     found = list(REMINDERS_DIR.glob(f\"*{rem_id}*.json\"))",
+        "  76 |     if not found:"
+      ]
+    },
+    {
+      "id": "FIND-D9913098",
+      "severity": "info",
+      "file": ".bago/tools/remind.py",
+      "line": 78,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  76 |     if not found:",
+        "  77 |         print(f\"  No encontrado: {rem_id}\")",
+        "  78 |         sys.exit(1)",
+        "  79 |     for f in found:",
+        "  80 |         rem = json.loads(f.read_text())"
+      ]
+    },
+    {
+      "id": "FIND-F00DF712",
+      "severity": "info",
+      "file": ".bago/tools/remind.py",
+      "line": 224,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 222 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 223 |     if errors:",
+        " 224 |         sys.exit(1)",
+        " 225 | ",
+        " 226 | "
+      ]
+    },
+    {
+      "id": "FIND-77811724",
+      "severity": "info",
+      "file": ".bago/tools/review.py",
+      "line": 218,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 216 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 217 |     if errors:",
+        " 218 |         sys.exit(1)",
+        " 219 | ",
+        " 220 | "
+      ]
+    },
+    {
+      "id": "FIND-76D1E8F7",
+      "severity": "info",
+      "file": ".bago/tools/review.py",
+      "line": 245,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 243 |         except ValueError:",
+        " 244 |             print(f\"Período inválido: {period}\", file=sys.stderr)",
+        " 245 |             sys.exit(1)",
+        " 246 | ",
+        " 247 |     review = build_review(days=days)"
+      ]
+    },
+    {
+      "id": "FIND-FCC92793",
+      "severity": "info",
+      "file": ".bago/tools/risk_matrix.py",
+      "line": 231,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 229 |     if db is None:",
+        " 230 |         print(f\"{RED}✗ Sin scan disponible. Ejecuta 'bago scan' primero.{RESET}\")",
+        " 231 |         sys.exit(1)",
+        " 232 | ",
+        " 233 |     findings = db.findings"
+      ]
+    },
+    {
+      "id": "FIND-0BF1CC9E",
+      "severity": "info",
+      "file": ".bago/tools/risk_matrix.py",
+      "line": 305,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 303 |     total = 6; passed = total - errors",
+        " 304 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 305 |     if errors: sys.exit(1)",
+        " 306 | ",
+        " 307 | "
+      ]
+    },
+    {
+      "id": "FIND-4573E846",
+      "severity": "warning",
+      "file": ".bago/tools/scan.py",
+      "line": 174,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() está deprecado desde Python 3.12",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a/.bago/tools/scan.py\n+++ b/.bago/tools/scan.py\n@@ -174,1 +174,1 @@\n-        \"import datetime\\nts = datetime.datetime.utcnow()\\n\"\n+        \"import datetime\\nts = datetime.datetime.datetime.now(datetime.timezone.utc)\\n\"\n",
+      "context_lines": [
+        " 172 |     tmp = Path(tempfile.mkdtemp())",
+        " 173 |     (tmp / \"sample.py\").write_text(",
+        " 174 |         \"import datetime\\nts = datetime.datetime.utcnow()\\n\"",
+        " 175 |     )",
+        " 176 |     findings = fe.run_bago_lint(str(tmp))"
+      ]
+    },
+    {
+      "id": "FIND-B0A73927",
+      "severity": "info",
+      "file": ".bago/tools/scan.py",
+      "line": 225,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 223 |     total=5; passed=total-errors",
+        " 224 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 225 |     if errors: sys.exit(1)",
+        " 226 | ",
+        " 227 | "
+      ]
+    },
+    {
+      "id": "FIND-28E4E2CC",
+      "severity": "info",
+      "file": ".bago/tools/scan.py",
+      "line": 249,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 247 |         if db is None:",
+        " 248 |             print(\"Sin scans guardados. Ejecuta 'bago scan' primero.\")",
+        " 249 |             sys.exit(1)",
+        " 250 |     else:",
+        " 251 |         print(f\"  Escaneando {args.target} ...\")"
+      ]
+    },
+    {
+      "id": "FIND-630B7FD1",
+      "severity": "info",
+      "file": ".bago/tools/session_details.py",
+      "line": 71,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  69 |     if not match:",
+        "  70 |         print(f\"  ERROR: sesión no encontrada: {sid}\")",
+        "  71 |         sys.exit(1)",
+        "  72 |     s = match[0]",
+        "  73 | "
+      ]
+    },
+    {
+      "id": "FIND-FFEE2123",
+      "severity": "info",
+      "file": ".bago/tools/session_details.py",
+      "line": 239,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 237 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 238 |     if errors:",
+        " 239 |         sys.exit(1)",
+        " 240 | ",
+        " 241 | "
+      ]
+    },
+    {
+      "id": "FIND-97ACE871",
+      "severity": "info",
+      "file": ".bago/tools/snapshot.py",
+      "line": 158,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 156 |     if not args.id:",
+        " 157 |         print(\"  ERROR: indica el ID del snapshot (--show SNAP-YYYYMMDD_HHMMSS)\")",
+        " 158 |         sys.exit(1)",
+        " 159 | ",
+        " 160 |     out_dir = Path(args.out) if args.out else SNAPSHOT_DIR"
+      ]
+    },
+    {
+      "id": "FIND-27060C69",
+      "severity": "info",
+      "file": ".bago/tools/snapshot.py",
+      "line": 164,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 162 |     if not zip_path.exists():",
+        " 163 |         print(f\"  ERROR: snapshot no encontrado: {zip_path}\")",
+        " 164 |         sys.exit(1)",
+        " 165 | ",
+        " 166 |     with zipfile.ZipFile(zip_path, \"r\") as zf:"
+      ]
+    },
+    {
+      "id": "FIND-7205C244",
+      "severity": "info",
+      "file": ".bago/tools/snapshot.py",
+      "line": 169,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 167 |         if \"SNAPSHOT_INDEX.json\" not in zf.namelist():",
+        " 168 |             print(\"  ERROR: snapshot no tiene índice\")",
+        " 169 |             sys.exit(1)",
+        " 170 |         index = json.loads(zf.read(\"SNAPSHOT_INDEX.json\"))",
+        " 171 | "
+      ]
+    },
+    {
+      "id": "FIND-900B7EDC",
+      "severity": "info",
+      "file": ".bago/tools/snapshot.py",
+      "line": 252,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 250 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 251 |     if errors:",
+        " 252 |         sys.exit(1)",
+        " 253 | ",
+        " 254 | "
+      ]
+    },
+    {
+      "id": "FIND-BCE67C60",
+      "severity": "info",
+      "file": ".bago/tools/sprint_manager.py",
+      "line": 101,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  99 |         print(\"  Cierralo primero con: bago sprint close\")",
+        " 100 |         print(\"  O usa --force para crear igualmente.\")",
+        " 101 |         sys.exit(1)",
+        " 102 |     sprint_id = _next_sprint_id()",
+        " 103 |     sprint = {"
+      ]
+    },
+    {
+      "id": "FIND-731ACFDC",
+      "severity": "info",
+      "file": ".bago/tools/sprint_manager.py",
+      "line": 207,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 205 |         if not path.exists():",
+        " 206 |             print(\"  Sprint no encontrado: {}\".format(sprint_id))",
+        " 207 |             sys.exit(1)",
+        " 208 |         sprint = _load_json(path)",
+        " 209 |     else:"
+      ]
+    },
+    {
+      "id": "FIND-3FE3DCB3",
+      "severity": "info",
+      "file": ".bago/tools/sprint_manager.py",
+      "line": 235,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 233 |     if not path.exists():",
+        " 234 |         print(\"  Sprint no encontrado: {}\".format(sprint_id))",
+        " 235 |         sys.exit(1)",
+        " 236 |     print(json.dumps(_load_json(path), indent=2, ensure_ascii=False))",
+        " 237 | "
+      ]
+    },
+    {
+      "id": "FIND-3A937885",
+      "severity": "info",
+      "file": ".bago/tools/sprint_manager.py",
+      "line": 243,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 241 |     if not path.exists():",
+        " 242 |         print(\"  Sprint no encontrado: {}\".format(sprint_id))",
+        " 243 |         sys.exit(1)",
+        " 244 |     sprint = _load_json(path)",
+        " 245 |     sessions = sprint.setdefault(\"sessions\", [])"
+      ]
+    },
+    {
+      "id": "FIND-C9E3EB5D",
+      "severity": "info",
+      "file": ".bago/tools/stats.py",
+      "line": 293,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 291 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 292 |     if errors:",
+        " 293 |         sys.exit(1)",
+        " 294 | ",
+        " 295 | "
+      ]
+    },
+    {
+      "id": "FIND-7540EDE0",
+      "severity": "info",
+      "file": ".bago/tools/summary.py",
+      "line": 32,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  30 |         if not sessions:",
+        "  31 |             print(\"  ERROR: no hay sesiones\")",
+        "  32 |             sys.exit(1)",
+        "  33 |         return json.loads(sessions[-1].read_text())",
+        "  34 | "
+      ]
+    },
+    {
+      "id": "FIND-E179A406",
+      "severity": "info",
+      "file": ".bago/tools/summary.py",
+      "line": 46,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  44 | ",
+        "  45 |     print(f\"  ERROR: sesión no encontrada: {sid}\")",
+        "  46 |     sys.exit(1)",
+        "  47 | ",
+        "  48 | "
+      ]
+    },
+    {
+      "id": "FIND-586273E0",
+      "severity": "info",
+      "file": ".bago/tools/summary.py",
+      "line": 54,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  52 |         if not sprints:",
+        "  53 |             print(\"  ERROR: no hay sprints\")",
+        "  54 |             sys.exit(1)",
+        "  55 |         return json.loads(sprints[-1].read_text())",
+        "  56 | "
+      ]
+    },
+    {
+      "id": "FIND-D1D57883",
+      "severity": "info",
+      "file": ".bago/tools/summary.py",
+      "line": 64,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  62 |         else:",
+        "  63 |             print(f\"  ERROR: sprint no encontrado: {sprint_id}\")",
+        "  64 |             sys.exit(1)",
+        "  65 |     return json.loads(p.read_text())",
+        "  66 | "
+      ]
+    },
+    {
+      "id": "FIND-275B1849",
+      "severity": "info",
+      "file": ".bago/tools/summary.py",
+      "line": 257,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 255 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 256 |     if errors:",
+        " 257 |         sys.exit(1)",
+        " 258 | ",
+        " 259 | "
+      ]
+    },
+    {
+      "id": "FIND-850A8097",
+      "severity": "info",
+      "file": ".bago/tools/tags.py",
+      "line": 65,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  63 |     if not args.entity_id or not args.tags:",
+        "  64 |         print(\"  ERROR: indica entidad ID y tags\")",
+        "  65 |         sys.exit(1)",
+        "  66 | ",
+        "  67 |     index = _load_index()"
+      ]
+    },
+    {
+      "id": "FIND-F53AFB44",
+      "severity": "info",
+      "file": ".bago/tools/tags.py",
+      "line": 100,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  98 |     if not args.tag:",
+        "  99 |         print(\"  ERROR: indica un tag\")",
+        " 100 |         sys.exit(1)",
+        " 101 | ",
+        " 102 |     index = _load_index()"
+      ]
+    },
+    {
+      "id": "FIND-D1DC4C00",
+      "severity": "info",
+      "file": ".bago/tools/tags.py",
+      "line": 265,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 263 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 264 |     if errors:",
+        " 265 |         sys.exit(1)",
+        " 266 | ",
+        " 267 | import pathlib  # ensure available in run_tests scope"
+      ]
+    },
+    {
+      "id": "FIND-6C58EE66",
+      "severity": "info",
+      "file": ".bago/tools/template.py",
+      "line": 132,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 130 |     if name not in templates:",
+        " 131 |         print(f\"Plantilla '{name}' no encontrada.\")",
+        " 132 |         sys.exit(1)",
+        " 133 |     t = templates[name]",
+        " 134 |     print(f\"\\n  {BOLD}{t['name']}{RESET}  {DIM}{t.get('description','')}{RESET}\")"
+      ]
+    },
+    {
+      "id": "FIND-1840E2C9",
+      "severity": "info",
+      "file": ".bago/tools/template.py",
+      "line": 152,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 150 |     if name not in templates:",
+        " 151 |         print(f\"Plantilla '{name}' no encontrada.\")",
+        " 152 |         sys.exit(1)",
+        " 153 |     t = templates[name]",
+        " 154 |     now = datetime.datetime.now(datetime.timezone.utc).isoformat().replace(\"+00:00\", \"Z\")"
+      ]
+    },
+    {
+      "id": "FIND-D20A5DC4",
+      "severity": "info",
+      "file": ".bago/tools/template.py",
+      "line": 204,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 202 |     if name in BUILTIN_TEMPLATES:",
+        " 203 |         print(f\"No se puede eliminar plantilla builtin '{name}'.\")",
+        " 204 |         sys.exit(1)",
+        " 205 |     f = TMPL_DIR / f\"{name}.json\"",
+        " 206 |     if not f.exists():"
+      ]
+    },
+    {
+      "id": "FIND-7E68FA6A",
+      "severity": "info",
+      "file": ".bago/tools/template.py",
+      "line": 208,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 206 |     if not f.exists():",
+        " 207 |         print(f\"Plantilla '{name}' no encontrada.\")",
+        " 208 |         sys.exit(1)",
+        " 209 |     f.unlink()",
+        " 210 |     print(f\"  Plantilla '{name}' eliminada.\")"
+      ]
+    },
+    {
+      "id": "FIND-CCF2EE8E",
+      "severity": "info",
+      "file": ".bago/tools/template.py",
+      "line": 276,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 274 |     total = 5; passed = total - errors",
+        " 275 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 276 |     if errors: sys.exit(1)",
+        " 277 | ",
+        " 278 | "
+      ]
+    },
+    {
+      "id": "FIND-2D754009",
+      "severity": "info",
+      "file": ".bago/tools/template.py",
+      "line": 292,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 290 |         cmd_list()",
+        " 291 |     elif args.subcmd == \"show\":",
+        " 292 |         if not args.name: print(\"Uso: bago template show <nombre>\"); sys.exit(1)",
+        " 293 |         cmd_show(args.name)",
+        " 294 |     elif args.subcmd == \"new\":"
+      ]
+    },
+    {
+      "id": "FIND-1CBA8A32",
+      "severity": "info",
+      "file": ".bago/tools/template.py",
+      "line": 295,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 293 |         cmd_show(args.name)",
+        " 294 |     elif args.subcmd == \"new\":",
+        " 295 |         if not args.name: print(\"Uso: bago template new <nombre>\"); sys.exit(1)",
+        " 296 |         cmd_new(args.name)",
+        " 297 |     elif args.subcmd == \"create\":"
+      ]
+    },
+    {
+      "id": "FIND-2576C00B",
+      "severity": "info",
+      "file": ".bago/tools/template.py",
+      "line": 298,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 296 |         cmd_new(args.name)",
+        " 297 |     elif args.subcmd == \"create\":",
+        " 298 |         if not args.name: print(\"Uso: bago template create <nombre>\"); sys.exit(1)",
+        " 299 |         cmd_create(args.name)",
+        " 300 |     elif args.subcmd == \"delete\":"
+      ]
+    },
+    {
+      "id": "FIND-01450442",
+      "severity": "info",
+      "file": ".bago/tools/template.py",
+      "line": 301,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 299 |         cmd_create(args.name)",
+        " 300 |     elif args.subcmd == \"delete\":",
+        " 301 |         if not args.name: print(\"Uso: bago template delete <nombre>\"); sys.exit(1)",
+        " 302 |         cmd_delete(args.name)",
+        " 303 | "
+      ]
+    },
+    {
+      "id": "FIND-0D6B2442",
+      "severity": "info",
+      "file": ".bago/tools/validate_manifest.py",
+      "line": 53,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  51 |     for e in errors:",
+        "  52 |         print(e)",
+        "  53 |     sys.exit(1)",
+        "  54 | ",
+        "  55 | print(\"GO manifest\")"
+      ]
+    },
+    {
+      "id": "FIND-23124D09",
+      "severity": "info",
+      "file": ".bago/tools/validate_pack.py",
+      "line": 76,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  74 |         print(\"KO\")",
+        "  75 |         print(f\"legacy 2.1 reference found outside migration/legacy: {rel}\")",
+        "  76 |         sys.exit(1)",
+        "  77 | ",
+        "  78 | role_dir_to_family = {"
+      ]
+    },
+    {
+      "id": "FIND-A02BC225",
+      "severity": "info",
+      "file": ".bago/tools/validate_pack.py",
+      "line": 92,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  90 |         print(\"KO\")",
+        "  91 |         print(f\"unknown role directory family for {rel}\")",
+        "  92 |         sys.exit(1)",
+        "  93 |     text = p.read_text(encoding=\"utf-8\")",
+        "  94 |     m = role_family_re.search(text)"
+      ]
+    },
+    {
+      "id": "FIND-850D1B42",
+      "severity": "info",
+      "file": ".bago/tools/validate_pack.py",
+      "line": 98,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  96 |         print(\"KO\")",
+        "  97 |         print(f\"role without parseable family: {rel}\")",
+        "  98 |         sys.exit(1)",
+        "  99 |     declared_family = m.group(1).strip()",
+        " 100 |     if declared_family != physical_family:"
+      ]
+    },
+    {
+      "id": "FIND-0D692B53",
+      "severity": "info",
+      "file": ".bago/tools/validate_pack.py",
+      "line": 105,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 103 |             f\"role family mismatch for {rel}: declared={declared_family} physical={physical_family}\"",
+        " 104 |         )",
+        " 105 |         sys.exit(1)",
+        " 106 | ",
+        " 107 | print(\"GO pack\")"
+      ]
+    },
+    {
+      "id": "FIND-978CB5FE",
+      "severity": "info",
+      "file": ".bago/tools/validate_state.py",
+      "line": 367,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 365 |     for e in errors:",
+        " 366 |         print(e)",
+        " 367 |     sys.exit(1)",
+        " 368 | ",
+        " 369 | print(\"GO state\")"
+      ]
+    },
+    {
+      "id": "FIND-91D686F2",
+      "severity": "info",
+      "file": ".bago/tools/velocity.py",
+      "line": 211,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "sys.exit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de sys.exit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 209 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 210 |     if errors:",
+        " 211 |         sys.exit(1)",
+        " 212 | ",
+        " 213 | "
+      ]
+    }
+  ]
+}

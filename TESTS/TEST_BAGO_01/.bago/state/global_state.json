@@ -1,0 +1,17 @@
+{
+  "bago_version": "2.5-stable",
+  "distribution_mode": "project_active",
+  "system_health": "initializing",
+  "sprint_status": {
+    "active_workflow": null,
+    "pending_w2_task": null
+  },
+  "inventory": {
+    "sessions": 0,
+    "changes": 0,
+    "evidences": 0
+  },
+  "last_validation": {},
+  "notes": "Estado inicial — ejecuta 'python3 bago health' para verificar el sistema.",
+  "updated_at": "2026-04-20T00:00:00Z"
+}

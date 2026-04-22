@@ -1,0 +1,9 @@
+{
+  "bago_host_root": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/TESTS/TEST_BAGO_01/v02-template-seed",
+  "note": "Ejecuta `python3 bago` para sincronizar este fichero al directorio actual.",
+  "recorded_at": "2026-04-19T13:46:13+00:00",
+  "repo_fingerprint": "8227ff06826fb8881abcacfd5a7ceb75ebfd9e6a45ebe0b8e4dbd7a41906f81b",
+  "repo_root": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA",
+  "role": "external_repo_pointer",
+  "working_mode": "external"
+}

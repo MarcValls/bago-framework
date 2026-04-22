@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Evolución del sistema BAGO · 2.3-clean</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg:#0f172a;--panel:#111827;--card:#1e293b;--text:#e2e8f0;
+      --muted:#94a3b8;--accent:#22c55e;--accent2:#38bdf8;--line:#334155;
+    }
+    body{margin:0;font-family:Inter,system-ui,sans-serif;background:linear-gradient(180deg,#0b1120 0%,#111827 100%);color:var(--text);}
+    .wrap{max-width:1100px;margin:0 auto;padding:32px 20px 56px;}
+    h1,h2{margin:0 0 12px;line-height:1.15;}
+    h1{font-size:2rem;} h2{margin-top:38px;font-size:1.2rem;color:var(--accent2);}
+    .grid{display:grid;gap:14px;}
+    .cards{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin:18px 0 10px;}
+    .card{background:rgba(30,41,59,.8);border:1px solid var(--line);border-radius:16px;padding:16px;}
+    .card-title{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;}
+    .card-value{font-size:1.4rem;font-weight:700;margin-top:8px;}
+    .card-sub{color:var(--muted);font-size:.78rem;margin-top:4px;}
+    table{width:100%;border-collapse:collapse;font-size:.85rem;margin-top:14px;}
+    th{color:var(--muted);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:.78rem;}
+    td{padding:7px 10px;border-bottom:1px solid rgba(51,65,85,.3);}
+    .panel{background:rgba(30,41,59,.6);border:1px solid var(--line);border-radius:12px;padding:20px;}
+    .stale-note{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:12px 16px;font-size:.83rem;color:#fbbf24;margin-top:6px;}
+    .alert-resolved{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:12px 16px;font-size:.83rem;color:#4ade80;margin:18px 0;}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📈 Evolución del sistema BAGO</h1>
+  <p style="color:var(--muted);font-size:.88rem;">Pack <strong style="color:var(--text);">2.3-clean</strong> · Snapshot: <strong>2026-04-18T12:06:00Z</strong> · actualizado desde global_state.json</p>
+
+  <div class="alert-resolved">✅ Informe regenerado el 2026-04-18. Snapshot anterior (2026-04-11) estaba desfasado — corregido.</div>
+
+  <h2>Inventario real</h2>
+  <div class="grid cards">
+    <div class="card"><div class="card-title">🗂 Sesiones</div><div class="card-value" style="color:#38bdf8;">20</div><div class="card-sub">10 cerradas · 10 completadas</div></div>
+    <div class="card"><div class="card-title">🔧 Cambios</div><div class="card-value" style="color:#a78bfa;">19</div><div class="card-sub">governance + architecture</div></div>
+    <div class="card"><div class="card-title">📋 Evidencias</div><div class="card-value" style="color:#4ade80;">21</div><div class="card-sub">closure + validation + decision</div></div>
+    <div class="card"><div class="card-title">📦 Artefactos/sesión</div><div class="card-value">8.7</div><div class="card-sub">media · pico 20</div></div>
+    <div class="card"><div class="card-title">⚖️ Decisiones/sesión</div><div class="card-value">3.6</div><div class="card-sub">rigor de razonamiento</div></div>
+    <div class="card"><div class="card-title">📅 Rango activo</div><div class="card-value" style="font-size:1rem;">2026-04-11</div><div class="card-sub">→ 2026-04-18</div></div>
+  </div>
+
+  <h2>Radar de evolución (early vs late)</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;margin-top:14px;">
+    <div class="panel" style="display:flex;align-items:center;justify-content:center;">
+      <canvas id="radarChart" style="max-width:380px;max-height:380px;"></canvas>
+    </div>
+    <div class="panel">
+      <table>
+        <tr><th>Dimensión</th><th>Inicio</th><th>Ahora</th><th>Δ</th></tr>
+        <tr><td>🔀 Diversidad tareas</td><td>4.0</td><td style="color:#4ade80;font-weight:700;">10.0</td><td style="color:#4ade80;">▲ +6.0</td></tr>
+        <tr><td>✅ Protocolo cierre</td><td>0.0</td><td style="color:#4ade80;font-weight:700;">10.0</td><td style="color:#4ade80;">▲ +10.0</td></tr>
+        <tr><td>🎯 Alcance workflows</td><td>2.5</td><td style="color:#4ade80;font-weight:700;">10.0</td><td style="color:#4ade80;">▲ +7.5</td></tr>
+        <tr><td>🎯 Foco sesión</td><td>3.0</td><td style="color:#4ade80;font-weight:700;">6.9</td><td style="color:#4ade80;">▲ +3.9</td></tr>
+        <tr><td>📦 Producción artefactos</td><td>4.8</td><td style="color:#f87171;">4.0</td><td style="color:#f87171;">▼ -0.8</td></tr>
+        <tr><td>⚖️ Rigor decisiones</td><td>9.0</td><td style="color:#94a3b8;">9.0</td><td style="color:#94a3b8;">= 0.0</td></tr>
+      </table>
+      <p style="font-size:.8rem;color:var(--muted);margin-top:12px;">Azul = primeras 10 sesiones · Verde = últimas 10</p>
+    </div>
+  </div>
+
+  <h2>Actividad por día</h2>
+  <div class="panel">
+    <table>
+      <tr><th>Fecha</th><th>system_change</th><th>bootstrap</th><th>execution</th><th>analysis</th><th>repo_audit</th><th>Total</th></tr>
+      <tr><td>2026-04-11</td><td>4</td><td>0</td><td>0</td><td>0</td><td>0</td><td style='font-weight:700;color:#4ade80'>4</td></tr><tr><td>2026-04-13</td><td>3</td><td>0</td><td>0</td><td>0</td><td>0</td><td style='font-weight:700;color:#4ade80'>3</td></tr><tr><td>2026-04-14</td><td>2</td><td>1</td><td>2</td><td>0</td><td>1</td><td style='font-weight:700;color:#4ade80'>6</td></tr><tr><td>2026-04-15</td><td>3</td><td>0</td><td>0</td><td>1</td><td>0</td><td style='font-weight:700;color:#4ade80'>4</td></tr><tr><td>2026-04-17</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td><td style='font-weight:700;color:#4ade80'>2</td></tr><tr><td>2026-04-18</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td style='font-weight:700;color:#4ade80'>1</td></tr>
+    </table>
+  </div>
+
+  <h2>Estado de sprints</h2>
+  <div class="panel">
+    <table><tr><th>Sprint</th><th>Estado</th></tr><tr><td>sprint_1a</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr><tr><td>sprint_1b</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr><tr><td>sprint_1c</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr><tr><td>sprint_1d</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr><tr><td>sprint_2</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr><tr><td>sprint_3</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr><tr><td>sprint_4</td><td style='color:#4ade80;font-weight:700;'>✅ DONE</td></tr></table>
+  </div>
+
+  <h2>Gaps de observabilidad identificados</h2>
+  <div class="panel">
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px;">Áreas no medidas todavía (prioridad para siguiente iteración de métricas):</p>
+    <ul style="font-size:.85rem;line-height:1.8;color:var(--text);">
+      <li>Calidad semántica de salida (utilidad, accionabilidad)</li>
+      <li>Tiempo bootstrap → primera acción útil</li>
+      <li>Éxito y duración por workflow</li>
+      <li>Métricas reales separadas de métricas afectadas por TLS/rate-limit</li>
+      <li>Valor incremental de activar roles adicionales</li>
+      <li>Artefactos útiles vs artefactos de relleno</li>
+    </ul>
+  </div>
+
+</div>
+<script>
+(function(){
+  const labels = ["Diversidad", "Protocolo", "Alcance WF", "Foco", "Producci\u00f3n", "Rigor"];
+  const early  = [4.0, 0.0, 2.5, 3.0, 4.8, 9.0];
+  const late   = [10.0, 10.0, 10.0, 6.9, 4.0, 9.0];
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  new Chart(ctx,{
+    type:'radar',
+    data:{
+      labels,
+      datasets:[
+        {label:'Inicio',data:early,backgroundColor:'rgba(56,189,248,0.15)',borderColor:'rgba(56,189,248,0.9)',pointBackgroundColor:'rgba(56,189,248,1)',pointRadius:4,borderWidth:2},
+        {label:'Ahora',data:late,backgroundColor:'rgba(74,222,128,0.18)',borderColor:'rgba(74,222,128,0.95)',pointBackgroundColor:'rgba(74,222,128,1)',pointRadius:4,borderWidth:2}
+      ]
+    },
+    options:{
+      responsive:true,
+      scales:{r:{min:0,max:10,ticks:{stepSize:2,color:'#64748b',font:{size:10}},grid:{color:'rgba(51,65,85,0.6)'},angleLines:{color:'rgba(51,65,85,0.6)'},pointLabels:{color:'#94a3b8',font:{size:11}}}},
+      plugins:{legend:{labels:{color:'#e2e8f0',font:{size:12},padding:16}},tooltip:{callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.raw}/10`}}}
+    }
+  });
+})();
+</script>
+</body>
+</html>

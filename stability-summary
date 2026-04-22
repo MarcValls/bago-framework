@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+"""Root wrapper: delega en bago stability."""
+import subprocess, sys
+from pathlib import Path
+bago = Path(__file__).resolve().parent / "bago"
+sys.exit(subprocess.run([sys.executable, str(bago), "stability"] + sys.argv[1:]).returncode)

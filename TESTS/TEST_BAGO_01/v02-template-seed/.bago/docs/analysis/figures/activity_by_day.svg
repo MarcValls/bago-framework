@@ -1,0 +1,58 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1180' height='440' viewBox='0 0 1180 440'>
+<style>
+text { font-family: Menlo, Consolas, monospace; fill: #0f172a; }
+.axis { stroke: #64748b; stroke-width: 1; }
+.grid { stroke: #cbd5e1; stroke-width: 1; stroke-dasharray: 3 3; }
+.title { font-size: 17px; font-weight: 700; }
+.label { font-size: 11px; }
+.small { font-size: 10px; }
+</style>
+<rect x='0' y='0' width='1180' height='440' fill='#f8fafc'/>
+<text x='20' y='26' class='title'>Actividad diaria del sistema</text>
+<line x1='80' y1='340.00' x2='1150' y2='340.00' class='grid' />
+<text x='8' y='344.00' class='label'>0.0</text>
+<line x1='80' y1='283.00' x2='1150' y2='283.00' class='grid' />
+<text x='8' y='287.00' class='label'>3.0</text>
+<line x1='80' y1='226.00' x2='1150' y2='226.00' class='grid' />
+<text x='8' y='230.00' class='label'>6.0</text>
+<line x1='80' y1='169.00' x2='1150' y2='169.00' class='grid' />
+<text x='8' y='173.00' class='label'>9.0</text>
+<line x1='80' y1='112.00' x2='1150' y2='112.00' class='grid' />
+<text x='8' y='116.00' class='label'>12.0</text>
+<line x1='80' y1='55.00' x2='1150' y2='55.00' class='grid' />
+<text x='8' y='59.00' class='label'>15.0</text>
+<rect x='127.08' y='264.00' width='119.84' height='76.00' fill='#1d4ed8' rx='2'/>
+<rect x='127.08' y='169.00' width='119.84' height='95.00' fill='#0f766e' rx='2'/>
+<rect x='127.08' y='55.00' width='119.84' height='114.00' fill='#c2410c' rx='2'/>
+<text x='187.00' y='356.00' text-anchor='middle' class='label'>2026-04-11</text>
+<text x='187.00' y='371.00' text-anchor='middle' class='small'>15</text>
+<rect x='341.08' y='283.00' width='119.84' height='57.00' fill='#1d4ed8' rx='2'/>
+<rect x='341.08' y='226.00' width='119.84' height='57.00' fill='#0f766e' rx='2'/>
+<rect x='341.08' y='169.00' width='119.84' height='57.00' fill='#c2410c' rx='2'/>
+<text x='401.00' y='356.00' text-anchor='middle' class='label'>2026-04-13</text>
+<text x='401.00' y='371.00' text-anchor='middle' class='small'>9</text>
+<rect x='555.08' y='245.00' width='119.84' height='95.00' fill='#1d4ed8' rx='2'/>
+<rect x='555.08' y='150.00' width='119.84' height='95.00' fill='#0f766e' rx='2'/>
+<rect x='555.08' y='55.00' width='119.84' height='95.00' fill='#c2410c' rx='2'/>
+<text x='615.00' y='356.00' text-anchor='middle' class='label'>2026-04-14</text>
+<text x='615.00' y='371.00' text-anchor='middle' class='small'>15</text>
+<rect x='769.08' y='245.00' width='119.84' height='95.00' fill='#1d4ed8' rx='2'/>
+<rect x='769.08' y='188.00' width='119.84' height='57.00' fill='#0f766e' rx='2'/>
+<rect x='769.08' y='131.00' width='119.84' height='57.00' fill='#c2410c' rx='2'/>
+<text x='829.00' y='356.00' text-anchor='middle' class='label'>2026-04-15</text>
+<text x='829.00' y='371.00' text-anchor='middle' class='small'>11</text>
+<rect x='983.08' y='321.00' width='119.84' height='19.00' fill='#1d4ed8' rx='2'/>
+<rect x='983.08' y='283.00' width='119.84' height='38.00' fill='#0f766e' rx='2'/>
+<rect x='983.08' y='226.00' width='119.84' height='57.00' fill='#c2410c' rx='2'/>
+<text x='1043.00' y='356.00' text-anchor='middle' class='label'>2026-04-17</text>
+<text x='1043.00' y='371.00' text-anchor='middle' class='small'>6</text>
+<rect x='80' y='408' width='12' height='12' fill='#1d4ed8' rx='2'/>
+<text x='98' y='418' class='label'>sessions</text>
+<rect x='200' y='408' width='12' height='12' fill='#0f766e' rx='2'/>
+<text x='218' y='418' class='label'>changes</text>
+<rect x='320' y='408' width='12' height='12' fill='#c2410c' rx='2'/>
+<text x='338' y='418' class='label'>evidences</text>
+<line x1='80' y1='340' x2='1150' y2='340' class='axis' />
+<line x1='80' y1='55' x2='80' y2='340' class='axis' />
+<text x='590' y='428' text-anchor='middle' class='label'>fecha local (Europe/Madrid)</text>
+</svg>

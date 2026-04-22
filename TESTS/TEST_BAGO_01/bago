@@ -1,0 +1,914 @@
+#!/usr/bin/env python3
+"""
+bago — script de activación BAGO
+Muestra banner + gestiona comandos rápidos.
+
+Uso:
+  ./bago                    → banner + estado (o prompt de arranque si es template)
+  ./bago setup              → sincroniza repo_context + instala extensiones Copilot
+  ./bago extensions         → gestiona extensiones BAGO (.bago/extensions/)
+  ./bago versions           → lista todas las cleanversions disponibles
+  ./bago stability          → resumen único de estabilidad (smoke/VM/soak/validadores)
+  ./bago dashboard          → pack_dashboard.py
+  ./bago ideas              → emit_ideas.py
+  ./bago ideas --accept N   → acepta idea N y genera tarea W2
+  ./bago task               → muestra la tarea W2 pendiente
+  ./bago task --done        → marca la tarea como completada (registra en implemented_ideas.json)
+  ./bago session            → abre sesión W2 con preflight pre-rellenado desde handoff
+  ./bago session --dry      → muestra args del preflight sin ejecutar
+  ./bago efficiency         → medidor de eficiencia inter-versiones
+  ./bago cosecha            → cosecha.py
+  ./bago detector           → context_detector.py
+  ./bago validate           → validate_pack.py  (solo verifica)
+  ./bago sync               → sync_pack_metadata.py  (regenera TREE.txt y CHECKSUMS)
+  ./bago check              → check_validate_purity.py  (chequeo estático de pureza)
+  ./bago dashboard --full   → dashboard extendido
+  ./bago health             → health_score.py
+  ./bago audit              → audit_v2.py
+  ./bago workflow           → workflow_selector.py (interactivo)
+  ./bago stale              → stale_detector.py
+  ./bago v2                 → v2_close_checklist.py
+
+Instalar como alias global:
+  echo 'alias bago="python3 $(pwd)/bago"' >> ~/.zshrc
+"""
+
+import json, os, shutil, subprocess, sys, threading, time
+from pathlib import Path
+
+BAGO_ROOT = Path(__file__).resolve().parent / ".bago"
+TOOLS     = BAGO_ROOT / "tools"
+
+COMMANDS = {
+    "dashboard": ["python3", str(TOOLS / "pack_dashboard.py")],
+    "ideas":     ["python3", str(TOOLS / "emit_ideas.py")],
+    "cosecha":   ["python3", str(TOOLS / "cosecha.py")],
+    "detector":  ["python3", str(TOOLS / "context_detector.py")],
+    "validate":  ["python3", str(TOOLS / "validate_pack.py")],
+    "sync":      ["python3", str(TOOLS / "sync_pack_metadata.py")],
+    "check":     ["python3", str(TOOLS / "check_validate_purity.py")],
+    "health":    ["python3", str(TOOLS / "health_score.py")],
+    "audit":     ["python3", str(TOOLS / "audit_v2.py")],
+    "workflow":  ["python3", str(TOOLS / "workflow_selector.py")],
+    "stale":     ["python3", str(TOOLS / "stale_detector.py")],
+    "v2":        ["python3", str(TOOLS / "v2_close_checklist.py")],
+    "task":      ["python3", str(TOOLS / "show_task.py")],
+    "stability": ["python3", str(TOOLS / "stability_summary.py")],
+    "session":   ["python3", str(TOOLS / "session_opener.py")],
+    "efficiency":["python3", str(TOOLS / "efficiency_meter.py")],
+}
+
+# ── Extensiones Copilot CLI ────────────────────────────────────────────────────
+
+def _install_extensions(bago_root=None, silent=False):
+    """Copia .bago/extensions/*/extension.mjs → .github/extensions/*/extension.mjs"""
+    src_base  = (bago_root or BAGO_ROOT) / "extensions"
+    repo_root = (bago_root or BAGO_ROOT).parent
+    dest_base = repo_root / ".github" / "extensions"
+
+    if not src_base.exists():
+        if not silent:
+            print("  ℹ  No hay extensiones en .bago/extensions/")
+        return []
+
+    installed = []
+    for ext_dir in sorted(src_base.iterdir()):
+        src_file = ext_dir / "extension.mjs"
+        if not src_file.exists():
+            continue
+        dest_dir  = dest_base / ext_dir.name
+        dest_file = dest_dir / "extension.mjs"
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(str(src_file), str(dest_file))
+        installed.append(ext_dir.name)
+
+    if installed and not silent:
+        for name in installed:
+            print(f"  🔌 Extensión instalada: {name}")
+    return installed
+
+def _cmd_extensions():
+    """Lista extensiones disponibles e instala si hay cambios."""
+    src_base = BAGO_ROOT / "extensions"
+    if not src_base.exists() or not any(src_base.iterdir()):
+        print("  No hay extensiones BAGO en .bago/extensions/")
+        return
+
+    print()
+    print("  ┌──────────────────────────────────────────────┐")
+    print("  │  BAGO · Extensiones Copilot CLI              │")
+    print("  └──────────────────────────────────────────────┘")
+    for ext_dir in sorted(src_base.iterdir()):
+        if (ext_dir / "extension.mjs").exists():
+            dest = BAGO_ROOT.parent / ".github" / "extensions" / ext_dir.name / "extension.mjs"
+            status = "✅ instalada" if dest.exists() else "⚠️  pendiente"
+            print(f"  🔌 {ext_dir.name:30s} {status}")
+    print()
+    print("  Reinstalar: bago setup")
+    print()
+
+# ── Helpers de estado ──────────────────────────────────────────────────────────
+
+def _read_state(bago_root=None):
+    f = (bago_root or BAGO_ROOT) / "state" / "global_state.json"
+    if not f.exists():
+        return {}
+    with open(f) as fh:
+        return json.load(fh)
+
+def _write_state(state, bago_root=None):
+    f = (bago_root or BAGO_ROOT) / "state" / "global_state.json"
+    with open(f, "w") as fh:
+        json.dump(state, fh, indent=2, ensure_ascii=False)
+        fh.write("\n")
+
+def _set_mode(mode, bago_root=None):
+    s = _read_state(bago_root)
+    s["distribution_mode"] = mode
+    _write_state(s, bago_root)
+
+def _is_template_seed():
+    return _read_state().get("distribution_mode") == "template_seed"
+
+# ── Scaffold de proyecto nuevo ─────────────────────────────────────────────────
+
+def _scaffold_project(dest_input, is_existing=False):
+    src = BAGO_ROOT.parent
+    dest = Path(dest_input.strip()).expanduser().resolve() if dest_input.strip() else src
+
+    if dest == src:
+        print()
+        print("  ⚠️  Estás a punto de inicializar BAGO en el propio directorio del framework.")
+        print(f"     {dest}")
+        print()
+        print("  BAGO está diseñado para gobernar un proyecto externo, no a sí mismo.")
+        print("  Usa esta opción solo si realmente quieres evolucionar el framework.")
+        print()
+        try:
+            confirm = input("  ¿Confirmar igualmente? [s/N]: ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            sys.exit(0)
+        if confirm != "s":
+            print("\n  Cancelado. Vuelve a ejecutar y elige otro directorio.\n")
+            return False
+        _set_mode("project_active")
+        _auto_sync(src)
+        _install_extensions(silent=True)
+        print(f"\n  ✅ Proyecto inicializado en: {dest}\n")
+        return True
+
+    try:
+        dest.relative_to(src)
+        print("  ⚠  El destino no puede estar dentro del directorio fuente.")
+        return False
+    except ValueError:
+        pass
+
+    # ── Proyecto existente ────────────────────────────────────────────────────
+    if is_existing:
+        if not dest.exists():
+            print(f"  ⚠  El directorio no existe:\n     {dest}")
+            return False
+
+        ctx = _detect_project_context(dest)
+
+        if ctx["has_bago"]:
+            print(f"\n  ⚠  Este directorio ya tiene BAGO inicializado (.bago/).")
+            print(f"     {dest}")
+            try:
+                confirm = input("  ¿Reinicializar de todas formas? [s/N]: ").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                print(); sys.exit(0)
+            if confirm != "s":
+                print("\n  Cancelado.\n")
+                return False
+
+        if ctx["files_found"]:
+            _show_context_box(ctx)
+            try:
+                use_ctx = input("  ¿Usar este contexto para inicializar BAGO? [S/n]: ").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                print(); sys.exit(0)
+            if use_ctx == "n":
+                ctx = None
+        else:
+            print(f"\n  ℹ  No se detectó contenido reconocible en: {dest}")
+            ctx = None
+
+        shutil.copytree(str(BAGO_ROOT), str(dest / ".bago"), dirs_exist_ok=True)
+        shutil.copy2(str(src / "bago"), str(dest / "bago"))
+        os.chmod(str(dest / "bago"), 0o755)
+        if (src / "Makefile").exists() and not (dest / "Makefile").exists():
+            shutil.copy2(str(src / "Makefile"), str(dest / "Makefile"))
+
+        _set_mode("project_active", dest / ".bago")
+
+        # Escribir contexto detectado en global_state
+        if ctx:
+            _write_context_to_state(ctx, dest / ".bago")
+
+        subprocess.run(["python3", str(dest / "bago"), "setup"], cwd=str(dest))
+        print(f"\n  ✅ BAGO inicializado en proyecto existente: {dest}")
+        print(f"  ▶  cd \"{dest}\" && python3 bago\n")
+        return True
+
+    # ── Proyecto nuevo (directorio vacío) ─────────────────────────────────────
+    if dest.exists() and any(dest.iterdir()):
+        print(f"  ⚠  El directorio ya existe y no está vacío:\n     {dest}")
+        print(f"     Si quieres inicializar BAGO en un proyecto existente, elige [2].")
+        return False
+
+    print(f"\n  📦 Copiando pack a: {dest}")
+    dest.mkdir(parents=True, exist_ok=True)
+
+    shutil.copytree(str(BAGO_ROOT), str(dest / ".bago"))
+    shutil.copy2(str(src / "bago"), str(dest / "bago"))
+    os.chmod(str(dest / "bago"), 0o755)
+    if (src / "Makefile").exists():
+        shutil.copy2(str(src / "Makefile"), str(dest / "Makefile"))
+
+    _set_mode("project_active", dest / ".bago")
+
+    subprocess.run(
+        ["python3", str(dest / "bago"), "setup"],
+        cwd=str(dest)
+    )
+
+    print(f"\n  ✅ Proyecto listo en: {dest}")
+    print(f"  ▶  cd \"{dest}\" && python3 bago\n")
+    return True
+
+
+def _write_context_to_state(ctx, bago_root=None):
+    """Escribe el contexto detectado del proyecto en global_state.json."""
+    s = _read_state(bago_root)
+    s["project_context"] = {
+        "name":        ctx.get("name", ""),
+        "description": ctx.get("description", ""),
+        "tech":        ctx.get("tech", []),
+        "has_docs":    ctx.get("has_docs", False),
+        "has_git":     ctx.get("has_git", False),
+        "detected_files": ctx.get("files_found", []),
+    }
+    if ctx.get("name"):
+        s["project_name"] = ctx["name"]
+    _write_state(s, bago_root)
+
+
+def _detect_project_context(path):
+    """Escanea path buscando proyecto o documentación existente.
+    Devuelve dict con name, description, tech, has_docs, has_git, has_bago, files_found."""
+    p = Path(path)
+    ctx = {
+        "name":        p.name,
+        "description": "",
+        "tech":        [],
+        "has_docs":    False,
+        "has_git":     False,
+        "has_bago":    (p / ".bago").exists(),
+        "files_found": [],
+    }
+
+    if (p / ".git").exists():
+        ctx["has_git"] = True
+        ctx["files_found"].append(".git/")
+
+    # README → nombre y descripción
+    for readme in ["README.md", "README.rst", "README.txt", "readme.md"]:
+        if (p / readme).exists():
+            ctx["files_found"].append(readme)
+            try:
+                text = (p / readme).read_text(encoding="utf-8", errors="ignore")
+                lines = [l.strip() for l in text.splitlines() if l.strip()]
+                for l in lines[:8]:
+                    if l.startswith("#") and not ctx["name"].startswith(p.name):
+                        ctx["name"] = l.lstrip("#").strip()
+                    elif not ctx["description"] and l and not l.startswith("#"):
+                        ctx["description"] = l[:120]
+                        break
+            except Exception:
+                pass
+            break
+
+    # Stack tecnológico
+    _TECH_FILES = {
+        "package.json":    ("Node.js",       lambda p: json.loads((p).read_text())),
+        "pyproject.toml":  ("Python",        None),
+        "requirements.txt":("Python",        None),
+        "setup.py":        ("Python",        None),
+        "Cargo.toml":      ("Rust",          None),
+        "go.mod":          ("Go",            None),
+        "pom.xml":         ("Java/Maven",    None),
+        "build.gradle":    ("Java/Gradle",   None),
+        "Gemfile":         ("Ruby",          None),
+        "composer.json":   ("PHP",           None),
+        "CMakeLists.txt":  ("C/C++",         None),
+    }
+    for fname, (tech, reader) in _TECH_FILES.items():
+        if (p / fname).exists():
+            if tech not in ctx["tech"]:
+                ctx["tech"].append(tech)
+            ctx["files_found"].append(fname)
+            if reader and not ctx["description"]:
+                try:
+                    data = reader(p / fname)
+                    if not ctx["name"] or ctx["name"] == p.name:
+                        ctx["name"] = data.get("name", ctx["name"])
+                    ctx["description"] = ctx["description"] or data.get("description", "")
+                except Exception:
+                    pass
+
+    # Carpeta docs
+    for doc_dir in ["docs", "doc", "documentation", "Docs", "wiki"]:
+        if (p / doc_dir).is_dir():
+            ctx["has_docs"] = True
+            ctx["files_found"].append(f"{doc_dir}/")
+            break
+
+    return ctx
+
+
+def _show_context_box(ctx):
+    """Imprime un cuadro resumen del contexto detectado."""
+    print()
+    print("  ┌─────────────────────────────────────────────────┐")
+    print("  │  Proyecto detectado                             │")
+    print("  ├─────────────────────────────────────────────────┤")
+    name_line = f"  Nombre:  {ctx['name']}"
+    print(f"  │  {name_line:<47}│")
+    if ctx["description"]:
+        desc = ctx["description"][:44]
+        print(f"  │  Desc:   {desc:<47}│")
+    if ctx["tech"]:
+        tech_str = ", ".join(ctx["tech"])[:44]
+        print(f"  │  Stack:  {tech_str:<47}│")
+    flags = []
+    if ctx["has_git"]:   flags.append("git")
+    if ctx["has_docs"]:  flags.append("docs")
+    if ctx["has_bago"]:  flags.append("⚠ ya tiene .bago/")
+    if flags:
+        print(f"  │  Extra:  {', '.join(flags):<47}│")
+    found = ", ".join(ctx["files_found"][:5])
+    if len(ctx["files_found"]) > 5:
+        found += f" +{len(ctx['files_found'])-5}"
+    print(f"  │  Archivos: {found:<45}│")
+    print("  └─────────────────────────────────────────────────┘")
+    print()
+
+
+def _candidate_dirs():
+    """Devuelve hasta 4 directorios candidatos para el nuevo proyecto:
+    el CWD (si no es el framework) y hasta 3 padres del framework."""
+    framework_dir = BAGO_ROOT.parent
+    cwd = Path.cwd()
+    seen = set()
+    candidates = []
+
+    for d in ([cwd] if cwd != framework_dir else []) + list(framework_dir.parents)[:4]:
+        if d not in seen and d != framework_dir:
+            seen.add(d)
+            candidates.append(d)
+        if len(candidates) == 4:
+            break
+    return candidates
+
+
+# ── Helpers de git ─────────────────────────────────────────────────────────────
+
+def _git_short_hash(cwd=None):
+    """Devuelve el hash corto del HEAD actual, o None."""
+    try:
+        r = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=str(cwd or BAGO_ROOT.parent), capture_output=True, text=True
+        )
+        return r.stdout.strip() if r.returncode == 0 else None
+    except Exception:
+        return None
+
+
+def _git_describe(cwd=None):
+    """Devuelve git describe --tags --always, o None."""
+    try:
+        r = subprocess.run(
+            ["git", "describe", "--tags", "--always"],
+            cwd=str(cwd or BAGO_ROOT.parent), capture_output=True, text=True
+        )
+        return r.stdout.strip() if r.returncode == 0 else None
+    except Exception:
+        return None
+
+
+def _has_remote_updates():
+    """Devuelve True si origin/master tiene commits que no están en local."""
+    try:
+        subprocess.run(
+            ["git", "fetch", "--quiet"],
+            cwd=str(BAGO_ROOT.parent), capture_output=True, text=True, timeout=6
+        )
+        r = subprocess.run(
+            ["git", "rev-list", "HEAD..origin/master", "--count"],
+            cwd=str(BAGO_ROOT.parent), capture_output=True, text=True
+        )
+        return r.returncode == 0 and r.stdout.strip() not in ("", "0")
+    except Exception:
+        return False
+
+
+# ── Helpers de arranque ────────────────────────────────────────────────────────
+
+def _git_remote_url():
+    """Devuelve la URL del remote origin si existe, o None."""
+    try:
+        r = subprocess.run(
+            ["git", "remote", "get-url", "origin"],
+            cwd=str(BAGO_ROOT.parent),
+            capture_output=True, text=True
+        )
+        return r.stdout.strip() if r.returncode == 0 else None
+    except Exception:
+        return None
+
+
+def _update_framework():
+    """Actualiza el framework mostrando banner, progreso animado y versión final."""
+    framework_dir = BAGO_ROOT.parent
+    old_desc = _git_describe(framework_dir) or _git_short_hash(framework_dir) or "desconocida"
+
+    subprocess.run(
+        ["python3", str(TOOLS / "bago_banner.py")],
+        cwd=str(framework_dir)
+    )
+
+    print(f"  Versión actual : {old_desc}")
+    print()
+
+    done_event = threading.Event()
+
+    def _spin():
+        frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+        i = 0
+        while not done_event.is_set():
+            filled = (i * 2) % 21
+            bar = "█" * filled + "░" * (20 - filled)
+            print(
+                f"\r  {frames[i % len(frames)]} [{bar}] Descargando desde GitHub...",
+                end="", flush=True
+            )
+            i += 1
+            time.sleep(0.08)
+        print("\r" + " " * 65 + "\r", end="", flush=True)
+
+    t = threading.Thread(target=_spin, daemon=True)
+    t.start()
+
+    r = subprocess.run(
+        ["git", "pull", "--ff-only"],
+        cwd=str(framework_dir), capture_output=True, text=True
+    )
+    done_event.set()
+    t.join(timeout=1)
+
+    new_desc = _git_describe(framework_dir) or _git_short_hash(framework_dir) or "desconocida"
+
+    if r.returncode == 0:
+        if old_desc == new_desc:
+            print("  ✅ Ya tenías la versión más reciente.")
+            print(f"     Versión: {new_desc}")
+        else:
+            print("  ✅ Framework actualizado.")
+            print(f"     {old_desc}  →  {new_desc}")
+        print()
+        return True
+    else:
+        print("  ⚠  No se pudo actualizar.")
+        if r.stderr.strip():
+            print(f"     {r.stderr.strip()}")
+        print("     Ejecuta: git pull origin master\n")
+        return False
+
+
+def _pick_project_dir():
+    """Pide tipo (nuevo/existente), nombre/ruta y directorio padre.
+    Devuelve (ruta_completa: str, is_existing: bool) o (None, False) si cancela."""
+    print()
+    print("  ─── Inicializar BAGO en un proyecto ────────────────────")
+    print()
+    print("  [1] Proyecto nuevo   (crear directorio vacío)")
+    print("  [2] Proyecto existente (directorio con contenido)")
+    print()
+    try:
+        tipo = input("  Elige [1/2]: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        sys.exit(0)
+
+    if tipo == "2":
+        # ── Proyecto existente ────────────────────────────────────
+        candidates = _candidate_dirs()
+        print()
+        print("  ¿Cuál es el directorio del proyecto?\n")
+        for i, d in enumerate(candidates, 1):
+            print(f"  [{i}] {d}")
+        print("  [M] Escribir ruta manualmente")
+        print()
+        try:
+            sel = input(f"  Elige [1-{len(candidates)}/M]: ").strip().upper()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            sys.exit(0)
+        if sel.isdigit() and 1 <= int(sel) <= len(candidates):
+            return str(candidates[int(sel) - 1]), True
+        elif sel == "M":
+            try:
+                ruta = input("  Ruta del proyecto: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print()
+                sys.exit(0)
+            if ruta:
+                return str(Path(ruta).expanduser().resolve()), True
+            print("  ⚠  Ruta vacía, cancelado.\n")
+            return None, False
+        else:
+            print("\n  Opción no válida.\n")
+            return None, False
+
+    elif tipo == "1":
+        # ── Proyecto nuevo ────────────────────────────────────────
+        name = ""
+        while not name:
+            try:
+                name = input("  Nombre del proyecto: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print()
+                sys.exit(0)
+            if not name:
+                print("  ⚠  El nombre no puede estar vacío.")
+
+        candidates = _candidate_dirs()
+        print()
+        print("  ¿Dónde crear el proyecto?\n")
+        for i, d in enumerate(candidates, 1):
+            print(f"  [{i}] {d}{os.sep}{name}")
+        print("  [M] Otra ruta base (escribirla)")
+        print()
+        try:
+            sel = input(f"  Elige [1-{len(candidates)}/M]: ").strip().upper()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            sys.exit(0)
+        if sel.isdigit() and 1 <= int(sel) <= len(candidates):
+            parent = candidates[int(sel) - 1]
+            return str(parent / name), False
+        elif sel == "M":
+            try:
+                base = input("  Ruta base: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print()
+                sys.exit(0)
+            if base:
+                return str(Path(base).expanduser().resolve() / name), False
+            print("  ⚠  Ruta vacía, cancelado.\n")
+            return None, False
+        else:
+            print("\n  Opción no válida.\n")
+            return None, False
+    else:
+        print("\n  Opción no válida.\n")
+        return None, False
+
+
+def _startup_update_check():
+    """Comprueba actualizaciones silenciosamente y ofrece actualizar si las hay."""
+    if not _git_remote_url():
+        return
+    if not _has_remote_updates():
+        return
+    current = _git_describe() or _git_short_hash() or "actual"
+    print()
+    print(f"  ⚡ Hay una actualización disponible  (local: {current})")
+    print()
+    try:
+        ans = input("  ¿Actualizar ahora? [S/n]: ").strip().lower()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        return
+    if ans in ("", "s", "si", "sí", "y", "yes"):
+        _update_framework()
+        sys.exit(0)
+
+
+# ── Prompt de arranque ─────────────────────────────────────────────────────────
+
+def _prompt_mode():
+    """Menú de primera ejecución — universal, funciona para cualquier usuario."""
+    remote = _git_remote_url()
+    framework_dir = BAGO_ROOT.parent.resolve()
+    suggested = framework_dir.parent  # directorio que contiene el clone del framework
+
+    # Comprobación silenciosa de actualizaciones
+    updates_available = False
+    if remote:
+        print("  Comprobando actualizaciones...", end="", flush=True)
+        updates_available = _has_remote_updates()
+        print("\r" + " " * 35 + "\r", end="", flush=True)
+
+    # Preparar ruta corta para mostrar en el menú
+    sugg_str = str(suggested)
+    if len(sugg_str) > 44:
+        sugg_str = "..." + sugg_str[-41:]
+
+    print()
+    print("  ┌─────────────────────────────────────────────────┐")
+    print("  │  BAGO Framework · Primera ejecución             │")
+    if updates_available:
+        print("  ├─────────────────────────────────────────────────┤")
+        print("  │  [!] Nueva versión disponible en GitHub         │")
+    print("  ├─────────────────────────────────────────────────┤")
+    print(f"  │  Directorio del proyecto:                       │")
+    print(f"  │  {sugg_str:<47}│")
+    print("  ├─────────────────────────────────────────────────┤")
+    print("  │  [1] Inicializar BAGO aquí  ← recomendado       │")
+    print("  │  [2] Crear nuevo proyecto aquí                  │")
+    if remote:
+        if updates_available:
+            print("  │  [3] Actualizar framework  ← nueva versión     │")
+        else:
+            print("  │  [3] Actualizar framework  (git pull)           │")
+        print("  │  [4] Modo desarrollo del framework              │")
+        max_opt = 4
+    else:
+        print("  │  [3] Modo desarrollo del framework              │")
+        max_opt = 3
+    print("  └─────────────────────────────────────────────────┘")
+    print()
+
+    try:
+        choice = input(f"  Elige [1-{max_opt}]: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        sys.exit(0)
+
+    _evolve_opt = "4" if remote else "3"
+    _update_opt = "3" if remote else None
+
+    if choice == "1":
+        # Proyecto existente — path ya mostrado en el menú, solo confirmar
+        dest = suggested
+        print()
+        print(f"  Inicializar BAGO en: {dest}")
+        print()
+        print("  [S/Enter] Confirmar    [N] Escribir otra ruta")
+        print()
+        try:
+            sel = input("  ").strip().upper()
+        except (EOFError, KeyboardInterrupt):
+            print(); sys.exit(0)
+        if sel == "N":
+            try:
+                ruta = input("  Ruta alternativa: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print(); sys.exit(0)
+            if not ruta:
+                print("  ⚠  Ruta vacía, cancelado.\n")
+                return "invalid"
+            dest = Path(ruta).expanduser().resolve()
+        if dest == framework_dir:
+            print()
+            print("  ⚠  Esa es la carpeta del propio framework BAGO.")
+            print("  Para desarrollar el framework usa la opción [4].")
+            print()
+            return "invalid"
+        return "done" if _scaffold_project(str(dest), is_existing=True) else "error"
+
+    elif choice == "2":
+        # Proyecto nuevo — usar el mismo directorio padre (ya mostrado en menú)
+        suggested_parent = suggested
+        print()
+        name = ""
+        while not name:
+            try:
+                name = input("  Nombre del proyecto: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print(); sys.exit(0)
+            if not name:
+                print("  ⚠  El nombre no puede estar vacío.")
+        print()
+        print(f"  Se creará en: {suggested_parent / name}")
+        print("  [S] Confirmar")
+        print("  [O] Elegir otro directorio base")
+        print()
+        try:
+            sel = input("  Elige [S/O]: ").strip().upper()
+        except (EOFError, KeyboardInterrupt):
+            print(); sys.exit(0)
+        if sel == "O":
+            try:
+                base = input("  Directorio base: ").strip()
+            except (EOFError, KeyboardInterrupt):
+                print(); sys.exit(0)
+            parent = Path(base).expanduser().resolve() if base else suggested_parent
+        else:
+            parent = suggested_parent
+        dest = parent / name
+        if dest == framework_dir:
+            print("  ⚠  Ese nombre coincide con el directorio del framework.\n")
+            return "invalid"
+        return "done" if _scaffold_project(str(dest), is_existing=False) else "error"
+
+    elif choice == _update_opt and remote:
+        success = _update_framework()
+        return "done" if success else "error"
+
+    elif choice == _evolve_opt:
+        print()
+        print("  ℹ  Modo desarrollo del framework BAGO.")
+        print("  Solo recomendado si vas a contribuir al propio framework.")
+        print()
+        try:
+            confirm = input("  ¿Confirmar? [s/N]: ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            print(); sys.exit(0)
+        if confirm != "s":
+            print("\n  Cancelado. Vuelve a ejecutar para elegir un proyecto.\n")
+            return "invalid"
+        _set_mode("framework_host")
+        print("\n  ✅ Modo desarrollo del framework activado.\n")
+        return "banner"
+
+    else:
+        print(f"\n  Opción no válida. Usa 1-{max_opt}.\n")
+        return "invalid"
+
+
+def _cmd_versions():
+    """Lista todas las cleanversions encontradas junto al script."""
+    cv_dir = Path(__file__).resolve().parent.parent / "cleanversion"
+    if not cv_dir.exists():
+        cv_dir = Path(__file__).resolve().parent / "cleanversion"
+    if not cv_dir.exists():
+        print("  No se encontró directorio cleanversion/")
+        return
+
+    entries = sorted(d for d in cv_dir.iterdir() if d.is_dir() and not d.name.startswith('.'))
+    if not entries:
+        print("  No hay cleanversions.")
+        return
+
+    print()
+    print("  ┌─────────────────────────────────────────────────────────────┐")
+    print("  │  BAGO · Cleanversions disponibles                          │")
+    print("  └─────────────────────────────────────────────────────────────┘")
+
+    for d in entries:
+        info_file  = d / "VERSION_INFO.json"
+        state_file = d / ".bago" / "state" / "global_state.json"
+
+        info  = json.loads(info_file.read_text())  if info_file.exists()  else {}
+        state = json.loads(state_file.read_text()) if state_file.exists() else {}
+
+        chg_dir   = d / ".bago" / "state" / "changes"
+        chg_count = len(list(chg_dir.glob("BAGO-CHG-*.json"))) if chg_dir.exists() else 0
+
+        slug   = info.get("slug", d.name)
+        name   = info.get("display_name", "—")
+        desc   = info.get("description", "")
+        mode   = state.get("distribution_mode") or "—"
+        script = info.get("bago_script", "—")
+        notes  = info.get("notes", "")
+
+        print()
+        print(f"  📦 {slug}")
+        print(f"     {name}")
+        print(f"     {desc}")
+        print(f"     mode={mode} | CHG={chg_count} | bago={script}")
+        if notes:
+            print(f"     💡 {notes}")
+
+    print()
+
+
+# ── Menú de trabajo (post-banner) ─────────────────────────────────────────────
+
+def _prompt_project_menu():
+    """Menú interactivo de trabajo que aparece tras el banner."""
+    opts = [
+        ("1", "Nueva sesión de trabajo",   "session"),
+        ("2", "Salud del proyecto",        "health"),
+        ("3", "Ideas",                     "ideas"),
+        ("4", "Dashboard",                 "dashboard"),
+        ("5", "Stability check",           "stability"),
+        ("6", "Audit",                     "audit"),
+    ]
+    print()
+    print("  ┌─────────────────────────────────────────────────┐")
+    print("  │  ¿Qué quieres hacer?                            │")
+    print("  ├─────────────────────────────────────────────────┤")
+    for key, label, _ in opts:
+        row = f"[{key}] {label}"
+        print(f"  │  {row:<47}│")
+    print("  │  [0] Salir / Enter                              │")
+    print("  └─────────────────────────────────────────────────┘")
+    print()
+    try:
+        choice = input("  Elige: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        return
+    if not choice or choice == "0":
+        return
+    for key, _, cmd in opts:
+        if choice == key and cmd in COMMANDS:
+            subprocess.run(COMMANDS[cmd], cwd=str(BAGO_ROOT.parent))
+            return
+    print(f"  Opción no válida: '{choice}'\n")
+
+# ── Auto-sync silencioso ───────────────────────────────────────────────────────
+
+def _auto_sync(cwd=None):
+    try:
+        subprocess.run(
+            ["python3", str(TOOLS / "repo_context_guard.py"), "sync"],
+            cwd=str(cwd or BAGO_ROOT.parent),
+            capture_output=True,
+            timeout=5
+        )
+    except Exception:
+        pass
+
+# ── Main ───────────────────────────────────────────────────────────────────────
+
+def main():
+    args = sys.argv[1:]
+
+    # Gestión del modo template_seed
+    if not args and _is_template_seed():
+        if sys.stdin.isatty():
+            # Terminal real: mostrar menú interactivo
+            result = _prompt_mode()
+            if result in ("done", "error", "invalid"):
+                sys.exit(1 if result == "error" else 0)
+            # result == "banner" → continúa al banner normal
+        else:
+            # Sin TTY (script, agente, pipe): avisar y salir — no mostrar banner
+            # como si BAGO estuviera configurado cuando no lo está
+            print()
+            print("  ⚠  BAGO está en modo template_seed (clon sin configurar).")
+            print("  Ejecuta  python3 bago  en un terminal interactivo para configurarlo.")
+            print()
+            sys.exit(1)
+
+    # En arranque normal (no template_seed), comprobar si hay actualizaciones
+    elif not args and sys.stdin.isatty():
+        _startup_update_check()
+
+    # validate y health son comandos de solo lectura — no tocar state/
+    _READ_ONLY_CMDS = {"validate", "health"}
+    if not (args and args[0].lower() in _READ_ONLY_CMDS):
+        _auto_sync()
+
+    if not args:
+        subprocess.run(
+            ["python3", str(TOOLS / "bago_banner.py")],
+            cwd=str(BAGO_ROOT.parent)
+        )
+        if sys.stdin.isatty() and not _is_template_seed():
+            _prompt_project_menu()
+        return
+
+    cmd = args[0].lower()
+    rest = args[1:]
+
+    if cmd == "setup":
+        subprocess.run(
+            ["python3", str(TOOLS / "repo_context_guard.py"), "sync"],
+            cwd=str(BAGO_ROOT.parent)
+        )
+        _install_extensions()
+    elif cmd == "extensions":
+        _cmd_extensions()
+    elif cmd == "versions":
+        _cmd_versions()
+    elif cmd in COMMANDS:
+        subprocess.run(COMMANDS[cmd] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd in ("help", "--help", "-h"):
+        subprocess.run(
+            ["python3", str(TOOLS / "bago_banner.py"), "--mini"],
+            cwd=str(BAGO_ROOT.parent)
+        )
+        print("  Comandos disponibles:")
+        print("    bago setup")
+        print("    bago extensions")
+        print("    bago versions")
+        for k in COMMANDS:
+            print(f"    bago {k}")
+        print()
+    else:
+        print(f"  Comando desconocido: '{cmd}'")
+        print("  Usa: bago help")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
