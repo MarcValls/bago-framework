@@ -140,17 +140,81 @@ def analyze_complexity(filepath: str) -> dict:
         return {"loc": 0, "functions": 0, "classes": 0, "max_nesting": 0}
 
 
+# ─── JS/TS pre-compiled patterns ─────────────────────────────────────────────
+_JS_FN_RE = re.compile(
+    r'(?:'
+    r'(?<!\w)(?:async\s+)?function\s*\*?\s*\w*\s*\('                          # function decl/expr
+    r'|(?:const|let|var)\s+\w+\s*=\s*(?:async\s+)?(?:\([^)]*\)|\w+)\s*=>'    # arrow: const f = () =>
+    r'|^\s{2,}(?:static\s+)?(?:async\s+)?(?:get\s+|set\s+)?'                 # method shorthand indent
+    r'(?!(?:if|for|while|switch|return|else|try|catch|finally|throw'
+    r'|new|typeof|delete|void|yield|await|import|export|class'
+    r'|const|let|var|true|false|null|undefined)\b)'
+    r'\w+\s*\([^)]*\)\s*\{)',                                                   # name(args) {
+    re.MULTILINE,
+)
+_JS_CLASS_RE   = re.compile(r'(?<!\w)(?:abstract\s+)?class\s+\w+', re.MULTILINE)
+_JS_SIMPLE_ARROW = re.compile(r'(?:const|let|var)\s+\w+\s*=\s*(?:async\s+)?\w+\s*=>\s*\S')  # f = x => expr
+
+
+def _js_node_ast(filepath: str) -> Optional[dict]:
+    """Try Node.js + acorn for accurate JS/TS AST analysis. Returns None if unavailable."""
+    import tempfile, os
+    script = (
+        "const p=process.argv[2];"
+        "try{"
+        "const a=require('acorn'),s=require('fs').readFileSync(p,'utf8');"
+        "let fn=0,cl=0;"
+        "function w(n){"
+        "if(!n||typeof n!=='object')return;"
+        "const t=n.type;"
+        "if(t==='FunctionDeclaration'||t==='FunctionExpression'||t==='ArrowFunctionExpression')fn++;"
+        "if(t==='MethodDefinition'&&n.kind==='method')fn++;"
+        "if(t==='Property'&&n.value&&(n.value.type==='FunctionExpression'||n.value.type==='ArrowFunctionExpression'))fn++;"
+        "if(t==='ClassDeclaration'||t==='ClassExpression')cl++;"
+        "Object.values(n).forEach(v=>{if(Array.isArray(v))v.forEach(w);else if(v&&typeof v==='object'&&v.type)w(v);});}"
+        "const ast=a.parse(s,{ecmaVersion:2022,sourceType:'module'});"
+        "w(ast);console.log(JSON.stringify({functions:fn,classes:cl}));"
+        "}catch(e){process.exit(1);}"
+    )
+    tmp = None
+    try:
+        with tempfile.NamedTemporaryFile(suffix=".js", mode="w", delete=False) as f:
+            f.write(script); tmp = f.name
+        r = subprocess.run(["node", tmp, filepath],
+                           capture_output=True, text=True, timeout=10)
+        if r.returncode == 0 and r.stdout.strip():
+            return json.loads(r.stdout.strip())
+    except Exception:
+        pass
+    finally:
+        if tmp:
+            try: os.unlink(tmp)
+            except: pass
+    return None
+
+
 def analyze_js_complexity(filepath: str) -> dict:
-    """Rough JS/TS complexity: LOC + function count via regex."""
+    """JS/TS complexity: LOC + accurate function/class count.
+
+    Primary: Node.js + acorn AST (catches arrow fns, method shorthands,
+             object literal methods, getters/setters).
+    Fallback: enhanced regex covering the same patterns without Node.js.
+    """
     try:
         src   = Path(filepath).read_text(errors="replace")
         lines = src.splitlines()
         loc   = sum(1 for l in lines if l.strip() and not l.strip().startswith("//"))
-        funcs = len(re.findall(
-            r'\bfunction\b|\b=>\s*\{|\bclass\b|\basync\s+function\b',
-            src
-        ))
-        return {"loc": loc, "functions": funcs, "classes": 0, "max_nesting": 0}
+
+        # Try accurate AST parse via Node.js first
+        ast_result = _js_node_ast(filepath)
+        if ast_result:
+            return {"loc": loc, "functions": ast_result["functions"],
+                    "classes": ast_result["classes"], "max_nesting": 0}
+
+        # Enhanced regex fallback — covers what the old single-pattern missed
+        funcs   = len(_JS_FN_RE.findall(src)) + len(_JS_SIMPLE_ARROW.findall(src))
+        classes = len(_JS_CLASS_RE.findall(src))
+        return {"loc": loc, "functions": funcs, "classes": classes, "max_nesting": 0}
     except Exception:
         return {"loc": 0, "functions": 0, "classes": 0, "max_nesting": 0}
 
@@ -371,11 +435,22 @@ def run_tests():
     print("\nTests de multi-lenguaje y CI failures...")
     tmp2 = Path(tempfile.mkdtemp())
 
-    # T6: analyze_js_complexity
+    # T6: analyze_js_complexity — covers function, arrow+braces, arrow no-braces,
+    #     method shorthand, getter, class (separated from functions)
     js = tmp2 / "app.js"
-    js.write_text("function foo() {}\nconst bar = () => { return 1; }\nclass Baz {}\n")
+    js.write_text(
+        "function foo() {}\n"                      # regular function
+        "const bar = () => { return 1; }\n"        # arrow with braces
+        "const baz = x => x + 1\n"                 # arrow without braces  ← was missed
+        "const obj = {\n"
+        "  method() { return 0; }\n"               # object literal shorthand ← was missed
+        "}\n"
+        "class Baz {\n"
+        "  get value() { return 1; }\n"            # getter ← was missed
+        "}\n"
+    )
     cj = analyze_js_complexity(str(js))
-    if cj["functions"] >= 2 and cj["loc"] >= 2:
+    if cj["functions"] >= 4 and cj["classes"] >= 1 and cj["loc"] >= 5:
         print("  OK: hotspot:js_complexity")
     else:
         errors2 += 1; print(f"  FAIL: hotspot:js_complexity — {cj}")
