@@ -14,6 +14,18 @@ from pathlib import Path
 BAGO_ROOT = Path(__file__).resolve().parent.parent
 TOOLS     = BAGO_ROOT / "tools"
 
+# ─── Workspace selector (importación dinámica) ────────────────────────────────
+def _select_workspace() -> None:
+    """Llama al selector de workspace antes de mostrar el menú principal."""
+    import importlib.util
+    sel_path = TOOLS / "workspace_selector.py"
+    if not sel_path.exists():
+        return
+    spec = importlib.util.spec_from_file_location("workspace_selector", sel_path)
+    mod  = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    mod.select(skip_if_set=False)
+
 # ─── Colores ANSI ─────────────────────────────────────────────────────────────
 USE_COLOR = sys.stdout.isatty()
 
@@ -165,6 +177,9 @@ def main():
     print()
     print(BOLD(CYAN("BAGO")))
     print(DIM("Sistema operativo de trabajo técnico con IA"))
+
+    # Selección de workspace antes de mostrar el menú
+    _select_workspace()
 
     while True:
         choice = show_menu()
