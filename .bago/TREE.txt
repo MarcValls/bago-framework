@@ -440,6 +440,8 @@
 ./state/iterations/ITER-0034.json
 ./state/iterations/ITER-0035.json
 ./state/iterations/ITER-0036.json
+./state/iterations/ITER-0037.json
+./state/iterations/ITER-0038.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -680,6 +682,7 @@
 ./tools/branch_check.py
 ./tools/ci_baseline.py
 ./tools/ci_generator.py
+./tools/code_review.py
 ./tools/compare.py
 ./tools/competition_report.py
 ./tools/complexity.py
@@ -744,6 +747,7 @@
 ./tools/pre_commit_gen.py
 ./tools/quick_status.py
 ./tools/reconcile_state.py
+./tools/refactor_suggest.py
 ./tools/remind.py
 ./tools/repo_context_guard.py
 ./tools/repo_on.py

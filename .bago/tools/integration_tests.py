@@ -1019,6 +1019,24 @@ def test_metrics_export():
         _record("metrics_export:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_code_review():
+    """code_review.py --test pasa todos los tests."""
+    rc, out, _ = _run("code_review.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("code_review:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("code_review:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_refactor_suggest():
+    """refactor_suggest.py --test pasa todos los tests."""
+    rc, out, _ = _run("refactor_suggest.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("refactor_suggest:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("refactor_suggest:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1089,6 +1107,8 @@ ALL_TESTS = [
     (67, "duplicate_check",  test_duplicate_check),
     (68, "pre_commit_gen",   test_pre_commit_gen),
     (69, "metrics_export",   test_metrics_export),
+    (70, "code_review",      test_code_review),
+    (71, "refactor_suggest", test_refactor_suggest),
 ]
 
 

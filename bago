@@ -554,6 +554,16 @@ def main():
             ["python3", str(TOOLS / "metrics_export.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "code-review":
+        subprocess.run(
+            ["python3", str(TOOLS / "code_review.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "refactor-suggest":
+        subprocess.run(
+            ["python3", str(TOOLS / "refactor_suggest.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -752,6 +762,8 @@ def main():
                 "duplicate-check": "detecta bloques de código duplicados/casi-idénticos entre archivos",
                 "pre-commit-gen":  "genera .pre-commit-config.yaml con hooks BAGO + estándar industry",
                 "metrics-export":  "exporta métricas BAGO en formato JSON, Prometheus o CSV",
+                "code-review":     "reporte CI agregado: lint+complexity+secrets+dead+dup score 0-100",
+                "refactor-suggest": "sugerencias de refactorización: RF-W001..RF-I002 con explicación",
             }
             for k, desc in extra.items():
                 print(f"    bago {k:12s} → {desc}")
