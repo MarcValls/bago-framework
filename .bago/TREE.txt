@@ -76,6 +76,8 @@
 ./docs/PLANTILLA_EVALUACION_BRUTAL_BAGO.md
 ./docs/READER_REPORT.md
 ./docs/REVIEW-2026-04-22.md
+./docs/RULE_CATALOG.html
+./docs/RULE_CATALOG.md
 ./docs/V2_CONTRATO_CIERRE_ESCENARIO.md
 ./docs/V2_GUIA_EJECUTIVA.md
 ./docs/V2_PLAYBOOK_OPERATIVO.md
@@ -175,6 +177,7 @@
 ./docs/operation/templates/tpl_system_change.md
 ./docs/tools
 ./docs/tools/archive.md
+./docs/tools/bago_lint_cli.md
 ./docs/tools/compare.md
 ./docs/tools/config.md
 ./docs/tools/changelog.md
@@ -187,13 +190,19 @@
 ./docs/tools/goals.md
 ./docs/tools/habit.md
 ./docs/tools/insights.md
+./docs/tools/install_deps.md
+./docs/tools/js_ast_scanner.md
 ./docs/tools/lint.md
+./docs/tools/lint_report.md
 ./docs/tools/metrics.md
+./docs/tools/multi_scan.md
 ./docs/tools/notes.md
 ./docs/tools/patch.md
+./docs/tools/permission_check.md
 ./docs/tools/remind.md
 ./docs/tools/report.md
 ./docs/tools/review.md
+./docs/tools/rule_catalog.md
 ./docs/tools/search.md
 ./docs/tools/session-stats.md
 ./docs/tools/snapshot.md
@@ -418,6 +427,9 @@
 ./state/iterations/ITER-0021.json
 ./state/iterations/ITER-0022.json
 ./state/iterations/ITER-0023.json
+./state/iterations/ITER-0024.json
+./state/iterations/ITER-0025.json
+./state/iterations/ITER-0026.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -692,6 +704,7 @@
 ./tools/js_ast_scanner.js
 ./tools/launch_workflow_maestro.sh
 ./tools/lint.py
+./tools/lint_report.py
 ./tools/metrics_trends.py
 ./tools/multi_scan.py
 ./tools/notes.py
