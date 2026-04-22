@@ -766,6 +766,34 @@ def test_bago_lint_cli():
         _record("bago_lint_cli:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_diff_findings():
+    """diff_findings() devuelve new/fixed/persistent correctamente."""
+    import sys
+    sys.path.insert(0, str(TOOLS))
+    try:
+        from findings_engine import Finding, diff_findings
+        f_before = [
+            Finding("id1", "error",   "a.py", 5, 0, "BAGO-E001", "bago_lint", "bare except"),
+            Finding("id2", "warning", "a.py", 10, 0, "BAGO-W001", "bago_lint", "utcnow"),
+        ]
+        f_after = [
+            Finding("id2", "warning", "a.py", 10, 0, "BAGO-W001", "bago_lint", "utcnow"),
+            Finding("id3", "warning", "a.py", 20, 0, "BAGO-W004", "bago_lint", "hardcoded"),
+        ]
+        diff = diff_findings(f_before, f_after)
+        ok = (
+            len(diff["new"]) == 1 and diff["new"][0].rule == "BAGO-W004" and
+            len(diff["fixed"]) == 1 and diff["fixed"][0].rule == "BAGO-E001" and
+            len(diff["persistent"]) == 1 and diff["persistent"][0].rule == "BAGO-W001"
+        )
+        if ok:
+            _record("diff_findings:new_fixed_persistent", PASS, "new=W004 fixed=E001 persistent=W001")
+        else:
+            _record("diff_findings:new_fixed_persistent", FAIL, str(diff))
+    except Exception as e:
+        _record("diff_findings:import", FAIL, str(e))
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -812,6 +840,7 @@ ALL_TESTS = [
     (43, "bago_lint_rules", test_bago_lint_rules),
     (44, "bago_lint_fix",   test_bago_lint_autofix),
     (45, "bago_lint_cli",   test_bago_lint_cli),
+    (46, "diff_findings",   test_diff_findings),
 ]
 
 

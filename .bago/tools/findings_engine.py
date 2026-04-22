@@ -867,6 +867,32 @@ def _make_utcnow_patch(filepath: str, lineno: int, line: str) -> str:
     )
 
 
+def diff_findings(before: list, after: list) -> dict:
+    """Compare two lists of Finding objects.
+
+    Identity key: (file, line, rule) — robust across re-scans.
+    Returns dict with keys:
+      'new'        — findings in after but not in before
+      'fixed'      — findings in before but not in after
+      'persistent' — findings in both runs
+    """
+    def _key(f: "Finding") -> tuple:
+        return (f.file, f.line, f.rule)
+
+    before_keys = {_key(f): f for f in before}
+    after_keys  = {_key(f): f for f in after}
+
+    new_keys        = set(after_keys) - set(before_keys)
+    fixed_keys      = set(before_keys) - set(after_keys)
+    persistent_keys = set(before_keys) & set(after_keys)
+
+    return {
+        "new":        [after_keys[k] for k in sorted(new_keys)],
+        "fixed":      [before_keys[k] for k in sorted(fixed_keys)],
+        "persistent": [after_keys[k] for k in sorted(persistent_keys)],
+    }
+
+
 # ─── Storage ─────────────────────────────────────────────────────────────────
 
 class FindingsDB:
@@ -1081,7 +1107,27 @@ def run_tests():
         fail("engine:noqa_suppression", f"rules: {rules5}, expected W003 gone + W002 present")
     shutil.rmtree(tmp5)
 
-    total = 11; passed = total - errors
+    # T8d: diff_findings
+    f_before = [
+        Finding("id1", "warning", "a.py", 10, 0, "BAGO-W001", "bago_lint", "old utcnow"),
+        Finding("id2", "error",   "a.py", 20, 0, "BAGO-E001", "bago_lint", "bare except", autofixable=True),
+    ]
+    f_after = [
+        Finding("id1", "warning", "a.py", 10, 0, "BAGO-W001", "bago_lint", "old utcnow"),
+        Finding("id3", "warning", "a.py", 30, 0, "BAGO-W004", "bago_lint", "hardcoded path"),
+    ]
+    diff = diff_findings(f_before, f_after)
+    ok_diff = (
+        len(diff["new"]) == 1 and diff["new"][0].rule == "BAGO-W004" and
+        len(diff["fixed"]) == 1 and diff["fixed"][0].rule == "BAGO-E001" and
+        len(diff["persistent"]) == 1 and diff["persistent"][0].rule == "BAGO-W001"
+    )
+    if ok_diff:
+        ok("engine:diff_findings")
+    else:
+        fail("engine:diff_findings", str(diff))
+
+    total = 12; passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors: sys.exit(1)
 

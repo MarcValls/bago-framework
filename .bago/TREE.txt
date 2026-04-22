@@ -412,6 +412,7 @@
 ./state/iterations/ITER-0015.json
 ./state/iterations/ITER-0016.json
 ./state/iterations/ITER-0017.json
+./state/iterations/ITER-0018.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json

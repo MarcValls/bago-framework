@@ -12,13 +12,14 @@ Scans Python files in a directory and reports code quality issues:
   BAGO-I002  TODO/FIXME/HACK comments — tech debt
 
 Usage:
-    bago bago-lint [path]           scan path (default: current dir)
-    bago bago-lint --fix            apply autofixable patches
-    bago bago-lint --preview        show what --fix would do (dry run)
-    bago bago-lint --rule BAGO-W001 filter to specific rule
-    bago bago-lint --json           output JSON
-    bago bago-lint --summary        counts by rule only
-    bago bago-lint --test           run self-tests
+    bago bago-lint [path]             scan path (default: current dir)
+    bago bago-lint --fix              apply autofixable patches
+    bago bago-lint --preview          show what --fix would do (dry run)
+    bago bago-lint --rule BAGO-W001   filter to specific rule
+    bago bago-lint --json             output JSON (saves snapshot for --since)
+    bago bago-lint --since FILE.json  diff against a previous JSON snapshot
+    bago bago-lint --summary          counts by rule only
+    bago bago-lint --test             run self-tests
 """
 
 from __future__ import annotations
@@ -175,7 +176,25 @@ def _print_summary(findings: list) -> None:
         print(f"  {sev}  {BOLD}{rule}{RESET}  {c} ocurrencias{fix}")
 
 
-# ── Main ─────────────────────────────────────────────────────────────────────
+def _print_diff(diff: dict, base: Path) -> None:
+    """Print the result of diff_findings() with coloured new/fixed/persistent sections."""
+    new        = diff["new"]
+    fixed      = diff["fixed"]
+    persistent = diff["persistent"]
+
+    print(f"\n  {BOLD}Diff de hallazgos:{RESET}")
+    print(f"  {GREEN}✓ Resueltos:    {len(fixed):3d}{RESET}")
+    print(f"  {RED}✗ Nuevos:       {len(new):3d}{RESET}")
+    print(f"  {DIM}  Persistentes: {len(persistent):3d}{RESET}\n")
+
+    if new:
+        print(f"  {BOLD}{RED}── NUEVOS ──{RESET}")
+        _print_findings(new, base)
+
+    if fixed:
+        print(f"  {BOLD}{GREEN}── RESUELTOS ──{RESET}")
+        _print_findings(fixed, base)
+
 
 def main() -> int:
     p = argparse.ArgumentParser(
@@ -187,7 +206,8 @@ def main() -> int:
     p.add_argument("--fix",     action="store_true", help="Aplicar patches autofixables")
     p.add_argument("--preview", action="store_true", help="Mostrar qué haría --fix (dry run)")
     p.add_argument("--rule",    default=None, help="Filtrar a regla específica (ej: BAGO-W001)")
-    p.add_argument("--json",    action="store_true", help="Output JSON")
+    p.add_argument("--json",    action="store_true", help="Output JSON (snapshot para --since)")
+    p.add_argument("--since",   default=None, metavar="FILE", help="Diff contra snapshot JSON anterior")
     p.add_argument("--summary", action="store_true", help="Solo totales por regla")
     p.add_argument("--test",    action="store_true", help="Ejecutar self-tests")
     args = p.parse_args()
@@ -204,6 +224,34 @@ def main() -> int:
 
     if args.rule:
         findings = [f for f in findings if f.rule == args.rule]
+
+    # ── --since: diff mode ────────────────────────────────────────────────────
+    if args.since:
+        since_path = Path(args.since)
+        if not since_path.exists():
+            print(f"ERROR: snapshot no encontrado: {since_path}", file=sys.stderr)
+            return 1
+        try:
+            raw = json.loads(since_path.read_text(encoding="utf-8"))
+            before = [fe.Finding.from_dict({
+                "id": item.get("id", ""),
+                "severity": item.get("severity", "warning"),
+                "file": item.get("file", ""),
+                "line": item.get("line", 0),
+                "col": item.get("col", 0),
+                "rule": item.get("rule", ""),
+                "source": item.get("source", "bago_lint"),
+                "message": item.get("message", ""),
+                "fix_suggestion": item.get("fix_suggestion", ""),
+                "autofixable": item.get("autofixable", False),
+            }) for item in raw]
+        except Exception as e:
+            print(f"ERROR: no se pudo leer snapshot: {e}", file=sys.stderr)
+            return 1
+        diff = fe.diff_findings(before, findings)
+        _print_diff(diff, target)
+        has_new_errors = any(f.severity == "error" for f in diff["new"])
+        return 1 if has_new_errors else 0
 
     if args.json:
         data = [
@@ -334,10 +382,50 @@ def _run_tests() -> int:
     else:
         fail("cli:json_structure", str(j[:1]))
 
-    for t in [tmp, tmp2, tmp3, tmp4]:
+    # T5: --since diff mode
+    tmp5 = Path(tempfile.mkdtemp())
+    py5 = tmp5 / "evolving.py"
+    # "before" snapshot: has bare except only
+    py5.write_text("try:\n    pass\nexcept:\n    pass\n")
+    before_findings = fe.run_bago_lint(str(tmp5))
+    snapshot = [
+        {"file": f.file, "line": f.line, "rule": f.rule,
+         "severity": f.severity, "message": f.message,
+         "autofixable": f.autofixable, "fix_suggestion": f.fix_suggestion,
+         "id": f.id, "col": f.col, "source": f.source}
+        for f in before_findings
+    ]
+    snapshot_file = tmp5 / "baseline.json"
+    snapshot_file.write_text(json.dumps(snapshot), encoding="utf-8")
+
+    # "after" scan: fixed the except, but added an eval
+    py5.write_text("try:\n    pass\nexcept Exception:\n    pass\nx = eval('1')\n")
+    after_findings = fe.run_bago_lint(str(tmp5))
+
+    raw_snap = json.loads(snapshot_file.read_text(encoding="utf-8"))
+    b4 = [fe.Finding.from_dict({
+        "id": item.get("id", ""), "severity": item.get("severity", "warning"),
+        "file": item.get("file", ""), "line": item.get("line", 0),
+        "col": item.get("col", 0), "rule": item.get("rule", ""),
+        "source": item.get("source", "bago_lint"), "message": item.get("message", ""),
+        "fix_suggestion": item.get("fix_suggestion", ""),
+        "autofixable": item.get("autofixable", False),
+    }) for item in raw_snap]
+    diff = fe.diff_findings(b4, after_findings)
+
+    ok_diff = (
+        any(f.rule == "BAGO-W002" for f in diff["new"]) and
+        any(f.rule == "BAGO-E001" for f in diff["fixed"])
+    )
+    if ok_diff:
+        ok("cli:diff_since")
+    else:
+        fail("cli:diff_since", f"new={[f.rule for f in diff['new']]} fixed={[f.rule for f in diff['fixed']]}")
+
+    for t in [tmp, tmp2, tmp3, tmp4, tmp5]:
         shutil.rmtree(t, ignore_errors=True)
 
-    total = 4
+    total = 5
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     return 0 if not errors else 1
