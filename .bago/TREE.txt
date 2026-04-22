@@ -458,6 +458,7 @@
 ./state/iterations/ITER-0050.json
 ./state/iterations/ITER-0051.json
 ./state/iterations/ITER-0052.json
+./state/iterations/ITER-0053.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -685,7 +686,9 @@
 ./tools/archive.py
 ./tools/artifact_counter.py
 ./tools/audit_v2.py
+./tools/auto_heal.py
 ./tools/auto_mode.py
+./tools/auto_register.py
 ./tools/autofix.py
 ./tools/bago_ask.py
 ./tools/bago_banner.py
@@ -748,6 +751,7 @@
 ./tools/inspect_workflow.py
 ./tools/install_deps.py
 ./tools/integration_tests.py
+./tools/intent_router.py
 ./tools/iteration_logger.py
 ./tools/js_ast_scanner.js
 ./tools/launch_workflow_maestro.sh
@@ -760,6 +764,7 @@
 ./tools/multi_scan.py
 ./tools/naming_check.py
 ./tools/notes.py
+./tools/orchestrator.py
 ./tools/pack_dashboard.py
 ./tools/patch.py
 ./tools/perf

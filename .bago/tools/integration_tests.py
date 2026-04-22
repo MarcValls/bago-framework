@@ -1155,6 +1155,42 @@ def test_commit_readiness():
         _record("commit_readiness:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_auto_register():
+    """auto_register.py --test pasa todos los tests."""
+    rc, out, _ = _run("auto_register.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("auto_register:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("auto_register:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_intent_router():
+    """intent_router.py --test pasa todos los tests."""
+    rc, out, _ = _run("intent_router.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("intent_router:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("intent_router:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_orchestrator():
+    """orchestrator.py --test pasa todos los tests."""
+    rc, out, _ = _run("orchestrator.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("orchestrator:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("orchestrator:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_auto_heal():
+    """auto_heal.py --test pasa todos los tests."""
+    rc, out, _ = _run("auto_heal.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("auto_heal:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("auto_heal:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1240,6 +1276,10 @@ ALL_TESTS = [
     (82, "tool_search",      test_tool_search),
     (83, "legacy_fixer",     test_legacy_fixer),
     (84, "commit_readiness", test_commit_readiness),
+    (85, "auto_register",    test_auto_register),
+    (86, "intent_router",    test_intent_router),
+    (87, "orchestrator",     test_orchestrator),
+    (88, "auto_heal",        test_auto_heal),
 ]
 
 

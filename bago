@@ -629,6 +629,26 @@ def main():
             ["python3", str(TOOLS / "commit_readiness.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "auto-register":
+        subprocess.run(
+            ["python3", str(TOOLS / "auto_register.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "intent":
+        subprocess.run(
+            ["python3", str(TOOLS / "intent_router.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "orchestrate":
+        subprocess.run(
+            ["python3", str(TOOLS / "orchestrator.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "auto-heal":
+        subprocess.run(
+            ["python3", str(TOOLS / "auto_heal.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
