@@ -261,6 +261,106 @@ def parse_eslint(output: str, root: str = "") -> list:
     return findings
 
 
+def parse_ast_js(output: str, root: str = "") -> list:
+    """
+    Parse JSON output from js_ast_scanner.js — BAGO's AST-based JS/TS linter.
+
+    Each item: {file, line, col, rule, severity, source, message,
+                fix_suggestion, autofixable}
+    """
+    findings = []
+    try:
+        data = json.loads(output)
+        if not isinstance(data, list):
+            return findings
+        for item in data:
+            filepath = item.get("file", "")
+            if root and filepath.startswith(root):
+                filepath = filepath[len(root):].lstrip("/")
+            line = item.get("line", 0)
+            rule = item.get("rule", "JS-UNKNOWN")
+            fid  = _make_id("bago_ast", filepath, line, rule)
+            findings.append(Finding(
+                id=fid,
+                severity=item.get("severity", "warning"),
+                file=filepath,
+                line=line,
+                col=item.get("col", 0),
+                rule=rule,
+                source="bago_ast",
+                message=item.get("message", ""),
+                fix_suggestion=item.get("fix_suggestion", ""),
+                autofixable=item.get("autofixable", False),
+                context_lines=_read_context(filepath, line),
+            ))
+    except (json.JSONDecodeError, TypeError, KeyError):
+        pass
+    return findings
+
+
+def run_js_ast_scan(target: str) -> list:
+    """Run js_ast_scanner.js on target and return Finding list.
+
+    Requires node + acorn + acorn-walk.
+    Returns empty list (never raises) if node or scanner unavailable.
+    """
+    import shutil
+    import subprocess as sp
+
+    scanner = Path(__file__).parent / "js_ast_scanner.js"
+    if not scanner.exists():
+        return []
+    node = shutil.which("node")
+    if not node:
+        return []
+    try:
+        result = sp.run(
+            [node, str(scanner), target, "--json"],
+            capture_output=True, text=True, timeout=30,
+        )
+        if result.returncode in (0, 1):  # 1 = errors found, still valid output
+            return parse_ast_js(result.stdout, root=target)
+    except Exception:  # noqa: BAGO-W002
+        pass
+    return []
+
+
+    """
+    ESLint --format=json output:
+    [{filePath, messages:[{ruleId,severity,message,line,column,fix}]}]
+    severity: 1=warning, 2=error
+    """
+    findings = []
+    try:
+        data = json.loads(output)
+        if not isinstance(data, list):
+            return findings
+        for file_obj in data:
+            filepath = file_obj.get("filePath", "")
+            if root and filepath.startswith(root):
+                filepath = filepath[len(root):].lstrip("/")
+            for msg in file_obj.get("messages", []):
+                sev_int = msg.get("severity", 1)
+                severity = "error" if sev_int == 2 else "warning"
+                rule  = msg.get("ruleId") or "eslint"
+                line  = msg.get("line", 0)
+                col   = msg.get("column", 0)
+                text  = msg.get("message", "")
+                has_fix = bool(msg.get("fix"))
+                fid   = _make_id("eslint", filepath, line, rule)
+                fix_sug = f"eslint --fix puede corregir esta regla ({rule})" if has_fix else ""
+                findings.append(Finding(
+                    id=fid, severity=severity,
+                    file=filepath, line=line, col=col,
+                    rule=rule, source="eslint", message=text,
+                    fix_suggestion=fix_sug, autofixable=has_fix,
+                    context_lines=_read_context(filepath, line),
+                ))
+    except (json.JSONDecodeError, TypeError, KeyError):
+        pass
+    return findings
+
+
 def parse_golangci(output: str, root: str = "") -> list:
     """
     golangci-lint --out-format=json output:

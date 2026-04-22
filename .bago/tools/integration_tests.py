@@ -51,6 +51,18 @@ def _run(tool, args=None, cwd=None, timeout=30):
         return -1, "", str(e)
 
 
+def _run_raw(cmd, cwd=None, timeout=30):
+    """Ejecuta comando arbitrario y retorna (returncode, stdout, stderr)."""
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True,
+                           timeout=timeout, cwd=str(cwd or PACK_PARENT))
+        return r.returncode, r.stdout, r.stderr
+    except subprocess.TimeoutExpired:
+        return -1, "", "TIMEOUT"
+    except Exception as e:
+        return -1, "", str(e)
+
+
 def _record(name, status, detail=""):
     results.append((name, status, detail))
     marker = "✅" if status == PASS else ("⏭" if status == SKIP else "❌")
@@ -803,6 +815,21 @@ def test_multi_scan():
         _record("multi_scan:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_js_ast_scanner():
+    """js_ast_scanner.js --test pasa todos los tests."""
+    import shutil
+    node = shutil.which("node")
+    scanner = TOOLS / "js_ast_scanner.js"
+    if not node or not scanner.exists():
+        _record("js_ast:available", SKIP, "node o js_ast_scanner.js no disponible")
+        return
+    rc, out, _ = _run_raw([node, str(scanner), "--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("js_ast:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("js_ast:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -851,6 +878,7 @@ ALL_TESTS = [
     (45, "bago_lint_cli",   test_bago_lint_cli),
     (46, "diff_findings",   test_diff_findings),
     (47, "multi_scan",      test_multi_scan),
+    (48, "js_ast_scanner",  test_js_ast_scanner),
 ]
 
 

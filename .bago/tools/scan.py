@@ -157,6 +157,11 @@ def run_scan(target: str, sources: Optional[list] = None,
             if not err2:
                 db.add(findings); db.meta["sources"].append("eslint")
 
+        # Always run BAGO's own AST-based JS linter (no eslint required)
+        ast_findings = fe.run_js_ast_scan(target)
+        if ast_findings:
+            db.add(ast_findings); db.meta["sources"].append("bago_ast")
+
     elif lang == "go":
         findings, err = fe.run_linter(
             ["golangci-lint", "run", "--out-format=json", target],

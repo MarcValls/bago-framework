@@ -133,16 +133,25 @@ def _scan_python(target: str) -> List:
 
 
 def _scan_js(target: str) -> List:
-    """Run ESLint via npx."""
-    findings, err = fe.run_linter(
+    """Run ESLint via npx + BAGO AST scanner."""
+    findings = []
+    eslint_findings, err = fe.run_linter(
         ["npx", "--yes", "eslint", "--format=json", target],
         fe.parse_eslint, cwd=str(BAGO_ROOT.parent),
     )
-    if err:
-        findings, _ = fe.run_linter(
+    if not err:
+        findings.extend(eslint_findings)
+    else:
+        eslint2, err2 = fe.run_linter(
             ["eslint", "--format=json", target],
             fe.parse_eslint, cwd=str(BAGO_ROOT.parent),
         )
+        if not err2:
+            findings.extend(eslint2)
+
+    # Always run BAGO AST scanner — works without eslint
+    ast_findings = fe.run_js_ast_scan(target)
+    findings.extend(ast_findings)
     return findings
 
 

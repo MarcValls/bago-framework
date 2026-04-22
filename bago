@@ -438,6 +438,17 @@ def main():
             ["python3", str(TOOLS / "multi_scan.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "ast-scan":
+        import shutil as _sh
+        _node = _sh.which("node")
+        _scanner = TOOLS / "js_ast_scanner.js"
+        if _node and _scanner.exists():
+            subprocess.run(
+                [_node, str(_scanner)] + rest,
+                cwd=str(BAGO_ROOT.parent)
+            )
+        else:
+            print("ERROR: node no encontrado o js_ast_scanner.js ausente")
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -611,6 +622,7 @@ def main():
                 "scan":          "analiza el codigo con multiples linters y genera hallazgos unificados",
                 "bago-lint":     "linter propio sin dependencias: BAGO-E001/W001-W004/I001-I002 + --fix",
                 "multi-scan":    "escanea TODOS los lenguajes del proyecto en una sola pasada",
+                "ast-scan":      "linter JS/TS basado en AST (acorn) — detecta arrow fn, eval, debugger, ==",
                 "hotspot":       "detecta hotspots: archivos con mas cambios + fallos + complejidad",
                 "fix":           "autofix serio: genera y aplica parches concretos con validacion",
                 "gh":            "integracion GitHub: check runs y comentarios en PRs",

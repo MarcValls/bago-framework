@@ -414,6 +414,7 @@
 ./state/iterations/ITER-0017.json
 ./state/iterations/ITER-0018.json
 ./state/iterations/ITER-0019.json
+./state/iterations/ITER-0020.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -684,6 +685,7 @@
 ./tools/inspect_workflow.py
 ./tools/integration_tests.py
 ./tools/iteration_logger.py
+./tools/js_ast_scanner.js
 ./tools/launch_workflow_maestro.sh
 ./tools/lint.py
 ./tools/metrics_trends.py
