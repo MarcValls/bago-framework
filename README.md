@@ -106,6 +106,50 @@ BAGO amplifica el trabajo con IA resolviendo:
 | `bago tags` | `tags.py` | Etiquetado con índice y búsqueda rápida |
 | `bago flow` | `flow.py` | Flowchart ASCII de pipelines W0-W9 |
 
+### Fase 4 — Subtools internos (S21–S23)
+
+> Herramientas de soporte sin comando CLI propio. Son consumidas internamente por otras tools y no están expuestas directamente al usuario.
+
+#### Motor de análisis estático (soporte para `scan` / `hotspot` / `fix` / `gh`)
+
+| Herramienta | Descripción |
+|-------------|-------------|
+| `findings_engine.py` | Motor de hallazgos unificado: parsing de linters, modelo canónico de Finding (id, severity, file, line, rule, fix_suggestion, autofixable, fix_patch) |
+| `risk_matrix.py` | Matriz de riesgo: categorías Security / Reliability / Maintainability / VelocityDrag × Probabilidad/Impacto → Exposición cuantificada |
+| `debt_ledger.py` | Ledger de deuda técnica: cuantifica en horas y € con cuadrantes Reckless/Prudent × Deliberate/Inadvertent |
+| `impact_engine.py` | Motor de impacto: traduce health score y deuda técnica en métricas de negocio (multiplicador de velocidad, €/trimestre) |
+
+#### Gestión de estado y contexto
+
+| Herramienta | Descripción |
+|-------------|-------------|
+| `state_store.py` | Capa de abstracción de almacenamiento: desacopla las tools del backend concreto |
+| `context_collector.py` | Recolecta y resume contexto operativo de uno o varios directorios |
+| `context_map.py` | Mapa de contexto distribuido: descubre instalaciones `.bago/` bajo una raíz y construye mapa jerárquico |
+| `reconcile_state.py` | Reconcilia el inventario en `global_state.json` con los archivos reales en `state/` |
+| `artifact_counter.py` | Mide la producción de artefactos útiles por sesión (excluye artefactos de protocolo) |
+
+#### Validación y contratos
+
+| Herramienta | Descripción |
+|-------------|-------------|
+| `validate_manifest.py` | Valida integridad y esquema del manifiesto `pack.json` |
+| `validate_state.py` | Valida consistencia del estado: sessions / changes / evidences |
+| `contracts.py` | Sistema de contratos de estado verificables con deadline y auditoría |
+| `session_preflight.py` | Preflight W7: verifica reglas ESCENARIO-001 antes de abrir sesión |
+
+#### Gobernanza y utilidades compartidas
+
+| Herramienta | Descripción |
+|-------------|-------------|
+| `repo_context_guard.py` | Guard de contexto: detecta `match` / `mismatch` / `new` al cambiar de repo |
+| `target_selector.py` | Selector seguro de directorio objetivo con candidatos priorizados y opción manual |
+| `vertice_activator.py` | Evaluador de señales para activar revisión Vértice (sesiones W0 sin decisiones, etc.) |
+| `bago_utils.py` | Utilidades compartidas: print_ok / fail / skip, runner de tests inline para todos los tools |
+| `session_stats.py` | Estadísticas agregadas de sesiones por tipo de tarea, workflow y rol |
+| `stability_summary.py` | Resume informes de sandbox (smoke/VM/soak) y validadores canónicos |
+| `efficiency_meter.py` | Compara métricas de salud y productividad entre cleanversions |
+
 ### Fase 5 — Inteligencia y rutinas (S24–S33)
 
 | Comando | Herramienta | Descripción |
