@@ -428,6 +428,11 @@ def main():
             ["python3", str(TOOLS / "scan.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "bago-lint":
+        subprocess.run(
+            ["python3", str(TOOLS / "bago_lint_cli.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -599,6 +604,7 @@ def main():
                 "notes":         "notas ligeras por sesion: add/list/show/delete",
                 "template":      "plantillas para nuevas sesiones con campos prefilled",
                 "scan":          "analiza el codigo con multiples linters y genera hallazgos unificados",
+                "bago-lint":     "linter propio sin dependencias: BAGO-E001/W001-W004/I001-I002 + --fix",
                 "hotspot":       "detecta hotspots: archivos con mas cambios + fallos + complejidad",
                 "fix":           "autofix serio: genera y aplica parches concretos con validacion",
                 "gh":            "integracion GitHub: check runs y comentarios en PRs",

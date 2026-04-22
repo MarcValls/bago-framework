@@ -1,12 +1,12 @@
 # tools
 
-Esta carpeta contiene **90 herramientas** Python del framework BAGO.
+Esta carpeta contiene **91 herramientas** Python del framework BAGO.
 
 > **Inventario completo:** ver `.bago/docs/tools/` (31 archivos de documentación individual).
 > **Referencia rápida:** ver `.bago/docs/BAGO_REFERENCIA_COMPLETA.md`.
 > **Tests:** `python3 .bago/tools/integration_tests.py` → 55/55 ALL PASS.
 
-## Herramientas por categoría (90 total)
+## Herramientas por categoría (91 total)
 
 ### Validación y salud del pack
 - `validate_manifest.py` — Integridad y esquema de `pack.json`
@@ -26,6 +26,7 @@ Esta carpeta contiene **90 herramientas** Python del framework BAGO.
 - `hotspot.py` — Hotspots: archivos con más cambios + fallos + complejidad
 - `autofix.py` — Autofix con generación y aplicación de parches validados
 - `findings_engine.py` — Motor de hallazgos: parsing linters, modelo canónico Finding
+- `bago_lint_cli.py` — CLI dedicado: bago bago-lint con 7 reglas, --fix, --preview, --json
 - `risk_matrix.py` — Matriz de riesgo cuantificada (Security/Reliability/Maintainability)
 - `debt_ledger.py` — Ledger de deuda técnica en horas y € (cuadrantes Reckless/Prudent)
 - `impact_engine.py` — Impacto de negocio: velocidad, €/trimestre

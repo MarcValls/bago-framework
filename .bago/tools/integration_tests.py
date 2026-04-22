@@ -757,6 +757,15 @@ def test_bago_lint_autofix():
         _record("bago_lint:patches", FAIL, str(e))
 
 
+def test_bago_lint_cli():
+    """bago_lint_cli.py --test pasa todos los tests."""
+    rc, out, _ = _run("bago_lint_cli.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("bago_lint_cli:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("bago_lint_cli:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -802,6 +811,7 @@ ALL_TESTS = [
     (42, "routing_count",   test_routing_count),
     (43, "bago_lint_rules", test_bago_lint_rules),
     (44, "bago_lint_fix",   test_bago_lint_autofix),
+    (45, "bago_lint_cli",   test_bago_lint_cli),
 ]
 
 

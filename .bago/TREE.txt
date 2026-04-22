@@ -410,6 +410,8 @@
 ./state/iterations/ITER-0013.json
 ./state/iterations/ITER-0014.json
 ./state/iterations/ITER-0015.json
+./state/iterations/ITER-0016.json
+./state/iterations/ITER-0017.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -641,6 +643,7 @@
 ./tools/bago_banner.py
 ./tools/bago_chat_server.py
 ./tools/bago_debug.py
+./tools/bago_lint_cli.py
 ./tools/bago_on.py
 ./tools/bago_search.py
 ./tools/bago_start.py
