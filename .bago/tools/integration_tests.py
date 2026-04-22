@@ -1191,6 +1191,15 @@ def test_auto_heal():
         _record("auto_heal:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_bago_config():
+    """bago_config.py --test pasa todos los tests."""
+    rc, out, _ = _run("bago_config.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("bago_config:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("bago_config:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1280,6 +1289,7 @@ ALL_TESTS = [
     (86, "intent_router",    test_intent_router),
     (87, "orchestrator",     test_orchestrator),
     (88, "auto_heal",        test_auto_heal),
+    (89, "bago_config",      test_bago_config),
 ]
 
 

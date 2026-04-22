@@ -459,6 +459,8 @@
 ./state/iterations/ITER-0051.json
 ./state/iterations/ITER-0052.json
 ./state/iterations/ITER-0053.json
+./state/iterations/ITER-0054.json
+./state/iterations/ITER-0055.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -692,6 +694,7 @@
 ./tools/autofix.py
 ./tools/bago_ask.py
 ./tools/bago_banner.py
+./tools/bago_config.py
 ./tools/bago_chat_server.py
 ./tools/bago_debug.py
 ./tools/bago_lint_cli.py

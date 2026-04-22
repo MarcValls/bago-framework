@@ -649,6 +649,11 @@ def main():
             ["python3", str(TOOLS / "auto_heal.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "config":
+        subprocess.run(
+            ["python3", str(TOOLS / "bago_config.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
