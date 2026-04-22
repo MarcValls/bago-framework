@@ -2,9 +2,9 @@
 
 > Sistema operativo de trabajo técnico para programación con IA
 
-![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%20102%2F102-brightgreen) ![tools](https://img.shields.io/badge/tools-135-blue) ![version](https://img.shields.io/badge/versión-3.0-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
+![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%20102%2F102-brightgreen) ![tools](https://img.shields.io/badge/tools-136-blue) ![version](https://img.shields.io/badge/versión-3.0-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
 
-**`health 🟢 100/100`** · **`tests ✅ 102/102`** · **`tools 🔧 135`** · **`versión 3.0`** · 12 workflows · Auto-gobernanza e inteligencia de intent integrada
+**`health 🟢 100/100`** · **`tests ✅ 102/102`** · **`tools 🔧 136`** · **`versión 3.0`** · 12 workflows · Auto-gobernanza e inteligencia de intent integrada
 
 ---
 
