@@ -16,7 +16,7 @@ Uso:
     bago scan --json                   → output JSON completo
     bago scan --last                   → muestra el último scan guardado
     bago scan --autofixable            → muestra solo hallazgos con autofix disponible
-    bago scan --lang py|js|go|auto     → fuerza lenguaje (auto = detecta del target)
+    bago scan --lang py|js|go|auto|java|csharp|ruby|php|swift|kotlin|shell|terraform|yaml
     bago scan --test                   → tests integrados
 """
 
@@ -35,18 +35,55 @@ BOLD  = "\033[1m"; RESET = "\033[0m"; DIM = "\033[2m"; GREEN = "\033[32m"
 
 
 def _detect_lang(target: str) -> str:
-    """Auto-detect dominant language from file extensions in target."""
+    """Auto-detect dominant language from file extensions and manifests in target."""
     p = Path(target)
     if not p.is_dir():
         suf = Path(target).suffix.lower()
-        return {"py": "py", ".js": "js", ".ts": "js", ".go": "go",
-                ".rs": "rust"}.get(suf, "py")
-    counts = {"py": 0, "js": 0, "go": 0, "rust": 0}
+        EXT_MAP = {
+            ".py": "py", ".js": "js", ".ts": "js", ".go": "go",
+            ".rs": "rust", ".java": "java", ".cs": "csharp",
+            ".rb": "ruby", ".php": "php", ".swift": "swift",
+            ".kt": "kotlin", ".kts": "kotlin",
+            ".sh": "shell", ".bash": "shell",
+            ".tf": "terraform", ".hcl": "terraform",
+            ".yml": "yaml", ".yaml": "yaml",
+        }
+        return EXT_MAP.get(suf, "py")
+
+    # Manifest-based detection (deterministic, takes priority)
+    if (p / "pom.xml").exists() or (p / "build.gradle").exists() or (p / "build.gradle.kts").exists():
+        # Use next() to avoid scanning the full tree unnecessarily
+        return "kotlin" if next(p.rglob("*.kt"), None) is not None else "java"
+    if any(p.glob("*.csproj")) or any(p.glob("*.sln")):
+        return "csharp"
+    if (p / "Gemfile").exists():
+        return "ruby"
+    if (p / "composer.json").exists():
+        return "php"
+    if (p / "Package.swift").exists():
+        return "swift"
+
+    # File-extension counting fallback
+    counts = {
+        "py": 0, "js": 0, "go": 0, "rust": 0, "java": 0,
+        "csharp": 0, "ruby": 0, "php": 0, "swift": 0, "kotlin": 0,
+        "shell": 0, "terraform": 0, "yaml": 0,
+    }
     for f in p.rglob("*"):
-        if f.suffix in (".py",):      counts["py"]   += 1
-        elif f.suffix in (".js",".ts"): counts["js"] += 1
-        elif f.suffix == ".go":        counts["go"]  += 1
-        elif f.suffix == ".rs":        counts["rust"]+= 1
+        suf = f.suffix.lower()
+        if suf == ".py":                counts["py"]        += 1
+        elif suf in (".js", ".ts"):     counts["js"]        += 1
+        elif suf == ".go":              counts["go"]        += 1
+        elif suf == ".rs":              counts["rust"]      += 1
+        elif suf == ".java":            counts["java"]      += 1
+        elif suf == ".cs":              counts["csharp"]    += 1
+        elif suf == ".rb":              counts["ruby"]      += 1
+        elif suf == ".php":             counts["php"]       += 1
+        elif suf == ".swift":           counts["swift"]     += 1
+        elif suf in (".kt", ".kts"):    counts["kotlin"]    += 1
+        elif suf in (".sh", ".bash"):   counts["shell"]     += 1
+        elif suf in (".tf", ".hcl"):    counts["terraform"] += 1
+        elif suf in (".yml", ".yaml"):  counts["yaml"]      += 1
     dominant = max(counts, key=lambda k: counts[k])
     return dominant if counts[dominant] > 0 else "py"
 
@@ -136,6 +173,92 @@ def run_scan(target: str, sources: Optional[list] = None,
         )
         if not err:
             db.add(findings); db.meta["sources"].append("clippy")
+
+    elif lang == "java":
+        findings, err = fe.run_linter(
+            ["checkstyle", "-f", "xml", "-r", target],
+            fe.parse_checkstyle, cwd=str(BAGO_ROOT.parent)
+        )
+        if not err:
+            db.add(findings); db.meta["sources"].append("checkstyle")
+
+    elif lang == "csharp":
+        findings, err = fe.run_linter(
+            ["dotnet", "build", "--nologo", "/p:TreatWarningsAsErrors=false", target],
+            fe.parse_dotnet_build, cwd=str(BAGO_ROOT.parent)
+        )
+        if not err:
+            db.add(findings); db.meta["sources"].append("dotnet")
+
+    elif lang == "ruby":
+        findings, err = fe.run_linter(
+            ["rubocop", "--format=json", target],
+            fe.parse_rubocop, cwd=str(BAGO_ROOT.parent)
+        )
+        if not err:
+            db.add(findings); db.meta["sources"].append("rubocop")
+
+    elif lang == "php":
+        findings, err = fe.run_linter(
+            ["phpcs", "--report=json", target],
+            fe.parse_phpcs, cwd=str(BAGO_ROOT.parent)
+        )
+        if not err:
+            db.add(findings); db.meta["sources"].append("phpcs")
+        findings2, err2 = fe.run_linter(
+            ["phpstan", "analyse", "--error-format=json", "--no-progress", target],
+            fe.parse_phpstan, cwd=str(BAGO_ROOT.parent)
+        )
+        if not err2:
+            db.add(findings2); db.meta["sources"].append("phpstan")
+
+    elif lang == "swift":
+        findings, err = fe.run_linter(
+            ["swiftlint", "lint", "--reporter=json", "--path", target],
+            fe.parse_swiftlint, cwd=str(BAGO_ROOT.parent)
+        )
+        if not err:
+            db.add(findings); db.meta["sources"].append("swiftlint")
+
+    elif lang == "kotlin":
+        # Expand glob here so subprocess receives actual file paths (shell won't expand it)
+        kt_files = [str(f) for f in Path(target).rglob("*.kt")]
+        if kt_files:
+            findings, err = fe.run_linter(
+                ["ktlint", "--reporter=json"] + kt_files,
+                fe.parse_ktlint, cwd=str(BAGO_ROOT.parent)
+            )
+            if not err:
+                db.add(findings); db.meta["sources"].append("ktlint")
+
+    elif lang == "shell":
+        shell_files = (
+            [str(f) for f in Path(target).rglob("*.sh")]
+            + [str(f) for f in Path(target).rglob("*.bash")]
+        )
+        if shell_files:
+            findings, err = fe.run_linter(
+                ["shellcheck", "--format=json"] + shell_files,
+                fe.parse_shellcheck, cwd=str(BAGO_ROOT.parent)
+            )
+            if not err:
+                db.add(findings); db.meta["sources"].append("shellcheck")
+
+    elif lang == "terraform":
+        findings, err = fe.run_linter(
+            ["tflint", "--format=json", "--chdir", target],
+            fe.parse_tflint, cwd=str(BAGO_ROOT.parent)
+        )
+        if not err:
+            db.add(findings); db.meta["sources"].append("tflint")
+
+    elif lang == "yaml":
+        findings, err = fe.run_linter(
+            ["yamllint", "-f", "parsable", target],
+            fe.parse_yamllint, cwd=str(BAGO_ROOT.parent)
+        )
+        if not err:
+            db.add(findings); db.meta["sources"].append("yamllint")
 
     db.save()
     return db
@@ -296,7 +419,9 @@ def main():
     parser.add_argument("--last",        action="store_true")
     parser.add_argument("--autofixable", action="store_true")
     parser.add_argument("--lang",        default="auto",
-                        choices=["auto","py","js","ts","go","rust"],
+                        choices=["auto","py","js","ts","go","rust",
+                                 "java","csharp","ruby","php",
+                                 "swift","kotlin","shell","terraform","yaml"],
                         help="Lenguaje a analizar (default: auto-detección)")
     parser.add_argument("--test",        action="store_true")
     args = parser.parse_args()

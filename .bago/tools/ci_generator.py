@@ -50,6 +50,15 @@ jobs:
         run: |
           pip install flake8 pylint mypy bandit
           pip install gitpython
+          # ── Language-specific linters (install only what your project needs) ──
+          # Java:       apt-get install -y checkstyle  (or download checkstyle jar)
+          # Ruby:       gem install rubocop
+          # PHP:        composer global require squizlabs/php_codesniffer phpstan/phpstan
+          # Swift:      brew install swiftlint  (macOS runner only)
+          # Kotlin:     curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.2.1/ktlint
+          # Shell:      apt-get install -y shellcheck
+          # Terraform:  curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+          # YAML:       pip install yamllint
 
       - name: BAGO validate
         run: python3 bago validate
@@ -140,6 +149,11 @@ bago-validate:
   image: python:3.11-slim
   before_script:
     - pip install flake8 pylint mypy bandit gitpython --quiet
+    # Add language-specific linters below as needed:
+    # - gem install rubocop                                                    # Ruby
+    # - composer global require squizlabs/php_codesniffer phpstan/phpstan      # PHP
+    # - apt-get install -y shellcheck                                          # Shell
+    # - pip install yamllint                                                   # YAML
   script:
     - python3 bago validate
   artifacts:
@@ -151,6 +165,7 @@ bago-scan:
   image: python:3.11-slim
   before_script:
     - pip install flake8 pylint mypy bandit gitpython --quiet
+    # Add language-specific linters below as needed (see bago-validate job)
   script:
     - python3 bago scan --json > bago-findings.json || true
     - python3 bago risk --json > bago-risk.json || true
