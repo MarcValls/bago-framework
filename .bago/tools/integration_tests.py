@@ -704,7 +704,7 @@ def test_routing_count():
 
 
 def test_bago_lint_rules():
-    """bago_lint detecta BAGO-E001/W002/W003/I002 en Python con problemas."""
+    """bago_lint detecta BAGO-E001/W002/W003/W004/I002 en Python con problemas."""
     import sys as _sys, tempfile as _tf
     from pathlib import Path as _Path
     _sys.path.insert(0, str(ROOT))
@@ -716,11 +716,12 @@ def test_bago_lint_rules():
             "try:\n    pass\nexcept:  # bare except\n    pass\n"
             "x = eval('1+1')  # eval\n"
             "os.system('ls')  # os.system\n"
+            "DATA = '/Users/john/data'\n"
             "# TODO: arreglar esto\n"
         )
         findings = run_bago_lint(str(tmp))
         rules = {f.rule for f in findings}
-        missing = {"BAGO-E001", "BAGO-W002", "BAGO-W003", "BAGO-I002"} - rules
+        missing = {"BAGO-E001", "BAGO-W002", "BAGO-W003", "BAGO-W004", "BAGO-I002"} - rules
         if not missing:
             _record("bago_lint:all_rules", PASS, f"{len(findings)} findings, rules: {sorted(rules)}")
         else:

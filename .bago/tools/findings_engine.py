@@ -716,6 +716,7 @@ def run_bago_lint(target_dir: str) -> list:
       BAGO-E001  bare except: clause — catches SystemExit/KeyboardInterrupt
       BAGO-W002  eval() or exec() — security risk
       BAGO-W003  os.system() — should use subprocess
+      BAGO-W004  hardcoded absolute user path (/Users/, /home/, C:\\) — not portable
       BAGO-I002  TODO/FIXME/HACK comments — technical debt markers
     """
     findings = []
@@ -723,6 +724,7 @@ def run_bago_lint(target_dir: str) -> list:
     _bare_except_re  = re.compile(r'^\s*except\s*:', re.MULTILINE)
     _eval_exec_re    = re.compile(r'\b(eval|exec)\s*\(')
     _os_system_re    = re.compile(r'\bos\.system\s*\(')
+    _hardpath_re     = re.compile(r'["\'](?:/Users/\w+|/home/\w+|C:\\\\Users\\\\)[^"\']*["\']')
     _todo_re         = re.compile(r'#.*\b(TODO|FIXME|HACK|XXX)\b', re.IGNORECASE)
 
     for pyfile in sorted(target.rglob("*.py")):
@@ -787,6 +789,19 @@ def run_bago_lint(target_dir: str) -> list:
                         rule="BAGO-W003", source="bago",
                         message="os.system() no captura salida ni maneja errores",
                         fix_suggestion="Usa subprocess.run() con capture_output=True",
+                        autofixable=False,
+                        context_lines=_read_context(rel, i),
+                    ))
+                # BAGO-W004: hardcoded absolute user paths
+                if not is_test and _hardpath_re.search(line):
+                    m4 = _hardpath_re.search(line)
+                    found_path = m4.group(0).strip("'\"") if m4 else ""
+                    fid = _make_id("bago", rel, i, "BAGO-W004")
+                    findings.append(Finding(
+                        id=fid, severity="warning", file=rel, line=i, col=0,
+                        rule="BAGO-W004", source="bago",
+                        message=f"Path absoluto hardcoded: '{found_path}' — no portable",
+                        fix_suggestion="Usa Path.home() / os.path.expanduser('~') o variables de entorno",
                         autofixable=False,
                         context_lines=_read_context(rel, i),
                     ))
@@ -1021,9 +1036,20 @@ def run_tests():
         ok("engine:bare_except_patch")
     else:
         fail("engine:bare_except_patch", repr(patch_e[:80]))
+    # T8b: BAGO-W004 hardcoded paths
+    tmp4 = Path(tf.mkdtemp())
+    py4 = tmp4 / "paths_config.py"
+    py4.write_text("DATA_DIR = '/Users/john/data/file.txt'\n")
+    f4 = run_bago_lint(str(tmp4))
+    rules4 = {f.rule for f in f4}
+    if "BAGO-W004" in rules4:
+        ok("engine:bago_lint_w004")
+    else:
+        fail("engine:bago_lint_w004", f"found rules: {rules4}")
+    shutil.rmtree(tmp4)
     shutil.rmtree(tmp3)
 
-    total = 9; passed = total - errors
+    total = 10; passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors: sys.exit(1)
 
