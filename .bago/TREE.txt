@@ -327,6 +327,7 @@
 ./state/changes/BAGO-CHG-078.json
 ./state/changes/BAGO-CHG-079.json
 ./state/changes/BAGO-CHG-080.json
+./state/changes/BAGO-CHG-081.json
 ./state/changes/BAGO-CHG-MIG-001.json
 ./state/changes/CHG-010-ux-controles-13fixes.json
 ./state/changes/CHG-011-caos-12ideas-cosecha.json
@@ -391,6 +392,7 @@
 ./state/evidences/BAGO-EVD-068.json
 ./state/evidences/BAGO-EVD-069.json
 ./state/evidences/BAGO-EVD-070.json
+./state/evidences/BAGO-EVD-071.json
 ./state/evidences/BAGO-EVD-MIG-001.json
 ./state/evidences/BAGO-EVD-MIG-002.json
 ./state/findings
@@ -442,6 +444,13 @@
 ./state/iterations/ITER-0036.json
 ./state/iterations/ITER-0037.json
 ./state/iterations/ITER-0038.json
+./state/iterations/ITER-0039.json
+./state/iterations/ITER-0040.json
+./state/iterations/ITER-0041.json
+./state/iterations/ITER-0042.json
+./state/iterations/ITER-0043.json
+./state/iterations/ITER-0044.json
+./state/iterations/ITER-0045.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -609,6 +618,7 @@
 ./state/sessions/SES-HARVEST-2026-04-21-005.json
 ./state/sessions/SES-HARVEST-2026-04-21-006.json
 ./state/sessions/SES-HARVEST-2026-04-21-007.json
+./state/sessions/SES-HARVEST-2026-04-22-001.json
 ./state/sessions/SES-HYB-2026-04-11-001.json
 ./state/sessions/SES-INS-2026-04-14-001.json
 ./state/sessions/SES-INS-2026-04-14-002.json
@@ -664,6 +674,7 @@
 ./tools
 ./tools/README.md
 ./tools/__pycache__
+./tools/api_check.py
 ./tools/archive.py
 ./tools/artifact_counter.py
 ./tools/audit_v2.py
@@ -693,6 +704,7 @@
 ./tools/context_map.py
 ./tools/contracts.py
 ./tools/cosecha.py
+./tools/coverage_gate.py
 ./tools/changelog.py
 ./tools/changelog_gen.py
 ./tools/chart_engine.py
@@ -734,6 +746,7 @@
 ./tools/metrics_export.py
 ./tools/metrics_trends.py
 ./tools/multi_scan.py
+./tools/naming_check.py
 ./tools/notes.py
 ./tools/pack_dashboard.py
 ./tools/patch.py

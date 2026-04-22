@@ -1037,6 +1037,33 @@ def test_refactor_suggest():
         _record("refactor_suggest:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_api_check():
+    """api_check.py --test pasa todos los tests."""
+    rc, out, _ = _run("api_check.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("api_check:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("api_check:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_coverage_gate():
+    """coverage_gate.py --test pasa todos los tests."""
+    rc, out, _ = _run("coverage_gate.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("coverage_gate:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("coverage_gate:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_naming_check():
+    """naming_check.py --test pasa todos los tests."""
+    rc, out, _ = _run("naming_check.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("naming_check:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("naming_check:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1109,6 +1136,9 @@ ALL_TESTS = [
     (69, "metrics_export",   test_metrics_export),
     (70, "code_review",      test_code_review),
     (71, "refactor_suggest", test_refactor_suggest),
+    (72, "api_check",        test_api_check),
+    (73, "coverage_gate",    test_coverage_gate),
+    (74, "naming_check",     test_naming_check),
 ]
 
 
