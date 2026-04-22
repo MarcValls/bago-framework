@@ -308,10 +308,10 @@ El método canónico para registrar un CHG es usar `bago cosecha` al final de un
 ./bago test
 ```
 
-Esto ejecuta `integration_tests.py` con los 36 tests definidos. Se espera:
+Esto ejecuta `integration_tests.py` con los 55 tests definidos. Se espera:
 
 ```
-✅ 36/36 tests pasando
+✅ 55/55 tests pasando
 ```
 
 ### Tests individuales durante desarrollo

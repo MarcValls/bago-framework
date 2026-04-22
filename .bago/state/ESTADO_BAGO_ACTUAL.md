@@ -173,15 +173,15 @@
 | `bago remind` | `remind.py` | Recordatorios con due-date y sprint_ref |
 | `bago habit` | `habit.py` | Detector de hábitos positivos/mejora/patrones |
 | `bago review` | `review.py` | Informe de revisión periódica Markdown |
-| `bago test` | `integration_tests.py` | **Ampliada** de 22 a 36 tests (23 tools cubiertos) |
+| `bago test` | `integration_tests.py` | **Ampliada** de 22 a 55 tests (todos los tools cubiertos) |
 
-**Total Sprint 180 acumulado: 28 nuevas herramientas CLI + 36/36 integration tests ALL PASS**
+**Total Sprint 180 acumulado: 28 nuevas herramientas CLI + 55/55 integration tests ALL PASS**
 **Health: 100/100 🟢 · Validate: GO manifest/state/pack ✅ · Snapshot: SNAP-20260422_000017**
 
 ## Última actualización
 
 - fecha: 2026-04-22 Sprint 180 Fase 5 activa
-- nota: Sprint 180 en curso — 28 herramientas, 36/36 tests, health=100/100, SPRINT-004 abierto
+- nota: Sprint 180 completo — 55/55 tests, health=100/100, SPRINT-005 activo
 
 ## Sprint 180 — Fase 6 (2026-04-22)
 
@@ -193,17 +193,17 @@
 | `bago patch` | `patch.py` | ✅ Implementado | Corrección automática de inconsistencias (3 parches) |
 | `bago notes` | `notes.py` | ✅ Implementado | Notas ligeras por sesión: add/list/show/delete/search |
 | `bago template` | `template.py` | ✅ Implementado | Plantillas para nuevas sesiones (4 built-in + custom) |
-| `bago scan` | `scan.py` | 🔜 Próximo | Analiza código con múltiples linters (hallazgos unificados) |
-| `bago hotspot` | `hotspot.py` | 🔜 Próximo | Hotspots: archivos con más cambios + fallos + complejidad |
-| `bago fix` | `autofix.py` | 🔜 Próximo | Autofix con generación y aplicación de parches validados |
-| `bago gh` | `gh_integration.py` | 🔜 Próximo | Integración GitHub: check runs y comentarios en PRs |
+| `bago scan` | `scan.py` | ✅ Implementado | Analiza código con múltiples linters (hallazgos unificados) |
+| `bago hotspot` | `hotspot.py` | ✅ Implementado | Hotspots: archivos con más cambios + fallos + complejidad |
+| `bago fix` | `autofix.py` | ✅ Implementado | Autofix con generación y aplicación de parches validados |
+| `bago gh` | `gh_integration.py` | ✅ Implementado | Integración GitHub: check runs y comentarios en PRs |
 
-**Total Sprint 180 acumulado (Fase 6): 32 herramientas CLI implementadas + 36/36 integration tests ALL PASS**
+**Total Sprint 180 acumulado (Fase 6): 32 herramientas CLI implementadas + 55/55 integration tests ALL PASS**
 **Health: 100/100 🟢 · Validate: GO ✅ · SPRINT-004 activo**
 
-## Sistema de Hallazgos Unificado (en construcción)
+## Sistema de Hallazgos Unificado (✅ Implementado — CHG-079)
 
-Pipeline planificado para análisis estático integrado con GitHub:
+Pipeline implementado para análisis estático integrado con GitHub:
 
 ```
 bago scan  →  hallazgos unificados desde múltiples linters
@@ -215,18 +215,18 @@ bago fix    →  generación automática de parches con validación previa
 bago gh     →  publicación en check runs y comentarios de PRs GitHub
 ```
 
-**Objetivo:** Cerrar el ciclo de calidad sin salir del entorno BAGO. El `scan` agrega resultados de linters externos (pylint, eslint, etc.) en formato BAGO-FINDING-*.json. El `fix` genera parches que pasan por `validate_pack` antes de aplicarse. El `gh` publica los resultados directamente en el PR correspondiente.
+**Estado:** ✅ Pipeline completo implementado. `scan`, `hotspot`, `fix`, `gh` operativos. `ci_generator` y `bago_ask` añadidos en CHG-079. `bago_watch`, testgen Go/Rust, dashboard v2 cockpit en CHG-080.
 
-**Archivos de estado previstos:**
+**Archivos de estado activos:**
 - `state/findings/BAGO-FINDING-*.json` — hallazgo individual con severidad/linter/archivo/línea
 - `state/patches/BAGO-PATCH-*.json` — parche generado con diff + estado de validación
 
-## Contadores totales (actualizado)
+## Contadores totales (actualizado — CHG-080)
 
 | Categoría | Cantidad |
 |-----------|----------|
-| Herramientas CLI implementadas | 32 (Sprint 180) + herramientas previas = 33+ total |
-| Tests de integración pasando | 36/36 |
+| Herramientas CLI implementadas | 89 total |
+| Tests de integración pasando | 55/55 |
 | Workflows canónicos (W0-W9) | 12 |
 | Sesiones registradas | 44 |
 | Cambios registrados | 46 |
@@ -235,5 +235,5 @@ bago gh     →  publicación en check runs y comentarios de PRs GitHub
 
 ## Última actualización
 
-- fecha: 2026-04-22 Sprint 180 Fase 6 (revisión)
-- nota: Fase 6 completa — velocity + patch + notes + template implementados — Pipeline GitHub en diseño
+- fecha: 2026-04-22 Sprint 180 completo + CHG-079 + CHG-080
+- nota: SPRINT-005 activo — 89 herramientas, 55/55 tests, health=100/100 🟢

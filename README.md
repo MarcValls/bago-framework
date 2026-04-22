@@ -2,9 +2,9 @@
 
 > Sistema operativo de trabajo técnico para programación con IA
 
-![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%2037%2F37-brightgreen) ![tools](https://img.shields.io/badge/tools-87-blue) ![version](https://img.shields.io/badge/versión-2.5--stable-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
+![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%2055%2F55-brightgreen) ![tools](https://img.shields.io/badge/tools-89-blue) ![version](https://img.shields.io/badge/versión-2.5--stable-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
 
-**`health 🟢 100/100`** · **`tests ✅ 37/37`** · **`tools 🔧 87`** · **`versión 2.5-stable`** · 12 workflows · Gobernanza de sesión integrada
+**`health 🟢 100/100`** · **`tests ✅ 55/55`** · **`tools 🔧 89`** · **`versión 2.5-stable`** · 12 workflows · Gobernanza de sesión integrada
 
 ---
 
@@ -89,7 +89,7 @@ BAGO amplifica el trabajo con IA resolviendo:
 |---------|-------------|-------------|
 | `bago export` | `export.py` | HTML dark-theme + CSV con SVG chart |
 | `bago watch` | `watch.py` | Monitor en tiempo real del estado BAGO |
-| `bago test` | `integration_tests.py` | Suite de integración (36/36 tests) |
+| `bago test` | `integration_tests.py` | Suite de integración (55/55 tests) |
 | `bago changelog` | `changelog.py` | CHANGELOG desde BAGO-CHG-*.json |
 | `bago snapshot` | `snapshot.py` | ZIP point-in-time de state/ |
 | `bago diff` | `diff.py` | Delta de state/ vs último snapshot |

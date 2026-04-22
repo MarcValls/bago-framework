@@ -82,15 +82,23 @@
 ### Changed
 
 - Health score: mantenido en **100/100 🟢** durante todo el Sprint 180
-- `bago test`: suite ampliada progresivamente de 22 → 36 tests pasando
+- `bago test`: suite ampliada progresivamente de 22 → 55 tests pasando
 - `bago_banner.py`: actualizado con nuevos comandos en el menú
 
-### Pendiente
+### Added — Sprint 180 Fase 7 (CHG-079, CHG-080)
 
-- `bago scan` → `scan.py` — Análisis estático multi-linter (próximamente)
-- `bago hotspot` → `hotspot.py` — Detección de hotspots de complejidad (próximamente)
-- `bago fix` → `autofix.py` — Autofix con validación (próximamente)
-- `bago gh` → `gh_integration.py` — Integración GitHub Actions (próximamente)
+- `bago scan` → `scan.py` — ✅ Análisis estático multi-linter (hallazgos unificados)
+- `bago hotspot` → `hotspot.py` — ✅ Hotspots: archivos con más cambios + fallos + complejidad
+- `bago fix` → `autofix.py` — ✅ Autofix con generación y aplicación de parches validados
+- `bago gh` → `gh_integration.py` — ✅ Integración GitHub: check runs y comentarios en PRs
+- `bago ci` → `ci_generator.py` — ✅ Generación GitHub Actions + GitLab CI + pre-commit hook
+- `bago ask` → `bago_ask.py` — ✅ Búsqueda en lenguaje natural sobre 166 docs BAGO
+- `bago watch-state` → `bago_watch.py` — ✅ Monitor de estado con polling SHA256 y health check
+- `bago testgen` (Go/Rust) → `testgen.py` ampliado — ✅ Generación tests Go y Rust
+
+**BAGO-CHG-079** — Sprint 180 cierre: ci_generator, bago_ask, correcciones datetime tz, SPRINT-004 cerrado, **55/55 tests** ALL PASS, 71 routing entries.
+
+**BAGO-CHG-080** — SPRINT-005: Python 3.9 compat (Optional[X]), dashboard v2 cockpit, auto_mode fix, RULE-CDTR-001 enforcement, bago_watch, testgen Go/Rust, IDEAS scoring dinámico.
 
 ---
 

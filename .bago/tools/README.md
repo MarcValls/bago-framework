@@ -1,8 +1,128 @@
 # tools
 
-Esta carpeta contiene utilidades ligeras para verificar que el pack no se rompe en sus puntos más sensibles.
+Esta carpeta contiene **89 herramientas** Python del framework BAGO.
 
-## Herramientas incluidas
+> **Inventario completo:** ver `.bago/docs/tools/` (31 archivos de documentación individual).
+> **Referencia rápida:** ver `.bago/docs/BAGO_REFERENCIA_COMPLETA.md`.
+> **Tests:** `python3 .bago/tools/integration_tests.py` → 55/55 ALL PASS.
+
+## Herramientas por categoría (89 total)
+
+### Validación y salud del pack
+- `validate_manifest.py` — Integridad y esquema de `pack.json`
+- `validate_state.py` — Coherencia del estado (sessions/changes/evidences)
+- `validate_pack.py` — Verificación compuesta (TREE.txt, CHECKSUMS, refs)
+- `health_score.py` — Score 0-100 con 5 dimensiones
+- `doctor.py` — Diagnóstico integral del pack
+- `lint.py` — Linter de calidad del pack (0 errores)
+- `reconcile_state.py` — Reconcilia inventario disco vs estado (`--fix`)
+- `audit_v2.py` — Auditoría integral en un comando (`bago audit`)
+- `stale_detector.py` — Detector de reporting stale (WARN/ERROR)
+- `v2_close_checklist.py` — Checklist GO/KO de cierre V2
+- `contracts.py` — Contratos de estado verificables con deadline y auditoría
+
+### Análisis estático y calidad de código
+- `scan.py` — Análisis estático multi-linter con hallazgos unificados
+- `hotspot.py` — Hotspots: archivos con más cambios + fallos + complejidad
+- `autofix.py` — Autofix con generación y aplicación de parches validados
+- `findings_engine.py` — Motor de hallazgos: parsing linters, modelo canónico Finding
+- `risk_matrix.py` — Matriz de riesgo cuantificada (Security/Reliability/Maintainability)
+- `debt_ledger.py` — Ledger de deuda técnica en horas y € (cuadrantes Reckless/Prudent)
+- `impact_engine.py` — Impacto de negocio: velocidad, €/trimestre
+- `patch.py` — Corrección automática de inconsistencias (3 parches)
+
+### Integración GitHub y CI
+- `gh_integration.py` — Check runs y comentarios en PRs GitHub
+- `ci_generator.py` — Generación GitHub Actions + GitLab CI + pre-commit hook
+- `git_context.py` — Contexto git (branch/log/autores) + inject
+
+### Gestión de sesiones y estado
+- `bago_on.py` — Activa explícitamente el modo BAGO sobre el host
+- `bago_start.py` — Menú interactivo con selector de workspace
+- `session_opener.py` — Abre sesión W2 con preflight desde handoff
+- `session_preflight.py` — Preflight W7: verifica ESCENARIO-001 antes de sesión
+- `session_details.py` — Top sesiones por producción (alias: `ss`)
+- `session_stats.py` — Estadísticas agregadas de sesiones por tipo/workflow/rol
+- `show_task.py` — Muestra y gestiona la tarea W2 registrada
+- `generate_task_closure.py` — Cierre automático de tareas W2
+- `quick_status.py` — Estado rápido del proyecto
+
+### Sprints, objetivos y planificación
+- `sprint_manager.py` — Gestión de sprints SPRINT-NNN.json
+- `goals.py` — Gestión de objetivos con link/close/progress
+- `timeline.py` — Timeline ASCII semanal con workflows
+- `velocity.py` — Métricas de velocidad por período con sparklines y proyección
+- `metrics_trends.py` — Tendencias rolling + sparklines ASCII
+- `efficiency_meter.py` — Compara métricas entre cleanversions
+
+### Dashboards y visualización
+- `pack_dashboard.py` — Dashboard v2 cockpit con health ring, inventory, risks
+- `dashboard_v2.py` — Dashboard con semáforos + KPIs V2
+- `flow.py` — Flowchart ASCII de pipelines W0-W9
+- `stats.py` — Dashboard agregado con sparklines de actividad
+- `stability_summary.py` — Resume informes sandbox (smoke/VM/soak) y validadores
+- `insights.py` — Motor de insights automáticos (5 categorías)
+
+### Reporting y exportación
+- `report_generator.py` — Reportes Markdown con filtros temporales
+- `export.py` — HTML dark-theme + CSV con SVG chart
+- `snapshot.py` — ZIP point-in-time de state/
+- `diff.py` — Delta de state/ vs último snapshot
+- `compare.py` — Comparativa wf/periodo/rol lado a lado
+- `summary.py` — Resumen ejecutivo Markdown de sesión/sprint
+- `review.py` — Informe de revisión periódica Markdown
+- `changelog.py` — CHANGELOG desde BAGO-CHG-*.json (Keep a Changelog)
+
+### Búsqueda y contexto
+- `bago_ask.py` — Búsqueda en lenguaje natural sobre 166 docs BAGO
+- `bago_search.py` — Full-text search sobre sessions/changes
+- `context_detector.py` — Detector de contexto acumulado
+- `context_collector.py` — Recolecta y resume contexto de directorios
+- `context_map.py` — Mapa de contexto distribuido: descubre instalaciones `.bago/`
+- `state_store.py` — Capa de abstracción de almacenamiento
+
+### Notas, etiquetas y recordatorios
+- `notes.py` — Notas ligeras por sesión: add/list/show/delete/search
+- `tags.py` — Etiquetado con índice y búsqueda rápida
+- `remind.py` — Recordatorios con due-date y sprint_ref
+- `template.py` — Plantillas para nuevas sesiones (4 built-in + custom)
+- `habit.py` — Detector de hábitos positivos/mejora/patrones
+
+### Monitorización y watch
+- `watch.py` — Monitor en tiempo real del estado BAGO
+- `bago_watch.py` — Monitor de estado con polling SHA256 y health check
+- `bago_debug.py` — Debug del pack y del repo externo
+
+### Generación de tests y CI
+- `integration_tests.py` — Suite de integración (55/55 tests — todos los tools)
+- `testgen.py` — Generación de tests Python, Go y Rust
+- `inspect_workflow.py` — Inspección de workflows BAGO
+
+### Selección y configuración
+- `workspace_selector.py` — Selector de workspace (framework/padre/ruta externa)
+- `workflow_selector.py` — Selector interactivo W0/W7/W8/W9
+- `target_selector.py` — Selección segura de directorio objetivo
+- `config.py` — Gestión de configuración del pack.json con validación de tipos
+- `personality_panel.py` — Panel de personalidad, idioma y vocabulario contextual
+
+### Gobernanza y trazabilidad
+- `cosecha.py` — Protocolo W9 de cosecha contextual
+- `archive.py` — Archivado de sesiones cerradas antiguas
+- `iteration_logger.py` — Registra silenciosamente invocaciones de comandos
+- `artifact_counter.py` — Producción de artefactos útiles por sesión
+- `vertice_activator.py` — Evaluador de señales para activar revisión Vértice
+- `emit_ideas.py` — Lista ideas priorizadas con scoring dinámico
+- `competition_report.py` — Comparativa bago/on vs bago/off
+- `repo_context_guard.py` — Guard de contexto: detecta match/mismatch/new al cambiar de repo
+- `repo_on.py` — Activa BAGO sobre un repo externo
+- `repo_runner.py` — Ejecuta lint/test/build sobre el repo intervenido
+- `generate_bago_evolution_report.py` — Análisis de iteraciones y evolución del sistema
+- `check.py` — Checklist pre-sesión personalizable desde checklist.json
+
+### Utilidades compartidas
+- `bago_utils.py` — Utilidades: print_ok/fail/skip, runner de tests inline
+- `bago_banner.py` — Banner BAGO con menú de comandos
+- `bago_chat_server.py` — Servidor de chat para sesiones interactivas
 
 - `validate_manifest.py`:
   comprueba que las rutas declaradas en `pack.json` existen,
