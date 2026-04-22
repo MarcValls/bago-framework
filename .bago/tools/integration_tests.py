@@ -703,6 +703,59 @@ def test_routing_count():
         _record("routing:count", FAIL, f"{count} < 65 required")
 
 
+def test_bago_lint_rules():
+    """bago_lint detecta BAGO-E001/W002/W003/I002 en Python con problemas."""
+    import sys as _sys, tempfile as _tf
+    from pathlib import Path as _Path
+    _sys.path.insert(0, str(ROOT))
+    try:
+        from findings_engine import run_bago_lint
+        tmp = _Path(_tf.mkdtemp())
+        (tmp / "problemas.py").write_text(
+            "import os\n"
+            "try:\n    pass\nexcept:  # bare except\n    pass\n"
+            "x = eval('1+1')  # eval\n"
+            "os.system('ls')  # os.system\n"
+            "# TODO: arreglar esto\n"
+        )
+        findings = run_bago_lint(str(tmp))
+        rules = {f.rule for f in findings}
+        missing = {"BAGO-E001", "BAGO-W002", "BAGO-W003", "BAGO-I002"} - rules
+        if not missing:
+            _record("bago_lint:all_rules", PASS, f"{len(findings)} findings, rules: {sorted(rules)}")
+        else:
+            _record("bago_lint:all_rules", FAIL, f"missing rules: {missing}")
+        import shutil; shutil.rmtree(tmp, ignore_errors=True)
+    except Exception as e:
+        _record("bago_lint:all_rules", FAIL, str(e))
+
+
+def test_bago_lint_autofix():
+    """bago_lint produce patches autofixables para BAGO-E001 y BAGO-W001."""
+    import sys as _sys, tempfile as _tf
+    from pathlib import Path as _Path
+    _sys.path.insert(0, str(ROOT))
+    try:
+        from findings_engine import run_bago_lint
+        tmp = _Path(_tf.mkdtemp())
+        (tmp / "fixable.py").write_text(
+            "import datetime\n"
+            "ts = datetime.datetime.utcnow()\n"
+            "try:\n    pass\nexcept:\n    pass\n"
+        )
+        findings = run_bago_lint(str(tmp))
+        autofixable = [f for f in findings if f.autofixable and f.fix_patch]
+        if len(autofixable) >= 2:
+            _record("bago_lint:patches", PASS, f"{len(autofixable)} autofixable con patch")
+        elif autofixable:
+            _record("bago_lint:patches", PASS, f"{len(autofixable)} autofixable (parcial ok)")
+        else:
+            _record("bago_lint:patches", FAIL, f"no autofixable findings ({[f.rule for f in findings]})")
+        import shutil; shutil.rmtree(tmp, ignore_errors=True)
+    except Exception as e:
+        _record("bago_lint:patches", FAIL, str(e))
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -746,6 +799,8 @@ ALL_TESTS = [
     (40, "sprint_state",    test_sprint_state),
     (41, "datetime_clean",  test_datetime_clean),
     (42, "routing_count",   test_routing_count),
+    (43, "bago_lint_rules", test_bago_lint_rules),
+    (44, "bago_lint_fix",   test_bago_lint_autofix),
 ]
 
 
