@@ -1,12 +1,12 @@
 # tools
 
-Esta carpeta contiene **91 herramientas** Python del framework BAGO.
+Esta carpeta contiene **95 herramientas** del framework BAGO (94 Python + 1 JavaScript).
 
 > **Inventario completo:** ver `.bago/docs/tools/` (31 archivos de documentación individual).
 > **Referencia rápida:** ver `.bago/docs/BAGO_REFERENCIA_COMPLETA.md`.
-> **Tests:** `python3 .bago/tools/integration_tests.py` → 55/55 ALL PASS.
+> **Tests:** `python3 .bago/tools/integration_tests.py` → 63/63 ALL PASS.
 
-## Herramientas por categoría (91 total)
+## Herramientas por categoría (95 total)
 
 ### Validación y salud del pack
 - `validate_manifest.py` — Integridad y esquema de `pack.json`
@@ -26,11 +26,17 @@ Esta carpeta contiene **91 herramientas** Python del framework BAGO.
 - `hotspot.py` — Hotspots: archivos con más cambios + fallos + complejidad
 - `autofix.py` — Autofix con generación y aplicación de parches validados
 - `findings_engine.py` — Motor de hallazgos: parsing linters, modelo canónico Finding
-- `bago_lint_cli.py` — CLI dedicado: bago bago-lint con 7 reglas, --fix, --preview, --json
+- `bago_lint_cli.py` — CLI dedicado: bago bago-lint con 7 reglas, --fix, --preview, --json, --since (tool #91)
+- `multi_scan.py` — Scanner multi-lenguaje simultáneo (py/js/go/rust), --since, --summary (tool #92)
+- `js_ast_scanner.js` — Linter AST JS/TS vía acorn, 10 reglas, noqa, supera regex (tool #93)
 - `risk_matrix.py` — Matriz de riesgo cuantificada (Security/Reliability/Maintainability)
 - `debt_ledger.py` — Ledger de deuda técnica en horas y € (cuadrantes Reckless/Prudent)
 - `impact_engine.py` — Impacto de negocio: velocidad, €/trimestre
 - `patch.py` — Corrección automática de inconsistencias (3 parches)
+
+### Infraestructura y tooling del framework
+- `permission_check.py` — Verifica/corrige +x en todos los ejecutables BAGO (tool #94)
+- `install_deps.py` — Verifica e instala dependencias opcionales con sugerencias (tool #95)
 
 ### Integración GitHub y CI
 - `gh_integration.py` — Check runs y comentarios en PRs GitHub

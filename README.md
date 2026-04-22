@@ -257,7 +257,7 @@ bago-framework/
 ├── menu.html                     # Interfaz web (BAGO Viewer)
 ├── Makefile                      # Targets: banner, pack, validate, install
 ├── .bago/
-│   ├── tools/                    # 87 herramientas Python (un archivo por comando)
+│   ├── tools/                    # 95 herramientas Python/JS (un archivo por comando)
 │   │   ├── health_score.py       # bago health
 │   │   ├── audit_v2.py           # bago audit
 │   │   ├── insights.py           # bago insights
@@ -327,7 +327,12 @@ Pipeline completo de análisis de código con integración directa en GitHub, **
 | `./bago scan` | `scan.py` | ✅ Activo | Análisis multi-linter (flake8/pylint/mypy/ESLint/golangci/clippy) con hallazgos unificados |
 | `./bago hotspot` | `hotspot.py` | ✅ Activo | Hotspots: frecuencia de cambios + errores + complejidad + historial CI |
 | `./bago fix` | `autofix.py` | ✅ Activo | Autofix: parches concretos (E711/E712/F401/W291/BAGO-W001) + black/prettier bulk |
+| `./bago bago-lint` | `bago_lint_cli.py` | ✅ Activo | Linter Python sin deps: 7 reglas, --fix, --preview, --json, --since (baseline diff) |
+| `./bago multi-scan` | `multi_scan.py` | ✅ Activo | Scanner simultáneo de todos los lenguajes: py/js/go/rust, --since, --summary |
+| `./bago ast-scan` | `js_ast_scanner.js` | ✅ Activo | Linter JS/TS basado en AST (acorn): 10 reglas, noqa, supera regex 80% |
 | `./bago gh` | `gh_integration.py` | ✅ Activo | GitHub Check Runs + PR review agrupado por archivo, retry en 429/5xx |
+| `./bago permission-check` | `permission_check.py` | ✅ Activo | Verifica y corrige permisos +x en todos los ejecutables BAGO |
+| `./bago install-deps` | `install_deps.py` | ✅ Activo | Verifica e instala dependencias opcionales (flake8, eslint, acorn, golangci-lint…) |
 
 ### Pipeline operativo
 
@@ -335,12 +340,28 @@ Pipeline completo de análisis de código con integración directa en GitHub, **
 # Analiza el proyecto (auto-detecta py/js/go/rust)
 bago scan ./ --lang auto
 
+# Escanea TODOS los lenguajes a la vez
+bago multi-scan ./ --summary
+
+# Linter Python zero-deps con diff contra baseline
+bago bago-lint --json > baseline.json   # guardar baseline
+bago bago-lint --since baseline.json   # solo errores NUEVOS (exit 1 si nuevos)
+
+# Linter JS/TS basado en AST (acorn) — supera el 80% regex
+bago ast-scan ./src --json
+
 # Identifica los archivos más problemáticos (commits + errores + CI)
 bago hotspot ./ --ci --heatmap
 
 # Aplica fixes automáticos con validación post-fix
 bago fix --apply
 bago fix --external --target ./src   # black / prettier
+
+# Verifica dependencias opcionales disponibles
+bago install-deps --check
+
+# Instala las que falten (pip/npm automáticamente)
+bago install-deps --install
 
 # Publica en GitHub
 bago gh checks                       # Check Run con anotaciones

@@ -416,6 +416,7 @@
 ./state/iterations/ITER-0019.json
 ./state/iterations/ITER-0020.json
 ./state/iterations/ITER-0021.json
+./state/iterations/ITER-0022.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -684,6 +685,7 @@
 ./tools/impact_engine.py
 ./tools/insights.py
 ./tools/inspect_workflow.py
+./tools/install_deps.py
 ./tools/integration_tests.py
 ./tools/iteration_logger.py
 ./tools/js_ast_scanner.js

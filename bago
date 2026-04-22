@@ -454,6 +454,11 @@ def main():
             ["python3", str(TOOLS / "permission_check.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "install-deps":
+        subprocess.run(
+            ["python3", str(TOOLS / "install_deps.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -629,6 +634,7 @@ def main():
                 "multi-scan":    "escanea TODOS los lenguajes del proyecto en una sola pasada",
                 "ast-scan":      "linter JS/TS basado en AST (acorn) — detecta arrow fn, eval, debugger, ==",
                 "permission-check": "verifica y corrige permisos +x de todos los ejecutables BAGO",
+                "install-deps":  "verifica e instala deps opcionales (flake8, eslint, acorn, golangci-lint…)",
                 "hotspot":       "detecta hotspots: archivos con mas cambios + fallos + complejidad",
                 "fix":           "autofix serio: genera y aplica parches concretos con validacion",
                 "gh":            "integracion GitHub: check runs y comentarios en PRs",

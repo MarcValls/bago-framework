@@ -839,6 +839,15 @@ def test_permission_check():
         _record("permission_check:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_install_deps():
+    """install_deps.py --test pasa todos los tests."""
+    rc, out, _ = _run("install_deps.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("install_deps:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("install_deps:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -889,6 +898,7 @@ ALL_TESTS = [
     (47, "multi_scan",      test_multi_scan),
     (48, "js_ast_scanner",  test_js_ast_scanner),
     (49, "permission_check", test_permission_check),
+    (50, "install_deps",    test_install_deps),
 ]
 
 
