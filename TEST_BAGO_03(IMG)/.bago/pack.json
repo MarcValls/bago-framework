@@ -1,0 +1,41 @@
+{
+  "pack_id": "TEST_BAGO_03_IMG",
+  "name": "char_girl_walk — Sprite Pipeline",
+  "description": "Pipeline de generación de 32 frames de animación walk para char_girl usando OpenAI gpt-image-1 y Perchance. Proyecto de game art para Bianca The Game.",
+  "version": "1.1",
+  "mode": "baseline_clean",
+  "language": "es",
+  "created_at": "2026-04-22",
+  "updated_at": "2026-04-22",
+  "governed_by": "BAGO v3.0",
+  "repo": "local — TEST_BAGO_03(IMG)",
+  "tags": ["game-art", "sprites", "openai", "automation", "bianca-the-game"],
+  "tech_stack": ["zsh", "python3", "openai-api", "csv", "applescript"],
+  "team": ["INTELIA_Manager"],
+  "workflows_active": ["W1_COLD_START", "W8_EXPLORACION"],
+  "health_target": 80,
+  "files": {
+    "generate_frames_openai.py": "Generador local de frames via OpenAI API — subcomandos: generate-one, generate-all, validate",
+    "run_generate_32.sh": "Wrapper shell para generar 32 frames via OpenAI API (usa generate_frames_openai.py local)",
+    "perchance_keyboard_submit.sh": "Automatiza envío de prompts a Perchance via AppleScript + osascript (alternativo, interactivo)",
+    "char_girl_walk_prompts_32_from_txt.csv": "CSV con 32 prompts de imagen (frame_index, prompt)"
+  },
+  "dependencies": {
+    "required": ["python3>=3.9", "openai>=1.0", "zsh"],
+    "optional_macos": ["osascript", "pbcopy"],
+    "external_removed": ["Volumes/Warehouse — ya no necesario, generate_frames_openai.py es local"]
+  },
+  "known_issues": [
+    "OPENAI_API_KEY debe estar exportada en el entorno antes de ejecutar",
+    "perchance_keyboard_submit.sh requiere foco en el navegador y permisos de Accesibilidad en macOS",
+    "gpt-image-1 con background transparent requiere openai>=1.35 y cuenta con acceso al modelo"
+  ],
+  "fixed_in_v1_1": [
+    "generate_frames_openai.py movido a repo local — no más dependencia de /Volumes/Warehouse/",
+    "run_generate_32.sh usa rutas relativas al script (${0:A:h})",
+    "perchance_keyboard_submit.sh: auto-detecta CSV local, añade --from, --input, --url, --help",
+    "perchance_keyboard_submit.sh: opción 's' para saltar frames individuales",
+    "run_generate_32.sh: añade --batch, --model, --size, --quality, --retry, --out-dir, --help",
+    "generate_frames_openai.py: subcomando validate para verificar los 32 frames"
+  ]
+}
