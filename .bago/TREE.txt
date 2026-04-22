@@ -413,6 +413,7 @@
 ./state/iterations/ITER-0016.json
 ./state/iterations/ITER-0017.json
 ./state/iterations/ITER-0018.json
+./state/iterations/ITER-0019.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -686,6 +687,7 @@
 ./tools/launch_workflow_maestro.sh
 ./tools/lint.py
 ./tools/metrics_trends.py
+./tools/multi_scan.py
 ./tools/notes.py
 ./tools/pack_dashboard.py
 ./tools/patch.py

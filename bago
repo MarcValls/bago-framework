@@ -433,6 +433,11 @@ def main():
             ["python3", str(TOOLS / "bago_lint_cli.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "multi-scan":
+        subprocess.run(
+            ["python3", str(TOOLS / "multi_scan.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -605,6 +610,7 @@ def main():
                 "template":      "plantillas para nuevas sesiones con campos prefilled",
                 "scan":          "analiza el codigo con multiples linters y genera hallazgos unificados",
                 "bago-lint":     "linter propio sin dependencias: BAGO-E001/W001-W004/I001-I002 + --fix",
+                "multi-scan":    "escanea TODOS los lenguajes del proyecto en una sola pasada",
                 "hotspot":       "detecta hotspots: archivos con mas cambios + fallos + complejidad",
                 "fix":           "autofix serio: genera y aplica parches concretos con validacion",
                 "gh":            "integracion GitHub: check runs y comentarios en PRs",

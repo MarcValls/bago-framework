@@ -794,6 +794,15 @@ def test_diff_findings():
         _record("diff_findings:import", FAIL, str(e))
 
 
+def test_multi_scan():
+    """multi_scan.py --test pasa todos los tests."""
+    rc, out, _ = _run("multi_scan.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("multi_scan:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("multi_scan:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -841,6 +850,7 @@ ALL_TESTS = [
     (44, "bago_lint_fix",   test_bago_lint_autofix),
     (45, "bago_lint_cli",   test_bago_lint_cli),
     (46, "diff_findings",   test_diff_findings),
+    (47, "multi_scan",      test_multi_scan),
 ]
 
 
