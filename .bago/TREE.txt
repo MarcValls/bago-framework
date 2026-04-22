@@ -433,6 +433,7 @@
 ./state/iterations/ITER-0027.json
 ./state/iterations/ITER-0028.json
 ./state/iterations/ITER-0029.json
+./state/iterations/ITER-0030.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -670,10 +671,12 @@
 ./tools/bago_start.py
 ./tools/bago_utils.py
 ./tools/bago_watch.py
+./tools/branch_check.py
 ./tools/ci_baseline.py
 ./tools/ci_generator.py
 ./tools/compare.py
 ./tools/competition_report.py
+./tools/complexity.py
 ./tools/config.py
 ./tools/config_check.py
 ./tools/context_collector.py

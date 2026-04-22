@@ -494,6 +494,16 @@ def main():
             ["python3", str(TOOLS / "dead_code.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "branch-check":
+        subprocess.run(
+            ["python3", str(TOOLS / "branch_check.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "complexity":
+        subprocess.run(
+            ["python3", str(TOOLS / "complexity.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -677,6 +687,8 @@ def main():
                 "health-report": "reporte integral Markdown/HTML: config + lint + git + score 0-100",
                 "changelog-gen": "genera CHANGELOG.md desde git log con conventional commits",
                 "dead-code":     "detecta imports/funciones sin usar, TODOs, código comentado (Python)",
+                "branch-check":  "valida nombre de rama vs convenciones (gitflow/simple/jira/bago)",
+                "complexity":    "complejidad ciclomática por función — identifica candidatos a refactor",
                 "hotspot":       "detecta hotspots: archivos con mas cambios + fallos + complejidad",
                 "fix":           "autofix serio: genera y aplica parches concretos con validacion",
                 "gh":            "integracion GitHub: check runs y comentarios en PRs",

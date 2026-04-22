@@ -911,6 +911,24 @@ def test_dead_code():
         _record("dead_code:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+def test_branch_check():
+    """branch_check.py --test pasa todos los tests."""
+    rc, out, _ = _run("branch_check.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("branch_check:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("branch_check:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_complexity():
+    """complexity.py --test pasa todos los tests."""
+    rc, out, _ = _run("complexity.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("complexity:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("complexity:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -969,6 +987,8 @@ ALL_TESTS = [
     (55, "health_report",   test_health_report),
     (56, "changelog_gen",   test_changelog_gen),
     (57, "dead_code",       test_dead_code),
+    (58, "branch_check",    test_branch_check),
+    (59, "complexity",      test_complexity),
 ]
 
 
