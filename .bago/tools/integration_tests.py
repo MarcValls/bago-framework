@@ -1073,6 +1073,7 @@ def test_type_check():
         _record("type_check:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
+
 def test_license_check():
     """license_check.py --test pasa todos los tests."""
     rc, out, _ = _run("license_check.py", ["--test"])
@@ -1080,6 +1081,24 @@ def test_license_check():
         _record("license_check:tests", PASS, out.strip().split("\n")[-1] or "ok")
     else:
         _record("license_check:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_dep_audit():
+    """dep_audit.py --test pasa todos los tests."""
+    rc, out, _ = _run("dep_audit.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("dep_audit:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("dep_audit:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
+def test_readme_check():
+    """readme_check.py --test pasa todos los tests."""
+    rc, out, _ = _run("readme_check.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("readme_check:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("readme_check:tests", FAIL, f"rc={rc} {out[-80:]}")
 
 
 ALL_TESTS = [
@@ -1159,6 +1178,8 @@ ALL_TESTS = [
     (74, "naming_check",     test_naming_check),
     (75, "type_check",       test_type_check),
     (76, "license_check",    test_license_check),
+    (77, "dep_audit",        test_dep_audit),
+    (78, "readme_check",     test_readme_check),
 ]
 
 

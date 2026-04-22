@@ -452,6 +452,8 @@
 ./state/iterations/ITER-0044.json
 ./state/iterations/ITER-0045.json
 ./state/iterations/ITER-0046.json
+./state/iterations/ITER-0047.json
+./state/iterations/ITER-0048.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -713,6 +715,7 @@
 ./tools/dashboard_v2.py
 ./tools/dead_code.py
 ./tools/debt_ledger.py
+./tools/dep_audit.py
 ./tools/diff.py
 ./tools/doc_coverage.py
 ./tools/doctor.py
@@ -761,6 +764,7 @@
 ./tools/personality_panel.py
 ./tools/pre_commit_gen.py
 ./tools/quick_status.py
+./tools/readme_check.py
 ./tools/reconcile_state.py
 ./tools/refactor_suggest.py
 ./tools/remind.py

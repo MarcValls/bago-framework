@@ -589,6 +589,16 @@ def main():
             ["python3", str(TOOLS / "license_check.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "dep-audit":
+        subprocess.run(
+            ["python3", str(TOOLS / "dep_audit.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "readme-check":
+        subprocess.run(
+            ["python3", str(TOOLS / "readme_check.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -794,6 +804,8 @@ def main():
                 "naming-check":     "PEP 8 naming: snake_case, PascalCase, UPPER_SNAKE — NAME-W001..I002",
                 "type-check":       "type hints: funciones sin anotaciones, uso de Any — TYPE-W001..I001",
                 "license-check":    "verifica cabeceras de licencia/copyright — LIC-W001..I001 con --add-header",
+                "dep-audit":        "auditoría dependencias: versiones inseguras, CVEs offline, ranges abiertos",
+                "readme-check":     "valida README.md: secciones, placeholders, enlaces rotos — README-W001..I002",
             }
             for k, desc in extra.items():
                 print(f"    bago {k:12s} → {desc}")
