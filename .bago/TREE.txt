@@ -430,6 +430,7 @@
 ./state/iterations/ITER-0024.json
 ./state/iterations/ITER-0025.json
 ./state/iterations/ITER-0026.json
+./state/iterations/ITER-0027.json
 ./state/metrics
 ./state/metrics/README.md
 ./state/metrics/metrics_snapshot.json
@@ -671,6 +672,7 @@
 ./tools/compare.py
 ./tools/competition_report.py
 ./tools/config.py
+./tools/config_check.py
 ./tools/context_collector.py
 ./tools/context_detector.py
 ./tools/context_map.py

@@ -469,6 +469,11 @@ def main():
             ["python3", str(TOOLS / "lint_report.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "config-check":
+        subprocess.run(
+            ["python3", str(TOOLS / "config_check.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "hotspot":
         subprocess.run(
             ["python3", str(TOOLS / "hotspot.py")] + rest,
@@ -647,6 +652,7 @@ def main():
                 "install-deps":  "verifica e instala deps opcionales (flake8, eslint, acorn, golangci-lint…)",
                 "rule-catalog":  "catálogo Markdown/HTML de todas las reglas BAGO-* y JS-* con ejemplos",
                 "lint-report":   "convierte salida JSON de bago-lint/multi-scan en informe Markdown",
+                "config-check":  "valida pack.json contra esquema BAGO (campos, tipos, versión, refs)",
                 "hotspot":       "detecta hotspots: archivos con mas cambios + fallos + complejidad",
                 "fix":           "autofix serio: genera y aplica parches concretos con validacion",
                 "gh":            "integracion GitHub: check runs y comentarios en PRs",
