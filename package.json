@@ -1,8 +1,17 @@
 {
   "name": "bago-framework",
-  "version": "2.5.0",
+  "version": "3.0.0",
   "description": "BAGO — Balanced Agile Governance Operations framework",
-  "private": true,
+  "author": "Marc Valls",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MarcValls/bago-framework.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MarcValls/bago-framework/issues"
+  },
+  "homepage": "https://github.com/MarcValls/bago-framework#readme",
   "devDependencies": {
     "@typescript-eslint/typescript-estree": "^8.0.0",
     "acorn": "^8.14.0",
