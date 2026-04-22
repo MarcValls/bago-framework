@@ -1,0 +1,36 @@
+{
+  "session_id": "SES-HARVEST-2026-04-22-001",
+  "task_type": "harvest",
+  "selected_workflow": "w9_cosecha",
+  "roles_activated": [
+    "role_auditor"
+  ],
+  "user_goal": "Cosecha contextual: Cerramos auto en TPV con contexto repo-on activo y health GO.",
+  "status": "closed",
+  "escenario": "ESCENARIO-003",
+  "created_at": "2026-04-22T20:40:07.729965+00:00",
+  "updated_at": "2026-04-22T20:40:07.729965+00:00",
+  "artifacts": [
+    "TESTS/TEST_BAGO_02/CAOS_SIGARRITO",
+    "TESTS/TEST_BAGO_02/bago-framework",
+    ".bago/state/iterations/ITER-0034.json",
+    ".bago/state/iterations/ITER-0035.json",
+    ".bago/state/iterations/ITER-0036.json",
+    ".bago/state/iterations/ITER-0037.json",
+    ".bago/state/iterations/ITER-0038.json",
+    ".bago/state/iterations/ITER-0039.json",
+    ".bago/state/iterations/ITER-0040.json",
+    ".bago/state/iterations/ITER-0041.json",
+    ".bago/state/iterations/ITER-0042.json",
+    ".bago/state/iterations/ITER-0043.json",
+    ".bago/tools/api_check.py",
+    ".bago/tools/coverage_gate.py",
+    ".bago/tools/naming_check.py"
+  ],
+  "decisions": [
+    "DECISIÓN: Cerramos auto en TPV con contexto repo-on activo y health GO.",
+    "DESCARTE: Descartamos ejecutar cambios sin tarea concreta para evitar ruido."
+  ],
+  "next_step": "Siguiente paso: recibir tarea TPV y ejecutar W2_IMPLEMENTACION_CONTROLADA con evidencia.",
+  "summary": "Harvest W9. Decisión: Cerramos auto en TPV con contexto repo-on activo y health GO. Próximo: Siguiente paso: recibir tarea TPV y ejecutar W2_IMPLEMENTACI."
+}

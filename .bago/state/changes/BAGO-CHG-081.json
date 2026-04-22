@@ -1,0 +1,29 @@
+{
+  "change_id": "BAGO-CHG-081",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Cosecha contextual W9: Cerramos auto en TPV con contexto repo-on activo y health GO",
+  "motivation": "Formalizar exploración libre. Decisión: Cerramos auto en TPV con contexto repo-on activo y health GO.. Descarte: Descartamos ejecutar cambios sin tarea concreta para evitar ruido..",
+  "status": "applied",
+  "affected_components": [
+    "TESTS/TEST_BAGO_02/CAOS_SIGARRITO",
+    "TESTS/TEST_BAGO_02/bago-framework",
+    ".bago/state/iterations/ITER-0034.json",
+    ".bago/state/iterations/ITER-0035.json",
+    ".bago/state/iterations/ITER-0036.json",
+    ".bago/state/iterations/ITER-0037.json",
+    ".bago/state/iterations/ITER-0038.json",
+    ".bago/state/iterations/ITER-0039.json",
+    ".bago/state/iterations/ITER-0040.json",
+    ".bago/state/iterations/ITER-0041.json",
+    ".bago/state/iterations/ITER-0042.json",
+    ".bago/state/iterations/ITER-0043.json",
+    ".bago/tools/api_check.py",
+    ".bago/tools/coverage_gate.py",
+    ".bago/tools/naming_check.py"
+  ],
+  "related_evidence": "BAGO-EVD-071",
+  "created_at": "2026-04-22T20:40:07.729965+00:00",
+  "updated_at": "2026-04-22T20:40:07.729965+00:00",
+  "author": "role_auditor"
+}

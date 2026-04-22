@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-071",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-081",
+    "SES-HARVEST-2026-04-22-001"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-22-001",
+  "details": "Decisión: Cerramos auto en TPV con contexto repo-on activo y health GO. | Descarte: Descartamos ejecutar cambios sin tarea concreta para evitar ruido. | Próximo paso: Siguiente paso: recibir tarea TPV y ejecutar W2_IMPLEMENTACION_CONTROLADA con evidencia. | Ficheros afectados: TESTS/TEST_BAGO_02/CAOS_SIGARRITO, TESTS/TEST_BAGO_02/bago-framework, .bago/state/iterations/ITER-0034.json",
+  "status": "recorded",
+  "recorded_at": "2026-04-22T20:40:07.729965+00:00"
+}
