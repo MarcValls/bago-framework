@@ -1,0 +1,19 @@
+{
+  "id": "BAGO-CHG-156",
+  "change_id": "CHG-156",
+  "type": "governance",
+  "severity": "minor",
+  "title": "velocity --csv export flag",
+  "motivation": "Añadir --csv a velocity.py para exportar métricas a CSV (period,sessions,artifacts,sess_per_day).",
+  "status": "applied",
+  "affected_components": [
+    "velocity.py",
+    "integration_tests.py"
+  ],
+  "related_evidence": [
+    "146/146 tests pass"
+  ],
+  "created_at": "2025-07-28T00:00:00Z",
+  "updated_at": "2025-07-28T00:00:00Z",
+  "author": "bago-autonomous"
+}

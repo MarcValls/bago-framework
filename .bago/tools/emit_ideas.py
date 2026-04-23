@@ -430,6 +430,63 @@ FALLBACK_IDEAS: list[dict[str, object]] = [
         ],
         "w2": "Implementar --quiet en scan.py main() y añadir test.",
     },
+    {
+        "priority": 55,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "velocity.py no tiene flag --csv para exportar datos a CSV.",
+        "title": "velocity --csv export",
+        "summary": "Añadir --csv flag a velocity.py para exportar métricas a CSV.",
+        "detail": [
+            "Añadir --csv argparse flag a velocity.py.",
+            "Cuando --csv, imprimir header y filas CSV a stdout.",
+            "Campos: period, sessions, artifacts, sess_per_day.",
+        ],
+        "w2": "Implementar --csv en velocity.py y añadir test.",
+        "next_step": "Añadir --csv a velocity.py argparse y lógica de salida.",
+    },
+    {
+        "priority": 53,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "scan.py no tiene flag --summary que muestre solo el resumen sin listar todos los hallazgos.",
+        "title": "scan --summary flag",
+        "summary": "Añadir --summary a scan.py para mostrar solo totales por severidad sin listar hallazgos.",
+        "detail": [
+            "Añadir --summary argparse flag.",
+            "Cuando --summary, imprimir solo líneas de totales: errors=N, warnings=N, etc.",
+        ],
+        "w2": "Implementar --summary en scan.py y añadir test.",
+        "next_step": "Añadir --summary a scan.py main() y test que verifica output conciso.",
+    },
+    {
+        "priority": 51,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "health_score.py no tiene flag --json para salida machine-readable.",
+        "title": "health_score --json output",
+        "summary": "Añadir --json flag a health_score.py para emitir score como JSON parseable.",
+        "detail": [
+            "Añadir --json argparse flag a health_score.py.",
+            "JSON output: {score, max, grade, checks}.",
+        ],
+        "w2": "Implementar --json en health_score.py y añadir test.",
+        "next_step": "Añadir --json a health_score.py argparse y lógica de salida.",
+    },
+    {
+        "priority": 49,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "emit_ideas.py no tiene flag --top N para limitar ideas mostradas.",
+        "title": "emit_ideas --top N flag",
+        "summary": "Añadir --top N a emit_ideas.py para limitar output a los N ideas de mayor prioridad.",
+        "detail": [
+            "Añadir --top N argparse flag.",
+            "Truncar la lista de ideas a N antes de imprimir.",
+        ],
+        "w2": "Implementar --top en emit_ideas.py y añadir test.",
+        "next_step": "Añadir --top N a emit_ideas.py argparse y truncar ideas list.",
+    },
 ]
 
 

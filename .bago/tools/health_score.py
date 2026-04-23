@@ -164,6 +164,7 @@ def score_consistencia_inventario() -> tuple[int, int, str]:
 
 def main():
     score_only = "--score-only" in sys.argv
+    as_json    = "--json" in sys.argv
 
     dimensions = [
         ("Integridad",          score_integridad),
@@ -183,6 +184,16 @@ def main():
 
     if score_only:
         print(total)
+        return 0
+
+    if as_json:
+        import json as _j
+        checks = [
+            {"name": name, "score": pts, "max": max_pts, "detail": detail}
+            for name, pts, max_pts, detail in results
+        ]
+        print(_j.dumps({"score": total, "max": max_total, "checks": checks},
+                       indent=2, ensure_ascii=False))
         return 0
 
     # Semáforo

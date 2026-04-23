@@ -2121,6 +2121,50 @@ def test_metrics_export_json():
             f"JSON OK, python_files={data['python_files']}, total_lines={data['total_lines']}")
 
 
+def test_velocity_csv():
+    """velocity.py --csv: output CSV con header y 2 filas de datos."""
+    rc, out, err = _run("velocity.py", ["--csv"], timeout=15)
+    if rc != 0:
+        _record("velocity:csv", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    lines = [l for l in out.splitlines() if l.strip()]
+    if not lines:
+        _record("velocity:csv", FAIL, "no output")
+        return
+    header = lines[0]
+    if "period" not in header or "sessions" not in header:
+        _record("velocity:csv", FAIL, f"header missing expected columns: {header}")
+        return
+    if len(lines) < 3:
+        _record("velocity:csv", FAIL, f"expected ≥3 lines (header+2 rows), got {len(lines)}")
+        return
+    _record("velocity:csv", PASS, f"CSV OK, header={header}, rows={len(lines)-1}")
+
+
+def test_health_score_json():
+    """health_score.py --json: JSON con score, max, checks."""
+    import json as _j
+    rc, out, err = _run("health_score.py", ["--json"], timeout=20)
+    if rc != 0:
+        _record("health_score:json", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    try:
+        data = _j.loads(out)
+    except Exception as e:
+        _record("health_score:json", FAIL, f"JSON parse error: {e}")
+        return
+    required = {"score", "max", "checks"}
+    missing = required - set(data.keys())
+    if missing:
+        _record("health_score:json", FAIL, f"missing keys: {missing}")
+        return
+    if not isinstance(data["checks"], list) or len(data["checks"]) == 0:
+        _record("health_score:json", FAIL, "checks must be non-empty list")
+        return
+    _record("health_score:json", PASS,
+            f"JSON OK, score={data['score']}/{data['max']}, checks={len(data['checks'])}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2253,6 +2297,8 @@ ALL_TESTS = [
     (129, "scan:quiet",                  test_scan_quiet),
     (130, "dashboard:production_score",  test_dashboard_production_score),
     (131, "metrics:export_json",         test_metrics_export_json),
+    (132, "velocity:csv",                test_velocity_csv),
+    (133, "health_score:json",           test_health_score_json),
 ]
 
 

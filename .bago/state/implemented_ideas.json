@@ -210,13 +210,23 @@
       "date": "2025-07-28"
     },
     {
-      "title": "Dashboard --json con production_score",
+      "title": "Dashboard --json con production score",
       "chg": "CHG-154",
       "date": "2025-07-28"
     },
     {
       "title": "Test estructura metrics --json",
       "chg": "CHG-155",
+      "date": "2025-07-28"
+    },
+    {
+      "title": "velocity --csv export",
+      "chg": "CHG-156",
+      "date": "2025-07-28"
+    },
+    {
+      "title": "health_score --json output",
+      "chg": "CHG-157",
       "date": "2025-07-28"
     }
   ],

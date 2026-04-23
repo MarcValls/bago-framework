@@ -1,0 +1,19 @@
+{
+  "id": "BAGO-CHG-157",
+  "change_id": "CHG-157",
+  "type": "governance",
+  "severity": "minor",
+  "title": "health_score --json output",
+  "motivation": "Añadir --json a health_score.py para emitir score, max y checks como JSON parseable.",
+  "status": "applied",
+  "affected_components": [
+    "health_score.py",
+    "integration_tests.py"
+  ],
+  "related_evidence": [
+    "146/146 tests pass"
+  ],
+  "created_at": "2025-07-28T00:00:00Z",
+  "updated_at": "2025-07-28T00:00:00Z",
+  "author": "bago-autonomous"
+}

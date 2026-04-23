@@ -216,6 +216,8 @@ def main():
     parser.add_argument("--period", type=int, default=7)
     parser.add_argument("--rolling", action="store_true")
     parser.add_argument("--json", action="store_true")
+    parser.add_argument("--csv", action="store_true",
+                        help="Exporta métricas a CSV (period,sessions,artifacts,sess_per_day)")
     parser.add_argument("--test", action="store_true")
 
     args = parser.parse_args()
@@ -232,6 +234,18 @@ def main():
     previous = velocity_for_period(sessions, today - datetime.timedelta(days=period*2),
                                              today - datetime.timedelta(days=period))
     rolling  = rolling_velocity(sessions)
+
+    if getattr(args, "csv", False):
+        import csv, io
+        buf = io.StringIO()
+        w = csv.writer(buf)
+        w.writerow(["period", "sessions", "artifacts", "sess_per_day", "arts_per_day"])
+        w.writerow(["current", current["sessions"], current["artifacts"],
+                    current["sess_per_day"], current["arts_per_day"]])
+        w.writerow(["previous", previous["sessions"], previous["artifacts"],
+                    previous["sess_per_day"], previous["arts_per_day"]])
+        print(buf.getvalue(), end="")
+        return
 
     render_velocity(current, previous, rolling, as_json=args.json)
 
