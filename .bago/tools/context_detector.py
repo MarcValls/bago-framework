@@ -12,7 +12,7 @@ Uso:
 
 import json, os, re, subprocess, sys
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 # ─── Configuración ────────────────────────────────────────────────────────────
 BAGO_ROOT   = Path(__file__).resolve().parent.parent
@@ -39,7 +39,9 @@ HARVEST_THRESHOLD = 2   # señales de peso alto mínimas para sugerir cosecha
 SKIP_DIRS = {
     ".bago", ".git", "node_modules", "dist", "build", "coverage",
     ".next", ".turbo", ".venv", "venv", "__pycache__", ".pytest_cache",
+    "TESTS", "RELEASE", "bago-viewer", "cleanversion",
 }
+SKIP_FILENAMES = {"CHANGELOG.md", "CHECKSUMS.sha256", "TREE.txt"}
 MAX_FILE_BYTES = 256_000
 
 
@@ -93,37 +95,100 @@ def _unregistered_files():
 
 
 def _commits_without_session():
-    """Número de commits recientes sin sesión BAGO asociada."""
+    """Número de commits recientes sin sesión BAGO asociada.
+    Un commit se considera cubierto si:
+      1. El session_id aparece en el mensaje del commit, O
+      2. El commit fue realizado durante el período activo de una sesión BAGO.
+    """
     try:
+        # Commits con timestamps (usar | como separador para evitar split por espacio)
         r = subprocess.run(
-            ["git", "-C", str(REPO_ROOT), "log", "--oneline", "-10"],
+            ["git", "-C", str(REPO_ROOT), "log", "--format=%H|%aI|%s", "-10"],
             capture_output=True, text=True, timeout=5
         )
-        commits = r.stdout.strip().splitlines()
-        session_ids = {
-            json.loads(f.read_text()).get("session_id", "")
-            for f in SESSIONS.glob("*.json")
-        }
-        orphan = [c for c in commits if not any(sid in c for sid in session_ids)]
-        return len(orphan)
+        lines = r.stdout.strip().splitlines()
+
+        # Rangos temporales de sesiones BAGO
+        sessions = []
+        session_ids = set()
+        for f in SESSIONS.glob("*.json"):
+            try:
+                d = json.loads(f.read_text())
+                sid = d.get("session_id", "")
+                session_ids.add(sid)
+                ca = d.get("created_at") or d.get("updated_at")
+                ua = d.get("closed_at") or d.get("updated_at") or ca
+                if ca:
+                    sessions.append((
+                        datetime.fromisoformat(ca.replace("Z", "+00:00")),
+                        datetime.fromisoformat(ua.replace("Z", "+00:00")) if ua else None
+                    ))
+            except Exception:
+                pass
+
+        # Buffer de 30 minutos: commits justo después del cierre de sesión también cuentan
+        SESSION_BUFFER = timedelta(minutes=30)
+
+        orphan = 0
+        for line in lines:
+            parts = line.split("|", 2)
+            if len(parts) < 3:
+                continue
+            sha, ts_str, msg = parts[0], parts[1], parts[2]
+            # Check 1: session_id en el mensaje
+            if any(sid in msg for sid in session_ids if sid):
+                continue
+            # Check 2: commit dentro del período de una sesión (±buffer)
+            try:
+                commit_dt = datetime.fromisoformat(ts_str)
+                covered = False
+                for (ses_start, ses_end) in sessions:
+                    effective_end = (ses_end or ses_start) + SESSION_BUFFER
+                    if ses_start <= commit_dt <= effective_end:
+                        covered = True
+                        break
+                if covered:
+                    continue
+            except Exception:
+                pass
+            orphan += 1
+
+        return orphan
     except Exception:
         return 0
 
 
 # ─── Señales cognitivas ───────────────────────────────────────────────────────
 
-def _scan_cognitive(max_files=40, extensions=(".md", ".txt", ".py", ".ts", ".js")):
+def _scan_cognitive(max_files=40, extensions=(".md", ".txt")):
     """
-    Busca keywords cognitivas en ficheros recientes del repo.
+    Busca keywords cognitivas en ficheros de notas/documentación recientes.
+    Solo escanea .md y .txt — el código fuente (.py, .ts, .js) no es fuente cognitiva.
     Devuelve lista de (fichero, keyword_encontrada, fragmento).
     """
     hits = []
     candidates = []
 
-    # Ficheros modificados primero
+    # Rutas que no contienen señales cognitivas del usuario
+    COGNITIVE_SKIP_PREFIXES = (
+        str(BAGO_ROOT / "state") + "/",
+        str(BAGO_ROOT / "docs") + "/",
+        str(REPO_ROOT / "TESTS") + "/",
+        str(REPO_ROOT / "RELEASE") + "/",
+        str(REPO_ROOT / "bago-viewer") + "/",
+    )
+    COGNITIVE_SKIP_NAMES = {"CHANGELOG.md", "CHECKSUMS.sha256", "TREE.txt"}
+
+    def _is_cognitive_candidate(path: Path) -> bool:
+        s = str(path)
+        if path.name in COGNITIVE_SKIP_NAMES:
+            return False
+        return not any(s.startswith(pfx) for pfx in COGNITIVE_SKIP_PREFIXES)
+
+    # Ficheros modificados primero (excluyendo state/ y docs/ del framework)
     for mf in _git_modified_files():
         p = REPO_ROOT / mf
-        if p.exists() and p.suffix in extensions:
+        if p.exists() and p.suffix in extensions and _is_cognitive_candidate(p):
             candidates.append(p)
 
     # Completar con ficheros recientes si hacen falta, evitando directorios pesados.
@@ -132,10 +197,14 @@ def _scan_cognitive(max_files=40, extensions=(".md", ".txt", ".py", ".ts", ".js"
         for root, dirnames, filenames in os.walk(REPO_ROOT):
             dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
             for filename in filenames:
+                if filename in SKIP_FILENAMES:
+                    continue
                 path = Path(root) / filename
                 if path.suffix not in extensions:
                     continue
                 if path in candidates:
+                    continue
+                if not _is_cognitive_candidate(path):
                     continue
                 try:
                     stat = path.stat()
@@ -158,6 +227,9 @@ def _scan_cognitive(max_files=40, extensions=(".md", ".txt", ".py", ".ts", ".js"
                 for m in re.finditer(pattern, text, re.IGNORECASE):
                     start = max(0, m.start() - 40)
                     fragment = text[start: m.end() + 40].replace("\n", " ").strip()
+                    # Ignorar ocurrencias de "vs" dentro de celdas de tabla Markdown
+                    if m.group().lower() == "vs" and re.search(r"\|[^|]*\bvs\b[^|]*\|", fragment, re.IGNORECASE):
+                        break
                     hits.append({"file": str(p.relative_to(REPO_ROOT)),
                                  "keyword": m.group(), "fragment": fragment})
                     break  # una hit por patrón por fichero
@@ -167,21 +239,29 @@ def _scan_cognitive(max_files=40, extensions=(".md", ".txt", ".py", ".ts", ".js"
 
 
 def _detect_comparisons(cognitive_hits):
-    """Detecta si hay al menos 1 alternativa comparada en los hits."""
+    """Detecta si hay al menos 1 alternativa comparada en los hits (solo en notas, no en código o tablas)."""
     comparison_patterns = [r"\bvs\b", r"\bfrente a\b", r"\bcomparado con\b",
                             r"\bmejor que\b", r"\bpeor que\b"]
     for h in cognitive_hits:
+        if h.get("file", "").endswith(".py"):
+            continue  # Las señales cognitivas no vienen de código Python
+        fragment = h["fragment"]
+        # Ignorar "vs" en celdas de tabla Markdown (rodeado de pipes)
+        if re.search(r"\|[^|]*\bvs\b[^|]*\|", fragment):
+            continue
         for p in comparison_patterns:
-            if re.search(p, h["fragment"], re.IGNORECASE):
+            if re.search(p, fragment, re.IGNORECASE):
                 return True
     return False
 
 
 def _detect_discards(cognitive_hits):
-    """Detecta si hay al menos 1 descarte explícito."""
+    """Detecta si hay al menos 1 descarte explícito (solo en notas, no en código)."""
     discard_patterns = [r"\bdescart", r"\bno vale\b", r"\bno sirve\b",
                         r"\babandon", r"\brechaz"]
     for h in cognitive_hits:
+        if h.get("file", "").endswith(".py"):
+            continue  # Los print("RECHAZADA") de código no son señales cognitivas
         for p in discard_patterns:
             if re.search(p, h["fragment"], re.IGNORECASE):
                 return True

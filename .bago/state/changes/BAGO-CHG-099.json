@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-099",
+  "type": "architecture",
+  "severity": "minor",
+  "title": "context_detector: eliminar falsos positivos W9 (tabla-MD, .py, TESTS/, RELEASE/)",
+  "motivation": "El detector marcaba HARVEST por hits de celdas tabla README, prints en .py, y fixtures de TESTS/. Fix: solo .md/.txt, excluyendo TESTS/RELEASE/bago-viewer/cleanversion, y filtro de tabla-celda para vs",
+  "status": "applied",
+  "affected_components": [
+    "context_detector.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T01:10:30.658076+00:00",
+  "updated_at": "2026-04-23T01:10:30.658076+00:00",
+  "author": "bago-autonomous"
+}

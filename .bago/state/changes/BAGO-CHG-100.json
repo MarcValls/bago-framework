@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-100",
+  "type": "architecture",
+  "severity": "minor",
+  "title": "context_detector: asociación temporal commit-sesión (±30min buffer)",
+  "motivation": "El conteo de commits sin sesión era siempre 10 porque usaba solo session_id en mensaje. Ahora también verifica si el commit fue realizado durante el período activo de una sesión BAGO",
+  "status": "applied",
+  "affected_components": [
+    "context_detector.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T01:10:30.658076+00:00",
+  "updated_at": "2026-04-23T01:10:30.658076+00:00",
+  "author": "bago-autonomous"
+}
