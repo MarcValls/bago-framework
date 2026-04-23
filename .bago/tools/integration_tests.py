@@ -2578,6 +2578,23 @@ def test_stability_json():
     _record("stability:json", PASS, f"decision={data['decision']} gates={len(data['gates'])}")
 
 
+def test_doctor_json():
+    """doctor.py --json: rc=0, JSON has 'verdict' and 'total_errors'."""
+    rc, out, err = _run("doctor.py", ["--json"], timeout=60)
+    if rc != 0:
+        _record("doctor:json", FAIL, f"rc={rc} err={err[:80]}")
+        return
+    try:
+        data = json.loads(out)
+    except json.JSONDecodeError:
+        _record("doctor:json", FAIL, f"invalid JSON: {out[:60]!r}")
+        return
+    if "verdict" not in data or "total_errors" not in data:
+        _record("doctor:json", FAIL, f"missing keys: {list(data)}")
+        return
+    _record("doctor:json", PASS, f"verdict={data['verdict']} errors={data['total_errors']}")
+
+
 def test_risk_matrix_since():
     """risk_matrix.py --since 2020-01-01 --csv: rc=0 y header con 'category'."""
     rc, out, err = _run("risk_matrix.py", ["--since", "2020-01-01", "--csv"], timeout=30)
@@ -2745,6 +2762,7 @@ ALL_TESTS = [
     (152, "velocity:top_rolling",        test_velocity_top_rolling),
     (153, "ideas:dynamic_scoring",       test_ideas_dynamic_scoring),
     (154, "stability:json",              test_stability_json),
+    (155, "doctor:json",                 test_doctor_json),
 ]
 
 

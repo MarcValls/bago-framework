@@ -1,0 +1,18 @@
+{
+  "id": "BAGO-CHG-178",
+  "change_id": "BAGO-CHG-178",
+  "type": "governance",
+  "severity": "patch",
+  "title": "doctor --json: output estructurado para automatizaci\u00f3n",
+  "motivation": "Permite consumir el diagn\u00f3stico del doctor en pipelines sin parsear texto.",
+  "status": "applied",
+  "affected_components": [
+    "doctor.py"
+  ],
+  "related_evidence": [
+    "test_155_doctor_json"
+  ],
+  "created_at": "2026-04-23T09:45:30.403449+00:00",
+  "updated_at": "2026-04-23T09:45:30.403449+00:00",
+  "author": "bago-autonomous"
+}

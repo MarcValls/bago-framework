@@ -345,6 +345,7 @@ def main():
     p = argparse.ArgumentParser(description="Diagnostico integral del pack BAGO")
     p.add_argument("--quiet", "-q", action="store_true", help="Solo mostrar errores")
     p.add_argument("--fix", action="store_true", help="Intentar auto-corregir problemas simples")
+    p.add_argument("--json", action="store_true", help="Output estructurado como JSON")
     p.add_argument("--section", choices=["tools", "json", "config", "sessions", "sprints", "workflows"],
                    help="Ejecutar solo una seccion")
     p.add_argument("--test", action="store_true")
@@ -354,13 +355,26 @@ def main():
         _run_tests()
         return
 
-    print()
-    print("  BAGO Doctor - Diagnostico integral del pack")
-    print("  Pack: {}".format(ROOT.name))
-    print("  Dir : {}".format(ROOT))
+    if not getattr(args, "json", False):
+        print()
+        print("  BAGO Doctor - Diagnostico integral del pack")
+        print("  Pack: {}".format(ROOT.name))
+        print("  Dir : {}".format(ROOT))
 
     all_errors = []
     all_warnings = []
+
+    import io as _io
+    _null = _io.StringIO()
+
+    def _run_section(fn, quiet):
+        if getattr(args, "json", False):
+            _saved, sys.stdout = sys.stdout, _null
+            try:
+                return fn(quiet)
+            finally:
+                sys.stdout = _saved
+        return fn(quiet)
 
     sections = {
         "tools": check_python_tools,
@@ -371,12 +385,12 @@ def main():
     }
 
     if args.section == "config" or args.section is None:
-        e, w = check_pack_config(args.quiet)
+        e, w = _run_section(check_pack_config, args.quiet)
         all_errors.append(e); all_warnings.append(w)
 
     for name, fn in sections.items():
         if args.section is None or args.section == name:
-            result = fn(args.quiet)
+            result = _run_section(fn, args.quiet)
             if isinstance(result, tuple):
                 e, w = result
                 all_errors.append(e)
@@ -385,7 +399,24 @@ def main():
                 all_errors.append(result)
                 all_warnings.append([])
 
-    _print_summary(all_errors, all_warnings)
+    if getattr(args, "json", False):
+        total_errors = sum(len(e) for e in all_errors)
+        total_warnings = sum(len(w) for w in all_warnings)
+        if total_errors == 0 and total_warnings == 0:
+            verdict = "OK"
+        elif total_errors == 0:
+            verdict = "WARN"
+        else:
+            verdict = "FAIL"
+        print(json.dumps({
+            "verdict": verdict,
+            "errors": sum(all_errors, []),
+            "warnings": sum(all_warnings, []),
+            "total_errors": total_errors,
+            "total_warnings": total_warnings,
+        }, indent=2, ensure_ascii=False))
+    else:
+        _print_summary(all_errors, all_warnings)
 
 
 if __name__ == "__main__":
