@@ -63,7 +63,7 @@ def save_baseline(findings: list[dict], baseline_path: Path,
                   target: str = "") -> dict:
     """Guarda findings como baseline en JSON."""
     data = {
-        "saved_at": datetime.datetime.now().isoformat(),
+        "saved_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "target": target,
         "count": len(findings),
         "findings": findings,

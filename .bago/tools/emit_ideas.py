@@ -312,7 +312,8 @@ def print_sectioned_ideas(sections: dict[str, list[dict[str, object]]]) -> None:
     total = len(sections["contextuales"]) + len(sections["respaldo"])
     print(
         f"Total ideas: {total} "
-        f"(contextuales={len(sections['contextuales'])}, respaldo={len(sections['respaldo'])})"
+        f"(contextuales={len(sections['contextuales'])}, respaldo={len(sections['respaldo'])}) "
+        f"[rango: {MIN_IDEAS}\u201320]"
     )
     counter = 1
     for item in order_ideas_by_section(sections):
@@ -742,7 +743,21 @@ def main() -> int:
     sections = build_idea_sections(ideas)
     ideas = order_ideas_by_section(sections)
 
+    # ── working mode header ────────────────────────────────────────────────────
+    repo_ctx_path = ROOT / ".bago/state/repo_context.json"
+    repo_ctx = load_json(repo_ctx_path) if file_exists(repo_ctx_path) else {}
+    working_mode = repo_ctx.get("working_mode", "self")
+    ext_repo = Path(repo_ctx.get("repo_root", "")).name if working_mode == "external" else ""
+
     print("BAGO ideas selector")
+    if working_mode == "external" and ext_repo:
+        print(f"modo: 🏠 framework  ·  proyecto externo activo: 📂 {ext_repo}")
+        print("⚠  Las ideas de abajo son mejoras del FRAMEWORK BAGO, no del proyecto externo.")
+        print("   Para trabajar en el proyecto usa: bago analyze <ruta> o bago session --repo <ruta>")
+    else:
+        print("modo: 🏠 framework (self)")
+    # ── /working mode header ───────────────────────────────────────────────────
+
     print(summarize_report("smoke", smoke))
     print(summarize_report("vm", vm))
     print(summarize_report("soak", soak))
@@ -750,12 +765,14 @@ def main() -> int:
     if baseline_clean_mode:
         print("baseline_clean_mode: activo (solo ideas low-risk con métrica)")
     print("")
+    if working_mode == "external" and ext_repo:
+        print(f"── Ideas del framework BAGO ──────────────────────────────────")
     print_sectioned_ideas(sections)
 
     print("")
     if detail_index is None:
         print(
-            "Recomendacion: pide detalle con `./ideas --detail N` o acepta con `./ideas --accept N`."
+            f"→ Acepta la idea con mayor score: `bago ideas --accept 1`"
         )
         return 0
 

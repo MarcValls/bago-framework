@@ -1,0 +1,42 @@
+================================================================================
+OPCIÓN A — Hoja de turnaround única (todas las vistas en UNA imagen)
+================================================================================
+
+POSITIVE:
+character turnaround sheet, same female anime game character in all 8 views, dark brown hair in twin messy buns with loose strands, pink off-shoulder sweater, ripped grey skinny jeans, chunky purple platform boots, small black backpack, semi-realistic painted 2D game-art style, consistent face, consistent proportions, fixed isometric game camera, neutral idle stance in all views, views arranged left to right: front, 3/4 front right, side right, 3/4 back right, back, 3/4 back left, side left, 3/4 front left, neutral lighting, plain light background or transparent background, clean readable silhouette, no animation, no motion
+
+NEGATIVE:
+pixel art, chibi, realistic photo, background, scenery, ground shadow, cinematic rim light, motion blur, depth of field, extreme foreshortening, strong perspective, inconsistent face, different outfit, different hairstyle, different shoes, extra fingers, bad hands, extra limbs, blurry edges, noisy details, animation frames, multiple poses, action pose
+
+NOTA: Úsalo si el modelo soporta layout de múltiples vistas (ej. DALL·E con instrucción de grid).
+
+================================================================================
+OPCIÓN B — 8 prompts individuales (una imagen por vista) [RECOMENDADO]
+================================================================================
+
+NEGATIVE (mismo para los 8):
+pixel art, chibi, realistic photo, background, scenery, ground shadow, cinematic rim light, motion blur, depth of field, inconsistent face, different outfit, different hairstyle, different shoes, extra fingers, bad hands, extra limbs, cropped body, blurry edges, noisy details, action pose, mid-stride
+
+--- View 01/8: South (front) ---
+POSITIVE: semi-realistic anime game sprite, female character, dark brown hair in twin messy buns with loose strands, pink off-shoulder sweater, ripped grey skinny jeans, chunky purple platform boots, small black backpack, clean readable silhouette, consistent face, consistent proportions, fixed isometric game camera, neutral idle stance, feet planted, neutral lighting, transparent background, no environment. View: front isometric view, facing camera. Direction: South. Same outfit, same hair, same proportions, same face as all other views in this turnaround. No motion, no animation. Full body visible, no cropped limbs.
+
+--- View 02/8: South-East (front_right_34) ---
+POSITIVE: semi-realistic anime game sprite, female character, dark brown hair in twin messy buns with loose strands, pink off-shoulder sweater, ripped grey skinny jeans, chunky purple platform boots, small black backpack, clean readable silhouette, consistent face, consistent proportions, fixed isometric game camera, neutral idle stance, feet planted, neutral lighting, transparent background, no environment. View: 3/4 front view facing down-right. Direction: South-East. Same outfit, same hair, same proportions, same face as all other views in this turnaround. No motion, no animation. Full body visible, no cropped limbs.
+
+--- View 03/8: East (side_right) ---
+POSITIVE: semi-realistic anime game sprite, female character, dark brown hair in twin messy buns with loose strands, pink off-shoulder sweater, ripped grey skinny jeans, chunky purple platform boots, small black backpack, clean readable silhouette, consistent face, consistent proportions, fixed isometric game camera, neutral idle stance, feet planted, neutral lighting, transparent background, no environment. View: side view facing right. Direction: East. Same outfit, same hair, same proportions, same face as all other views in this turnaround. No motion, no animation. Full body visible, no cropped limbs.
+
+--- View 04/8: North-East (back_right_34) ---
+POSITIVE: semi-realistic anime game sprite, female character, dark brown hair in twin messy buns with loose strands, pink off-shoulder sweater, ripped grey skinny jeans, chunky purple platform boots, small black backpack, clean readable silhouette, consistent face, consistent proportions, fixed isometric game camera, neutral idle stance, feet planted, neutral lighting, transparent background, no environment. View: 3/4 back view facing up-right. Direction: North-East. Same outfit, same hair, same proportions, same face as all other views in this turnaround. No motion, no animation. Full body visible, no cropped limbs.
+
+--- View 05/8: North (back) ---
+POSITIVE: semi-realistic anime game sprite, female character, dark brown hair in twin messy buns with loose strands, pink off-shoulder sweater, ripped grey skinny jeans, chunky purple platform boots, small black backpack, clean readable silhouette, consistent face, consistent proportions, fixed isometric game camera, neutral idle stance, feet planted, neutral lighting, transparent background, no environment. View: back isometric view, facing away. Direction: North. Same outfit, same hair, same proportions, same face as all other views in this turnaround. No motion, no animation. Full body visible, no cropped limbs.
+
+--- View 06/8: North-West (back_left_34) ---
+POSITIVE: semi-realistic anime game sprite, female character, dark brown hair in twin messy buns with loose strands, pink off-shoulder sweater, ripped grey skinny jeans, chunky purple platform boots, small black backpack, clean readable silhouette, consistent face, consistent proportions, fixed isometric game camera, neutral idle stance, feet planted, neutral lighting, transparent background, no environment. View: 3/4 back view facing up-left. Direction: North-West. Same outfit, same hair, same proportions, same face as all other views in this turnaround. No motion, no animation. Full body visible, no cropped limbs.
+
+--- View 07/8: West (side_left) ---
+POSITIVE: semi-realistic anime game sprite, female character, dark brown hair in twin messy buns with loose strands, pink off-shoulder sweater, ripped grey skinny jeans, chunky purple platform boots, small black backpack, clean readable silhouette, consistent face, consistent proportions, fixed isometric game camera, neutral idle stance, feet planted, neutral lighting, transparent background, no environment. View: side view facing left. Direction: West. Same outfit, same hair, same proportions, same face as all other views in this turnaround. No motion, no animation. Full body visible, no cropped limbs.
+
+--- View 08/8: South-West (front_left_34) ---
+POSITIVE: semi-realistic anime game sprite, female character, dark brown hair in twin messy buns with loose strands, pink off-shoulder sweater, ripped grey skinny jeans, chunky purple platform boots, small black backpack, clean readable silhouette, consistent face, consistent proportions, fixed isometric game camera, neutral idle stance, feet planted, neutral lighting, transparent background, no environment. View: 3/4 front view facing down-left. Direction: South-West. Same outfit, same hair, same proportions, same face as all other views in this turnaround. No motion, no animation. Full body visible, no cropped limbs.

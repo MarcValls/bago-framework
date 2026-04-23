@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-073",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-083",
+    "Alinear README con selector"
+  ],
+  "summary": "Cierre W2 automático: Alinear README con selector",
+  "details": "La tarea W2 quedó marcada como done, se generó un CHG de gobernanza y se actualizó global_state con el nuevo inventario. Archivos candidatos de la tarea: README.md, .bago/README.md, .bago/tools/emit_ideas.py, .bago/docs/operation/GUIA_DE_USO.md. Gate de cierre: GO. Tests ejecutados: python3 -c \"import re; m=open('README.md').read(); b=open('.bago/README.md').read(); steps={'health': bool(re.search(r'bago (health|stability)', m)), 'ideas': 'bago ideas' in m, 'accept': 'ideas --accept' in m, 'session': 'bago session' in m}; bsteps={'health': bool(re.search(r'bago (health|stability)', b)), 'ideas': 'bago ideas' in b, 'accept': 'ideas --accept' in b, 'session': 'bago session' in b}; assert steps==bsteps, 'NOT ALIGNED'; print('OK: ambos docs alinean el mismo recorrido')\"=>0. Validación humana: El Quick Start de README.md ahora incluye bago ideas y bago ideas --accept N antes de bago session, alineado con el recorrido de .bago/README.md: el usuario ve el mismo flujo en ambos documentos sin ambiguedades.",
+  "status": "recorded",
+  "recorded_at": "2026-04-22T23:38:49.134649+00:00"
+}

@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-087",
+  "type": "governance",
+  "severity": "minor",
+  "title": "SPRINT-005: testgen.py Python 3.9 compat + Go subtests + Rust AAA",
+  "motivation": "SPRINT-005/006 — SPRINT-005: testgen.py Python 3.9 compat + Go subtests + Rust AAA",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/testgen.py"
+  ],
+  "created_at": "2026-04-23T00:32:51.233981+00:00",
+  "related_evidence": "BAGO-EVD-076",
+  "updated_at": "2026-04-23T00:33:38.854869+00:00",
+  "author": "copilot-autonomous"
+}

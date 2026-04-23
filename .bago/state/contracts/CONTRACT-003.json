@@ -3,7 +3,7 @@
   "title": "T+4h — Automatización, memoria institucional y test generation",
   "type": "commitment",
   "created_at": "2026-04-21T22:46:13.694763+00:00",
-  "deadline": "2026-04-22T02:46:13.694763+00:00",
+  "deadline": "2026-07-22T00:35:08.919504+00:00",
   "business_impact": "Al completar este contrato BAGO puede: generar tests completos para cualquier repo desconocido (bago testgen), integrarse en CI/CD con un solo comando (bago ci), responder preguntas sobre su propia historia (bago ask), y vigilar ficheros en tiempo real (bago watch). El framework pasa de herramienta manual a sistema autónomo que protege la calidad sin intervención constante.",
   "commitments": [
     "bago testgen <path> — genera suite de tests para repos/dirs desconocidos (Python+JS, AST-based)",
@@ -25,7 +25,9 @@
       "params": {
         "min": 56
       },
-      "critical": true
+      "critical": true,
+      "met": true,
+      "met_at": "2026-04-23T00:28:38.513926+00:00"
     },
     {
       "id": "C003-002",
@@ -36,7 +38,9 @@
           ".bago/tools/testgen.py"
         ]
       },
-      "critical": true
+      "critical": true,
+      "met": true,
+      "met_at": "2026-04-23T00:28:38.513926+00:00"
     },
     {
       "id": "C003-003",
@@ -47,7 +51,9 @@
           ".bago/tools/ci_generator.py"
         ]
       },
-      "critical": true
+      "critical": true,
+      "met": true,
+      "met_at": "2026-04-23T00:28:38.513926+00:00"
     },
     {
       "id": "C003-004",
@@ -58,7 +64,9 @@
           ".bago/tools/bago_ask.py"
         ]
       },
-      "critical": true
+      "critical": true,
+      "met": true,
+      "met_at": "2026-04-23T00:28:38.513926+00:00"
     },
     {
       "id": "C003-005",
@@ -69,7 +77,9 @@
           ".bago/tools/bago_watch.py"
         ]
       },
-      "critical": false
+      "critical": false,
+      "met": true,
+      "met_at": "2026-04-23T00:28:38.513926+00:00"
     },
     {
       "id": "C003-006",
@@ -78,7 +88,9 @@
       "params": {
         "since": "2026-04-21T22:46:13.694763+00:00"
       },
-      "critical": true
+      "critical": true,
+      "met": true,
+      "met_at": "2026-04-23T00:28:38.513926+00:00"
     },
     {
       "id": "C003-007",
@@ -87,7 +99,8 @@
       "params": {
         "min": 78
       },
-      "critical": false
+      "critical": false,
+      "met": true
     },
     {
       "id": "C003-008",
@@ -96,7 +109,9 @@
       "params": {
         "min": 95
       },
-      "critical": false
+      "critical": false,
+      "met": true,
+      "met_at": "2026-04-23T00:28:38.513926+00:00"
     },
     {
       "id": "C003-009",
@@ -105,14 +120,18 @@
       "params": {
         "min": 100
       },
-      "critical": true
+      "critical": true,
+      "met": true,
+      "met_at": "2026-04-23T00:28:38.513926+00:00"
     },
     {
       "id": "C003-010",
       "description": "bago validate retorna GO",
       "type": "validate_go",
       "params": {},
-      "critical": true
+      "critical": true,
+      "met": true,
+      "met_at": "2026-04-23T00:28:38.513926+00:00"
     },
     {
       "id": "C003-011",
@@ -122,7 +141,11 @@
         "glob": ".bago/tools/*.py",
         "pattern": "datetime.now()"
       },
-      "critical": false
+      "critical": false,
+      "met": true
     }
-  ]
+  ],
+  "status": "fulfilled",
+  "fulfilled_at": "2026-04-23T00:35:08.919504+00:00",
+  "renewed_at": "2026-04-23T00:35:08.919504+00:00"
 }

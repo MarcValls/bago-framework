@@ -17,11 +17,11 @@ Uso:
 """
 import ast, argparse, json, os, re, sys
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 
 # ─── Python analysis ─────────────────────────────────────────────────────────
 
-def _python_signature(node: ast.FunctionDef | ast.AsyncFunctionDef) -> str:
+def _python_signature(node: Union[ast.FunctionDef, ast.AsyncFunctionDef]) -> str:
     """Returns 'func(arg1, arg2)' string from AST node."""
     args = node.args
     all_args = []
@@ -326,12 +326,22 @@ def generate_go_test_file(analysis: dict, rel_path: Optional[Path] = None) -> st
     ]
     for fn in analysis["funcs"]:
         name = fn["name"]
+        params = fn["params"].strip()
         lines += [
             f"func Test{name}(t *testing.T) {{",
-            f"\t// result := {name}(/* args */)",
-            f"\t// if result == nil {{ t.Error(\"{name} returned nil\") }}",
-            f"\tt.Log(\"placeholder test for {name}\")",
-            "}",
+            f"\ttests := []struct{{",
+            f"\t\tname string",
+            f"\t}}{{",
+            f"\t\t{{name: \"basic\"}},",
+            f"\t}}",
+            f"\tfor _, tt := range tests {{",
+            f"\t\tt.Run(tt.name, func(t *testing.T) {{",
+            f"\t\t\t// result := {name}(/* args */)",
+            f"\t\t\t_ = tt",
+            f"\t\t\tt.Log(\"placeholder test for {name}\")",
+            f"\t\t}})",
+            f"\t}}",
+            f"}}",
             "",
         ]
     seen_receivers = set()
@@ -406,9 +416,22 @@ def generate_rust_test_file(analysis: dict) -> str:
         lines += [
             f"    #[test]",
             f"    fn test_{name}() {{",
-            f"        // let result = {name}(/* args */);",
-            f"        // assert!(result.is_some());",
-            f"        assert!(true, \"placeholder test for {name}\");",
+            f"        // Arrange",
+            f"        // let input = /* value */;",
+            f"        // Act",
+            f"        // let result = {name}(/* input */);",
+            f"        // Assert",
+            f"        assert!(true, \"placeholder for {name}\");",
+            "    }",
+            "",
+        ]
+    for impl_type in analysis["impls"][:3]:
+        lines += [
+            f"    #[test]",
+            f"    fn test_{impl_type.lower()}_methods() {{",
+            f"        // let obj = {impl_type}::default(); // or ::new()",
+            f"        // assert!(obj.is_valid());",
+            f"        assert!(true, \"placeholder for {impl_type} impl\");",
             "    }",
             "",
         ]
@@ -416,7 +439,9 @@ def generate_rust_test_file(analysis: dict) -> str:
         lines += [
             f"    #[test]",
             f"    fn test_{s.lower()}_creation() {{",
+            f"        // Arrange & Act",
             f"        // let obj = {s} {{ /* fields */ }};",
+            f"        // Assert",
             f"        assert!(true, \"placeholder for {s}\");",
             "    }",
             "",

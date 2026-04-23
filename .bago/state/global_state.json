@@ -9,21 +9,21 @@
   "active_scenarios": [],
   "active_workflows": [],
   "history_migration_status": "completed_with_preserved_legacy",
-  "updated_at": "2026-04-22T22:13:15.763466+00:00",
+  "updated_at": "2026-04-23T00:42:39.449426+00:00",
   "v2_status": "stable",
-  "notes": "v3.0 release — 125 tools (91/91 ✅). Sprint 180 activo. Suite completa: static analysis, security, CI/CD, dynamic charts, doc coverage, type hints, license, dep-audit, readme-check.",
-  "last_completed_session_id": "SES-HARVEST-2026-04-22-001",
+  "notes": "v3.0 release — 135 tools. Sprint 005 cerrado. Sprint 006 activo. 102/102 tests.",
+  "last_completed_session_id": "SES-HARVEST-2026-04-23-001",
   "last_completed_task_type": "harvest",
   "last_completed_workflow": "w9_cosecha",
   "last_completed_roles": [
     "role_auditor"
   ],
-  "last_completed_change_id": "BAGO-CHG-081",
-  "last_completed_evidence_id": "BAGO-EVD-071",
+  "last_completed_change_id": "BAGO-CHG-086",
+  "last_completed_evidence_id": "BAGO-EVD-076",
   "inventory": {
-    "sessions": 51,
-    "changes": 64,
-    "evidences": 53
+    "sessions": 53,
+    "changes": 78,
+    "evidences": 58
   },
   "last_validation": {
     "pack": "GO",
@@ -37,8 +37,9 @@
     "SPRINT-002": "closed",
     "SPRINT-003": "closed",
     "SPRINT-004": "closed",
-    "SPRINT-005": "open",
-    "SPRINT-006": "closed"
+    "SPRINT-005": "closed",
+    "SPRINT-006": "open",
+    "SPRINT-007": "closed"
   },
   "tool_count": 135,
   "integration_suite": "91/91",

@@ -94,7 +94,7 @@ def _bar(size_b: int, max_b: int, width: int = 20) -> str:
 def save_baseline(files: list[FileEntry], path: Path, target: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     data = {
-        "saved_at": datetime.datetime.now().isoformat(),
+        "saved_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "target":   target,
         "total_kb": round(sum(f.size_kb for f in files), 2),
         "files":    {f.path: f.size_b for f in files},

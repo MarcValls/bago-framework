@@ -5,7 +5,7 @@
 
 ## Versión activa
 
-**BAGO v2.5-stable** — Dynamic-BAGO con runtime governance
+**BAGO v3.0** — Dynamic-BAGO v3.0 — Sprint 005 completado · Actualizado: 2026-04-23
 
 ## Estado de validadores
 

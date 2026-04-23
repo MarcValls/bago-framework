@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-076",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-086",
+    "SES-HARVEST-2026-04-23-001"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-23-001",
+  "details": "Decisión: \".\" | Descarte: \".\" | Próximo paso: \".\" | Ficheros afectados: .bago/tools/dashboard_v2.py, .bago/state/changes/BAGO-CHG-085.json, .bago/state/evidences/BAGO-EVD-075.json",
+  "status": "recorded",
+  "recorded_at": "2026-04-23T00:20:06.243192+00:00"
+}

@@ -1,0 +1,26 @@
+{
+  "sprint_id": "SPRINT-006",
+  "name": "SPRINT — Contracts, Governance & Hardening",
+  "goal": "Cerrar contratos vencidos, consolidar governance v3, hardening de tests",
+  "status": "open",
+  "tags": [
+    "contracts",
+    "governance",
+    "hardening"
+  ],
+  "sessions": [
+    "SES-HARVEST-2026-04-23-001"
+  ],
+  "artifacts": [],
+  "decisions": [],
+  "created_at": "2026-04-23T00:27:56.604277+00:00",
+  "closed_at": null,
+  "summary": null,
+  "goals": [
+    "Cockpit risk: mostrar exposición 0.0 en lugar de sin datos",
+    "Cockpit velocity: cálculo sesiones/semana con sparkline real",
+    "Ideas selector: alinear README, rango 5-20, compactar recomendación",
+    "Git commit sprint-005+006 completo (147 ficheros dirty)",
+    "Mantener 102/102 integration tests"
+  ]
+}

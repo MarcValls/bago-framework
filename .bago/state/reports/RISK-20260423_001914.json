@@ -1,0 +1,11 @@
+{
+  "report_id": "RISK-20260423_001914",
+  "scan_id": "SCAN-20260422_213442",
+  "generated_at": "2026-04-23T00:19:14.795662+00:00",
+  "summary": {
+    "by_category": {},
+    "total_exposure": 0.0,
+    "items": 0
+  },
+  "items": []
+}

@@ -152,7 +152,7 @@ def generate_markdown(target: str, lint_data: dict, cfg_data: dict,
     findings   = lint_data.get("findings", [])
     cfg_issues = cfg_data.get("issues", [])
     score      = _compute_score(findings, cfg_issues)
-    now        = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    now        = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M")
     title      = title or f"Health Report — {Path(target).resolve().name}"
 
     lines = [
@@ -266,7 +266,7 @@ def generate_html(target: str, lint_data: dict, cfg_data: dict,
     findings   = lint_data.get("findings", [])
     cfg_issues = cfg_data.get("issues", [])
     score      = _compute_score(findings, cfg_issues)
-    now        = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    now        = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M")
     page_title = title or f"Health Report — {Path(target).resolve().name}"
 
     # ── Interactive charts (if chart_engine available) ──────────────────

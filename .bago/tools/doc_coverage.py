@@ -182,7 +182,7 @@ def generate_html(results: list[dict]) -> str:
     total_miss = sum(len(r["missing"])    for r in results if "error" not in r)
     global_score = round(100 * total_doc / max(1, total_doc + total_miss))
     badge = "🟢" if global_score >= 80 else ("🟡" if global_score >= 50 else "🔴")
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M")
 
     # ── Charts section ──────────────────────────────────────────────────
     charts_html = ""

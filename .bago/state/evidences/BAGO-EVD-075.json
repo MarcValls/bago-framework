@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-075",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-085",
+    "SES-HARVEST-2026-04-22-002"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-22-002",
+  "details": "Decisión: /Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/TESTS/TEST_BAGO_02/CAOS_SIGARRITO | Descarte: nada | Próximo paso: analizar /Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/TESTS/TEST_BAGO_02/CAOS_SIGARRITO | Ficheros afectados: .bago/docs/governance/ACTA_OFICIAL_BASELINE_BAGO_AMTEC_V2_2_2_OFICIAL.md, .bago/state/changes/BAGO-CHG-082.json, .bago/state/changes/BAGO-CHG-083.json",
+  "status": "recorded",
+  "recorded_at": "2026-04-22T23:44:04.831630+00:00"
+}

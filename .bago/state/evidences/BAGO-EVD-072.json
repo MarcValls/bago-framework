@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-072",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-082",
+    "Compactar recomendacion final"
+  ],
+  "summary": "Cierre W2 automático: Compactar recomendacion final",
+  "details": "La tarea W2 quedó marcada como done, se generó un CHG de gobernanza y se actualizó global_state con el nuevo inventario. Archivos candidatos de la tarea: .bago/tools/emit_ideas.py, .bago/README.md, .bago/docs/operation/GUIA_DE_USO.md. Gate de cierre: GO. Tests ejecutados: python3 .bago/tools/emit_ideas.py | grep -q 'Acepta la idea'=>0. Validación humana: Recomendacion final muestra una sola accion directa; usuario sabe exactamente que hacer sin leer opciones adicionales.",
+  "status": "recorded",
+  "recorded_at": "2026-04-22T23:33:32.133193+00:00"
+}

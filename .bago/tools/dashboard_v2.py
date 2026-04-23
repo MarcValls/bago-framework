@@ -137,6 +137,87 @@ def _get_reconcile_status() -> str:
     return f"⚠️  Diff detectado"
 
 
+def _health_ring(score: int, semaforo: str) -> str:
+    filled = round(score / 5)  # 20 chars total
+    bar = "█" * filled + "░" * (20 - filled)
+    return f"[{bar}]  {score}/100  {semaforo}"
+
+
+def _get_risk_summary() -> str:
+    import subprocess, sys
+    from pathlib import Path
+    tools = Path(__file__).parent
+    risk_tool = tools / "risk_matrix.py"
+    if risk_tool.exists():
+        r = subprocess.run([sys.executable, str(risk_tool), "--summary"],
+                          capture_output=True, text=True, timeout=15,
+                          cwd=tools.parent.parent)
+        if r.returncode == 0 and r.stdout.strip():
+            for line in r.stdout.splitlines():
+                if line.strip() and not line.startswith("#"):
+                    return line.strip()[:50]
+    findings_dir = Path(__file__).parent.parent / "state/findings"
+    if findings_dir.exists():
+        critical = 0
+        for f in findings_dir.glob("*.json"):
+            try:
+                import json
+                d = json.loads(f.read_text())
+                lst = d if isinstance(d, list) else d.get("findings", [])
+                critical += sum(1 for x in lst if x.get("severity") in ("critical", "error") and x.get("status", "open") == "open")
+            except Exception:
+                pass
+        if critical == 0:
+            return "🟢 Sin riesgos críticos abiertos"
+        return f"🔴 {critical} finding(s) crítico(s) abierto(s)"
+    return "—"
+
+
+def _get_debt_summary() -> str:
+    import subprocess, sys
+    from pathlib import Path
+    tools = Path(__file__).parent
+    debt_tool = tools / "debt_ledger.py"
+    if debt_tool.exists():
+        r = subprocess.run([sys.executable, str(debt_tool), "--summary"],
+                          capture_output=True, text=True, timeout=15,
+                          cwd=tools.parent.parent)
+        if r.returncode == 0 and r.stdout.strip():
+            for line in r.stdout.splitlines():
+                if line.strip() and ("deuda" in line.lower() or "debt" in line.lower() or "h/sem" in line.lower()):
+                    return line.strip()[:50]
+    return "0 ítems  |  0.0 h/sem"
+
+
+def _get_velocity() -> str:
+    from pathlib import Path
+    import json
+    from datetime import datetime, timezone, timedelta
+    sessions_dir = Path(__file__).parent.parent / "state/sessions"
+    if not sessions_dir.exists():
+        return "—"
+    now = datetime.now(timezone.utc)
+    week_ago = now - timedelta(days=7)
+    four_weeks_ago = now - timedelta(days=28)
+    recent, month = 0, 0
+    for f in sessions_dir.glob("*.json"):
+        try:
+            s = json.loads(f.read_text(encoding="utf-8"))
+            if s.get("status") != "closed":
+                continue
+            ts = s.get("closed_at") or s.get("created_at") or ""
+            if ts:
+                dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                if dt >= week_ago:
+                    recent += 1
+                if dt >= four_weeks_ago:
+                    month += 1
+        except Exception:
+            pass
+    avg = round(month / 4, 1) if month else 0
+    return f"{recent} esta semana  |  ~{avg}/sem (media 4 sem)"
+
+
 def main():
     full = "--full" in sys.argv
 
@@ -190,10 +271,14 @@ def main():
     reconc_st = _get_reconcile_status()
 
     print(f"║    Health Score:   {health_score}/100  {semaforo}")
+    print(f"║    Health Ring:    {_health_ring(health_score, semaforo)}")
     print(f"║    Stale:          {stale_st}")
     print(f"║    Inventario:     {reconc_st}")
     print(f"║    V2 Status:      {v2_status}")
     print(f"║    Workflow rec.:  → {wf_rec}")
+    print(f"║    Risk:           {_get_risk_summary()}")
+    print(f"║    Deuda técnica:  {_get_debt_summary()}")
+    print(f"║    Velocidad:      {_get_velocity()}")
     print("╚══════════════════════════════════════════════════════════╝")
 
     # KPIs vs targets

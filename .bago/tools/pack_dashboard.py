@@ -131,10 +131,34 @@ def _top_risks():
     try:
         out, _ = _run_tool([TOOLS / "risk_matrix.py", "--json"], timeout=8)
         data = json.loads(out)
+        # risk_matrix --json returns {"by_category":..., "total_exposure": float, "items": int}
+        # No "risks" key — build list from by_category if present
         risks = data.get("risks", [])
-        return sorted(risks, key=lambda r: r.get("score", 0), reverse=True)[:3]
+        if not risks:
+            by_cat = data.get("by_category", {})
+            for cat, items in by_cat.items():
+                if isinstance(items, list):
+                    risks.extend(items)
+        return sorted(risks, key=lambda r: r.get("score", 0), reverse=True)[:3], data.get("total_exposure", None), data.get("items", None)
     except Exception:
-        return []
+        return [], None, None
+
+def section_risks():
+    risks, exposure, items = _top_risks()
+    if exposure is not None and (items == 0 or not risks):
+        level = "BAJA" if exposure < 5 else ("MEDIA" if exposure < 10 else "ALTA")
+        ico   = "🟢" if exposure < 5 else ("🟡" if exposure < 10 else "🔴")
+        return [_header("── RIESGOS ──"), _row(f"{ico} Sin riesgos activos — exposición {exposure:.1f} ({level})")]
+    if not risks:
+        return [_row("  (sin datos de riesgos — ejecuta bago risk)")]
+    lines = [_header("── TOP 3 RIESGOS ──")]
+    icons = {5:"🔴",4:"🟠",3:"🟡",2:"🟢",1:"🔵"}
+    for r in risks:
+        sco = r.get("score", 0)
+        ico = icons.get(min(5, int(sco)), "⚪")
+        name = r.get("name", r.get("id", "?"))[:30]
+        lines.append(_row(f"{ico} {name:<32} score={sco:.1f}"))
+    return lines
 
 def _debt_summary():
     try:
@@ -151,6 +175,7 @@ def _debt_summary():
 def _velocity_data():
     """Lee velocity directo desde sesiones (sin subprocess)."""
     try:
+        from datetime import timedelta
         sessions_dir = STATE / "sessions"
         closed = []
         for f in sessions_dir.glob("*.json"):
@@ -162,30 +187,44 @@ def _velocity_data():
                 pass
         if not closed:
             return {}
-        # últimas 8 sesiones — contar artefactos
+        # Sesiones por semana — últimas 4 semanas
+        now = datetime.now(timezone.utc)
+        weeks = []
+        for w in range(4, 0, -1):
+            w_start = now - timedelta(days=7 * w)
+            w_end   = now - timedelta(days=7 * (w - 1))
+            count = 0
+            for d in closed:
+                ts = d.get("closed_at") or d.get("created_at") or ""
+                if ts:
+                    try:
+                        dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                        if w_start <= dt < w_end:
+                            count += 1
+                    except Exception:
+                        pass
+            weeks.append(count)
+        # Artefactos por sesión — últimas 10
         closed.sort(key=lambda d: d.get("created_at", ""), reverse=True)
         recent = closed[:10]
         arts   = [len(d.get("artifacts", [])) for d in recent][::-1]
         trend  = "↑" if len(arts) >= 2 and arts[-1] > arts[0] else ("↓" if len(arts) >= 2 and arts[-1] < arts[0] else "→")
-        return {"artifacts_per_session": arts, "sessions_per_week": [], "trend": trend}
+        return {"artifacts_per_session": arts, "sessions_per_week": weeks, "trend": trend}
     except Exception:
         return {}
 
 def _contracts():
-    """Lee contratos directamente desde state/contracts/ (evita subprocess que cuelga)."""
+    """Lee contratos desde state/contracts/ usando el campo 'met' de cada condición."""
     contracts_dir = STATE / "contracts"
     results = []
-    now = datetime.now(timezone.utc)
     for f in sorted(contracts_dir.glob("CONTRACT-*.json")):
         try:
             c = json.loads(f.read_text())
-            cid    = c.get("contract_id", f.stem)
-            conds  = c.get("conditions", [])
-            total  = len(conds)
-            # Check conditions met (quick check: file_exists only)
-            met = sum(1 for cond in conds if cond.get("type") == "file_exists"
-                      and ROOT.parent.joinpath(cond.get("path","")).exists())
-            ddl = c.get("deadline")
+            cid   = c.get("contract_id", f.stem)
+            conds = c.get("conditions", [])
+            total = len(conds)
+            met   = sum(1 for cond in conds if cond.get("met") is True)
+            ddl   = c.get("deadline")
             status = "fulfilled" if met == total else "pending"
             results.append({
                 "id": cid, "status": status,
@@ -273,19 +312,6 @@ def section_detector():
         _row(f"{icon} {verdict:<10} [{bar}]  {score}/{thresh} señales"),
     ]
 
-def section_risks():
-    risks = _top_risks()
-    if not risks:
-        return [_row("  (sin datos de riesgos — ejecuta bago risk)")]
-    lines = [_header("── TOP 3 RIESGOS ──")]
-    icons = {5:"🔴",4:"🟠",3:"🟡",2:"🟢",1:"🔵"}
-    for r in risks:
-        sco = r.get("score", 0)
-        ico = icons.get(min(5, int(sco)), "⚪")
-        name = r.get("name", r.get("id", "?"))[:30]
-        lines.append(_row(f"{ico} {name:<32} score={sco:.1f}"))
-    return lines
-
 def section_debt():
     total_h, total_eur, items_cnt, by_q = _debt_summary()
     lines = [
@@ -303,14 +329,15 @@ def section_velocity():
     data = _velocity_data()
     if not data:
         return [_row("  (sin datos de velocidad — ejecuta bago velocity)")]
-    sessions = data.get("sessions_per_week", [])
+    sessions  = data.get("sessions_per_week", [])
     artifacts = data.get("artifacts_per_session", [])
-    sp = _sparkline(sessions)
-    ap = _sparkline(artifacts)
+    sp    = _sparkline(sessions)
+    avg   = f"~{sum(sessions)/len(sessions):.1f}/sem" if sessions else "—"
+    ap    = _sparkline(artifacts)
     trend = data.get("trend", "—")
     return [
         _header("── VELOCIDAD ──"),
-        _row(f"Sesiones/sem:   {sp}  (tendencia: {trend})"),
+        _row(f"Sesiones/sem:   {sp}  {avg}  (tendencia: {trend})"),
         _row(f"Artefactos/ses: {ap}"),
     ]
 

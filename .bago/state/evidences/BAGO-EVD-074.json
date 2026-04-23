@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-074",
+  "type": "closure",
+  "related_to": [
+    "BAGO-CHG-084",
+    "Reforzar rango del selector"
+  ],
+  "summary": "Cierre W2 automático: Reforzar rango del selector",
+  "details": "La tarea W2 quedó marcada como done, se generó un CHG de gobernanza y se actualizó global_state con el nuevo inventario. Archivos candidatos de la tarea: .bago/tools/emit_ideas.py, README.md, .bago/README.md, .bago/docs/operation/GUIA_DE_USO.md. Gate de cierre: GO. Tests ejecutados: ./bago ideas 2>&1 | grep -q 'rango: 5' && echo OK=>0. Validación humana: La salida de bago ideas ahora muestra el rango 5-20 ideas junto al total, de forma que el usuario siempre ve el limite operativo del selector sin necesidad de leer el codigo fuente.",
+  "status": "recorded",
+  "recorded_at": "2026-04-22T23:39:52.213073+00:00"
+}

@@ -140,7 +140,7 @@ def _group_by_version(commits: list[dict]) -> list[tuple[str, list[dict]]]:
 def generate_markdown(commits: list[dict], title: str = "CHANGELOG",
                       include_body: bool = True) -> str:
     groups = _group_by_version(commits)
-    now    = datetime.datetime.now().strftime("%Y-%m-%d")
+    now    = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
     lines  = [f"# {title}\n", f"*Generado automáticamente — {now}*\n", "---\n"]
 
     for version, group in groups:

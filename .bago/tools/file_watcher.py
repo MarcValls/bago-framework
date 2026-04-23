@@ -84,7 +84,7 @@ def diff_snapshots(old: dict, new: dict) -> dict:
 def save_baseline(snap: dict, path: Path, target: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     data = {
-        "saved_at": datetime.datetime.now().isoformat(),
+        "saved_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "target":   target,
         "files":    len(snap),
         "snapshot": snap,
@@ -113,7 +113,7 @@ def watch_loop(target: str, exts: set[str], cmd: Optional[str],
         diff = diff_snapshots(prev, curr)
         changes = diff["added"] + diff["removed"] + diff["modified"]
         if changes:
-            ts = datetime.datetime.now().strftime("%H:%M:%S")
+            ts = datetime.datetime.now(datetime.timezone.utc).strftime("%H:%M:%S")
             print(f"\n{_YEL}[{ts}] Cambios detectados:{_RST}")
             for f in diff["added"]:
                 print(f"  {_GRN}+{_RST} {f}")

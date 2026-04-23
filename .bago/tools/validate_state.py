@@ -303,54 +303,67 @@ if rule_path.exists():
         _sys.path.insert(0, str(_tools))
         from datetime import datetime, timezone, timedelta
 
-        # Check CDTR-E01: Critical security findings unacknowledged > 7 days
-        findings_dir = root / "state/findings"
-        if findings_dir.exists():
-            now_utc = datetime.now(timezone.utc)
-            critical_limit = now_utc - timedelta(days=7)
-            for ff in findings_dir.glob("*.json"):
-                try:
-                    fd = json.loads(ff.read_text(encoding="utf-8"))
-                    findings_list = fd if isinstance(fd, list) else fd.get("findings", [])
-                    for finding in findings_list:
-                        if (finding.get("severity") in ("critical", "error")
-                                and finding.get("status", "open") == "open"
-                                and not finding.get("acknowledged")):
-                            created = finding.get("created_at") or finding.get("timestamp")
-                            if created:
-                                try:
-                                    dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
-                                    if dt < critical_limit:
-                                        errors.append(
-                                            f"RULE-CDTR-001 KO (CDTR-E01): critical finding "
-                                            f"'{finding.get('rule','?')}' in "
-                                            f"'{finding.get('file','?')}' unacknowledged >7 days"
-                                        )
-                                except Exception:
-                                    pass
-                except Exception:
-                    pass
+        rule_data = json.loads(rule_path.read_text(encoding="utf-8"))
+        rule_version = rule_data.get("version", "?")
+        rule_status  = rule_data.get("status", "?")
+        # Only enforce if rule is active
+        if rule_status != "active":
+            pass  # skip enforcement for inactive rules
+        else:
+            # Check CDTR-E01: Critical security findings unacknowledged > 7 days
+            findings_dir = root / "state/findings"
+            if findings_dir.exists():
+                now_utc = datetime.now(timezone.utc)
+                critical_limit = now_utc - timedelta(days=7)
+                for ff in findings_dir.glob("*.json"):
+                    try:
+                        fd = json.loads(ff.read_text(encoding="utf-8"))
+                        findings_list = fd if isinstance(fd, list) else fd.get("findings", [])
+                        for finding in findings_list:
+                            if (finding.get("severity") in ("critical", "error")
+                                    and finding.get("status", "open") == "open"
+                                    and not finding.get("acknowledged")):
+                                created = finding.get("created_at") or finding.get("timestamp")
+                                if created:
+                                    try:
+                                        dt = datetime.fromisoformat(created.replace("Z", "+00:00"))
+                                        if dt < critical_limit:
+                                            errors.append(
+                                                f"RULE-CDTR-001 KO (CDTR-E01): critical finding "
+                                                f"'{finding.get('rule','?')}' in "
+                                                f"'{finding.get('file','?')}' unacknowledged >7 days"
+                                            )
+                                    except Exception:
+                                        pass
+                    except Exception:
+                        pass
 
-        # Check CDTR-E02 (advisory, not blocking): health < 70 without improvement sprint
-        # Read last known health from global_state.json (no subprocess needed)
-        try:
-            _last_val = gs.get("last_validation", {})
-            _health_total = _last_val.get("health_score", 100)  # default 100 if unknown
-            if _health_total < 70:
-                # Check if there is an open improvement sprint
-                _sprints_dir = root / "state/sprints"
-                _has_improvement = any(
-                    json.loads(sf.read_text()).get("status") == "open"
-                    for sf in _sprints_dir.glob("*.json")
-                    if sf.exists()
-                )
-                if not _has_improvement:
-                    warnings.append(
-                        f"RULE-CDTR-001 ADVISORY (CDTR-E02): last health_score={_health_total} < 70 "
-                        f"and no open improvement sprint — add a sprint goal to recover"
+            # Check CDTR-E02 (advisory, not blocking): health < 70 without improvement sprint
+            # Read last known health from global_state.json (no subprocess needed)
+            try:
+                _last_val = gs.get("last_validation", {})
+                _health_total = _last_val.get("health_score", 100)  # default 100 if unknown
+                if _health_total < 70:
+                    # Check if there is an open improvement sprint
+                    _sprints_dir = root / "state/sprints"
+                    _has_improvement = any(
+                        json.loads(sf.read_text()).get("status") == "open"
+                        for sf in _sprints_dir.glob("*.json")
+                        if sf.exists()
                     )
-        except Exception:
-            pass
+                    if not _has_improvement:
+                        warnings.append(
+                            f"RULE-CDTR-001 ADVISORY (CDTR-E02): last health_score={_health_total} < 70 "
+                            f"and no open improvement sprint — add a sprint goal to recover"
+                        )
+            except Exception:
+                pass
+
+            # CDTR reporting summary
+            cdtr_errors = [e for e in errors if "RULE-CDTR-001" in e]
+            cdtr_warns  = [w for w in warnings if "RULE-CDTR-001" in w]
+            if not cdtr_errors and not cdtr_warns:
+                pass  # enforcement OK — no action needed
 
     except Exception:
         pass

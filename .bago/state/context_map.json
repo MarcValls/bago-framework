@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-04-22T20:39:00+00:00",
+  "generated_at": "2026-04-22T23:43:57+00:00",
   "search_root": "/Users/INTELIA_Manager/Desktop",
   "bago_host": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA",
-  "total_nodes": 19,
+  "total_nodes": 20,
   "nodes": [
     {
       "path": "/Users/INTELIA_Manager/Desktop/BAGO.V4.PLANO/BAGO_AMTEC_V2_2_1_OFICIAL_utf8",
@@ -174,16 +174,16 @@
       "relative_path": "BAGO_CAJAFISICA",
       "depth": 1,
       "working_mode": "external",
-      "repo_root": "/Users/INTELIA_Manager/Documents/INTELIA_Manager_2026/Contabilidad/TPV_Contabilidad 2",
-      "recorded_at": "2026-04-22T20:39:00+00:00",
+      "repo_root": "/Users/INTELIA_Manager/Desktop/BAGO.V4.PLANO/WORCK01/BAGO_OFICIAL_LIMPIO_2_3_CLEAN/BAGO_5_OFICIAL",
+      "recorded_at": "2026-04-22T23:43:56+00:00",
       "role": "external_repo_pointer",
-      "bago_version": "2.5-stable",
+      "bago_version": "3.0",
       "system_health": "stable",
-      "last_session": "SES-HARVEST-2026-04-21-007",
+      "last_session": "SES-HARVEST-2026-04-22-001",
       "last_workflow": "w9_cosecha",
       "active_scenarios": [],
       "active_workflows": [],
-      "sessions_count": 50,
+      "sessions_count": 51,
       "last_validation": {
         "pack": "GO",
         "state": "GO",
@@ -318,6 +318,14 @@
       "active_workflows": [],
       "sessions_count": 0,
       "last_validation": {}
+    },
+    {
+      "path": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/TEST_BAGO_03(IMG)",
+      "relative_path": "BAGO_CAJAFISICA/TEST_BAGO_03(IMG)",
+      "depth": 2,
+      "working_mode": "no_context",
+      "bago_version": "no_state",
+      "system_health": "unknown"
     },
     {
       "path": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/cleanversion/v01-base-clean",

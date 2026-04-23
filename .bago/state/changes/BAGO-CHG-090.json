@@ -1,0 +1,17 @@
+{
+  "change_id": "BAGO-CHG-090",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Docs: README.md + CHANGELOG.md actualizados a v3.0",
+  "motivation": "SPRINT-005/006 — Docs: README.md + CHANGELOG.md + .bago/docs/CHANGELOG.md actualizados a v3.0",
+  "status": "applied",
+  "affected_components": [
+    "README.md",
+    "CHANGELOG.md",
+    ".bago/docs/CHANGELOG.md"
+  ],
+  "created_at": "2026-04-23T00:32:51.233981+00:00",
+  "related_evidence": "BAGO-EVD-076",
+  "updated_at": "2026-04-23T00:33:38.854869+00:00",
+  "author": "copilot-autonomous"
+}

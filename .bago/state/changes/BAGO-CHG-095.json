@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-095",
+  "type": "governance",
+  "severity": "minor",
+  "title": "pack_dashboard.py fix: _contracts() lee campo met del JSON",
+  "motivation": "SPRINT-005/006 — pack_dashboard.py fix: _contracts() lee campo met directamente del JSON",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/pack_dashboard.py"
+  ],
+  "created_at": "2026-04-23T00:32:51.233981+00:00",
+  "related_evidence": "BAGO-EVD-076",
+  "updated_at": "2026-04-23T00:33:38.854869+00:00",
+  "author": "copilot-autonomous"
+}

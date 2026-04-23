@@ -57,7 +57,7 @@ def generate_report(
     include_details: bool = True,
     meta: Optional[dict] = None,
 ) -> str:
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M")
     lines = [f"# {title}\n"]
     lines.append(f"> Generado: {now}  ")
     if meta:

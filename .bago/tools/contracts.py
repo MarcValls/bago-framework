@@ -127,7 +127,8 @@ def check_file_not_contains(params: dict) -> tuple:
 def check_snapshot_exists(params: dict) -> tuple:
     """Verify at least one snapshot was taken after a given date."""
     since = params.get("since", "")
-    snaps = list((BAGO_ROOT / "state" / "snapshots").glob("SNAP-*.json"))
+    snaps_dir = BAGO_ROOT / "state" / "snapshots"
+    snaps = list(snaps_dir.glob("SNAP-*.json")) + list(snaps_dir.glob("SNAP-*.zip"))
     if not snaps:
         return False, "sin snapshots"
     latest = max(snaps, key=lambda p: p.stat().st_mtime)
