@@ -1,0 +1,14 @@
+{
+  "id": "BAGO-CHG-152",
+  "change_id": "CHG-152",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Test 128: velocity --json + 4 nuevas FALLBACK_IDEAS",
+  "motivation": "Añadir test de regresión para velocity.py --json; ampliar backlog con 4 ideas técnicas nuevas.",
+  "status": "applied",
+  "affected_components": ["integration_tests.py", "emit_ideas.py"],
+  "related_evidence": ["141/141 tests pass"],
+  "created_at": "2025-07-21T00:00:00Z",
+  "updated_at": "2025-07-21T00:00:00Z",
+  "author": "bago-autonomous"
+}

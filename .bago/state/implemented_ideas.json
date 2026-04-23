@@ -198,6 +198,11 @@
       "title": "Test para health score CLI",
       "chg": "CHG-150",
       "date": "2025-07-21"
+    },
+    {
+      "title": "Test para velocity --json",
+      "chg": "CHG-152",
+      "date": "2025-07-21"
     }
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"

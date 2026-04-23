@@ -1964,6 +1964,31 @@ def test_scan_top():
         _record("scan:top", PASS, f"--top 3 limited to {n} findings")
 
 
+def test_velocity_json():
+    """velocity.py --json: rc=0, JSON con current_period y campos de velocidad."""
+    import json as _j
+    rc, out, err = _run("velocity.py", ["--json"], timeout=15)
+    if rc != 0:
+        _record("velocity:json", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    try:
+        data = _j.loads(out)
+    except Exception as e:
+        _record("velocity:json", FAIL, f"JSON parse error: {e}")
+        return
+    if "current_period" not in data:
+        _record("velocity:json", FAIL, "missing current_period key")
+        return
+    cp = data["current_period"]
+    required = {"sessions", "artifacts", "sess_per_day"}
+    missing = required - set(cp.keys())
+    if missing:
+        _record("velocity:json", FAIL, f"current_period missing keys: {missing}")
+        return
+    _record("velocity:json", PASS,
+            f"JSON OK, sessions={cp['sessions']}, sess_per_day={cp['sess_per_day']}")
+
+
 def test_stability_summary():
     """stability_summary.py: rc=0, emite DECISIÓN GO o KO."""
     rc, out, err = _run("stability_summary.py", [], timeout=20)
@@ -2154,6 +2179,7 @@ ALL_TESTS = [
     (125, "session_details:json",        test_session_details_json),
     (126, "ideas:json",                  test_ideas_json),
     (127, "scan:top",                    test_scan_top),
+    (128, "velocity:json",               test_velocity_json),
 ]
 
 

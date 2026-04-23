@@ -378,6 +378,58 @@ FALLBACK_IDEAS: list[dict[str, object]] = [
         ],
         "w2": "Añadir test_session_manager_list() a integration_tests.py, registrar en ALL_TESTS.",
     },
+    {
+        "priority": 52,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "velocity_tracker.py no tiene test de output JSON en ALL_TESTS.",
+        "title": "Test para velocity --json",
+        "summary": "Verificar que velocity_tracker.py --json retorna rc=0 con campos de velocidad.",
+        "detail": [
+            "Ejecutar velocity_tracker.py o equivalente con --json.",
+            "Verificar rc=0 y campos: sessions_per_week, avg_artifacts o similar.",
+        ],
+        "w2": "Añadir test_velocity_json() a integration_tests.py, registrar en ALL_TESTS.",
+    },
+    {
+        "priority": 50,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "metrics.py --json no tiene test de estructura completa en ALL_TESTS.",
+        "title": "Test estructura metrics --json",
+        "summary": "Añadir test que verifica que metrics.py --json emite todos los campos requeridos.",
+        "detail": [
+            "Ejecutar metrics.py --json.",
+            "Verificar rc=0 y campos: sessions, changes, health o similar.",
+        ],
+        "w2": "Añadir test_metrics_json_structure() a integration_tests.py, registrar en ALL_TESTS.",
+    },
+    {
+        "priority": 48,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "dashboard --json no incluye production_score en el campo root.",
+        "title": "Dashboard --json con production score",
+        "summary": "Añadir production_score al JSON root del dashboard para facilitar monitoreo.",
+        "detail": [
+            "Leer score de artifact_counter.py.",
+            "Incluir production_score en el JSON root de pack_dashboard.py --json.",
+        ],
+        "w2": "Añadir produccion_score al JSON root en pack_dashboard.py --json output.",
+    },
+    {
+        "priority": 46,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "scan --quiet flag no está implementado.",
+        "title": "scan --quiet flag",
+        "summary": "Añadir --quiet a scan.py para suprimir la línea de progreso 'Escaneando...'.",
+        "detail": [
+            "Añadir --quiet argparse flag.",
+            "En main(), si args.quiet, no imprimir la línea de progreso.",
+        ],
+        "w2": "Implementar --quiet en scan.py main() y añadir test.",
+    },
 ]
 
 
