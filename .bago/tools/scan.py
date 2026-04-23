@@ -423,6 +423,10 @@ def main():
     parser.add_argument("--json",        action="store_true")
     parser.add_argument("--last",        action="store_true")
     parser.add_argument("--autofixable", action="store_true")
+    parser.add_argument("--purge",       action="store_true",
+                        help="Elimina SCAN files más antiguos de --days días (default 30)")
+    parser.add_argument("--days",        type=int, default=30,
+                        help="Antigüedad en días para --purge (default: 30)")
     parser.add_argument("--lang",        default="auto",
                         choices=["auto","py","js","ts","go","rust",
                                  "java","csharp","ruby","php",
@@ -433,6 +437,23 @@ def main():
 
     if args.test:
         run_tests(); return
+
+    if args.purge:
+        import datetime as _dt
+        cutoff = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(days=args.days)
+        deleted = []
+        for f in sorted(fe.FINDINGS_DIR.glob("SCAN-*.json")):
+            mtime = _dt.datetime.fromtimestamp(f.stat().st_mtime, tz=_dt.timezone.utc)
+            if mtime < cutoff:
+                f.unlink()
+                deleted.append(f.name)
+        if deleted:
+            print(f"🗑  Eliminados {len(deleted)} SCAN files con >  {args.days} días:")
+            for name in deleted:
+                print(f"   · {name}")
+        else:
+            print(f"✅ Sin SCAN files con > {args.days} días — nada que limpiar.")
+        return
 
     if args.last:
         db = fe.FindingsDB.latest()

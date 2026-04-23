@@ -5,8 +5,8 @@
   "skipped": 0,
   "total": 122,
   "workers": 122,
-  "duration_seconds": 99.0,
-  "generated_at": "2026-04-23T04:51:12.320846+00:00",
+  "duration_seconds": 106.88,
+  "generated_at": "2026-04-23T04:55:21.688330+00:00",
   "tool": "integration_tests.py",
   "returncode": 0
 }

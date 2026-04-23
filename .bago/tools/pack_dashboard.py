@@ -409,6 +409,32 @@ def section_last_session():
         _row(f"Workflow: {wf}"),
     ]
 
+
+def section_recent_chgs(n=5):
+    """Muestra los N CHGs más recientes por fecha de creación."""
+    chgs_dir = STATE / "changes"
+    files = sorted(chgs_dir.glob("BAGO-CHG-*.json"), reverse=True)
+    items = []
+    for f in files:
+        try:
+            d = json.loads(f.read_text())
+            items.append(d)
+        except Exception:
+            continue
+        if len(items) >= n:
+            break
+    lines = [_header(f"── ÚLTIMOS {n} CAMBIOS (CHGs) ──")]
+    if not items:
+        lines.append(_row("  (sin cambios registrados)"))
+        return lines
+    for d in items:
+        chg_id  = d.get("change_id", d.get("id", "?"))
+        title   = d.get("title", "")[:42]
+        sev     = d.get("severity", "")
+        sev_tag = "🔴" if sev == "major" else "⚪"
+        lines.append(_row(f"  {sev_tag} {chg_id}  {title}"))
+    return lines
+
 # ─── render principal ─────────────────────────────────────────────────────────
 
 def render(full=False, compact=False, as_json=False):
@@ -424,6 +450,7 @@ def render(full=False, compact=False, as_json=False):
     hot_lines   = section_hotspots()
     sprint_lines = section_sprint()
     sess_lines  = section_last_session()
+    chgs_lines  = section_recent_chgs()
 
     if as_json:
         # Machine-readable summary
@@ -474,6 +501,8 @@ def render(full=False, compact=False, as_json=False):
 
     out.append(_divider())
     out += sess_lines
+    out.append(_divider())
+    out += chgs_lines
     out.append(_bottom())
 
     print("\n".join(out))
