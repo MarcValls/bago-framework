@@ -359,6 +359,7 @@ state/changes/BAGO-CHG-132.json
 state/changes/BAGO-CHG-133.json
 state/changes/BAGO-CHG-134.json
 state/changes/BAGO-CHG-135.json
+state/changes/BAGO-CHG-136.json
 state/changes/BAGO-CHG-MIG-001.json
 state/changes/CHG-010-ux-controles-13fixes.json
 state/changes/CHG-011-caos-12ideas-cosecha.json
@@ -436,6 +437,7 @@ state/evidences/BAGO-EVD-074.json
 state/evidences/BAGO-EVD-075.json
 state/evidences/BAGO-EVD-076.json
 state/evidences/BAGO-EVD-077.json
+state/evidences/BAGO-EVD-078.json
 state/evidences/BAGO-EVD-MIG-001.json
 state/evidences/BAGO-EVD-MIG-002.json
 state/findings/
@@ -740,6 +742,15 @@ state/iterations/ITER-0250.json
 state/iterations/ITER-0251.json
 state/iterations/ITER-0252.json
 state/iterations/ITER-0253.json
+state/iterations/ITER-0254.json
+state/iterations/ITER-0255.json
+state/iterations/ITER-0256.json
+state/iterations/ITER-0257.json
+state/iterations/ITER-0258.json
+state/iterations/ITER-0259.json
+state/iterations/ITER-0260.json
+state/iterations/ITER-0261.json
+state/iterations/ITER-0262.json
 state/linked_projects.json
 state/metrics/
 state/metrics/README.md
@@ -924,6 +935,7 @@ state/sessions/SES-HARVEST-2026-04-22-001.json
 state/sessions/SES-HARVEST-2026-04-22-002.json
 state/sessions/SES-HARVEST-2026-04-23-001.json
 state/sessions/SES-HARVEST-2026-04-23-002.json
+state/sessions/SES-HARVEST-2026-04-23-003.json
 state/sessions/SES-HYB-2026-04-11-001.json
 state/sessions/SES-INS-2026-04-14-001.json
 state/sessions/SES-INS-2026-04-14-002.json
@@ -1208,6 +1220,7 @@ tools/stale_detector.py
 tools/state_store.py
 tools/stats.py
 tools/summary.py
+tools/sync_badges.py
 tools/tags.py
 tools/target_selector.py
 tools/template.py

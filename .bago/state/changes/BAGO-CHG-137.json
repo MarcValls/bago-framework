@@ -1,0 +1,20 @@
+{
+  "id": "BAGO-CHG-137",
+  "change_id": "BAGO-CHG-137",
+  "type": "governance",
+  "severity": "minor",
+  "title": "sync_badges + FINDINGS_DIR fix + context_detector sandbox exclusion",
+  "motivation": "findings_engine.py tenia FINDINGS_DIR hardcoded causando que cada commit creara scans sinteticos; sync_badges.py sincroniza badges README con estado real; context_detector.py excluye sandbox/runtime/ de unregistered",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/findings_engine.py",
+    ".bago/tools/context_detector.py",
+    ".bago/tools/sync_badges.py",
+    "bago",
+    "README.md"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T04:53:14.676288+00:00",
+  "updated_at": "2026-04-23T04:53:14.676761+00:00",
+  "author": "copilot-autonomous"
+}

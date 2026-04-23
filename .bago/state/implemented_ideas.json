@@ -1,25 +1,25 @@
 {
   "implemented": [
     {
-      "title": "Handoff idea → W2",
+      "title": "Handoff idea \u2192 W2",
       "idea_index": 1,
       "done_at": "2026-04-18T16:00:00+00:00",
       "session": "sprint-ideas-gen1"
     },
     {
-      "title": "Resumen único de estabilidad",
+      "title": "Resumen \u00fanico de estabilidad",
       "idea_index": 2,
       "done_at": "2026-04-18T16:30:00+00:00",
       "session": "sprint-ideas-gen1"
     },
     {
-      "title": "Gate canónico de ideas",
+      "title": "Gate can\u00f3nico de ideas",
       "idea_index": 3,
       "done_at": "2026-04-18T17:00:00+00:00",
       "session": "sprint-ideas-gen1"
     },
     {
-      "title": "Opener de sesión desde task",
+      "title": "Opener de sesi\u00f3n desde task",
       "idea_index": 1,
       "done_at": "2026-04-19T14:00:00+00:00",
       "session": "sprint-ideas-gen2"
@@ -55,7 +55,7 @@
       "session": "sprint-v03-pack"
     },
     {
-      "title": "Cierre automático de sesión",
+      "title": "Cierre autom\u00e1tico de sesi\u00f3n",
       "idea_index": 1,
       "done_at": "2026-04-21T01:52:31.597808+00:00"
     },
@@ -70,7 +70,7 @@
       "done_at": "2026-04-21T14:13:01.701285+00:00"
     },
     {
-      "title": "Scoring dinámico por registro",
+      "title": "Scoring din\u00e1mico por registro",
       "idea_index": 1,
       "registered_at": "2026-04-22T23:21:20.565431+00:00"
     },
@@ -93,7 +93,12 @@
       "title": "Hook post-commit para bago smoke",
       "idea_index": 4,
       "registered_at": "2026-04-23T04:30:37.706974+00:00"
+    },
+    {
+      "title": "Sincronizar badges README con global_state",
+      "idea_index": 3,
+      "registered_at": "2026-04-23T05:00:00+00:00"
     }
   ],
-  "updated_at": "2026-04-23T04:30:37.706974+00:00"
+  "updated_at": "2026-04-23T04:53:26.208801+00:00"
 }

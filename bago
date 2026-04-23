@@ -285,6 +285,11 @@ def main():
             ["python3", str(TOOLS / "report_generator.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "sync-badges":
+        subprocess.run(
+            ["python3", str(TOOLS / "sync_badges.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "metrics":
         subprocess.run(
             ["python3", str(TOOLS / "metrics_trends.py")] + rest,
@@ -811,9 +816,10 @@ def main():
                 "sprint":    "gestionar sprints (new/list/status/close/show/link)",
                 "search":    "buscar en sesiones, cambios y evidencias",
                 "timeline":  "timeline ASCII semanal de sesiones",
-                "report":    "generar reporte Markdown (full/summary)",
-                "metrics":   "tendencias de métricas con sparklines",
-                "doctor":    "diagnóstico integral del pack",
+                "report":       "generar reporte Markdown (full/summary)",
+                "sync-badges":  "actualiza badges README.md con datos reales de global_state + smoke",
+                "metrics":      "tendencias de métricas con sparklines",
+                "doctor":       "diagnóstico integral del pack",
                 "git":       "contexto git del repo activo",
                 "export":    "exportar sesiones a HTML/CSV",
                 "watch":     "monitor en tiempo real del estado BAGO",
