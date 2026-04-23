@@ -1,10 +1,19 @@
 {
-  "id": "CHG-154",
+  "id": "BAGO-CHG-154",
+  "change_id": "CHG-154",
+  "type": "governance",
+  "severity": "minor",
   "title": "dashboard --json: add production_score field",
-  "type": "feature",
-  "impact": "low",
-  "files": [".bago/tools/pack_dashboard.py", ".bago/tools/integration_tests.py"],
-  "tests_added": ["dashboard:production_score"],
-  "description": "Added _production_score() helper to pack_dashboard.py that reads artifact_counter.py score. Added 'production_score' field to --json output. Test verifies numeric value present.",
-  "date": "2025-07-28"
+  "motivation": "Añadir production_score al JSON de pack_dashboard.py para visibilidad de producción de artefactos.",
+  "status": "applied",
+  "affected_components": [
+    "pack_dashboard.py",
+    "integration_tests.py"
+  ],
+  "related_evidence": [
+    "143/143 tests pass"
+  ],
+  "created_at": "2025-07-28T00:00:00Z",
+  "updated_at": "2025-07-28T00:00:00Z",
+  "author": "bago-autonomous"
 }

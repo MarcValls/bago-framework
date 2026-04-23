@@ -213,6 +213,11 @@
       "title": "Dashboard --json con production_score",
       "chg": "CHG-154",
       "date": "2025-07-28"
+    },
+    {
+      "title": "Test estructura metrics --json",
+      "chg": "CHG-155",
+      "date": "2025-07-28"
     }
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"

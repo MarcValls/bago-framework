@@ -1,17 +1,16 @@
 {
-  "id": "BAGO-CHG-153",
-  "change_id": "CHG-153",
+  "id": "BAGO-CHG-155",
+  "change_id": "CHG-155",
   "type": "governance",
   "severity": "minor",
-  "title": "scan --quiet flag: suppress progress line",
-  "motivation": "Añadir --quiet a scan.py para suprimir la línea Escaneando... útil en scripts y pipes.",
+  "title": "Test 131: metrics_export --format json estructura",
+  "motivation": "Añadir test de regresión para metrics_export.py --format json; verifica timestamp, python_files, total_lines.",
   "status": "applied",
   "affected_components": [
-    "scan.py",
     "integration_tests.py"
   ],
   "related_evidence": [
-    "143/143 tests pass"
+    "144/144 tests pass"
   ],
   "created_at": "2025-07-28T00:00:00Z",
   "updated_at": "2025-07-28T00:00:00Z",

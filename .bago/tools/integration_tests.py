@@ -2092,6 +2092,35 @@ def test_dashboard_production_score():
     _record("dashboard:production_score", PASS, f"production_score={score}")
 
 
+def test_metrics_export_json():
+    """metrics_export.py --format json: parseable JSON con timestamp, python_files, total_lines."""
+    import json as _j, subprocess as _sp
+    r = _sp.run(
+        [sys.executable, str(ROOT / "tools" / "metrics_export.py"), "--format", "json"],
+        capture_output=True, text=True, timeout=60
+    )
+    if r.returncode != 0:
+        _record("metrics:export_json", FAIL, f"rc={r.returncode} err={r.stderr[:100]}")
+        return
+    lines = r.stdout.splitlines()
+    json_start = next((i for i, l in enumerate(lines) if l.strip().startswith("{")), -1)
+    if json_start < 0:
+        _record("metrics:export_json", FAIL, "no JSON block found in output")
+        return
+    try:
+        data = _j.loads("\n".join(lines[json_start:]))
+    except Exception as e:
+        _record("metrics:export_json", FAIL, f"JSON parse error: {e}")
+        return
+    required = {"timestamp", "python_files", "total_lines"}
+    missing = required - set(data.keys())
+    if missing:
+        _record("metrics:export_json", FAIL, f"missing keys: {missing}")
+        return
+    _record("metrics:export_json", PASS,
+            f"JSON OK, python_files={data['python_files']}, total_lines={data['total_lines']}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2223,6 +2252,7 @@ ALL_TESTS = [
     (128, "velocity:json",               test_velocity_json),
     (129, "scan:quiet",                  test_scan_quiet),
     (130, "dashboard:production_score",  test_dashboard_production_score),
+    (131, "metrics:export_json",         test_metrics_export_json),
 ]
 
 
