@@ -1877,6 +1877,34 @@ def test_artifact_counter():
     _record("artifact_counter:run", PASS, f"rc=0, score={score}")
 
 
+def test_stability_summary():
+    """stability_summary.py: rc=0, emite DECISIÓN GO o KO."""
+    rc, out, err = _run("stability_summary.py", [], timeout=20)
+    if rc != 0:
+        _record("stability_summary:run", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    if "DECISIÓN" not in out and "DECISION" not in out.upper():
+        _record("stability_summary:run", FAIL, f"missing DECISIÓN in output")
+        return
+    decision = "GO" if "GO" in out else "KO"
+    _record("stability_summary:run", PASS, f"rc=0, DECISIÓN={decision}")
+
+
+def test_health_score():
+    """health_score.py: rc=0, output contiene puntuación numérica /100."""
+    import re
+    rc, out, err = _run("health_score.py", [], timeout=20)
+    if rc != 0:
+        _record("health_score:run", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    m = re.search(r"(\d+)\s*/\s*100", out)
+    if not m:
+        _record("health_score:run", FAIL, "no score X/100 in output")
+        return
+    score = int(m.group(1))
+    _record("health_score:run", PASS, f"rc=0, score={score}/100")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1999,6 +2027,8 @@ ALL_TESTS = [
     (119, "evolution_report:html",     test_evolution_report_html),
     (120, "dashboard:inventory_accuracy", test_dashboard_inventory_accuracy),
     (121, "artifact_counter:run",        test_artifact_counter),
+    (122, "stability_summary:run",       test_stability_summary),
+    (123, "health_score:run",            test_health_score),
 ]
 
 

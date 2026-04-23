@@ -326,6 +326,58 @@ FALLBACK_IDEAS: list[dict[str, object]] = [
         ],
         "w2": "Añadir test_artifact_counter() a integration_tests.py, registrar en ALL_TESTS.",
     },
+    {
+        "priority": 50,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "stability_tracker.py no tiene test de regresión en ALL_TESTS.",
+        "title": "Test para stability_tracker",
+        "summary": "Añadir test que verifique que stability_tracker.py retorna rc=0 con output estructurado.",
+        "detail": [
+            "Ejecutar stability_tracker.py y verificar rc=0.",
+            "Verificar que el output contiene una puntuación de estabilidad.",
+        ],
+        "w2": "Añadir test_stability_tracker() a integration_tests.py, registrar en ALL_TESTS.",
+    },
+    {
+        "priority": 48,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "scan.py --json no tiene test de estructura en ALL_TESTS.",
+        "title": "scan --json output de hallazgos",
+        "summary": "Añadir scan.py --json flag que emite hallazgos estructurados; test verifica formato.",
+        "detail": [
+            "Añadir --json a scan.py render_findings para emitir JSON.",
+            "Test verifica rc=0, JSON con campo 'findings' y 'total'.",
+        ],
+        "w2": "Modificar render_findings para soportar --json y añadir test_scan_json() a ALL_TESTS.",
+    },
+    {
+        "priority": 46,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "health_check.py (u otros) no tiene test en ALL_TESTS.",
+        "title": "Test para health score CLI",
+        "summary": "Añadir test que ejecuta el comando bago health y verifica que produce score numérico.",
+        "detail": [
+            "Ejecutar pack_health.py o equivalente con --json.",
+            "Verificar rc=0 y un campo score o health >= 0.",
+        ],
+        "w2": "Añadir test_health_score() a integration_tests.py, registrar en ALL_TESTS.",
+    },
+    {
+        "priority": 44,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "session_manager.py no tiene test directo en ALL_TESTS.",
+        "title": "Test para session_manager --list",
+        "summary": "Verificar que session_manager.py --list retorna rc=0 y lista de sesiones.",
+        "detail": [
+            "Ejecutar session_manager.py --list.",
+            "Verificar rc=0 y que output contiene al menos una sesión SES-*.",
+        ],
+        "w2": "Añadir test_session_manager_list() a integration_tests.py, registrar en ALL_TESTS.",
+    },
 ]
 
 
