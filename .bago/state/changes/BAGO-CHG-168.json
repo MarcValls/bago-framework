@@ -2,10 +2,10 @@
   "id": "BAGO-CHG-168",
   "change_id": "CHG-168",
   "type": "governance",
-  "severity": "low",
+  "severity": "patch",
   "title": "dashboard --json test_count field",
   "motivation": "Expose test worker count in --json output so CI pipelines and external tools can consume test metrics without parsing text output.",
-  "status": "implemented",
+  "status": "applied",
   "affected_components": [
     "pack_dashboard.py",
     "integration_tests.py"

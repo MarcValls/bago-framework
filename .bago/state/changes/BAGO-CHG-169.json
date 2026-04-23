@@ -1,0 +1,17 @@
+{
+  "id": "BAGO-CHG-169",
+  "change_id": "CHG-169",
+  "type": "governance",
+  "severity": "patch",
+  "title": "velocity --json rolling windows",
+  "motivation": "Add --windows N flag so --json output uses dynamic rolling_Nw key, giving callers control over the number of rolling velocity windows without changing the default behavior.",
+  "status": "applied",
+  "affected_components": [
+    "velocity.py",
+    "integration_tests.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T08:32:19.040714+00:00",
+  "updated_at": "2026-04-23T08:32:19.041081+00:00",
+  "author": "bago-autonomous-loop"
+}

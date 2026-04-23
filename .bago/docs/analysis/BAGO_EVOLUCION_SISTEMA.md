@@ -31,10 +31,10 @@ Ahora trabaja como un sistema operativo más maduro:
 
 | Métrica | Inicio | Ahora |
 | --- | ---:| ---:|
-| Snapshot documental mínimo | 22 artefactos | 268 artefactos |
+| Snapshot documental mínimo | 22 artefactos | 269 artefactos |
 | Sesiones nativas visibles | 19 | 57 |
 | Sesiones migradas preservadas | 3 | 4 preservadas en `state/migrated_sessions/` |
-| Cambios migrados/validados | 0 | 151 |
+| Cambios migrados/validados | 0 | 152 |
 | Evidencias registradas | no consolidado en snapshot inicial | 60 |
 | Integridad del pack | GO | GO / GO / GO |
 
@@ -45,7 +45,7 @@ Hoy local: **23/04/2026**.
 | Métrica | Valor |
 | --- | ---: |
 | Sesiones de hoy | 6 |
-| Cambios de hoy | 64 |
+| Cambios de hoy | 65 |
 | Evidencias de hoy | 7 |
 | Corridas autónomas de hoy | 0 |
 | Solicitudes de hoy en `metrics/runs` | 0 |
@@ -139,12 +139,12 @@ stateDiagram-v2
 ## Observaciones
 
 - **Snapshot:** 23/04/2026 · versión 3.0 · estado del sistema: `stable`.
-- **Corpus total:** 57 sesiones · 151 cambios · 60 evidencias.
-- **Suite de tests:** `pass` · 157 workers registrados.
+- **Corpus total:** 57 sesiones · 152 cambios · 60 evidencias.
+- **Suite de tests:** `pass` · 159 workers registrados.
 - **Últimos cambios aplicados:**
+  - dashboard --json test_count field
   - debt_ledger --json rc=0 sin scans; tests debt+risk JSON; 130/130
   - Tests findings_engine:parse y sync_badges:compute; 128/128 tests
   - Coverage por módulo en dashboard (118/139 = 84%)
   - test_scan_purge; dashboard timeouts 60s; smoke_runner show_last rc=0
-  - Observaciones dinamicas en reporte de evolucion + 2 FALLBACK_IDEAS
 - La evolución del sistema es de especialización progresiva: cada sprint aumenta la capacidad de auto-gobernanza y cierre de ciclos con evidencias.

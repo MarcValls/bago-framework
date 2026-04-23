@@ -2410,6 +2410,33 @@ def test_dashboard_json_test_count():
     _record("dashboard:json_test_count", PASS, f"test_count={data['test_count']}")
 
 
+def test_velocity_json_rolling_windows():
+    """velocity.py --json --windows 4: JSON contiene rolling_4w con 4 entradas."""
+    import json as _json
+    rc, out, err = _run("velocity.py", ["--json", "--windows", "4"], timeout=30)
+    if rc != 0:
+        _record("velocity:json_rolling_windows", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    try:
+        data = _json.loads(out)
+    except Exception as e:
+        _record("velocity:json_rolling_windows", FAIL, f"JSON parse error: {e}")
+        return
+    key = "rolling_4w"
+    if key not in data:
+        _record("velocity:json_rolling_windows", FAIL, f"'{key}' missing, keys={list(data.keys())[:8]}")
+        return
+    windows = data[key]
+    if not isinstance(windows, list) or len(windows) != 4:
+        _record("velocity:json_rolling_windows", FAIL, f"expected 4 windows, got {len(windows)}")
+        return
+    w0 = windows[0]
+    if "start" not in w0 or "sessions" not in w0:
+        _record("velocity:json_rolling_windows", FAIL, f"window fields missing: {list(w0.keys())}")
+        return
+    _record("velocity:json_rolling_windows", PASS, f"rolling_4w OK, {len(windows)} windows")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2556,6 +2583,7 @@ ALL_TESTS = [
     (143, "scan:output_file",            test_scan_output_file),
     (144, "risk_matrix:top",             test_risk_matrix_top),
     (145, "dashboard:json_test_count",   test_dashboard_json_test_count),
+    (146, "velocity:json_rolling_windows", test_velocity_json_rolling_windows),
 ]
 
 

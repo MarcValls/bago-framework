@@ -274,7 +274,8 @@
     {
       "title": "risk_matrix --top N flag"
     },
-    "dashboard --json test_count field"
+    "dashboard --json test_count field",
+    "velocity --json rolling windows"
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"
 }

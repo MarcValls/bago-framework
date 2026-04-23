@@ -1,5 +1,7 @@
 {
   "status": "pass",
   "failure_count": 0,
-  "workers": 158
+  "workers": 159,
+  "duration_seconds": 42.0,
+  "generated_at": "2026-04-23T08:32:19.044256+00:00"
 }

@@ -90,10 +90,11 @@ def _sparkline(values: list, width: int = 8) -> str:
 
 def render_velocity(current: dict, previous: dict, rolling: list, as_json: bool):
     if as_json:
+        n = len(rolling)
         print(json.dumps({
             "current_period": current,
             "previous_period": previous,
-            "rolling_8w": rolling,
+            f"rolling_{n}w": rolling,
         }, indent=2, ensure_ascii=False))
         return
 
@@ -215,6 +216,8 @@ def main():
     parser = argparse.ArgumentParser(prog="bago velocity", add_help=False)
     parser.add_argument("--period", type=int, default=7)
     parser.add_argument("--rolling", action="store_true")
+    parser.add_argument("--windows", type=int, default=8, metavar="N",
+                        help="Número de ventanas rolling en --json (default 8)")
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--csv", action="store_true",
                         help="Exporta métricas a CSV (period,sessions,artifacts,sess_per_day)")
@@ -246,7 +249,7 @@ def main():
         current  = velocity_for_period(sessions, today - datetime.timedelta(days=period), today)
         previous = velocity_for_period(sessions, today - datetime.timedelta(days=period*2),
                                                  today - datetime.timedelta(days=period))
-    rolling  = rolling_velocity(sessions)
+    rolling  = rolling_velocity(sessions, n_windows=max(1, getattr(args, "windows", 8)))
 
     if getattr(args, "csv", False):
         import csv, io
