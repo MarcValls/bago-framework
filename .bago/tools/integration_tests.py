@@ -1925,6 +1925,45 @@ def test_ideas_json():
             f"JSON OK, total={data['total']}, gate={data['gate']}")
 
 
+def test_scan_top():
+    """scan.py --top N: limita findings al N máximo solicitado."""
+    import tempfile, subprocess as _sp, os as _os
+    from pathlib import Path as _P
+
+    with tempfile.TemporaryDirectory() as tmp:
+        env = {**_os.environ, "BAGO_STATE_DIR": tmp}
+        # Get total count first via --json
+        r_all = _sp.run(
+            [sys.executable, str(ROOT / "tools" / "scan.py"), "--json"],
+            capture_output=True, text=True, cwd=str(ROOT.parent),
+            env={**_os.environ, "BAGO_STATE_DIR": tmp + "_all"}, timeout=60
+        )
+        r_top = _sp.run(
+            [sys.executable, str(ROOT / "tools" / "scan.py"), "--json", "--top", "3"],
+            capture_output=True, text=True, cwd=str(ROOT.parent),
+            env=env, timeout=60
+        )
+        if r_top.returncode != 0:
+            _record("scan:top", FAIL, f"rc={r_top.returncode}")
+            return
+        import json as _j
+        lines = r_top.stdout.splitlines()
+        json_start = next((i for i, l in enumerate(lines) if l.strip().startswith("{")), -1)
+        if json_start < 0:
+            _record("scan:top", FAIL, "no JSON block in output")
+            return
+        try:
+            data = _j.loads("\n".join(lines[json_start:]))
+        except Exception as e:
+            _record("scan:top", FAIL, f"JSON parse error: {e}")
+            return
+        n = len(data.get("findings", []))
+        if n > 3:
+            _record("scan:top", FAIL, f"--top 3 returned {n} findings")
+            return
+        _record("scan:top", PASS, f"--top 3 limited to {n} findings")
+
+
 def test_stability_summary():
     """stability_summary.py: rc=0, emite DECISIÓN GO o KO."""
     rc, out, err = _run("stability_summary.py", [], timeout=20)
@@ -2114,6 +2153,7 @@ ALL_TESTS = [
     (124, "scan:json_output",            test_scan_json_output),
     (125, "session_details:json",        test_session_details_json),
     (126, "ideas:json",                  test_ideas_json),
+    (127, "scan:top",                    test_scan_top),
 ]
 
 

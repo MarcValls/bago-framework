@@ -1,0 +1,14 @@
+{
+  "id": "BAGO-CHG-151",
+  "change_id": "CHG-151",
+  "type": "governance",
+  "severity": "minor",
+  "title": "scan --top N flag + test 127 scan:top",
+  "motivation": "Añadir --top N a scan.py para mostrar solo los N hallazgos más importantes ordenados por severidad; test verifica el límite.",
+  "status": "applied",
+  "affected_components": ["scan.py", "integration_tests.py"],
+  "related_evidence": ["140/140 tests pass"],
+  "created_at": "2025-07-21T00:00:00Z",
+  "updated_at": "2025-07-21T00:00:00Z",
+  "author": "bago-autonomous"
+}

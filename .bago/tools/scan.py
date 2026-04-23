@@ -430,6 +430,8 @@ def main():
                         help="Antigüedad en días para --purge (default: 30)")
     parser.add_argument("--dry-run",     action="store_true",
                         help="Escanea sin escribir SCAN file (solo muestra conteo)")
+    parser.add_argument("--top",         type=int, default=None,
+                        help="Muestra solo los N hallazgos más importantes")
     parser.add_argument("--lang",        default="auto",
                         choices=["auto","py","js","ts","go","rust",
                                  "java","csharp","ruby","php",
@@ -479,6 +481,9 @@ def main():
         args.severity, args.source, args.rule,
         args.file_filter, args.autofixable
     )
+    if args.top is not None:
+        sev_order = {"error": 0, "warning": 1, "info": 2, "hint": 3}
+        findings = sorted(findings, key=lambda f: sev_order.get(f.severity, 9))[:args.top]
     render_findings(db, findings, args.summary, args.json)
 
 if __name__ == "__main__":
