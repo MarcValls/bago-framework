@@ -29,7 +29,7 @@ def _load_session(sid: str) -> dict:
         sessions = sorted(SESSIONS_DIR.glob("SES-*.json"))
         if not sessions:
             print("  ERROR: no hay sesiones")
-            sys.exit(1)
+            raise SystemExit(1)
         return json.loads(sessions[-1].read_text())
 
     # Try exact match
@@ -43,7 +43,7 @@ def _load_session(sid: str) -> dict:
         return json.loads(matches[0].read_text())
 
     print(f"  ERROR: sesión no encontrada: {sid}")
-    sys.exit(1)
+    raise SystemExit(1)
 
 
 def _load_sprint(sprint_id: str) -> dict:
@@ -51,7 +51,7 @@ def _load_sprint(sprint_id: str) -> dict:
         sprints = sorted(SPRINTS_DIR.glob("SPRINT-*.json"))
         if not sprints:
             print("  ERROR: no hay sprints")
-            sys.exit(1)
+            raise SystemExit(1)
         return json.loads(sprints[-1].read_text())
 
     p = SPRINTS_DIR / f"{sprint_id}.json"
@@ -61,7 +61,7 @@ def _load_sprint(sprint_id: str) -> dict:
             p = matches[0]
         else:
             print(f"  ERROR: sprint no encontrado: {sprint_id}")
-            sys.exit(1)
+            raise SystemExit(1)
     return json.loads(p.read_text())
 
 
@@ -254,7 +254,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def main():

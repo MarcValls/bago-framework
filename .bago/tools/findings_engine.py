@@ -812,7 +812,7 @@ def run_bago_lint(target_dir: str) -> list:
 
     Rules:
       BAGO-W001  datetime.utcnow — deprecated since Python 3.12
-      BAGO-I001  sys.exit(1) without user-visible message
+      BAGO-I001  raise SystemExit(1) without user-visible message
       BAGO-E001  bare except: clause — catches SystemExit/KeyboardInterrupt
       BAGO-W002  eval() or exec() — security risk # noqa: BAGO-W002
       BAGO-W003  os.system() — should use subprocess
@@ -866,8 +866,8 @@ def run_bago_lint(target_dir: str) -> list:
                     findings.append(Finding(
                         id=fid, severity="info", file=rel, line=i, col=0,
                         rule="BAGO-I001", source="bago",
-                        message="sys.exit(1) sin mensaje de error claro para el usuario",
-                        fix_suggestion="Añade print(mensaje) antes de sys.exit(1)",
+                        message="raise SystemExit(1) sin mensaje de error claro para el usuario",
+                        fix_suggestion="Añade print(mensaje) antes de raise SystemExit(1)",
                         autofixable=False,
                         context_lines=_read_context(rel, i),
                     ))
@@ -1229,7 +1229,7 @@ def run_tests():
 
     total = 12; passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
-    if errors: sys.exit(1)
+    if errors: raise SystemExit(1)
 
     # ── Extended tests for new parsers ─────────────────────────────────────
     errors2 = 0
@@ -1285,7 +1285,7 @@ def run_tests():
 
     total2 = 3; passed2 = total2 - errors2
     print(f"\n  {passed2}/{total2} tests de parsers multi-lenguaje pasaron")
-    if errors2: sys.exit(1)
+    if errors2: raise SystemExit(1)
 
     # ── Tests for Phase 1-3 parsers ───────────────────────────────────────
     errors3 = 0
@@ -1438,7 +1438,7 @@ def run_tests():
 
     total3 = 10; passed3 = total3 - errors3
     print(f"\n  {passed3}/{total3} tests de parsers Fase 1-3 pasaron")
-    if errors3: sys.exit(1)
+    if errors3: raise SystemExit(1)
 
 
 if __name__ == "__main__":

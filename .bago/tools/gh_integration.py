@@ -304,18 +304,18 @@ def cmd_checks(cfg: dict, scan_id: Optional[str], min_severity: str, dry_run: bo
 
     if not token:
         print(f"{RED}✗ Sin token. Usa: bago gh config --token TOKEN{RESET}")
-        sys.exit(1)
+        raise SystemExit(1)
     if not repo:
         print(f"{RED}✗ Sin repo. Usa: bago gh config --repo owner/repo{RESET}")
-        sys.exit(1)
+        raise SystemExit(1)
     if not sha:
         print(f"{RED}✗ No se puede obtener el SHA del HEAD{RESET}")
-        sys.exit(1)
+        raise SystemExit(1)
 
     db = fe.FindingsDB.load(scan_id) if scan_id else fe.FindingsDB.latest()
     if db is None:
         print(f"{RED}✗ Sin scan disponible. Ejecuta 'bago scan' primero.{RESET}")
-        sys.exit(1)
+        raise SystemExit(1)
 
     sev_ord = SEV_ORD.get(min_severity, 3)
     findings = [f for f in db.findings if SEV_ORD.get(f.severity, 3) <= sev_ord]
@@ -361,15 +361,15 @@ def cmd_pr(cfg: dict, pr_number: int, min_severity: str, dry_run: bool):
 
     if not token:
         print(f"{RED}✗ Sin token. Usa: bago gh config --token TOKEN{RESET}")
-        sys.exit(1)
+        raise SystemExit(1)
     if not repo:
         print(f"{RED}✗ Sin repo. Usa: bago gh config --repo owner/repo{RESET}")
-        sys.exit(1)
+        raise SystemExit(1)
 
     db = fe.FindingsDB.latest()
     if db is None:
         print(f"{RED}✗ Sin scan. Ejecuta 'bago scan' primero.{RESET}")
-        sys.exit(1)
+        raise SystemExit(1)
 
     sev_ord  = SEV_ORD.get(min_severity, 1)  # default: warnings+errors only
     findings = [f for f in db.findings if SEV_ORD.get(f.severity, 3) <= sev_ord]
@@ -501,7 +501,7 @@ def run_tests():
 
     total=8; passed=total-errors
     print(f"\n  {passed}/{total} tests pasaron")
-    if errors: sys.exit(1)
+    if errors: raise SystemExit(1)
 
 
 def main():

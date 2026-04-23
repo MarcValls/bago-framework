@@ -77,7 +77,7 @@ def cmd_list(pack: dict):
 def cmd_get(pack: dict, key: str):
     if key not in DEFAULTS:
         print(f"Clave desconocida: {key}", file=sys.stderr)
-        sys.exit(1)
+        raise SystemExit(1)
     val = pack.get(key, DEFAULTS[key]["default"])
     print(val)
 
@@ -85,15 +85,15 @@ def cmd_get(pack: dict, key: str):
 def cmd_set(pack: dict, key: str, val_str: str):
     if key not in DEFAULTS:
         print(f"Clave desconocida: {key}", file=sys.stderr)
-        sys.exit(1)
+        raise SystemExit(1)
     meta = DEFAULTS[key]
     if not meta.get("writable", True):
         print(f"'{key}' es de solo lectura", file=sys.stderr)
-        sys.exit(1)
+        raise SystemExit(1)
     val = _coerce(key, val_str)
     if "choices" in meta and val not in meta["choices"]:
         print(f"Valor inválido '{val}'. Opciones: {meta['choices']}", file=sys.stderr)
-        sys.exit(1)
+        raise SystemExit(1)
     old = pack.get(key, meta["default"])
     pack[key] = val
     _save_pack(pack)
@@ -103,11 +103,11 @@ def cmd_set(pack: dict, key: str, val_str: str):
 def cmd_reset(pack: dict, key: str):
     if key not in DEFAULTS:
         print(f"Clave desconocida: {key}", file=sys.stderr)
-        sys.exit(1)
+        raise SystemExit(1)
     meta = DEFAULTS[key]
     if not meta.get("writable", True):
         print(f"'{key}' es de solo lectura", file=sys.stderr)
-        sys.exit(1)
+        raise SystemExit(1)
     old = pack.get(key, meta["default"])
     pack[key] = meta["default"]
     _save_pack(pack)
@@ -190,7 +190,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def main():

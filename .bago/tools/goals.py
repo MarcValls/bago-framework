@@ -55,7 +55,7 @@ def _load_goal(goal_id: str) -> dict:
     path = GOALS_DIR / f"{goal_id}.json"
     if not path.exists():
         print(f"  ERROR: objetivo no encontrado: {goal_id}")
-        sys.exit(1)
+        raise SystemExit(1)
     return json.loads(path.read_text())
 
 
@@ -79,7 +79,7 @@ def _load_all_goals() -> list:
 def cmd_new(args):
     if not args.title:
         print("  ERROR: indica el título del objetivo")
-        sys.exit(1)
+        raise SystemExit(1)
     goal_id = _next_goal_id()
     cat = args.cat if args.cat in CATEGORIES else "other"
     now = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -133,7 +133,7 @@ def cmd_list(args):
 def cmd_show(args):
     if not args.goal_id:
         print("  ERROR: indica el ID del objetivo")
-        sys.exit(1)
+        raise SystemExit(1)
     g = _load_goal(args.goal_id)
     icon = STATUS_ICON.get(g.get("status", ""), "?")
     print(f"\n  {icon} {g['goal_id']}: {g['title']}")
@@ -162,7 +162,7 @@ def cmd_show(args):
 def cmd_close(args):
     if not args.goal_id:
         print("  ERROR: indica el ID del objetivo")
-        sys.exit(1)
+        raise SystemExit(1)
     g = _load_goal(args.goal_id)
     g["status"] = STATUS_CLOSED
     g["updated_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -175,7 +175,7 @@ def cmd_close(args):
 def cmd_link(args):
     if not args.goal_id or not args.ref:
         print("  ERROR: indica GOAL-ID y el REF (sesión o cambio)")
-        sys.exit(1)
+        raise SystemExit(1)
     g = _load_goal(args.goal_id)
     ref = args.ref
     if ref.startswith("SES-") or ref.startswith("ses-"):
@@ -332,7 +332,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 # Need pathlib imported at module level for tests
 import pathlib

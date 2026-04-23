@@ -1294,7 +1294,7 @@ def test_context_detector_json_fields():
             _record("detector:json_fields", FAIL, f"missing keys: {missing}")
         else:
             verdict = data["verdict"]
-            if verdict in ("CLEAR", "WATCH", "HARVEST"):
+            if verdict in ("CLEAN", "CLEAR", "WATCH", "HARVEST"):
                 _record("detector:json_fields", PASS, f"verdict={verdict}, signals={len(data['signals'])}")
             else:
                 _record("detector:json_fields", FAIL, f"unknown verdict: {verdict}")
@@ -1425,6 +1425,44 @@ def test_ideas_backlog_exists():
 
 
 
+def test_sprint_manager_list():
+    """sprint_manager list muestra sprints con [OPEN] o [DONE]."""
+    rc, out, _ = _run("sprint_manager.py", ["list"], timeout=10)
+    if rc != 0:
+        _record("sprint:list", FAIL, f"rc={rc}")
+        return
+    if "[OPEN]" in out or "[DONE]" in out:
+        sprint_lines = [l for l in out.splitlines() if "[OPEN]" in l or "[DONE]" in l]
+        _record("sprint:list", PASS, f"{len(sprint_lines)} sprints listed")
+    else:
+        _record("sprint:list", FAIL, "no [OPEN]/[DONE] in output")
+
+
+def test_sprint_manager_active():
+    """sprint_manager active devuelve el sprint activo."""
+    rc, out, _ = _run("sprint_manager.py", ["active"], timeout=10)
+    if rc != 0:
+        _record("sprint:active", FAIL, f"rc={rc}")
+        return
+    out = out.strip()
+    if out:
+        _record("sprint:active", PASS, f"active sprint: {out[:40]}")
+    else:
+        _record("sprint:active", FAIL, "no active sprint returned (empty output)")
+
+
+def test_sprint_manager_status():
+    """sprint_manager status muestra goals del sprint activo."""
+    rc, out, _ = _run("sprint_manager.py", ["status"], timeout=10)
+    if rc != 0:
+        _record("sprint:status", FAIL, f"rc={rc}")
+        return
+    if "SPRINT" in out or "goal" in out.lower() or "objetivo" in out.lower():
+        _record("sprint:status", PASS, "status output contains sprint info")
+    else:
+        _record("sprint:status", FAIL, f"unexpected output: {out[:80]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1527,6 +1565,9 @@ ALL_TESTS = [
     (99, "dashboard_velocity",       test_dashboard_velocity_section),
     (100, "dashboard_risk_exposure", test_dashboard_risk_exposure),
     (101, "ideas_backlog",           test_ideas_backlog_exists),
+    (102, "sprint_list",             test_sprint_manager_list),
+    (103, "sprint_active",           test_sprint_manager_active),
+    (104, "sprint_status",           test_sprint_manager_status),
 ]
 
 

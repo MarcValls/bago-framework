@@ -208,7 +208,7 @@ if __name__ == "__main__":
 
     if not args or "--help" in args or "-h" in args:
         print(__doc__)
-        sys.exit(0)
+        raise SystemExit(0)
 
     if "--test" in args:
         sys.exit(run_tests())
@@ -219,13 +219,13 @@ if __name__ == "__main__":
             if a == "--category" and i + 1 < len(args):
                 cat = args[i + 1]
         cmd_list_all(cat)
-        sys.exit(0)
+        raise SystemExit(0)
 
     if "--category" in args:
         i = args.index("--category")
         cat = args[i + 1] if i + 1 < len(args) else ""
         cmd_list_all(cat)
-        sys.exit(0)
+        raise SystemExit(0)
 
     if "--code" in args:
         i = args.index("--code")

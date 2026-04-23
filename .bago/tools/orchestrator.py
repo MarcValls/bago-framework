@@ -298,14 +298,14 @@ if __name__ == "__main__":
 
     if not args or "--help" in args or "-h" in args:
         print(__doc__)
-        sys.exit(0)
+        raise SystemExit(0)
 
     if "--test" in args:
         sys.exit(run_tests())
 
     if "--list" in args:
         cmd_list()
-        sys.exit(0)
+        raise SystemExit(0)
 
     dry_run = "--dry-run" in args
     fail_fast = "--fail-fast" in args
@@ -316,20 +316,20 @@ if __name__ == "__main__":
     if not clean_args:
         print("  Usa: orchestrator.py <workflow|run> [cmds...]")
         print("  Workflows: " + ", ".join(WORKFLOWS.keys()))
-        sys.exit(1)
+        raise SystemExit(1)
 
     if clean_args[0] == "run":
         cmds = clean_args[1:]
         if not cmds:
             print("  Uso: orchestrator.py run cmd1 cmd2 ...")
-            sys.exit(1)
+            raise SystemExit(1)
         sys.exit(run_adhoc(cmds, dry_run=dry_run, fail_fast=fail_fast))
 
     workflow_name = clean_args[0]
     if workflow_name not in WORKFLOWS:
         print(f"  [ORC-E002] Workflow desconocido: '{workflow_name}'")
         print(f"  Disponibles: {', '.join(WORKFLOWS.keys())}")
-        sys.exit(1)
+        raise SystemExit(1)
 
     result = run_workflow(WORKFLOWS[workflow_name], dry_run=dry_run,
                           fail_fast=fail_fast, verbose=verbose)

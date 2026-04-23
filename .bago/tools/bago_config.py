@@ -324,7 +324,7 @@ if __name__ == "__main__":
 
     if "--help" in args or "-h" in args or not args:
         cmd_show()
-        sys.exit(0)
+        raise SystemExit(0)
 
     if "--get" in args:
         i = args.index("--get")
@@ -346,6 +346,6 @@ if __name__ == "__main__":
     if "--export" in args:
         config = load_config()
         print(json.dumps(config, indent=2))
-        sys.exit(0)
+        raise SystemExit(0)
 
     cmd_show()

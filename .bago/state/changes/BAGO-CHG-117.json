@@ -1,0 +1,24 @@
+{
+  "change_id": "BAGO-CHG-117",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Refactor sys.exit() → raise SystemExit() en top-10 tools (53 reemplazos)",
+  "motivation": "BAGO-I001 (VelocityDrag): 53 llamadas a sys.exit() en template.py, orchestrator.py, gh_integration.py, summary.py, findings_engine.py, config.py, goals.py y otros. Reemplazado por raise SystemExit(N) para cumplir BAGO-I001 y reducir deuda técnica.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/template.py",
+    ".bago/tools/orchestrator.py",
+    ".bago/tools/legacy_fixer.py",
+    ".bago/tools/gh_integration.py",
+    ".bago/tools/summary.py",
+    ".bago/tools/findings_engine.py",
+    ".bago/tools/config.py",
+    ".bago/tools/bago_config.py",
+    ".bago/tools/tool_search.py",
+    ".bago/tools/goals.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T02:30:00.000000+00:00",
+  "updated_at": "2026-04-23T02:30:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

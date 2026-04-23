@@ -1,0 +1,13 @@
+{
+  "change_id": "BAGO-CHG-119",
+  "type": "governance",
+  "severity": "patch",
+  "title": "README.md: actualización de badges y contadores a estado real v3.0",
+  "motivation": "Badges desactualizados mostraban 102/102 tests, 136 tools, 12 workflows. Actualizado a 117/117 tests, 135 tools, CHG-101 milestone, 10 workflows.",
+  "status": "applied",
+  "affected_components": ["README.md"],
+  "related_evidence": [],
+  "created_at": "2026-04-23T02:40:00.000000+00:00",
+  "updated_at": "2026-04-23T02:40:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

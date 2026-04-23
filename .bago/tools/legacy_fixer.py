@@ -299,7 +299,7 @@ if __name__ == "__main__":
 
     if not args or "--help" in args or "-h" in args:
         print(__doc__)
-        sys.exit(0)
+        raise SystemExit(0)
 
     if "--test" in args:
         sys.exit(run_tests())
@@ -318,4 +318,4 @@ if __name__ == "__main__":
 
     print(f"  Argumento desconocido: {args}")
     print("  Usa: legacy_fixer.py --help")
-    sys.exit(1)
+    raise SystemExit(1)

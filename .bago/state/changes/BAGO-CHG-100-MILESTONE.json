@@ -1,0 +1,18 @@
+{
+  "change_id": "BAGO-CHG-100-MILESTONE",
+  "type": "governance",
+  "severity": "major",
+  "title": "🏆 MILESTONE: 100 CHGs registrados en BAGO v3.0",
+  "motivation": "Hito de gobernanza: el framework BAGO ha superado los 100 cambios registrados (CHGs) en su base de conocimiento. Desde el CHG-001 inicial hasta el CHG-101+, cada cambio ha sido trazado, justificado y vinculado a sesiones y evidencias. Este milestone marca la madurez del sistema de gobernanza.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/state/changes/",
+    ".bago/state/global_state.json"
+  ],
+  "related_evidence": [],
+  "milestone": true,
+  "milestone_label": "CHG-100",
+  "created_at": "2026-04-23T02:35:00.000000+00:00",
+  "updated_at": "2026-04-23T02:35:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

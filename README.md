@@ -2,9 +2,9 @@
 
 > Sistema operativo de trabajo técnico para programación con IA
 
-![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%20102%2F102-brightgreen) ![tools](https://img.shields.io/badge/tools-136-blue) ![version](https://img.shields.io/badge/versión-3.0-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
+![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%20117%2F117-brightgreen) ![tools](https://img.shields.io/badge/tools-135-blue) ![chg](https://img.shields.io/badge/CHGs-101%20🏆-gold) ![version](https://img.shields.io/badge/versión-3.0-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
 
-**`health 🟢 100/100`** · **`tests ✅ 102/102`** · **`tools 🔧 136`** · **`versión 3.0`** · 12 workflows · Auto-gobernanza e inteligencia de intent integrada
+**`health 🟢 100/100`** · **`tests ✅ 117/117`** · **`tools 🔧 135`** · **`CHGs 🏆 101`** · **`versión 3.0`** · 10 workflows · Auto-gobernanza e inteligencia de intent integrada
 
 ---
 
@@ -202,7 +202,7 @@ BAGO amplifica el trabajo con IA resolviendo:
 | `bago ci-report` | `ci_report.py` | Reporte CI agregado: 10 scanners, score 0-100, markdown para PR |
 | `bago tool-guardian` | `tool_guardian.py` | Valida coherencia del framework: tests, routing, integración, docstrings |
 | `bago pre-push` | `pre_push_guard.py` | Guard pre-push: CHECKSUMS, suite, version sync en un comando |
-| `bago tool-search` | `tool_search.py` | Búsqueda semántica sobre los 136 tools: `bago tool-search "secretos"` |
+| `bago tool-search` | `tool_search.py` | Búsqueda semántica sobre los 135 tools: `bago tool-search "secretos"` |
 | `bago legacy-fix` | `legacy_fixer.py` | Scaffolding de `--test` en tools legacy sin auto-tests |
 | `bago commit-ready` | `commit_readiness.py` | Gate pre-commit: syntax, secrets, merge conflicts, debug prints, size |
 | `bago auto-register` | `auto_register.py` | Registra un tool en integration_tests + bago script + CHECKSUMS en 1 cmd |
@@ -292,7 +292,7 @@ bago-framework/
 ├── menu.html                     # Interfaz web (BAGO Viewer)
 ├── Makefile                      # Targets: banner, pack, validate, install
 ├── .bago/
-│   ├── tools/                    # 136 herramientas Python/JS (un archivo por comando)
+│   ├── tools/                    # 135 herramientas Python/JS (un archivo por comando)
 │   │   ├── health_score.py       # bago health
 │   │   ├── audit_v2.py           # bago audit
 │   │   ├── insights.py           # bago insights

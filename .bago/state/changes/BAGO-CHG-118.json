@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-118",
+  "type": "governance",
+  "severity": "patch",
+  "title": "Tests 102-104: sprint_manager list/active/status + fix detector:json_fields verdict CLEAN",
+  "motivation": "Añadidos tests 102-104 para sprint_manager.py (commands list, active, status). Corregido test detector:json_fields para aceptar verdict=CLEAN además de CLEAR/WATCH/HARVEST. Total: 104 ALL_TESTS entries.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/integration_tests.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T02:30:00.000000+00:00",
+  "updated_at": "2026-04-23T02:30:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

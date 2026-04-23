@@ -129,7 +129,7 @@ def cmd_show(name: str):
     templates = _load_templates()
     if name not in templates:
         print(f"Plantilla '{name}' no encontrada.")
-        sys.exit(1)
+        raise SystemExit(1)
     t = templates[name]
     print(f"\n  {BOLD}{t['name']}{RESET}  {DIM}{t.get('description','')}{RESET}")
     print(f"\n  user_goal:  {t.get('user_goal','')}")
@@ -149,7 +149,7 @@ def cmd_new(name: str, dry_run: bool = False):
     templates = _load_templates()
     if name not in templates:
         print(f"Plantilla '{name}' no encontrada.")
-        sys.exit(1)
+        raise SystemExit(1)
     t = templates[name]
     now = datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z")
     sid = _next_session_id()
@@ -201,11 +201,11 @@ def cmd_create(name: str):
 def cmd_delete(name: str):
     if name in BUILTIN_TEMPLATES:
         print(f"No se puede eliminar plantilla builtin '{name}'.")
-        sys.exit(1)
+        raise SystemExit(1)
     f = TMPL_DIR / f"{name}.json"
     if not f.exists():
         print(f"Plantilla '{name}' no encontrada.")
-        sys.exit(1)
+        raise SystemExit(1)
     f.unlink()
     print(f"  Plantilla '{name}' eliminada.")
 
@@ -273,7 +273,7 @@ def run_tests():
     shutil.rmtree(tmpdir)
     total = 5; passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
-    if errors: sys.exit(1)
+    if errors: raise SystemExit(1)
 
 
 def main():
@@ -289,16 +289,16 @@ def main():
     if args.subcmd == "list" or (not args.subcmd):
         cmd_list()
     elif args.subcmd == "show":
-        if not args.name: print("Uso: bago template show <nombre>"); sys.exit(1)
+        if not args.name: print("Uso: bago template show <nombre>"); raise SystemExit(1)
         cmd_show(args.name)
     elif args.subcmd == "new":
-        if not args.name: print("Uso: bago template new <nombre>"); sys.exit(1)
+        if not args.name: print("Uso: bago template new <nombre>"); raise SystemExit(1)
         cmd_new(args.name)
     elif args.subcmd == "create":
-        if not args.name: print("Uso: bago template create <nombre>"); sys.exit(1)
+        if not args.name: print("Uso: bago template create <nombre>"); raise SystemExit(1)
         cmd_create(args.name)
     elif args.subcmd == "delete":
-        if not args.name: print("Uso: bago template delete <nombre>"); sys.exit(1)
+        if not args.name: print("Uso: bago template delete <nombre>"); raise SystemExit(1)
         cmd_delete(args.name)
 
 if __name__ == "__main__":
