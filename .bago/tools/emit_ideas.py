@@ -865,20 +865,22 @@ def save_handoff(data: dict[str, object]) -> Path:
     return dest
 
 
-def parse_args(argv: list[str]) -> tuple[int | None, bool, bool]:
+def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, int | None]:
     detail_index = None
     accept = False
     as_json = False
+    top_n: int | None = None
     idx = 1
 
     while idx < len(argv):
         arg = argv[idx]
         if arg in {"-h", "--help"}:
             print(
-                "Usage: emit_ideas.py [--detail N] [--accept N] [--json]\n\n"
+                "Usage: emit_ideas.py [--detail N] [--accept N] [--json] [--top N]\n\n"
                 "Show 5 to 20 contextual ideas prioritized by stability. Use --detail "
                 "to expand a selected idea and --accept to mark it ready for W2.\n"
-                "--json  Output ideas as structured JSON."
+                "--json   Output ideas as structured JSON.\n"
+                "--top N  Limit output to top N ideas."
             )
             raise SystemExit(0)
         if arg == "--detail":
@@ -898,9 +900,15 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool, bool]:
             as_json = True
             idx += 1
             continue
+        if arg == "--top":
+            if idx + 1 >= len(argv):
+                raise SystemExit("--top requires a numeric argument")
+            top_n = int(argv[idx + 1])
+            idx += 2
+            continue
         raise SystemExit(f"Unknown argument: {arg}")
 
-    return detail_index, accept, as_json
+    return detail_index, accept, as_json, top_n
 
 
 def _run_tool_json(tool_name: str, extra_args: list[str] | None = None) -> dict | list | None:
@@ -1044,7 +1052,7 @@ def _real_state_ideas() -> list[dict[str, object]]:
 
 
 def main() -> int:
-    detail_index, accept, as_json = parse_args(sys.argv)
+    detail_index, accept, as_json, top_n = parse_args(sys.argv)
     state_path = _STATE / "ESTADO_BAGO_ACTUAL.md"
     global_state_path = _STATE / "global_state.json"
     smoke_path = ROOT / "sandbox/runtime/last-report.json"
@@ -1330,6 +1338,9 @@ def main() -> int:
 
     sections = build_idea_sections(ideas, done_titles)
     ideas = order_ideas_by_section(sections)
+
+    if top_n is not None:
+        ideas = ideas[:top_n]
 
     if as_json:
         print(json.dumps({

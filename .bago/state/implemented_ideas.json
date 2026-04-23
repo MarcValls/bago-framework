@@ -228,6 +228,21 @@
       "title": "health_score --json output",
       "chg": "CHG-157",
       "date": "2025-07-28"
+    },
+    {
+      "title": "scan --summary flag",
+      "chg": "already-exists",
+      "date": "2025-07-28"
+    },
+    {
+      "title": "emit_ideas --top N flag",
+      "chg": "CHG-158",
+      "date": "2025-07-28"
+    },
+    {
+      "title": "scan --summary flag",
+      "chg": "already-exists",
+      "date": "2025-07-28"
     }
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"

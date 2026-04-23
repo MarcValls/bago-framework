@@ -1,0 +1,19 @@
+{
+  "id": "BAGO-CHG-158",
+  "change_id": "CHG-158",
+  "type": "governance",
+  "severity": "minor",
+  "title": "emit_ideas --top N flag + test 134",
+  "motivation": "Añadir --top N a emit_ideas.py para limitar output; test verifica truncado correcto.",
+  "status": "applied",
+  "affected_components": [
+    "emit_ideas.py",
+    "integration_tests.py"
+  ],
+  "related_evidence": [
+    "147/147 tests pass"
+  ],
+  "created_at": "2025-07-28T00:00:00Z",
+  "updated_at": "2025-07-28T00:00:00Z",
+  "author": "bago-autonomous"
+}

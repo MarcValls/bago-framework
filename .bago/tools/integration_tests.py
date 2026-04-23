@@ -2165,6 +2165,25 @@ def test_health_score_json():
             f"JSON OK, score={data['score']}/{data['max']}, checks={len(data['checks'])}")
 
 
+def test_ideas_top_n():
+    """emit_ideas.py --top 2 --json: retorna exactamente 2 ideas."""
+    import json as _j
+    rc, out, err = _run("emit_ideas.py", ["--top", "2", "--json"], timeout=20)
+    if rc != 0:
+        _record("ideas:top_n", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    try:
+        data = _j.loads(out)
+    except Exception as e:
+        _record("ideas:top_n", FAIL, f"JSON parse error: {e}")
+        return
+    n = len(data.get("ideas", []))
+    if n > 2:
+        _record("ideas:top_n", FAIL, f"--top 2 returned {n} ideas (expected ≤2)")
+        return
+    _record("ideas:top_n", PASS, f"--top 2 returned {n} ideas")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2299,6 +2318,7 @@ ALL_TESTS = [
     (131, "metrics:export_json",         test_metrics_export_json),
     (132, "velocity:csv",                test_velocity_csv),
     (133, "health_score:json",           test_health_score_json),
+    (134, "ideas:top_n",                 test_ideas_top_n),
 ]
 
 
