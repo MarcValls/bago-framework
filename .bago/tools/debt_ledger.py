@@ -281,21 +281,56 @@ def main():
     p.add_argument("--json",      action="store_true")
     p.add_argument("--csv",       action="store_true",
                    help="Exporta deuda a CSV (file,severity,hours,cost_eur,quadrant)")
+    p.add_argument("--since",     default=None, metavar="DATE",
+                   help="Agregar hallazgos de todos los scans desde DATE (YYYY-MM-DD)")
     p.add_argument("--test",      action="store_true")
     args = p.parse_args()
 
     if args.test:
         run_tests(); return
 
-    db = fe.FindingsDB.load(args.scan) if args.scan else fe.FindingsDB.latest()
-    if db is None:
-        if args.json:
-            print(json.dumps({"total_hours": 0, "total_cost": 0, "items": 0, "by_quadrant": {}}, indent=2))
-            return
-        print(f"{RED}✗ Sin scan. Ejecuta 'bago scan' primero.{RESET}")
-        raise SystemExit(1)
-
-    findings = db.findings
+    since = getattr(args, "since", None)
+    if since:
+        import datetime as _dt
+        try:
+            cutoff = _dt.date.fromisoformat(since)
+        except ValueError:
+            print(f"ERROR: --since fecha inválida '{since}'", file=sys.stderr)
+            raise SystemExit(1)
+        all_scans = sorted(fe.FINDINGS_DIR.glob("SCAN-*.json"))
+        merged_findings = []
+        latest_db = None
+        for sf in all_scans:
+            stem = sf.stem
+            try:
+                date_part = stem.split("-", 1)[1].split("_")[0]
+                scan_date = _dt.date(int(date_part[:4]), int(date_part[4:6]), int(date_part[6:8]))
+            except Exception:
+                continue
+            if scan_date >= cutoff:
+                try:
+                    d = fe.FindingsDB.load(stem)
+                    merged_findings.extend(d.findings)
+                    latest_db = d
+                except Exception:
+                    pass
+        if latest_db is None:
+            if args.json:
+                print(json.dumps({"total_hours": 0, "total_cost": 0, "items": 0, "by_quadrant": {}}, indent=2))
+                return
+            print(f"Sin scans desde {since}.")
+            raise SystemExit(1)
+        findings = merged_findings
+        db = latest_db
+    else:
+        db = fe.FindingsDB.load(args.scan) if args.scan else fe.FindingsDB.latest()
+        if db is None:
+            if args.json:
+                print(json.dumps({"total_hours": 0, "total_cost": 0, "items": 0, "by_quadrant": {}}, indent=2))
+                return
+            print(f"{RED}✗ Sin scan. Ejecuta 'bago scan' primero.{RESET}")
+            raise SystemExit(1)
+        findings = db.findings
     if args.quadrant:
         all_items = build_debt_items(findings, args.rate)
         items     = [i for i in all_items if args.quadrant.lower() in i.quadrant.lower()]

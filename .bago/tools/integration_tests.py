@@ -2595,6 +2595,23 @@ def test_doctor_json():
     _record("doctor:json", PASS, f"verdict={data['verdict']} errors={data['total_errors']}")
 
 
+def test_debt_ledger_since():
+    """debt_ledger.py --since 2020-01-01 --json: rc=0, JSON has 'total_hours'."""
+    rc, out, err = _run("debt_ledger.py", ["--since", "2020-01-01", "--json"], timeout=30)
+    if rc != 0:
+        _record("debt_ledger:since", FAIL, f"rc={rc} err={err[:80]}")
+        return
+    try:
+        data = json.loads(out)
+    except json.JSONDecodeError:
+        _record("debt_ledger:since", FAIL, f"invalid JSON: {out[:60]!r}")
+        return
+    if "total_hours" not in data:
+        _record("debt_ledger:since", FAIL, f"missing 'total_hours': {list(data)}")
+        return
+    _record("debt_ledger:since", PASS, f"total_hours={data['total_hours']}")
+
+
 def test_risk_matrix_since():
     """risk_matrix.py --since 2020-01-01 --csv: rc=0 y header con 'category'."""
     rc, out, err = _run("risk_matrix.py", ["--since", "2020-01-01", "--csv"], timeout=30)
@@ -2763,6 +2780,7 @@ ALL_TESTS = [
     (153, "ideas:dynamic_scoring",       test_ideas_dynamic_scoring),
     (154, "stability:json",              test_stability_json),
     (155, "doctor:json",                 test_doctor_json),
+    (156, "debt_ledger:since",           test_debt_ledger_since),
 ]
 
 

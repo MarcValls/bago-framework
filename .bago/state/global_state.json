@@ -9,7 +9,7 @@
   "active_scenarios": [],
   "active_workflows": [],
   "history_migration_status": "completed_with_preserved_legacy",
-  "updated_at": "2026-04-23T09:41:01.451567+00:00",
+  "updated_at": "2026-04-23T09:46:39.399525+00:00",
   "v2_status": "stable",
   "notes": "Loop-11: README badges, ideas dyn docs, orphan-CLEAN, CHG-126. chg=110, tests 119/119",
   "last_completed_session_id": "SES-HARVEST-2026-04-23-003",
@@ -22,7 +22,7 @@
   "last_completed_evidence_id": "BAGO-EVD-078",
   "inventory": {
     "sessions": 57,
-    "changes": 162,
+    "changes": 163,
     "evidences": 60
   },
   "last_validation": {

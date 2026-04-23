@@ -284,7 +284,8 @@
     "velocity --top N rolling",
     "Scoring din\u00e1mico por registro",
     "stability_summary --json output",
-    "doctor --json output"
+    "doctor --json output",
+    "debt_ledger --since DATE"
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"
 }

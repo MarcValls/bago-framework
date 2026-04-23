@@ -4,24 +4,25 @@
   "priority": 62,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
   "objetivo": "Reducir la friccion del final del selector con una recomendacion mas directa.",
-  "alcance": "Materializar con el mínimo cambio suficiente.",
+  "alcance": "Materializar con el m\u00ednimo cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
     ".bago/tools/emit_ideas.py"
   ],
   "validacion_minima": [
-    "Explica cambio, archivos y verificación mínima.",
-    "Métrica objetivo: La recomendacion final queda en una sola accion explícita."
+    "Explica cambio, archivos y verificaci\u00f3n m\u00ednima.",
+    "M\u00e9trica objetivo: La recomendacion final queda en una sola accion expl\u00edcita."
   ],
   "siguiente_paso": "Ajustar el texto final de `./ideas` sin alterar el ranking.",
-  "metric": "La recomendacion final queda en una sola accion explícita.",
+  "metric": "La recomendacion final queda en una sola accion expl\u00edcita.",
   "handoff_chain": "role_analyst>role_architect>role_generator>role_validator>role_vertice",
-  "human_validation_prompt": "Describe en 1-2 frases qué experiencia humana mejora y cómo lo verificaste.",
+  "human_validation_prompt": "Describe en 1-2 frases qu\u00e9 experiencia humana mejora y c\u00f3mo lo verificaste.",
   "contexto": [
     "Entrada: salida de ideas ya ordenadas.",
     "Salida: siguiente paso corto y visible.",
     "Ventaja: facilita pasar de idea a decision sin leer de nuevo toda la lista."
   ],
-  "status": "pending",
-  "accepted_at": "2026-04-23T03:20:36.858220+00:00"
+  "status": "done",
+  "accepted_at": "2026-04-23T03:20:36.858220+00:00",
+  "completed_at": "2026-04-23T09:51:46.537463+00:00"
 }

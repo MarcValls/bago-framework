@@ -1,0 +1,18 @@
+{
+  "id": "BAGO-CHG-179",
+  "change_id": "BAGO-CHG-179",
+  "type": "governance",
+  "severity": "patch",
+  "title": "debt_ledger --since DATE: agrega hallazgos de scans desde fecha",
+  "motivation": "Permite analizar deuda t\u00e9cnica acumulada desde una fecha sin especificar scan concreto.",
+  "status": "applied",
+  "affected_components": [
+    "debt_ledger.py"
+  ],
+  "related_evidence": [
+    "test_156_debt_ledger_since"
+  ],
+  "created_at": "2026-04-23T09:52:32.482145+00:00",
+  "updated_at": "2026-04-23T09:52:32.482145+00:00",
+  "author": "bago-autonomous"
+}
