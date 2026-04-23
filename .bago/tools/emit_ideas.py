@@ -1085,22 +1085,24 @@ def save_handoff(data: dict[str, object]) -> Path:
     return dest
 
 
-def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, int | None]:
+def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, int | None, str | None]:
     detail_index = None
     accept = False
     as_json = False
     top_n: int | None = None
+    section_filter: str | None = None
     idx = 1
 
     while idx < len(argv):
         arg = argv[idx]
         if arg in {"-h", "--help"}:
             print(
-                "Usage: emit_ideas.py [--detail N] [--accept N] [--json] [--top N]\n\n"
+                "Usage: emit_ideas.py [--detail N] [--accept N] [--json] [--top N] [--section SECTION]\n\n"
                 "Show 5 to 20 contextual ideas prioritized by stability. Use --detail "
                 "to expand a selected idea and --accept to mark it ready for W2.\n"
-                "--json   Output ideas as structured JSON.\n"
-                "--top N  Limit output to top N ideas."
+                "--json          Output ideas as structured JSON.\n"
+                "--top N         Limit output to top N ideas.\n"
+                "--section NAME  Filter ideas to only those matching section NAME."
             )
             raise SystemExit(0)
         if arg == "--detail":
@@ -1126,9 +1128,15 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, int | None]:
             top_n = int(argv[idx + 1])
             idx += 2
             continue
+        if arg == "--section":
+            if idx + 1 >= len(argv):
+                raise SystemExit("--section requires a section name")
+            section_filter = argv[idx + 1]
+            idx += 2
+            continue
         raise SystemExit(f"Unknown argument: {arg}")
 
-    return detail_index, accept, as_json, top_n
+    return detail_index, accept, as_json, top_n, section_filter
 
 
 def _run_tool_json(tool_name: str, extra_args: list[str] | None = None) -> dict | list | None:
@@ -1272,7 +1280,7 @@ def _real_state_ideas() -> list[dict[str, object]]:
 
 
 def main() -> int:
-    detail_index, accept, as_json, top_n = parse_args(sys.argv)
+    detail_index, accept, as_json, top_n, section_filter = parse_args(sys.argv)
     state_path = _STATE / "ESTADO_BAGO_ACTUAL.md"
     global_state_path = _STATE / "global_state.json"
     smoke_path = ROOT / "sandbox/runtime/last-report.json"
@@ -1561,6 +1569,9 @@ def main() -> int:
 
     if top_n is not None:
         ideas = ideas[:top_n]
+
+    if section_filter is not None:
+        ideas = [i for i in ideas if i.get("section", "") == section_filter]
 
     if as_json:
         print(json.dumps({

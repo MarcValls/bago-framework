@@ -2449,6 +2449,26 @@ def test_scan_stats():
     _record("scan:stats", PASS, "stats OK")
 
 
+def test_emit_ideas_section_filter():
+    """emit_ideas.py --section contextuales --json: todas las ideas tienen section=='contextuales'."""
+    import json as _json
+    rc, out, err = _run("emit_ideas.py", ["--section", "contextuales", "--json"], timeout=30)
+    if rc != 0:
+        _record("emit_ideas:section_filter", FAIL, f"rc={rc} err={err[:80]}")
+        return
+    try:
+        data = _json.loads(out)
+    except Exception as e:
+        _record("emit_ideas:section_filter", FAIL, f"JSON parse error: {e}")
+        return
+    ideas = data.get("ideas", [])
+    wrong = [i.get("section") for i in ideas if i.get("section") != "contextuales"]
+    if wrong:
+        _record("emit_ideas:section_filter", FAIL, f"non-contextuales sections: {wrong[:5]}")
+        return
+    _record("emit_ideas:section_filter", PASS, f"section filter OK, {len(ideas)} ideas in contextuales")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2597,6 +2617,7 @@ ALL_TESTS = [
     (145, "dashboard:json_test_count",   test_dashboard_json_test_count),
     (146, "velocity:json_rolling_windows", test_velocity_json_rolling_windows),
     (147, "scan:stats",                  test_scan_stats),
+    (148, "emit_ideas:section_filter",   test_emit_ideas_section_filter),
 ]
 
 
