@@ -9,7 +9,7 @@
   "active_scenarios": [],
   "active_workflows": [],
   "history_migration_status": "completed_with_preserved_legacy",
-  "updated_at": "2026-04-23T01:10:30.658076+00:00",
+  "updated_at": "2026-04-23T01:29:05.112446+00:00",
   "v2_status": "stable",
   "notes": "v3.0 release — 135 tools. Sprint 005 cerrado. Sprint 006 activo. 102/102 tests.",
   "last_completed_session_id": "SES-HARVEST-2026-04-23-001",
@@ -21,8 +21,8 @@
   "last_completed_change_id": "BAGO-CHG-086",
   "last_completed_evidence_id": "BAGO-EVD-076",
   "inventory": {
-    "sessions": 53,
-    "changes": 83,
+    "sessions": 54,
+    "changes": 89,
     "evidences": 58
   },
   "last_validation": {
@@ -32,15 +32,7 @@
   },
   "baseline_code": "baseline_bago_3_0",
   "baseline_status": "active_clean_core",
-  "sprint_status": {
-    "SPRINT-001": "closed",
-    "SPRINT-002": "closed",
-    "SPRINT-003": "closed",
-    "SPRINT-004": "closed",
-    "SPRINT-005": "closed",
-    "SPRINT-006": "open",
-    "SPRINT-007": "closed"
-  },
+  "sprint_status": "SPRINT-007 open",
   "tool_count": 135,
   "integration_suite": "91/91",
   "changes": 59

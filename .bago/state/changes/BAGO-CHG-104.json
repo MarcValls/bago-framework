@@ -1,0 +1,18 @@
+{
+  "change_id": "BAGO-CHG-104",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Scan real .bago/tools/ → debt_ledger 23.9h/€1912, risk_matrix 243.6 CRÍTICA",
+  "motivation": "El cockpit mostraba 0 deuda y 0 riesgo porque nunca se había hecho scan real. Ejecutado scan.py sobre .bago/tools/ (197 hallazgos BAGO-I001). Ahora el ledger y la matriz muestran datos reales.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/state/findings/SCAN-20260423_011729.json",
+    ".bago/state/reports/"
+  ],
+  "related_evidence": [
+    "SCAN-20260423_011729"
+  ],
+  "created_at": "2026-04-23T01:28:04.333848+00:00",
+  "updated_at": "2026-04-23T01:28:55.002851+00:00",
+  "author": "copilot-autonomous"
+}

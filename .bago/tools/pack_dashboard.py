@@ -128,36 +128,30 @@ def _detector():
         return "CLEAN", 0, 2
 
 def _top_risks():
+    """Returns (by_category_dict, total_exposure, items_count)."""
     try:
         out, _ = _run_tool([TOOLS / "risk_matrix.py", "--json"], timeout=8)
         data = json.loads(out)
-        # risk_matrix --json returns {"by_category":..., "total_exposure": float, "items": int}
-        # No "risks" key — build list from by_category if present
-        risks = data.get("risks", [])
-        if not risks:
-            by_cat = data.get("by_category", {})
-            for cat, items in by_cat.items():
-                if isinstance(items, list):
-                    risks.extend(items)
-        return sorted(risks, key=lambda r: r.get("score", 0), reverse=True)[:3], data.get("total_exposure", None), data.get("items", None)
+        by_cat   = data.get("by_category", {})
+        exposure = data.get("total_exposure", 0.0)
+        items    = data.get("items", 0)
+        return by_cat, exposure, items
     except Exception:
-        return [], None, None
+        return {}, 0.0, 0
 
 def section_risks():
-    risks, exposure, items = _top_risks()
-    if exposure is not None and (items == 0 or not risks):
-        level = "BAJA" if exposure < 5 else ("MEDIA" if exposure < 10 else "ALTA")
-        ico   = "🟢" if exposure < 5 else ("🟡" if exposure < 10 else "🔴")
-        return [_header("── RIESGOS ──"), _row(f"{ico} Sin riesgos activos — exposición {exposure:.1f} ({level})")]
-    if not risks:
-        return [_row("  (sin datos de riesgos — ejecuta bago risk)")]
-    lines = [_header("── TOP 3 RIESGOS ──")]
-    icons = {5:"🔴",4:"🟠",3:"🟡",2:"🟢",1:"🔵"}
-    for r in risks:
-        sco = r.get("score", 0)
-        ico = icons.get(min(5, int(sco)), "⚪")
-        name = r.get("name", r.get("id", "?"))[:30]
-        lines.append(_row(f"{ico} {name:<32} score={sco:.1f}"))
+    by_cat, exposure, items = _top_risks()
+    level = "BAJA" if exposure < 5 else ("MEDIA" if exposure < 20 else ("ALTA" if exposure < 100 else "CRÍTICA"))
+    ico   = "🟢" if exposure < 5 else ("🟡" if exposure < 20 else ("🔴" if exposure < 100 else "🚨"))
+    if items == 0 or not by_cat:
+        return [_header("── RIESGOS ──"), _row(f"🟢 Sin riesgos activos — exposición 0.0 (BAJA)")]
+    lines = [_header("── RIESGOS ──"), _row(f"{ico} Exposición total: {exposure:.1f} ({level})  |  {items} hallazgos")]
+    cat_icons = {"Security": "🔴", "Reliability": "🟠", "Maintainability": "🟡", "VelocityDrag": "🔵"}
+    for cat, stats in sorted(by_cat.items(), key=lambda x: x[1].get("total_exposure", 0), reverse=True)[:3]:
+        cico  = cat_icons.get(cat, "⚪")
+        cnt   = stats.get("count", 0)
+        exp   = stats.get("total_exposure", 0.0)
+        lines.append(_row(f"  {cico} {cat:<20} {cnt:>3} items  exp={exp:.1f}"))
     return lines
 
 def _debt_summary():
@@ -239,6 +233,9 @@ def _hotspots():
     try:
         out, _ = _run_tool([TOOLS / "hotspot.py", "--json", "--top", "3"], timeout=15)
         data = json.loads(out)
+        # hotspot.py --json returns a list directly
+        if isinstance(data, list):
+            return data[:3]
         return data.get("hotspots", [])[:3]
     except Exception:
         return []
@@ -370,25 +367,35 @@ def section_contracts():
 def section_hotspots():
     spots = _hotspots()
     if not spots:
-        return [_row("  (sin hotspots — ejecuta bago hotspot)")]
+        return [_header("── HOTSPOTS ──"), _row("  🟢 Sin hotspots críticos detectados")]
     lines = [_header("── HOTSPOTS ──")]
+    max_score = max(h.get("score", 1) for h in spots) or 1
     for h in spots:
         f = h.get("file", "?")
         score = h.get("score", 0)
-        fname = Path(f).name[:36]
-        bar = _bar(score, maxv=20, width=10)
-        lines.append(_row(f"  🔥 {fname:<38} [{bar}]"))
+        commits = h.get("commits", 0)
+        loc = h.get("loc", 0)
+        fname = Path(f).name[:30]
+        bar = _bar(score, maxv=max_score, width=8)
+        lines.append(_row(f"  🔥 {fname:<32} [{bar}] sc={score}  {commits}c/{loc}l"))
     return lines
 
 def section_sprint():
     sp = _sprint()
     if not sp:
         return [_row("  (sin sprint activo)")]
-    name = sp.get("name", sp.get("sprint_id", "?"))[:40]
+    name  = sp.get("name", sp.get("sprint_id", "?"))[:40]
     goals = sp.get("goals", [])
+    total = len(goals)
+    # Count done goals (strings starting with "✅" or dicts with status=done)
+    done  = sum(1 for g in goals if (isinstance(g, str) and g.startswith("✅"))
+                                 or (isinstance(g, dict) and g.get("status") == "done"))
+    pct   = int(done / total * 100) if total else 0
+    bar   = _bar(done, maxv=total or 1, width=10)
     lines = [
         _header("── SPRINT ACTIVO ──"),
         _row(f"{name}"),
+        _row(f"  Progreso: {done}/{total} goals  [{bar}]  {pct}%"),
     ]
     for g in goals[:3]:
         lines.append(_row(f"  · {str(g)[:52]}"))
@@ -429,7 +436,7 @@ def render(full=False, compact=False, as_json=False):
                 "changes":  _count("changes"),
                 "evidences":_count("evidences"),
             },
-            "top_risks": _top_risks(),
+            "top_risks": {"by_category": _top_risks()[0], "exposure": _top_risks()[1], "items": _top_risks()[2]},
             "debt_cost_per_hour": _debt_summary()[0],
             "contracts": _contracts(),
             "sprint": _sprint(),

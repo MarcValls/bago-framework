@@ -1,0 +1,15 @@
+{
+  "report_id": "DEBT-20260423_011740",
+  "scan_id": "SCAN-20260423_011729",
+  "generated_at": "2026-04-23T01:17:40.743634+00:00",
+  "total_hours": 23.9,
+  "total_cost": 1912.0,
+  "items": 197,
+  "by_quadrant": {
+    "PrudentInadvertent": {
+      "count": 197,
+      "hours": 23.9,
+      "cost": 1912.0
+    }
+  }
+}
