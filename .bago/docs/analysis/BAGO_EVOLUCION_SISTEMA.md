@@ -31,11 +31,11 @@ Ahora trabaja como un sistema operativo más maduro:
 
 | Métrica | Inicio | Ahora |
 | --- | ---:| ---:|
-| Snapshot documental mínimo | 22 artefactos | 229 artefactos |
-| Sesiones nativas visibles | 19 | 55 |
+| Snapshot documental mínimo | 22 artefactos | 240 artefactos |
+| Sesiones nativas visibles | 19 | 57 |
 | Sesiones migradas preservadas | 3 | 4 preservadas en `state/migrated_sessions/` |
-| Cambios migrados/validados | 0 | 116 |
-| Evidencias registradas | no consolidado en snapshot inicial | 58 |
+| Cambios migrados/validados | 0 | 123 |
+| Evidencias registradas | no consolidado en snapshot inicial | 60 |
 | Integridad del pack | GO | GO / GO / GO |
 
 ## Métricas de hoy
@@ -44,9 +44,9 @@ Hoy local: **23/04/2026**.
 
 | Métrica | Valor |
 | --- | ---: |
-| Sesiones de hoy | 4 |
-| Cambios de hoy | 52 |
-| Evidencias de hoy | 5 |
+| Sesiones de hoy | 6 |
+| Cambios de hoy | 59 |
+| Evidencias de hoy | 7 |
 | Corridas autónomas de hoy | 0 |
 | Solicitudes de hoy en `metrics/runs` | 0 |
 
@@ -88,7 +88,7 @@ Rango visible del estado actual: **14/04/2026-15/04/2026** en el árbol local, c
 | Fase | system_change | project_bootstrap | analysis | repository_audit | execution | Total |
 | --- | ---:| ---:| ---:| ---:| ---:| ---:|
 | Inicio | 7 | 0 | 0 | 0 | 0 | 7 |
-| Ahora | 19 | 3 | 4 | 2 | 6 | 48 |
+| Ahora | 19 | 3 | 4 | 2 | 6 | 50 |
 
 ## Evolución de tipos de trabajo
 
@@ -138,6 +138,13 @@ stateDiagram-v2
 
 ## Observaciones
 
-- Snapshot canónico de referencia: {state_ref_day.strftime("%d/%m/%Y")} desde `global_state.updated_at`.
-- El árbol local visible tiene menos archivos que `global_state.json` anticipa en su inventario. Eso sugiere que el estado canónico va por delante de esta copia del árbol.
-- La evolución principal no es solo de volumen; es de especialización y de capacidad para cerrar ciclos de trabajo con evidencias y validación.
+- **Snapshot:** 23/04/2026 · versión 3.0 · estado del sistema: `stable`.
+- **Corpus total:** 57 sesiones · 123 cambios · 60 evidencias.
+- **Suite de tests:** `pass` · 125 workers registrados.
+- **Últimos cambios aplicados:**
+  - Tests de integracion para smoke_runner (3 nuevos tests)
+  - Dashboard CHGs section + scan --purge auto-cleanup
+  - sync_badges + FINDINGS_DIR fix + context_detector sandbox exclusion
+  - Cosecha contextual W9: Stub reports vm/soak/matrix implementados (4 in
+  - Stub reports vm/soak/matrix + hook post-commit + FALLBACK_IDEAS amplia
+- La evolución del sistema es de especialización progresiva: cada sprint aumenta la capacidad de auto-gobernanza y cierre de ciclos con evidencias.

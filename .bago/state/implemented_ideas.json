@@ -100,7 +100,7 @@
       "registered_at": "2026-04-23T05:00:00+00:00"
     },
     {
-      "title": "Ultimos CHGs en bago dashboard",
+      "title": "\u00daltimos CHGs en bago dashboard",
       "idea_index": 0,
       "registered_at": "2026-04-23T04:59:15.680752+00:00"
     },
@@ -110,10 +110,15 @@
       "registered_at": "2026-04-23T04:59:15.680774+00:00"
     },
     {
-      "title": "Tests de integracion para smoke_runner",
+      "title": "Tests de integraci\u00f3n para smoke_runner",
       "idea_index": 4,
       "registered_at": "2026-04-23T05:03:40.242666+00:00"
+    },
+    {
+      "title": "Observaciones din\u00e1micas en reporte evoluci\u00f3n",
+      "idea_index": 0,
+      "registered_at": "2026-04-23T05:11:01.774482+00:00"
     }
   ],
-  "updated_at": "2026-04-23T05:03:40.242683+00:00"
+  "updated_at": "2026-04-23T05:11:01.774512+00:00"
 }

@@ -187,6 +187,34 @@ FALLBACK_IDEAS: list[dict[str, object]] = [
         ],
         "w2": "Modificar generate_bago_evolution_report.py para construir la sección Observaciones desde variables.",
     },
+    {
+        "priority": 38,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "El dashboard no muestra métricas de cobertura de tests por módulo.",
+        "title": "Coverage por módulo en dashboard",
+        "summary": "Añadir sección en pack_dashboard.py mostrando % de tools cubiertos por tests en integration_tests.",
+        "detail": [
+            "Entrada: integration_tests.py + lista de tools en .bago/tools/.",
+            "Salida: porcentaje de cobertura y lista de tools sin test.",
+            "Ventaja: visibilidad directa de gaps de cobertura.",
+        ],
+        "w2": "Parsear ALL_TESTS en integration_tests.py para extraer qué tools tienen test y calcular % sobre todos los .py.",
+    },
+    {
+        "priority": 35,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "bago scan --purge no tiene test de integración.",
+        "title": "Tests para scan --purge",
+        "summary": "Añadir test_scan_purge() en integration_tests.py que verifique que --purge elimina solo archivos viejos.",
+        "detail": [
+            "Crear SCAN-*.json sintéticos con mtime antiguo en tmp dir.",
+            "Ejecutar scan.py --purge --days 0 con BAGO_STATE_DIR apuntando al tmp.",
+            "Verificar que solo los archivos con mtime < cutoff fueron eliminados.",
+        ],
+        "w2": "Añadir test_scan_purge() a integration_tests.py, registrar en ALL_TESTS.",
+    },
 ]
 
 

@@ -379,6 +379,8 @@ def build_html_report(
     task_values: dict,
     radar_labels: list[str] | None = None,
     radar_values: list[float] | None = None,
+    changes: list | None = None,
+    sessions: list | None = None,
 ) -> str:
     def card(title: str, value: str, subtitle: str = "") -> str:
         return f"""
@@ -405,6 +407,10 @@ def build_html_report(
         f"<td>{c['end'].astimezone(MADRID).strftime('%d/%m %H:%M')}</td>"
         f"<td>{c['duration_s']:.3f}s</td><td>{c['requests']}</td><td>{c['run_count']}</td></tr>"
         for c in cluster_rows
+    )
+
+    obs_html = build_dynamic_html_observations(
+        current_state, changes or [], sessions or [], state_ref_day
     )
 
     return f"""<!doctype html>
@@ -614,9 +620,7 @@ def build_html_report(
 
     <div class="panel">
       <h2>Observaciones técnicas</h2>
-      <p class="muted">Snapshot canónico de referencia: {state_ref_day.strftime("%d/%m/%Y")} desde <code>global_state.updated_at</code>.</p>
-      <p class="muted">El árbol local visible tiene menos archivos que <code>global_state.json</code> anticipa en su inventario. Eso sugiere que el estado canónico va por delante de esta copia del árbol.</p>
-      <p class="muted">La evolución principal no es solo de volumen; es de especialización y de capacidad para cerrar ciclos de trabajo con evidencias y validación.</p>
+{obs_html}
     </div>
   </div>
 </body>
@@ -634,6 +638,98 @@ def counts_by_day(records, ts_field: str, tz: ZoneInfo):
 
 def collect_json_records(folder: Path):
     return [load_json(p) for p in sorted(folder.glob("*.json"))]
+
+
+def build_dynamic_observations(
+    current_state: dict,
+    changes: list,
+    sessions: list,
+    state_ref_day,
+) -> str:
+    """Generate dynamic observation bullets from real system metrics."""
+    inv     = current_state.get("inventory", {})
+    health  = current_state.get("system_health", "unknown")
+    n_chgs  = inv.get("changes", len(changes))
+    n_sess  = inv.get("sessions", len(sessions))
+    n_evid  = inv.get("evidences", 0)
+    version = current_state.get("bago_version", "?")
+
+    # smoke report
+    smoke_path = ROOT.parent / "sandbox" / "runtime" / "last-report.json"
+    smoke_status, smoke_workers = "desconocido", 0
+    if smoke_path.exists():
+        try:
+            s = json.loads(smoke_path.read_text())
+            smoke_status  = s.get("status", "desconocido")
+            smoke_workers = s.get("workers", 0)
+        except Exception:
+            pass
+
+    # Recent CHGs (last 5)
+    chg_titles = []
+    for c in sorted(changes, key=lambda x: x.get("created_at", ""), reverse=True)[:5]:
+        t = c.get("title", "")
+        if t:
+            chg_titles.append(f"  - {t[:70]}")
+
+    bullets = [
+        f"- **Snapshot:** {state_ref_day.strftime('%d/%m/%Y')} · versión {version} · estado del sistema: `{health}`.",
+        f"- **Corpus total:** {n_sess} sesiones · {n_chgs} cambios · {n_evid} evidencias.",
+        f"- **Suite de tests:** `{smoke_status}` · {smoke_workers} workers registrados.",
+    ]
+    if chg_titles:
+        bullets.append("- **Últimos cambios aplicados:**")
+        bullets.extend(chg_titles)
+    else:
+        bullets.append("- Sin cambios recientes registrados.")
+
+    bullets.append(
+        "- La evolución del sistema es de especialización progresiva: "
+        "cada sprint aumenta la capacidad de auto-gobernanza y cierre de ciclos con evidencias."
+    )
+    return "\n".join(bullets)
+
+
+def build_dynamic_html_observations(
+    current_state: dict,
+    changes: list,
+    sessions: list,
+    state_ref_day,
+) -> str:
+    """Generate HTML observation list from real system metrics."""
+    inv     = current_state.get("inventory", {})
+    health  = current_state.get("system_health", "unknown")
+    n_chgs  = inv.get("changes", len(changes))
+    n_sess  = inv.get("sessions", len(sessions))
+    n_evid  = inv.get("evidences", 0)
+    version = current_state.get("bago_version", "?")
+
+    smoke_path = ROOT.parent / "sandbox" / "runtime" / "last-report.json"
+    smoke_status, smoke_workers = "desconocido", 0
+    if smoke_path.exists():
+        try:
+            s = json.loads(smoke_path.read_text())
+            smoke_status  = s.get("status", "desconocido")
+            smoke_workers = s.get("workers", 0)
+        except Exception:
+            pass
+
+    items = [
+        f"Snapshot: {state_ref_day.strftime('%d/%m/%Y')} · versión {version} · estado: <strong>{health}</strong>.",
+        f"Corpus: {n_sess} sesiones · {n_chgs} cambios · {n_evid} evidencias.",
+        f"Suite de tests: <code>{smoke_status}</code> · {smoke_workers} workers.",
+    ]
+    for c in sorted(changes, key=lambda x: x.get("created_at", ""), reverse=True)[:3]:
+        t = c.get("title", "")
+        if t:
+            items.append(f"CHG reciente: {t[:70]}")
+
+    items.append(
+        "La evolución es de especialización progresiva: "
+        "cada sprint aumenta la capacidad de auto-gobernanza y cierre de ciclos."
+    )
+    li_items = "".join(f"      <li>{i}</li>\n" for i in items)
+    return f"      <ul>\n{li_items}      </ul>"
 
 
 def main() -> int:
@@ -1008,10 +1104,8 @@ stateDiagram-v2
 
 ## Observaciones
 
-- Snapshot canónico de referencia: {state_ref_day.strftime("%d/%m/%Y")} desde `global_state.updated_at`.
-- El árbol local visible tiene menos archivos que `global_state.json` anticipa en su inventario. Eso sugiere que el estado canónico va por delante de esta copia del árbol.
-- La evolución principal no es solo de volumen; es de especialización y de capacidad para cerrar ciclos de trabajo con evidencias y validación.
 """
+    report += build_dynamic_observations(current_state, changes, sessions, state_ref_day) + "\n"
     report_path.write_text(report, encoding="utf-8")
 
     html_path = OUT_DIR / "BAGO_EVOLUCION_SISTEMA.html"
@@ -1035,6 +1129,8 @@ stateDiagram-v2
         task_values=task_values,
         radar_labels=radar_labels,
         radar_values=radar_values,
+        changes=changes,
+        sessions=sessions,
     ), encoding="utf-8")
 
     print(f"OK {report_path}")

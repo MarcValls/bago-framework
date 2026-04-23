@@ -108,8 +108,8 @@
       
         <div class="card">
           <div class="card-title">Corpus actual</div>
-          <div class="card-value">229 artefactos</div>
-          <div class="card-subtitle">Inventario visible: 55 sesiones, 116 cambios, 58 evidencias</div>
+          <div class="card-value">240 artefactos</div>
+          <div class="card-subtitle">Inventario visible: 57 sesiones, 123 cambios, 60 evidencias</div>
         </div>
         
       
@@ -122,7 +122,7 @@
       
         <div class="card">
           <div class="card-title">Última sesión</div>
-          <div class="card-value">SES-HARVEST-2026-04-23-001</div>
+          <div class="card-value">SES-HARVEST-2026-04-23-003</div>
           <div class="card-subtitle">w9_cosecha</div>
         </div>
         
@@ -157,21 +157,21 @@
         
         <div class="card">
           <div class="card-title">Sesiones de hoy</div>
-          <div class="card-value">4</div>
+          <div class="card-value">6</div>
           <div class="card-subtitle">sin actividad si vale 0</div>
         </div>
         
         
         <div class="card">
           <div class="card-title">Cambios de hoy</div>
-          <div class="card-value">52</div>
+          <div class="card-value">59</div>
           <div class="card-subtitle">sin actividad si vale 0</div>
         </div>
         
         
         <div class="card">
           <div class="card-title">Evidencias de hoy</div>
-          <div class="card-value">5</div>
+          <div class="card-value">7</div>
           <div class="card-subtitle">sin actividad si vale 0</div>
         </div>
         
@@ -210,7 +210,7 @@
         <thead><tr><th>Fase</th><th>system_change</th><th>project_bootstrap</th><th>analysis</th><th>repository_audit</th><th>execution</th><th>Total</th></tr></thead>
         <tbody>
           <tr><td>Inicio</td><td>7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>7</td></tr>
-          <tr><td>Ahora</td><td>19</td><td>3</td><td>4</td><td>2</td><td>6</td><td>48</td></tr>
+          <tr><td>Ahora</td><td>19</td><td>3</td><td>4</td><td>2</td><td>6</td><td>50</td></tr>
         </tbody>
       </table>
     </div>
@@ -265,9 +265,15 @@
 
     <div class="panel">
       <h2>Observaciones técnicas</h2>
-      <p class="muted">Snapshot canónico de referencia: 23/04/2026 desde <code>global_state.updated_at</code>.</p>
-      <p class="muted">El árbol local visible tiene menos archivos que <code>global_state.json</code> anticipa en su inventario. Eso sugiere que el estado canónico va por delante de esta copia del árbol.</p>
-      <p class="muted">La evolución principal no es solo de volumen; es de especialización y de capacidad para cerrar ciclos de trabajo con evidencias y validación.</p>
+      <ul>
+      <li>Snapshot: 23/04/2026 · versión 3.0 · estado: <strong>stable</strong>.</li>
+      <li>Corpus: 57 sesiones · 123 cambios · 60 evidencias.</li>
+      <li>Suite de tests: <code>pass</code> · 125 workers.</li>
+      <li>CHG reciente: Tests de integracion para smoke_runner (3 nuevos tests)</li>
+      <li>CHG reciente: Dashboard CHGs section + scan --purge auto-cleanup</li>
+      <li>CHG reciente: sync_badges + FINDINGS_DIR fix + context_detector sandbox exclusion</li>
+      <li>La evolución es de especialización progresiva: cada sprint aumenta la capacidad de auto-gobernanza y cierre de ciclos.</li>
+      </ul>
     </div>
   </div>
 </body>
