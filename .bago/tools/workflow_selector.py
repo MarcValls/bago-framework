@@ -80,7 +80,7 @@ def auto_recommend() -> tuple[str, dict]:
     """Analiza global_state para recomendar sin interacción."""
     if not GLOBAL_STATE.exists():
         return "W7_FOCO_SESION", {}
-    gs = json.loads(GLOBAL_STATE.read_text(encoding="utf-8"))
+    global_state = json.loads(GLOBAL_STATE.read_text(encoding="utf-8"))
 
     ctx = {
         "has_task": False,
@@ -92,10 +92,10 @@ def auto_recommend() -> tuple[str, dict]:
     }
 
     # Heurísticas desde global_state
-    last_wf = gs.get("last_completed_workflow", "")
-    last_type = gs.get("last_completed_task_type", "")
-    active_scenarios = gs.get("active_scenarios", [])
-    system_health = gs.get("system_health", "stable")
+    last_workflow = global_state.get("last_completed_workflow", "")
+    last_type = global_state.get("last_completed_task_type", "")
+    active_scenarios = global_state.get("active_scenarios", [])
+    system_health = global_state.get("system_health", "stable")
 
     # Si hay escenarios activos → probablemente hay tarea
     if active_scenarios:
@@ -122,39 +122,39 @@ def interactive_mode() -> str:
 
     ctx["is_bago_change"] = ask("¿Estás modificando el propio pack BAGO (herramientas, core, estructura)?")
     if ctx["is_bago_change"]:
-        wf = recommend(ctx)
-        _print_result(wf)
-        return wf
+        selected_workflow = recommend(ctx)
+        _print_result(selected_workflow)
+        return selected_workflow
 
     ctx["is_new_repo"] = ask("¿Es un bootstrap en un repositorio o proyecto completamente nuevo?")
     if ctx["is_new_repo"]:
-        wf = recommend(ctx)
-        _print_result(wf)
-        return wf
+        selected_workflow = recommend(ctx)
+        _print_result(selected_workflow)
+        return selected_workflow
 
     ctx["has_task"] = ask("¿Hay una tarea técnica concreta y definida que completar?")
     if ctx["has_task"]:
         ctx["needs_quality_gate"] = ask("¿Requiere gate de calidad estricto (TDD, revisión formal, contrato)?")
-        wf = recommend(ctx)
-        _print_result(wf)
-        return wf
+        selected_workflow = recommend(ctx)
+        _print_result(selected_workflow)
+        return selected_workflow
 
     ctx["is_exploration"] = ask("¿Es exploración, investigación o análisis sin entregable fijo?")
     if ctx["is_exploration"]:
-        wf = recommend(ctx)
-        _print_result(wf)
-        return wf
+        selected_workflow = recommend(ctx)
+        _print_result(selected_workflow)
+        return selected_workflow
 
     ctx["has_accumulated"] = ask("¿Hay contexto, decisiones o artefactos acumulados que formalizar?")
-    wf = recommend(ctx)
-    _print_result(wf)
-    return wf
+    selected_workflow = recommend(ctx)
+    _print_result(selected_workflow)
+    return selected_workflow
 
 
-def _print_result(wf: str):
+def _print_result(selected_workflow: str):
     print()
-    print(f"  → Workflow recomendado: {wf}")
-    print(f"    {describe(wf)}")
+    print(f"  → Workflow recomendado: {selected_workflow}")
+    print(f"    {describe(selected_workflow)}")
     print()
 
 
@@ -162,13 +162,13 @@ def main():
     auto = "--auto" in sys.argv or "--no-interactive" in sys.argv
 
     if auto:
-        wf, ctx = auto_recommend()
-        print(f"Workflow recomendado: {wf}")
-        print(f"  {describe(wf)}")
+        selected_workflow, ctx = auto_recommend()
+        print(f"Workflow recomendado: {selected_workflow}")
+        print(f"  {describe(selected_workflow)}")
         return 0
 
     try:
-        wf = interactive_mode()
+        selected_workflow = interactive_mode()
     except (KeyboardInterrupt, EOFError):
         print("\n  Selección cancelada.")
         return 1

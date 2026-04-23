@@ -33,6 +33,7 @@ from pathlib import Path
 
 BAGO_ROOT = Path(__file__).parent.parent
 PROJECT_ROOT = BAGO_ROOT.parent
+BAGO_TOOLS_DIR = BAGO_ROOT / "tools"   # CLI tools: print() is intentional output, not debug
 
 SECRET_PATTERNS = [
     (r'(?i)(api[_\-]?key|secret|password|passwd|token|auth[_\-]?key)\s*=\s*["\'][^"\']{8,}["\']', "CR-E002", "credencial hardcoded"),
@@ -98,9 +99,13 @@ def check_secrets(filepath: Path) -> list:
     findings = []
     try:
         src = filepath.read_text(encoding="utf-8", errors="replace")
+        src_lines = src.splitlines()
         for pattern, code, label in SECRET_PATTERNS:
             for m in re.finditer(pattern, src):
                 line_no = src[:m.start()].count("\n") + 1
+                # Honour # nosec inline suppression (bandit-compatible)
+                if 0 < line_no <= len(src_lines) and "# nosec" in src_lines[line_no - 1]:
+                    continue
                 snippet = m.group(0)[:40]
                 findings.append({
                     "code": code, "file": str(filepath.name),
@@ -201,7 +206,9 @@ def evaluate_files(files: list, strict: bool = False) -> dict:
         errors.extend(check_syntax(f))
         errors.extend(check_secrets(f))
         errors.extend(check_merge_conflicts(f))
-        warnings.extend(check_debug_prints(f))
+        # Skip W001 for BAGO CLI tools — print() is intentional CLI output, not debug
+        if not str(f).startswith(str(BAGO_TOOLS_DIR)):
+            warnings.extend(check_debug_prints(f))
         warnings.extend(check_file_size(f))
 
     warnings.extend(check_new_todos(diff))
@@ -274,7 +281,7 @@ def run_tests():
     results.append(("commit_readiness:valid_syntax_ok", ok2, f"findings={len(findings)}"))
 
     # Test 3: secret detection
-    tmp.write_text('API_KEY = "sk-abcdefghijklmnopqrstuvwxyz12345678"\n')
+    tmp.write_text('API_KEY = "sk-abcdefghijklmnopqrstuvwxyz12345678"\n')  # nosec - test fixture, not a real credential
     findings = check_secrets(tmp)
     ok3 = any(f["code"] == "CR-E002" for f in findings)
     results.append(("commit_readiness:secret_detected", ok3, f"findings={len(findings)}"))

@@ -15,16 +15,16 @@ def load_json(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 data = load_json(manifest)
-gs = load_json(state)
+global_state = load_json(state)
 
 def check_rel(label: str, relpath: str):
     path = root / relpath
     if not path.exists():
         errors.append(f"{label}: missing -> {relpath}")
 
-if data.get("version") != gs.get("bago_version"):
+if data.get("version") != global_state.get("bago_version"):
     errors.append(
-        f"version mismatch: pack.json={data.get('version')} state={gs.get('bago_version')}"
+        f"version mismatch: pack.json={data.get('version')} state={global_state.get('bago_version')}"
     )
 
 for section in ("entrypoints", "contracts", "workflows", "governance", "docs", "bootstrap"):

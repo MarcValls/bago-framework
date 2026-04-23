@@ -63,9 +63,9 @@ def check_w0_consecutive(sessions: list, signals: list) -> None:
         return
     consecutive = 0
     for s in reversed(recent):
-        wf = s.get("workflow", "")
+        workflow_id = s.get("workflow", "")
         decisions = s.get("decisions", [])
-        if "w0" in wf.lower() or wf.lower() == "w0_free_session":
+        if "w0" in workflow_id.lower() or workflow_id.lower() == "w0_free_session":
             if not decisions:
                 consecutive += 1
             else:
@@ -79,11 +79,11 @@ def check_w0_consecutive(sessions: list, signals: list) -> None:
 def check_health_score(signals: list) -> None:
     """health score < 60 → WARN."""
     try:
-        r = subprocess.run(
+        proc = subprocess.run(
             [sys.executable, str(TOOLS / "health_score.py"), "--score-only"],
             capture_output=True, text=True, timeout=30
         )
-        out = r.stdout.strip()
+        out = proc.stdout.strip()
         # Parsear score del output
         for line in out.splitlines():
             if line.strip().isdigit():
@@ -95,9 +95,9 @@ def check_health_score(signals: list) -> None:
         pass  # Si no se puede calcular, no es señal de activación
 
 
-def check_scenario_inactivity(gs: dict, sessions: list, signals: list) -> None:
+def check_scenario_inactivity(global_state: dict, sessions: list, signals: list) -> None:
     """Escenario activo sin actividad > 14 días → WARN."""
-    active = gs.get("active_scenarios", [])
+    active = global_state.get("active_scenarios", [])
     if not active:
         return
 
@@ -112,9 +112,9 @@ def check_scenario_inactivity(gs: dict, sessions: list, signals: list) -> None:
                 ts_str = s.get("closed_at") or s.get("created_at")
                 if ts_str:
                     try:
-                        ts = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
-                        if last_activity is None or ts > last_activity:
-                            last_activity = ts
+                        timestamp = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+                        if last_activity is None or timestamp > last_activity:
+                            last_activity = timestamp
                     except ValueError:
                         pass
 
@@ -142,13 +142,13 @@ def check_pack_ko_recurrent(sessions: list, signals: list) -> None:
 
 
 def main():
-    gs = load_global()
+    global_state = load_global()
     sessions = load_sessions()
     signals = []
 
     check_w0_consecutive(sessions, signals)
     check_health_score(signals)
-    check_scenario_inactivity(gs, sessions, signals)
+    check_scenario_inactivity(global_state, sessions, signals)
     check_pack_ko_recurrent(sessions, signals)
 
     # Determinar nivel

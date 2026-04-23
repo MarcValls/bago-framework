@@ -31,9 +31,9 @@ def run_script(script: str, args: list = None) -> tuple[int, str]:
     """Ejecuta un script y devuelve (returncode, stdout)."""
     cmd = [sys.executable, str(TOOLS / script)] + (args or [])
     try:
-        r = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT.parent, timeout=60)
-        output = (r.stdout + r.stderr).strip()
-        return r.returncode, output
+        proc = subprocess.run(cmd, capture_output=True, text=True, cwd=ROOT.parent, timeout=60)
+        output = (proc.stdout + proc.stderr).strip()
+        return proc.returncode, output
     except subprocess.TimeoutExpired:
         return 1, "TIMEOUT"
     except Exception as e:
@@ -80,8 +80,8 @@ def check_scenarios_coherent() -> tuple[bool, str]:
     gs_path = ROOT / "state" / "global_state.json"
     if not gs_path.exists():
         return False, "global_state.json no encontrado"
-    gs = json.loads(gs_path.read_text(encoding="utf-8"))
-    active = gs.get("active_scenarios", [])
+    global_state = json.loads(gs_path.read_text(encoding="utf-8"))
+    active = global_state.get("active_scenarios", [])
     if not active:
         return True, "Sin escenarios activos"
 

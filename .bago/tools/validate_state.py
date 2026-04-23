@@ -13,7 +13,7 @@ def load_json(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 pack = load_json(root / "pack.json")
-gs = load_json(root / "state/global_state.json")
+global_state = load_json(root / "state/global_state.json")
 sessions_dir = root / "state/sessions"
 changes_dir = root / "state/changes"
 evidences_dir = root / "state/evidences"
@@ -85,63 +85,63 @@ for rel in pack.get("workflows", {}).values():
         errors.append(f"missing workflow file: {rel}")
         continue
     txt = path.read_text(encoding="utf-8")
-    m = workflow_id_re.search(txt)
-    if not m:
-        m = re.search(r"^## id\s+`?([A-Za-z0-9_\-]+)`?$", txt, re.M)
-    if not m:
+    wf_match = workflow_id_re.search(txt)
+    if not wf_match:
+        wf_match = re.search(r"^## id\s+`?([A-Za-z0-9_\-]+)`?$", txt, re.M)
+    if not wf_match:
         errors.append(f"workflow without parseable id: {rel}")
         continue
-    workflow_ids.add(m.group(1))
+    workflow_ids.add(wf_match.group(1))
 
-active_session_id = gs.get("active_session_id")
+active_session_id = global_state.get("active_session_id")
 if active_session_id:
     session_file = sessions_dir / f"{active_session_id}.json"
     if not session_file.exists():
         errors.append(f"active_session_id points to missing file: {active_session_id}")
     else:
         session = load_json(session_file)
-        if gs.get("active_task_type") != session.get("task_type"):
+        if global_state.get("active_task_type") != session.get("task_type"):
             errors.append("active_task_type does not match active session task_type")
         active_workflow = session.get("selected_workflow")
-        if active_workflow and active_workflow not in gs.get("active_workflows", []):
+        if active_workflow and active_workflow not in global_state.get("active_workflows", []):
             errors.append("active_workflows does not include the active session workflow")
-        if gs.get("active_roles", []) != session.get("roles_activated", []):
+        if global_state.get("active_roles", []) != session.get("roles_activated", []):
             errors.append("active_roles does not match active session roles_activated")
 else:
-    if gs.get("active_task_type") is not None:
+    if global_state.get("active_task_type") is not None:
         errors.append("active_task_type must be null when active_session_id is null")
-    if gs.get("active_roles"):
+    if global_state.get("active_roles"):
         errors.append("active_roles must be empty when active_session_id is null")
-    if gs.get("active_workflows"):
+    if global_state.get("active_workflows"):
         errors.append("active_workflows must be empty when active_session_id is null")
 
-last_completed = gs.get("last_completed_session_id")
+last_completed = global_state.get("last_completed_session_id")
 if last_completed:
     last_file = sessions_dir / f"{last_completed}.json"
     if not last_file.exists():
         errors.append(f"last_completed_session_id points to missing file: {last_completed}")
     else:
         last_data = load_json(last_file)
-        if gs.get("last_completed_task_type") != last_data.get("task_type"):
+        if global_state.get("last_completed_task_type") != last_data.get("task_type"):
             errors.append("last_completed_task_type does not match the referenced session")
-        if gs.get("last_completed_workflow") != last_data.get("selected_workflow"):
+        if global_state.get("last_completed_workflow") != last_data.get("selected_workflow"):
             errors.append("last_completed_workflow does not match the referenced session")
-        if gs.get("last_completed_roles", []) != last_data.get("roles_activated", []):
+        if global_state.get("last_completed_roles", []) != last_data.get("roles_activated", []):
             errors.append("last_completed_roles does not match the referenced session")
 
-last_change_id = gs.get("last_completed_change_id")
+last_change_id = global_state.get("last_completed_change_id")
 if last_change_id:
     change_file = changes_dir / f"{last_change_id}.json"
     if not change_file.exists():
         errors.append(f"last_completed_change_id points to missing file: {last_change_id}")
 
-last_evidence_id = gs.get("last_completed_evidence_id")
+last_evidence_id = global_state.get("last_completed_evidence_id")
 if last_evidence_id:
     evidence_file = evidences_dir / f"{last_evidence_id}.json"
     if not evidence_file.exists():
         errors.append(f"last_completed_evidence_id points to missing file: {last_evidence_id}")
 
-inventory = gs.get("inventory", {})
+inventory = global_state.get("inventory", {})
 real_sessions = len(list(sessions_dir.glob("*.json")))
 real_changes = len(list(changes_dir.glob("*.json")))
 real_evidences = len(list(evidences_dir.glob("*.json")))
@@ -153,12 +153,12 @@ if inventory:
     if inventory.get("evidences") != real_evidences:
         errors.append(f"inventory.evidences mismatch: {inventory.get('evidences')} != {real_evidences}")
 
-last_validation = gs.get("last_validation", {})
+last_validation = global_state.get("last_validation", {})
 for key in ("manifest", "state", "pack"):
     if key in last_validation and last_validation[key] not in {"GO", "GO_WITH_RESERVATIONS", "KO"}:
         errors.append(f"last_validation.{key} has invalid status: {last_validation[key]}")
 
-for wf in gs.get("active_workflows", []):
+for wf in global_state.get("active_workflows", []):
     if wf not in workflow_ids:
         errors.append(f"active_workflow not declared: {wf}")
 
@@ -256,7 +256,7 @@ if estado_path.exists():
     obj_match = re.search(r"##\s*objetivo actual\s*\n(.*?)(?=\n##|\Z)", estado_text, re.DOTALL)
     if obj_match:
         obj_text = obj_match.group(1)
-        for sprint_key, sprint_val in gs.get("sprint_status", {}).items():
+        for sprint_key, sprint_val in global_state.get("sprint_status", {}).items():
             readable = sprint_key.replace("_", " ")
             if readable in obj_text and sprint_val == "DONE":
                 errors.append(
@@ -273,7 +273,7 @@ if repo_ctx_path.exists():
         repo_ctx = json.loads(repo_ctx_path.read_text(encoding="utf-8"))
         working_mode = repo_ctx.get("working_mode")
         if working_mode == "external":
-            lc_task = gs.get("last_completed_task_type", "")
+            lc_task = global_state.get("last_completed_task_type", "")
             if lc_task in external_task_types:
                 errors.append(
                     f"working_mode=external but last_completed_task_type='{lc_task}' "
