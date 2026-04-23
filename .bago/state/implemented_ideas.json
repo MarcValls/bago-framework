@@ -1,25 +1,25 @@
 {
   "implemented": [
     {
-      "title": "Handoff idea → W2",
+      "title": "Handoff idea \u2192 W2",
       "idea_index": 1,
       "done_at": "2026-04-18T16:00:00+00:00",
       "session": "sprint-ideas-gen1"
     },
     {
-      "title": "Resumen único de estabilidad",
+      "title": "Resumen \u00fanico de estabilidad",
       "idea_index": 2,
       "done_at": "2026-04-18T16:30:00+00:00",
       "session": "sprint-ideas-gen1"
     },
     {
-      "title": "Gate canónico de ideas",
+      "title": "Gate can\u00f3nico de ideas",
       "idea_index": 3,
       "done_at": "2026-04-18T17:00:00+00:00",
       "session": "sprint-ideas-gen1"
     },
     {
-      "title": "Opener de sesión desde task",
+      "title": "Opener de sesi\u00f3n desde task",
       "idea_index": 1,
       "done_at": "2026-04-19T14:00:00+00:00",
       "session": "sprint-ideas-gen2"
@@ -55,7 +55,7 @@
       "session": "sprint-v03-pack"
     },
     {
-      "title": "Cierre automático de sesión",
+      "title": "Cierre autom\u00e1tico de sesi\u00f3n",
       "idea_index": 1,
       "done_at": "2026-04-21T01:52:31.597808+00:00"
     },
@@ -70,7 +70,7 @@
       "done_at": "2026-04-21T14:13:01.701285+00:00"
     },
     {
-      "title": "Scoring dinámico por registro",
+      "title": "Scoring din\u00e1mico por registro",
       "idea_index": 1,
       "registered_at": "2026-04-22T23:21:20.565431+00:00"
     },
@@ -100,7 +100,7 @@
       "registered_at": "2026-04-23T05:00:00+00:00"
     },
     {
-      "title": "Últimos CHGs en bago dashboard",
+      "title": "\u00daltimos CHGs en bago dashboard",
       "idea_index": 0,
       "registered_at": "2026-04-23T04:59:15.680752+00:00"
     },
@@ -110,12 +110,12 @@
       "registered_at": "2026-04-23T04:59:15.680774+00:00"
     },
     {
-      "title": "Tests de integración para smoke_runner",
+      "title": "Tests de integraci\u00f3n para smoke_runner",
       "idea_index": 4,
       "registered_at": "2026-04-23T05:03:40.242666+00:00"
     },
     {
-      "title": "Observaciones dinámicas en reporte evolución",
+      "title": "Observaciones din\u00e1micas en reporte evoluci\u00f3n",
       "idea_index": 0,
       "registered_at": "2026-04-23T05:11:01.774482+00:00"
     },
@@ -125,7 +125,7 @@
       "chg": "BAGO-CHG-141"
     },
     {
-      "title": "Coverage por módulo en dashboard",
+      "title": "Coverage por m\u00f3dulo en dashboard",
       "implemented_at": "2026-04-23T05:38:56.325121+00:00",
       "chg": "BAGO-CHG-142"
     },
@@ -273,7 +273,8 @@
     },
     {
       "title": "risk_matrix --top N flag"
-    }
+    },
+    "dashboard --json test_count field"
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"
 }

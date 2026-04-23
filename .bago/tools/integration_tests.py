@@ -2384,6 +2384,32 @@ def test_risk_matrix_top():
     _record("risk_matrix:top", PASS, f"top OK, {data_rows} data rows")
 
 
+def test_dashboard_json_test_count():
+    """pack_dashboard.py --json: output contiene 'test_count' como entero."""
+    import json as _json
+    rc, out, err = _run("pack_dashboard.py", ["--json"], timeout=30)
+    if rc != 0:
+        _record("dashboard:json_test_count", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    lines = out.splitlines()
+    json_start = next((i for i, l in enumerate(lines) if l.strip().startswith("{")), None)
+    if json_start is None:
+        _record("dashboard:json_test_count", FAIL, "no JSON block found")
+        return
+    try:
+        data = _json.loads("\n".join(lines[json_start:]))
+    except Exception as e:
+        _record("dashboard:json_test_count", FAIL, f"JSON parse error: {e}")
+        return
+    if "test_count" not in data:
+        _record("dashboard:json_test_count", FAIL, f"'test_count' missing from keys: {list(data.keys())[:8]}")
+        return
+    if not isinstance(data["test_count"], int):
+        _record("dashboard:json_test_count", FAIL, f"test_count not int: {data['test_count']}")
+        return
+    _record("dashboard:json_test_count", PASS, f"test_count={data['test_count']}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2529,6 +2555,7 @@ ALL_TESTS = [
     (142, "debt_ledger:top",             test_debt_ledger_top),
     (143, "scan:output_file",            test_scan_output_file),
     (144, "risk_matrix:top",             test_risk_matrix_top),
+    (145, "dashboard:json_test_count",   test_dashboard_json_test_count),
 ]
 
 

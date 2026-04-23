@@ -542,9 +542,16 @@ def render(full=False, compact=False, as_json=False, minimal=False):
 
     if as_json:
         # Machine-readable summary
+        _lr_path = Path(__file__).parent.parent.parent / "sandbox" / "runtime" / "last-report.json"
+        try:
+            _lr = json.loads(_lr_path.read_text())
+            _test_count = _lr.get("workers", 0)
+        except Exception:
+            _test_count = 0
         data = {
             "health_score": score,
             "production_score": _production_score(),
+            "test_count": _test_count,
             "validate": _validate(),
             "detector": _detector()[0],
             "inventory": {
