@@ -2293,6 +2293,31 @@ def test_health_score_breakdown():
     _record("health_score:breakdown", PASS, f"breakdown OK, {len(lines)-1} check rows")
 
 
+def test_metrics_export_since():
+    """metrics_export.py --format json --since DATE: JSON con timestamp y git_commits_30d."""
+    import datetime, json as _json
+    since = (datetime.date.today() - datetime.timedelta(days=90)).isoformat()
+    rc, out, err = _run("metrics_export.py", ["--format", "json", "--since", since], timeout=60)
+    if rc != 0:
+        _record("metrics_export:since", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    # find JSON block
+    lines = out.splitlines()
+    json_start = next((i for i, l in enumerate(lines) if l.strip().startswith("{")), None)
+    if json_start is None:
+        _record("metrics_export:since", FAIL, "no JSON block found")
+        return
+    try:
+        data = _json.loads("\n".join(lines[json_start:]))
+    except Exception as e:
+        _record("metrics_export:since", FAIL, f"JSON parse error: {e}")
+        return
+    if "timestamp" not in data or "git_commits_30d" not in data:
+        _record("metrics_export:since", FAIL, f"missing keys: {list(data.keys())[:5]}")
+        return
+    _record("metrics_export:since", PASS, f"since OK, commits={data['git_commits_30d']}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2434,6 +2459,7 @@ ALL_TESTS = [
     (138, "velocity:since",              test_velocity_since),
     (139, "scan:format_csv",             test_scan_format_csv),
     (140, "health_score:breakdown",      test_health_score_breakdown),
+    (141, "metrics_export:since",        test_metrics_export_since),
 ]
 
 

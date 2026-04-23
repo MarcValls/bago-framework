@@ -1,0 +1,19 @@
+{
+  "id": "BAGO-CHG-164",
+  "change_id": "CHG-164",
+  "type": "governance",
+  "severity": "minor",
+  "title": "metrics_export --since date filter (test 141)",
+  "motivation": "Añadir --since DATE a metrics_export.py para filtrar git log por fecha. Test 141 valida JSON con git_commits_30d.",
+  "status": "applied",
+  "affected_components": [
+    "metrics_export.py",
+    "integration_tests.py"
+  ],
+  "related_evidence": [
+    "154/154 tests pass"
+  ],
+  "created_at": "2025-07-28T00:00:00Z",
+  "updated_at": "2025-07-28T00:00:00Z",
+  "author": "bago-autonomous"
+}

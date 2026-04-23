@@ -84,17 +84,18 @@ def _collect_complexity_metrics(directory: str) -> dict:
         return {}
 
 
-def _collect_git_metrics(directory: str) -> dict:
-    """Commits últimos 30 días, autores, archivos modificados."""
+def _collect_git_metrics(directory: str, since: str = None) -> dict:
+    """Commits desde --since (o últimos 30 días), autores, archivos modificados."""
+    since_arg = f"--since={since}" if since else "--since=30.days"
     try:
         result = subprocess.run(
-            ["git", "-C", directory, "log", "--oneline", "--since=30.days"],
+            ["git", "-C", directory, "log", "--oneline", since_arg],
             capture_output=True, text=True, timeout=10
         )
         commits_30d = len(result.stdout.strip().splitlines()) if result.stdout.strip() else 0
 
         result2 = subprocess.run(
-            ["git", "-C", directory, "log", "--format=%ae", "--since=30.days"],
+            ["git", "-C", directory, "log", "--format=%ae", since_arg],
             capture_output=True, text=True, timeout=10
         )
         authors = len(set(result2.stdout.strip().splitlines())) if result2.stdout.strip() else 0
@@ -139,12 +140,12 @@ def _collect_doc_metrics(directory: str) -> dict:
         return {}
 
 
-def collect_all(directory: str) -> dict:
+def collect_all(directory: str, since: str = None) -> dict:
     ts = int(time.time())
     metrics = {"timestamp": ts, "directory": directory}
     metrics.update(_collect_file_metrics(directory))
     metrics.update(_collect_complexity_metrics(directory))
-    metrics.update(_collect_git_metrics(directory))
+    metrics.update(_collect_git_metrics(directory, since=since))
     metrics.update(_collect_doc_metrics(directory))
     return metrics
 
@@ -196,6 +197,7 @@ def main(argv: list[str]) -> int:
     prefix    = "bago"
 
     i = 0
+    since     = None
     while i < len(argv):
         a = argv[i]
         if a == "--format" and i + 1 < len(argv):
@@ -204,6 +206,8 @@ def main(argv: list[str]) -> int:
             out_file = argv[i + 1]; i += 2
         elif a == "--prefix" and i + 1 < len(argv):
             prefix = argv[i + 1]; i += 2
+        elif a == "--since" and i + 1 < len(argv):
+            since = argv[i + 1]; i += 2
         elif not a.startswith("--"):
             directory = a; i += 1
         else:
@@ -213,7 +217,7 @@ def main(argv: list[str]) -> int:
         print(f"No existe: {directory}", file=sys.stderr); return 1
 
     print(f"{_YEL}Recopilando métricas…{_RST}", file=sys.stderr)
-    metrics = collect_all(directory)
+    metrics = collect_all(directory, since=since)
 
     if fmt == "json":
         content = json.dumps(metrics, indent=2)
