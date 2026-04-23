@@ -1877,6 +1877,30 @@ def test_artifact_counter():
     _record("artifact_counter:run", PASS, f"rc=0, score={score}")
 
 
+def test_session_details_json():
+    """session_details.py --json: rc=0, retorna lista con campos esperados."""
+    import json as _j
+    rc, out, err = _run("session_details.py", ["--json"], timeout=15)
+    if rc != 0:
+        _record("session_details:json", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    try:
+        data = _j.loads(out)
+    except Exception as e:
+        _record("session_details:json", FAIL, f"JSON parse error: {e}")
+        return
+    if not isinstance(data, list) or len(data) == 0:
+        _record("session_details:json", FAIL, "expected non-empty list")
+        return
+    required = {"session_id", "workflow", "artifacts"}
+    first = set(data[0].keys()) if data else set()
+    missing = required - first
+    if missing:
+        _record("session_details:json", FAIL, f"missing keys: {missing}")
+        return
+    _record("session_details:json", PASS, f"list of {len(data)} sessions, keys OK")
+
+
 def test_stability_summary():
     """stability_summary.py: rc=0, emite DECISIÓN GO o KO."""
     rc, out, err = _run("stability_summary.py", [], timeout=20)
@@ -2064,6 +2088,7 @@ ALL_TESTS = [
     (122, "stability_summary:run",       test_stability_summary),
     (123, "health_score:run",            test_health_score),
     (124, "scan:json_output",            test_scan_json_output),
+    (125, "session_details:json",        test_session_details_json),
 ]
 
 
