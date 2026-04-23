@@ -1,0 +1,19 @@
+{
+  "id": "BAGO-CHG-141",
+  "change_id": "BAGO-CHG-141",
+  "type": "governance",
+  "severity": "minor",
+  "title": "test_scan_purge; dashboard timeouts 60s; smoke_runner show_last rc=0",
+  "motivation": "test_scan_purge verifica aislamiento de scan --purge con BAGO_STATE_DIR. Timeouts de pack_dashboard aumentados de 15-25s a 60s para evitar falsos negativos bajo carga. show_last() ahora retorna 0 siempre (display-only).",
+  "status": "applied",
+  "affected_components": [
+    "integration_tests.py",
+    "smoke_runner.py"
+  ],
+  "related_evidence": [
+    "126/126 tests pass"
+  ],
+  "created_at": "2026-04-23T05:33:32.000219+00:00",
+  "updated_at": "2026-04-23T05:33:32.000606+00:00",
+  "author": "copilot-autonomous"
+}

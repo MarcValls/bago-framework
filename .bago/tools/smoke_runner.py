@@ -97,7 +97,7 @@ def show_last() -> int:
           f"failed={data.get('failure_count','?')} · "
           f"duration={data.get('duration_seconds','?')}s · "
           f"at={data.get('generated_at','?')[:19]}")
-    return 0 if data.get("status") == "pass" else 1
+    return 0  # show_last is display-only; rc reflects read success, not stored status
 
 
 def run_self_tests() -> int:

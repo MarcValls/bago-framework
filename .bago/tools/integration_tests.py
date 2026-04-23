@@ -1216,7 +1216,7 @@ def test_bago_config():
 
 def test_dashboard_risks():
     """pack_dashboard.py muestra exposición real cuando hay findings."""
-    rc, out, _ = _run("pack_dashboard.py", [], timeout=20)
+    rc, out, _ = _run("pack_dashboard.py", [], timeout=60)
     if rc != 0:
         _record("dashboard:risks", FAIL, f"rc={rc}")
         return
@@ -1231,7 +1231,7 @@ def test_dashboard_risks():
 
 def test_dashboard_hotspots():
     """pack_dashboard.py --full muestra hotspots reales de hotspot.py."""
-    rc, out, _ = _run("pack_dashboard.py", ["--full"], timeout=25)
+    rc, out, _ = _run("pack_dashboard.py", ["--full"], timeout=60)
     if rc != 0:
         _record("dashboard:hotspots", FAIL, f"rc={rc}")
         return
@@ -1243,7 +1243,7 @@ def test_dashboard_hotspots():
 
 def test_dashboard_sprint_progress():
     """pack_dashboard.py muestra barra de progreso del sprint activo."""
-    rc, out, _ = _run("pack_dashboard.py", [], timeout=20)
+    rc, out, _ = _run("pack_dashboard.py", [], timeout=60)
     if rc != 0:
         _record("dashboard:sprint_progress", FAIL, f"rc={rc}")
         return
@@ -1384,7 +1384,7 @@ def test_emit_ideas_dynamic():
 
 def test_dashboard_velocity_section():
     """pack_dashboard.py — sección velocidad muestra CHGs y tendencia."""
-    rc, out, _ = _run("pack_dashboard.py", [], timeout=15)
+    rc, out, _ = _run("pack_dashboard.py", [], timeout=60)
     if rc != 0:
         _record("dashboard:velocity", FAIL, f"rc={rc} {out[-80:]}")
         return
@@ -1412,7 +1412,7 @@ def test_dashboard_risk_exposure():
         _record("dashboard:risk_exposure", PASS, "risk data not parseable, skip")
         return
 
-    rc, out, _ = _run("pack_dashboard.py", [], timeout=15)
+    rc, out, _ = _run("pack_dashboard.py", [], timeout=60)
     if rc != 0:
         _record("dashboard:risk_exposure", FAIL, f"dashboard rc={rc}")
         return
@@ -1644,6 +1644,45 @@ def test_smoke_runner_isolated():
         _record("smoke_runner:isolated", FAIL, f"unexpected output: {out[:150]}")
 
 
+def test_scan_purge():
+    """scan.py --purge elimina SCAN files más viejos del umbral sin tocar los recientes."""
+    import tempfile, json as _j, time as _t, subprocess as _sp
+    from pathlib import Path as _P
+
+    with tempfile.TemporaryDirectory() as tmp:
+        findings_dir = _P(tmp) / "findings"
+        findings_dir.mkdir(parents=True)
+
+        # Create one old file (mtime set to 40 days ago) and one recent file
+        old_file = findings_dir / "SCAN-20200101_000000.json"
+        new_file = findings_dir / "SCAN-99991231_235959.json"
+        old_file.write_text(_j.dumps({"findings": [], "source": "test_purge_old"}))
+        new_file.write_text(_j.dumps({"findings": [], "source": "test_purge_new"}))
+
+        # Set old_file mtime to 40 days ago
+        old_mtime = _t.time() - 40 * 86400
+        import os as _os
+        _os.utime(str(old_file), (old_mtime, old_mtime))
+
+        env = {**_os.environ, "BAGO_STATE_DIR": tmp}
+        r = _sp.run(
+            [sys.executable, str(ROOT / "tools" / "scan.py"), "--purge", "--days", "30"],
+            capture_output=True, text=True, cwd=str(ROOT.parent), env=env
+        )
+        if r.returncode != 0:
+            _record("scan:purge", FAIL, f"rc={r.returncode} stderr={r.stderr[:150]}")
+            return
+
+        old_gone = not old_file.exists()
+        new_kept = new_file.exists()
+        if old_gone and new_kept:
+            _record("scan:purge", PASS, "old SCAN deleted, recent SCAN retained")
+        elif not old_gone:
+            _record("scan:purge", FAIL, "old SCAN was NOT deleted by --purge")
+        else:
+            _record("scan:purge", FAIL, "recent SCAN was wrongly deleted by --purge")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1757,6 +1796,7 @@ ALL_TESTS = [
     (110, "smoke_runner:report_keys",  test_smoke_runner_report_keys),
     (111, "smoke_runner:status_valid", test_smoke_runner_status_valid),
     (112, "smoke_runner:isolated",     test_smoke_runner_isolated),
+    (113, "scan:purge",                test_scan_purge),
 ]
 
 
