@@ -1,12 +1,12 @@
 {
   "status": "pass",
   "failure_count": 0,
-  "passed": 134,
+  "passed": 136,
   "skipped": 0,
-  "total": 134,
-  "workers": 136,
-  "duration_seconds": 126.26,
-  "generated_at": "2026-04-23T06:10:11.757257+00:00",
+  "total": 136,
+  "workers": 137,
+  "duration_seconds": 130.27,
+  "generated_at": "2026-04-23T06:14:52.856228+00:00",
   "tool": "integration_tests.py",
   "returncode": 0
 }

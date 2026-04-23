@@ -1,0 +1,14 @@
+{
+  "id": "BAGO-CHG-148",
+  "change_id": "CHG-148",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Test 124: scan --json output de hallazgos estructurado",
+  "motivation": "Verificar que scan.py --json emite JSON válido con scan_id, summary y findings.",
+  "status": "applied",
+  "affected_components": ["integration_tests.py"],
+  "related_evidence": ["137/137 tests pass"],
+  "created_at": "2025-07-21T00:00:00Z",
+  "updated_at": "2025-07-21T00:00:00Z",
+  "author": "bago-autonomous"
+}

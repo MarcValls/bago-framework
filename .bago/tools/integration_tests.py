@@ -1905,6 +1905,40 @@ def test_health_score():
     _record("health_score:run", PASS, f"rc=0, score={score}/100")
 
 
+def test_scan_json_output():
+    """scan.py --json: JSON con campos scan_id, summary, findings."""
+    import json as _j, tempfile, subprocess as _sp, os as _os
+    with tempfile.TemporaryDirectory() as tmp:
+        env = {**_os.environ, "BAGO_STATE_DIR": tmp}
+        r = _sp.run(
+            [sys.executable, str(ROOT / "tools" / "scan.py"), "--json"],
+            capture_output=True, text=True, cwd=str(ROOT.parent),
+            env=env, timeout=60
+        )
+        if r.returncode != 0:
+            _record("scan:json_output", FAIL, f"rc={r.returncode} err={r.stderr[:100]}")
+            return
+        # Find JSON block — starts with '{'
+        lines = r.stdout.splitlines()
+        json_start = next((i for i, l in enumerate(lines) if l.strip().startswith("{")), -1)
+        if json_start < 0:
+            _record("scan:json_output", FAIL, "no JSON block found in output")
+            return
+        json_text = "\n".join(lines[json_start:])
+        try:
+            data = _j.loads(json_text)
+        except Exception as e:
+            _record("scan:json_output", FAIL, f"JSON parse error: {e}")
+            return
+        required = {"scan_id", "summary", "findings"}
+        missing = required - set(data.keys())
+        if missing:
+            _record("scan:json_output", FAIL, f"missing keys: {missing}")
+            return
+        n = len(data["findings"])
+        _record("scan:json_output", PASS, f"JSON OK, findings={n}, scan_id={data['scan_id']}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2029,6 +2063,7 @@ ALL_TESTS = [
     (121, "artifact_counter:run",        test_artifact_counter),
     (122, "stability_summary:run",       test_stability_summary),
     (123, "health_score:run",            test_health_score),
+    (124, "scan:json_output",            test_scan_json_output),
 ]
 
 
