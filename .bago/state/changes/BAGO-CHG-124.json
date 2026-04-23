@@ -1,0 +1,19 @@
+{
+  "change_id": "BAGO-CHG-124",
+  "type": "governance",
+  "severity": "patch",
+  "title": "Cobertura CHG 100%: retroactiva para 5 tools sin registro (bago_start, evolution_report, personality_panel, state_store, workspace_selector)",
+  "motivation": "Cierre de cobertura CHG: 5 herramientas sin registro propio. bago_start.py gestiona el arranque inicial del framework, generate_bago_evolution_report.py genera informes de evolución, personality_panel.py configura roles y personalidad del agente, state_store.py abstrae la capa de persistencia de estado, workspace_selector.py permite seleccionar entornos de trabajo. Cobertura final: 135/135 tools.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/bago_start.py",
+    ".bago/tools/generate_bago_evolution_report.py",
+    ".bago/tools/personality_panel.py",
+    ".bago/tools/state_store.py",
+    ".bago/tools/workspace_selector.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T03:20:00.000000+00:00",
+  "updated_at": "2026-04-23T03:20:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

@@ -4,7 +4,7 @@
   "version": "3.0",
   "status": "open",
   "created_at": "2026-04-23T01:21:28.242160+00:00",
-  "updated_at": "2026-04-23T02:16:35.779198+00:00",
+  "updated_at": "2026-04-23T02:23:13.902094+00:00",
   "goals": [
     "Cockpit hotspots: mostrar datos reales de complejidad (fix _hotspots() list vs dict)",
     "Cockpit risk: exponer categorías reales de risk_matrix (fix section_risks)",
@@ -33,17 +33,19 @@
     "Docs: TOOLS_INDEX.md (135 tools) + WORKFLOWS_REFERENCE.md (W0-W9) ✅",
     "session-commit-link: 6 sesiones con commits vinculados ✅",
     "IDEAS_BACKLOG.json: historial persistente de ideas ✅",
-    "detector CLEAN: cero señales activas ✅"
+    "detector CLEAN: cero señales activas ✅",
+    "CHG coverage 100%: 135/135 tools con registro ✅"
   ],
   "goals_metrics": {
-    "tests": "117/117",
-    "chg": 104,
+    "tests": "119/119",
+    "chg": 108,
     "sys_exit_fixed": 175,
     "health": "100/100",
     "detector": "CLEAN",
     "docs_added": [
       "TOOLS_INDEX.md",
       "WORKFLOWS_REFERENCE.md"
-    ]
+    ],
+    "chg_coverage": "135/135 (100%)"
   }
 }
