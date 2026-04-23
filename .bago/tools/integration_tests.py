@@ -2363,6 +2363,27 @@ def test_scan_output_file():
             os.unlink(out_path)
 
 
+def test_risk_matrix_top():
+    """risk_matrix.py --top 3 --csv: ≤4 líneas (header + max 3 rows)."""
+    rc, out, err = _run("risk_matrix.py", ["--top", "3", "--csv"], timeout=30)
+    if rc != 0:
+        _record("risk_matrix:top", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    lines = [l for l in out.splitlines() if l.strip()]
+    if not lines:
+        _record("risk_matrix:top", FAIL, "no output")
+        return
+    header = lines[0]
+    if "category" not in header or "exposure" not in header:
+        _record("risk_matrix:top", FAIL, f"header missing: {header}")
+        return
+    data_rows = len(lines) - 1
+    if data_rows > 3:
+        _record("risk_matrix:top", FAIL, f"--top 3 returned {data_rows} rows (expected ≤3)")
+        return
+    _record("risk_matrix:top", PASS, f"top OK, {data_rows} data rows")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2507,6 +2528,7 @@ ALL_TESTS = [
     (141, "metrics_export:since",        test_metrics_export_since),
     (142, "debt_ledger:top",             test_debt_ledger_top),
     (143, "scan:output_file",            test_scan_output_file),
+    (144, "risk_matrix:top",             test_risk_matrix_top),
 ]
 
 

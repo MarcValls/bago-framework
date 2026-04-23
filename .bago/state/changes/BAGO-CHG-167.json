@@ -1,0 +1,19 @@
+{
+  "id": "BAGO-CHG-167",
+  "change_id": "CHG-167",
+  "type": "governance",
+  "severity": "minor",
+  "title": "risk_matrix --top N flag (test 144)",
+  "motivation": "Añadir --top N a risk_matrix.py para truncar items por exposición. Test 144 verifica ≤3 rows con --top 3.",
+  "status": "applied",
+  "affected_components": [
+    "risk_matrix.py",
+    "integration_tests.py"
+  ],
+  "related_evidence": [
+    "157/157 tests pass"
+  ],
+  "created_at": "2025-07-28T00:00:00Z",
+  "updated_at": "2025-07-28T00:00:00Z",
+  "author": "bago-autonomous"
+}

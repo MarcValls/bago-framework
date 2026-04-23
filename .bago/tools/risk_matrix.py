@@ -224,7 +224,7 @@ def save_report(items: list, agg: dict, scan_id: str) -> Path:
     return out
 
 
-def cmd_risk(scan_id, category_filter, as_json, as_csv=False):
+def cmd_risk(scan_id, category_filter, as_json, as_csv=False, top=None):
     db = fe.FindingsDB.load(scan_id) if scan_id else fe.FindingsDB.latest()
     if db is None:
         print(f"{RED}✗ Sin scan disponible. Ejecuta 'bago scan' primero.{RESET}")
@@ -236,6 +236,9 @@ def cmd_risk(scan_id, category_filter, as_json, as_csv=False):
         items = [i for i in items if i.category.lower() == category_filter.lower()]
     else:
         items = build_risk_items(findings)
+
+    if top is not None:
+        items = items[:top]
 
     agg = aggregate(items)
 
@@ -329,12 +332,14 @@ def main():
     p.add_argument("--json",     action="store_true")
     p.add_argument("--csv",      action="store_true",
                    help="Exporta riesgos a CSV (file,category,probability,impact,exposure,level)")
+    p.add_argument("--top",      type=int, default=None,
+                   help="Limita output a los N riesgos de mayor exposición")
     p.add_argument("--test",     action="store_true")
     args = p.parse_args()
 
     if args.test:
         run_tests(); return
-    cmd_risk(args.scan, args.category, args.json, getattr(args, "csv", False))
+    cmd_risk(args.scan, args.category, args.json, getattr(args, "csv", False), getattr(args, "top", None))
 
 
 if __name__ == "__main__":

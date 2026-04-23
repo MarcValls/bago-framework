@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "scan_id": "SCAN-20260423_080728",
+    "created_at": "2026-04-23T08:07:28.626043+00:00",
+    "sources": [
+      "bago",
+      "flake8",
+      "pylint",
+      "mypy",
+      "bandit"
+    ],
+    "target": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools",
+    "lang": "py"
+  },
+  "summary": {
+    "total": 0,
+    "autofixable": 0,
+    "by_severity": {
+      "error": 0,
+      "warning": 0,
+      "info": 0,
+      "hint": 0
+    },
+    "by_source": {},
+    "top_files": []
+  },
+  "findings": []
+}
