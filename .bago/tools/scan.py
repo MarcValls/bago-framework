@@ -440,6 +440,8 @@ def main():
                                  "swift","kotlin","shell","terraform","yaml"],
                         help="Lenguaje a analizar (default: auto-detección)")
     parser.add_argument("--test",        action="store_true")
+    parser.add_argument("--format",      choices=["text", "json", "csv"], default=None,
+                        help="Formato de salida: text (default), json, csv")
     args = parser.parse_args()
 
     if args.test:
@@ -487,6 +489,20 @@ def main():
     if args.top is not None:
         sev_order = {"error": 0, "warning": 1, "info": 2, "hint": 3}
         findings = sorted(findings, key=lambda f: sev_order.get(f.severity, 9))[:args.top]
+
+    fmt = getattr(args, "format", None)
+    if fmt == "csv":
+        import csv as _csv, io as _io
+        buf = _io.StringIO()
+        w = _csv.writer(buf)
+        w.writerow(["file", "line", "col", "severity", "rule", "source", "message"])
+        for f in findings:
+            w.writerow([f.file, f.line, f.col, f.severity, f.rule, f.source, f.message])
+        print(buf.getvalue(), end="")
+        return
+    elif fmt == "json":
+        args.json = True
+
     render_findings(db, findings, args.summary, args.json)
 
 if __name__ == "__main__":

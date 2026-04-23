@@ -753,5 +753,25 @@
     "name": "test_isolation",
     "registered_at": "2026-04-23T07:35:31.225261+00:00",
     "state_dir": "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmpajjs2t7i/test_isolation/.bago/state"
+  },
+  "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmpna_gcenn/test_proj": {
+    "name": "TestProj",
+    "registered_at": "2026-04-23T07:38:44.074180+00:00",
+    "state_dir": "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmpna_gcenn/test_proj/.bago/state"
+  },
+  "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmp8ym6dyl1/test_isolation": {
+    "name": "test_isolation",
+    "registered_at": "2026-04-23T07:38:44.370338+00:00",
+    "state_dir": "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmp8ym6dyl1/test_isolation/.bago/state"
+  },
+  "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmpgp3u06uh/test_proj": {
+    "name": "TestProj",
+    "registered_at": "2026-04-23T07:40:16.193816+00:00",
+    "state_dir": "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmpgp3u06uh/test_proj/.bago/state"
+  },
+  "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmp5v4o7_37/test_isolation": {
+    "name": "test_isolation",
+    "registered_at": "2026-04-23T07:40:16.442018+00:00",
+    "state_dir": "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmp5v4o7_37/test_isolation/.bago/state"
   }
 }

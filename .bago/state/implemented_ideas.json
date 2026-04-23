@@ -255,6 +255,9 @@
     },
     {
       "title": "velocity --since date filter"
+    },
+    {
+      "title": "scan --format csv"
     }
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"
