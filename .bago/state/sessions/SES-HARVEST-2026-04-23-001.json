@@ -9,7 +9,7 @@
   "status": "closed",
   "escenario": "ESCENARIO-003",
   "created_at": "2026-04-23T00:20:06.243192+00:00",
-  "updated_at": "2026-04-23T00:20:06.243192+00:00",
+  "updated_at": "2026-04-23T01:57:06.760077+00:00",
   "artifacts": [
     ".bago/tools/dashboard_v2.py",
     ".bago/state/changes/BAGO-CHG-085.json",
@@ -39,5 +39,8 @@
     "DESCARTE: \".\""
   ],
   "next_step": "\".\"",
-  "summary": "Harvest W9. Decisión: \".\". Próximo: \".\"."
+  "summary": "Harvest W9. Decisión: \".\". Próximo: \".\".",
+  "linked_commits": [
+    "60e20d8"
+  ]
 }

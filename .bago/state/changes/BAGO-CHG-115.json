@@ -1,0 +1,13 @@
+{
+  "change_id": "BAGO-CHG-115",
+  "type": "governance",
+  "severity": "patch",
+  "title": "TOOLS_INDEX.md — Índice auto-generado de 135 herramientas BAGO",
+  "motivation": "Documentación centralizada de todos los tools con número, nombre y descripción. Generado desde docstrings. Permite navegación rápida.",
+  "status": "applied",
+  "affected_components": [".bago/docs/TOOLS_INDEX.md"],
+  "related_evidence": [],
+  "created_at": "2026-04-23T02:05:00.000000+00:00",
+  "updated_at": "2026-04-23T02:05:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

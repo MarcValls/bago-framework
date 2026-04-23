@@ -67,6 +67,7 @@ docs/MAPA_DEL_SISTEMA.md
 docs/PLANTILLA_EVALUACION_BRUTAL_BAGO.md
 docs/RULE_CATALOG.html
 docs/RULE_CATALOG.md
+docs/TOOLS_INDEX.md
 docs/analysis/
 docs/analysis/BAGO_EVOLUCION_SISTEMA.html
 docs/analysis/BAGO_EVOLUCION_SISTEMA.md
@@ -334,6 +335,7 @@ state/changes/BAGO-CHG-111.json
 state/changes/BAGO-CHG-112.json
 state/changes/BAGO-CHG-113.json
 state/changes/BAGO-CHG-114.json
+state/changes/BAGO-CHG-115.json
 state/changes/BAGO-CHG-MIG-001.json
 state/changes/CHG-010-ux-controles-13fixes.json
 state/changes/CHG-011-caos-12ideas-cosecha.json
@@ -618,6 +620,7 @@ state/iterations/ITER-0180.json
 state/iterations/ITER-0181.json
 state/iterations/ITER-0182.json
 state/iterations/ITER-0183.json
+state/iterations/ITER-0184.json
 state/metrics/
 state/metrics/README.md
 state/metrics/metrics_snapshot.json

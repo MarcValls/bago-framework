@@ -12,7 +12,7 @@
   "escenario": "ESCENARIO-001",
   "ronda": 5,
   "created_at": "2026-04-18T14:00:00Z",
-  "updated_at": "2026-04-18T14:04:00Z",
+  "updated_at": "2026-04-23T01:57:06.758020+00:00",
   "artifacts_planned": [
     "docs/analysis/BAGO_EVOLUCION_SISTEMA_v2.md",
     "state/evaluations/EVAL-ESCENARIO001-FINAL.md",
@@ -29,5 +29,8 @@
     "ESCENARIO-001 cerrado: targets alcanzados (4.2 útiles/sesión ≥4, 2.0 roles ≤2). Las 3 reglas A/B/C son efectivas.",
     "W8 cubre el hueco exploración: preflight mínimo + 1 útil + 1 decisión garantizan calidad sin rigidez de W7."
   ],
-  "summary": "SES-5 E001. 3 útiles (BAGO_EVOLUCION_v2+EVAL-E001-FINAL+E001-cerrado), 2 roles, preflight GO, 3 decisiones. ESCENARIO-001 CERRADO."
+  "summary": "SES-5 E001. 3 útiles (BAGO_EVOLUCION_v2+EVAL-E001-FINAL+E001-cerrado), 2 roles, preflight GO, 3 decisiones. ESCENARIO-001 CERRADO.",
+  "linked_commits": [
+    "d03ff5a"
+  ]
 }

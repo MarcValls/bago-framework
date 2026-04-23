@@ -9,7 +9,7 @@
   "status": "closed",
   "escenario": null,
   "created_at": "2026-04-21T07:38:26.198102+00:00",
-  "updated_at": "2026-04-21T07:58:25.991269+00:00",
+  "updated_at": "2026-04-23T01:57:06.762754+00:00",
   "artifacts": [],
   "decisions": [
     "CONTINUACIÓN: auditoría nuclear — decisión SES-HARVEST-2026-04-21-006",
@@ -26,5 +26,8 @@
     "proviene_de": "SES-HARVEST-2026-04-21-006 → next_step: bago auto"
   },
   "next_step": "continuada en SES-W1-2026-04-21-001 sobre repo visor ER",
-  "summary": "Sesión W7 cerrada sin artefactos. Pivot de repo: usuario redirige a /Volumes/Warehouse/visor ER. Continuidad en SES-W1-2026-04-21-001."
+  "summary": "Sesión W7 cerrada sin artefactos. Pivot de repo: usuario redirige a /Volumes/Warehouse/visor ER. Continuidad en SES-W1-2026-04-21-001.",
+  "linked_commits": [
+    "a5b6b28"
+  ]
 }

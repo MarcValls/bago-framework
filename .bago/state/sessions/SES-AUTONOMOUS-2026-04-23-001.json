@@ -10,7 +10,7 @@
   "status": "closed",
   "escenario": "ESCENARIO-001-DESARROLLO-CONTINUO",
   "created_at": "2026-04-23T01:29:42.795589+00:00",
-  "updated_at": "2026-04-23T01:31:07.949578+00:00",
+  "updated_at": "2026-04-23T01:57:06.753939+00:00",
   "artifacts": [
     ".bago/state/sprints/SPRINT-006.json (closed)",
     ".bago/state/sprints/SPRINT-007.json (created)",
@@ -29,5 +29,8 @@
     "SPRINT-006 cerrado, SPRINT-007 abierto"
   ],
   "next_step": "Continuar con ideas dinámicas, dep_audit fix, docs index, push",
-  "summary": "Loop autónomo: 6 CHGs (101-106), 5 tests (90-94), 3 cockpit fixes, scan real, sprint cycle"
+  "summary": "Loop autónomo: 6 CHGs (101-106), 5 tests (90-94), 3 cockpit fixes, scan real, sprint cycle",
+  "linked_commits": [
+    "a5f9b8f"
+  ]
 }
