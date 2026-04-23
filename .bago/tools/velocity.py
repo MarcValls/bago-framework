@@ -218,6 +218,8 @@ def main():
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--csv", action="store_true",
                         help="Exporta métricas a CSV (period,sessions,artifacts,sess_per_day)")
+    parser.add_argument("--since", type=str, default=None, metavar="DATE",
+                        help="Filtra sesiones desde DATE (YYYY-MM-DD) en lugar de --period")
     parser.add_argument("--test", action="store_true")
 
     args = parser.parse_args()
@@ -230,9 +232,20 @@ def main():
     today = datetime.date.today()
     period = args.period
 
-    current  = velocity_for_period(sessions, today - datetime.timedelta(days=period), today)
-    previous = velocity_for_period(sessions, today - datetime.timedelta(days=period*2),
-                                             today - datetime.timedelta(days=period))
+    if getattr(args, "since", None):
+        try:
+            since_date = datetime.date.fromisoformat(args.since)
+        except ValueError:
+            print(f"ERROR: --since fecha inválida '{args.since}' (usa YYYY-MM-DD)", file=sys.stderr)
+            raise SystemExit(1)
+        current  = velocity_for_period(sessions, since_date, today)
+        previous = velocity_for_period(sessions,
+                                       since_date - (today - since_date),
+                                       since_date)
+    else:
+        current  = velocity_for_period(sessions, today - datetime.timedelta(days=period), today)
+        previous = velocity_for_period(sessions, today - datetime.timedelta(days=period*2),
+                                                 today - datetime.timedelta(days=period))
     rolling  = rolling_velocity(sessions)
 
     if getattr(args, "csv", False):

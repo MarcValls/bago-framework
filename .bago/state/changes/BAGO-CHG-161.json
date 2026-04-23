@@ -1,0 +1,19 @@
+{
+  "id": "BAGO-CHG-161",
+  "change_id": "CHG-161",
+  "type": "governance",
+  "severity": "minor",
+  "title": "velocity --since date filter (test 138)",
+  "motivation": "Añadir --since DATE a velocity.py para filtrar por fecha de inicio arbitraria. Test 138 valida CSV output.",
+  "status": "applied",
+  "affected_components": [
+    "velocity.py",
+    "integration_tests.py"
+  ],
+  "related_evidence": [
+    "151/151 tests pass"
+  ],
+  "created_at": "2025-07-28T00:00:00Z",
+  "updated_at": "2025-07-28T00:00:00Z",
+  "author": "bago-autonomous"
+}

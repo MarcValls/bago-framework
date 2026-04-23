@@ -2235,6 +2235,25 @@ def test_dashboard_minimal():
     _record("dashboard:minimal", PASS, f"minimal OK: {line[:80]}")
 
 
+def test_velocity_since():
+    """velocity.py --since DATE --csv: CSV filtrado desde fecha dada."""
+    import datetime
+    since = (datetime.date.today() - datetime.timedelta(days=30)).isoformat()
+    rc, out, err = _run("velocity.py", ["--since", since, "--csv"], timeout=20)
+    if rc != 0:
+        _record("velocity:since", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    lines = [l for l in out.splitlines() if l.strip()]
+    if not lines:
+        _record("velocity:since", FAIL, "no output")
+        return
+    header = lines[0]
+    if "period" not in header or "sessions" not in header:
+        _record("velocity:since", FAIL, f"header unexpected: {header}")
+        return
+    _record("velocity:since", PASS, f"CSV OK, header={header}, rows={len(lines)-1}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2373,6 +2392,7 @@ ALL_TESTS = [
     (135, "debt_ledger:csv",             test_debt_ledger_csv),
     (136, "risk_matrix:csv",             test_risk_matrix_csv),
     (137, "dashboard:minimal",           test_dashboard_minimal),
+    (138, "velocity:since",              test_velocity_since),
 ]
 
 
