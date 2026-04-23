@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-077",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-134",
+    "SES-HARVEST-2026-04-23-002"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-23-002",
+  "details": "Decisión: Radar SVG de salud añadido al reporte de evolución con 6 dimensiones. FALLBACK_IDEAS ahora filtradas contra done_titles. 8 scans sintéticos eliminados del state. | Descarte: Usar matplotlib para el radar (dependencia externa innecesaria; SVG puro es más portable y sin deps) | Próximo paso: Vincular commits e55181f y 2d1cb8f a sesión activa y sincronizar sprint | Ficheros afectados: (exploración sin artefactos de fichero)",
+  "status": "recorded",
+  "recorded_at": "2026-04-23T03:47:27.425290+00:00"
+}

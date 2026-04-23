@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-134",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Cosecha contextual W9: Radar SVG de salud añadido al reporte de evolución con 6 dim",
+  "motivation": "Formalizar exploración libre. Decisión: Radar SVG de salud añadido al reporte de evolución con 6 dimensiones. FALLBACK_IDEAS ahora filtradas contra done_titles. 8 scans sintéticos eliminados del state.. Descarte: Usar matplotlib para el radar (dependencia externa innecesaria; SVG puro es más portable y sin deps).",
+  "status": "applied",
+  "affected_components": [
+    "(exploración sin artefactos de fichero)"
+  ],
+  "related_evidence": "BAGO-EVD-077",
+  "created_at": "2026-04-23T03:47:27.425290+00:00",
+  "updated_at": "2026-04-23T03:47:27.425290+00:00",
+  "author": "role_auditor"
+}

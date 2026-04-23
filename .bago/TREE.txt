@@ -357,6 +357,7 @@ state/changes/BAGO-CHG-130.json
 state/changes/BAGO-CHG-131.json
 state/changes/BAGO-CHG-132.json
 state/changes/BAGO-CHG-133.json
+state/changes/BAGO-CHG-134.json
 state/changes/BAGO-CHG-MIG-001.json
 state/changes/CHG-010-ux-controles-13fixes.json
 state/changes/CHG-011-caos-12ideas-cosecha.json
@@ -433,6 +434,7 @@ state/evidences/BAGO-EVD-073.json
 state/evidences/BAGO-EVD-074.json
 state/evidences/BAGO-EVD-075.json
 state/evidences/BAGO-EVD-076.json
+state/evidences/BAGO-EVD-077.json
 state/evidences/BAGO-EVD-MIG-001.json
 state/evidences/BAGO-EVD-MIG-002.json
 state/findings/
@@ -908,6 +910,7 @@ state/sessions/SES-HARVEST-2026-04-21-007.json
 state/sessions/SES-HARVEST-2026-04-22-001.json
 state/sessions/SES-HARVEST-2026-04-22-002.json
 state/sessions/SES-HARVEST-2026-04-23-001.json
+state/sessions/SES-HARVEST-2026-04-23-002.json
 state/sessions/SES-HYB-2026-04-11-001.json
 state/sessions/SES-INS-2026-04-14-001.json
 state/sessions/SES-INS-2026-04-14-002.json
