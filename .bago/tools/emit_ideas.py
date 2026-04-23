@@ -215,6 +215,62 @@ FALLBACK_IDEAS: list[dict[str, object]] = [
         ],
         "w2": "Añadir test_scan_purge() a integration_tests.py, registrar en ALL_TESTS.",
     },
+    {
+        "priority": 55,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "Dashboard muestra deuda 0.0h/€0 pero debt_ledger tiene datos reales.",
+        "title": "Dashboard deuda real desde debt_ledger",
+        "summary": "Hacer que section_debt() en pack_dashboard.py lea debt_ledger.json real en lugar de calcular desde scan.",
+        "detail": [
+            "Leer state/debt_ledger.json si existe para obtener total_hours y total_cost.",
+            "Mostrar en sección DEUDA TÉCNICA con datos reales.",
+            "Fallback a cálculo actual si el fichero no existe.",
+        ],
+        "w2": "Actualizar section_debt() en pack_dashboard.py para leer debt_ledger.json.",
+    },
+    {
+        "priority": 52,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "Dashboard muestra exposición 0.0 pero puede haber risk_matrix real.",
+        "title": "Dashboard riesgo real desde risk_matrix --json",
+        "summary": "Verificar que section_risks() en pack_dashboard.py muestra exposición real cuando risk_matrix tiene datos.",
+        "detail": [
+            "Añadir test que ejecute risk_matrix --json y compare con lo mostrado en dashboard.",
+            "Asegurar que cuando exposure > 0 el dashboard no muestra 'Sin riesgos activos'.",
+            "Ya verificado por test_dashboard_risk_exposure — confirmar que funciona end-to-end.",
+        ],
+        "w2": "Añadir test de regresión end-to-end risk → dashboard en integration_tests.py.",
+    },
+    {
+        "priority": 44,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "findings_engine.py no tiene test directo en ALL_TESTS.",
+        "title": "Test directo para findings_engine",
+        "summary": "Añadir test_findings_engine() que verifique CRUD de findings con BAGO_STATE_DIR isolation.",
+        "detail": [
+            "Crear finding sintético con findings_engine.save_finding() en tmp dir.",
+            "Verificar que load_findings() lo recupera correctamente.",
+            "Verificar que el finding aparece en list_findings() filtrado por severity.",
+        ],
+        "w2": "Añadir test_findings_engine() a integration_tests.py, registrar en ALL_TESTS.",
+    },
+    {
+        "priority": 40,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "sync_badges.py no tiene test de integración en ALL_TESTS.",
+        "title": "Test para sync_badges",
+        "summary": "Añadir test_sync_badges() que verifique que sync_badges actualiza README con datos de global_state.",
+        "detail": [
+            "Ejecutar sync_badges.py sobre README temporal.",
+            "Verificar que las badges shields.io se actualizan con los datos de global_state.json.",
+            "Verificar que el script sale rc=0.",
+        ],
+        "w2": "Añadir test_sync_badges() a integration_tests.py, registrar en ALL_TESTS.",
+    },
 ]
 
 

@@ -1,0 +1,19 @@
+{
+  "id": "BAGO-CHG-143",
+  "change_id": "BAGO-CHG-143",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Tests findings_engine:parse y sync_badges:compute; 128/128 tests",
+  "motivation": "test_findings_engine_parse verifica que parse_flake8() retorna Finding objects correctos. test_sync_badges_compute verifica que compute_badges() inyecta valores reales en badge URLs. 5 nuevas FALLBACK_IDEAS añadidas a emit_ideas.py.",
+  "status": "applied",
+  "affected_components": [
+    "integration_tests.py",
+    "emit_ideas.py"
+  ],
+  "related_evidence": [
+    "128/128 tests pass"
+  ],
+  "created_at": "2026-04-23T05:45:01.825544+00:00",
+  "updated_at": "2026-04-23T05:45:01.826850+00:00",
+  "author": "copilot-autonomous"
+}

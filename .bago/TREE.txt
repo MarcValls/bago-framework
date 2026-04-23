@@ -365,6 +365,7 @@ state/changes/BAGO-CHG-138.json
 state/changes/BAGO-CHG-139.json
 state/changes/BAGO-CHG-140.json
 state/changes/BAGO-CHG-141.json
+state/changes/BAGO-CHG-142.json
 state/changes/BAGO-CHG-MIG-001.json
 state/changes/CHG-010-ux-controles-13fixes.json
 state/changes/CHG-011-caos-12ideas-cosecha.json
@@ -771,6 +772,8 @@ state/iterations/ITER-0274.json
 state/iterations/ITER-0275.json
 state/iterations/ITER-0276.json
 state/iterations/ITER-0277.json
+state/iterations/ITER-0278.json
+state/iterations/ITER-0279.json
 state/linked_projects.json
 state/metrics/
 state/metrics/README.md

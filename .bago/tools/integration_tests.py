@@ -1683,6 +1683,51 @@ def test_scan_purge():
             _record("scan:purge", FAIL, "recent SCAN was wrongly deleted by --purge")
 
 
+def test_findings_engine_parse():
+    """findings_engine.parse_flake8() — parsea salida estándar a objetos Finding."""
+    import importlib, sys as _sys
+    _sys.path.insert(0, str(ROOT / "tools"))
+    fe = importlib.import_module("findings_engine")
+    sample = (
+        "test_file.py:10:5: E501 line too long (100 > 79 characters)\n"
+        "test_file.py:20:1: W291 trailing whitespace\n"
+    )
+    findings = fe.parse_flake8(sample)
+    if not findings:
+        _record("findings_engine:parse", FAIL, "parse_flake8 returned empty list")
+        return
+    f = findings[0]
+    if f.file != "test_file.py" or f.line != 10:
+        _record("findings_engine:parse", FAIL, f"unexpected fields: file={f.file} line={f.line}")
+        return
+    if f.severity not in ("error", "warning", "info", "hint"):
+        _record("findings_engine:parse", FAIL, f"invalid severity: {f.severity}")
+        return
+    _record("findings_engine:parse", PASS,
+            f"parse_flake8 OK: {len(findings)} findings, severity={f.severity}")
+
+
+def test_sync_badges_compute():
+    """sync_badges.compute_badges() — calcula badge URLs correctas desde state+smoke."""
+    import importlib, sys as _sys
+    _sys.path.insert(0, str(ROOT / "tools"))
+    sb = importlib.import_module("sync_badges")
+    state = {"system_health": "stable", "inventory": {"changes": 99}, "bago_version": "3.0"}
+    smoke = {"workers": 126, "failure_count": 0}
+    badges = sb.compute_badges(state, smoke)
+    required = {"health", "tests", "tools", "chg", "version"}
+    missing = required - set(badges.keys())
+    if missing:
+        _record("sync_badges:compute", FAIL, f"missing badge keys: {missing}")
+        return
+    tests_url = badges["tests"][0]
+    if "126" not in tests_url or "99" not in badges["chg"][0]:
+        _record("sync_badges:compute", FAIL, f"badge values not injected: tests={tests_url[:60]}")
+        return
+    _record("sync_badges:compute", PASS,
+            f"compute_badges OK: tests=126/126, CHGs=99 in URLs")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1797,6 +1842,8 @@ ALL_TESTS = [
     (111, "smoke_runner:status_valid", test_smoke_runner_status_valid),
     (112, "smoke_runner:isolated",     test_smoke_runner_isolated),
     (113, "scan:purge",                test_scan_purge),
+    (114, "findings_engine:parse",     test_findings_engine_parse),
+    (115, "sync_badges:compute",       test_sync_badges_compute),
 ]
 
 

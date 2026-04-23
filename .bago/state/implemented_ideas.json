@@ -128,6 +128,16 @@
       "title": "Coverage por módulo en dashboard",
       "implemented_at": "2026-04-23T05:38:56.325121+00:00",
       "chg": "BAGO-CHG-142"
+    },
+    {
+      "title": "Test directo para findings_engine",
+      "implemented_at": "2026-04-23T05:45:01.832241+00:00",
+      "chg": "BAGO-CHG-143"
+    },
+    {
+      "title": "Test para sync_badges",
+      "implemented_at": "2026-04-23T05:45:01.832283+00:00",
+      "chg": "BAGO-CHG-143"
     }
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"
