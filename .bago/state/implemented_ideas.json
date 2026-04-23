@@ -183,6 +183,21 @@
       "title": "Test para session_manager --list",
       "chg": "CHG-149",
       "date": "2025-07-21"
+    },
+    {
+      "title": "Dashboard deuda real desde debt_ledger",
+      "chg": "CHG-150",
+      "date": "2025-07-21"
+    },
+    {
+      "title": "Dashboard riesgo real desde risk_matrix --json",
+      "chg": "CHG-150",
+      "date": "2025-07-21"
+    },
+    {
+      "title": "Test para health score CLI",
+      "chg": "CHG-150",
+      "date": "2025-07-21"
     }
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"

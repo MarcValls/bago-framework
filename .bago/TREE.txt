@@ -372,6 +372,7 @@ state/changes/BAGO-CHG-145.json
 state/changes/BAGO-CHG-146.json
 state/changes/BAGO-CHG-147.json
 state/changes/BAGO-CHG-148.json
+state/changes/BAGO-CHG-149.json
 state/changes/BAGO-CHG-MIG-001.json
 state/changes/CHG-010-ux-controles-13fixes.json
 state/changes/CHG-011-caos-12ideas-cosecha.json
@@ -795,6 +796,8 @@ state/iterations/ITER-0289.json
 state/iterations/ITER-0290.json
 state/iterations/ITER-0291.json
 state/iterations/ITER-0292.json
+state/iterations/ITER-0293.json
+state/iterations/ITER-0294.json
 state/linked_projects.json
 state/metrics/
 state/metrics/README.md
@@ -932,6 +935,7 @@ state/repo_context.json
 state/reports/
 state/reports/DEBT-20260423_011555.json
 state/reports/DEBT-20260423_011740.json
+state/reports/DEBT-20260423_062233.json
 state/reports/RISK-20260423_001914.json
 state/reports/RISK-20260423_031004.json
 state/reports/RISK-20260423_031630.json

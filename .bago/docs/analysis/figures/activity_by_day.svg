@@ -21,9 +21,9 @@ text { font-family: Menlo, Consolas, monospace; fill: #0f172a; }
 <text x='8' y='116.00' class='label'>61.6</text>
 <line x1='80' y1='55.00' x2='1150' y2='55.00' class='grid' />
 <text x='8' y='59.00' class='label'>77.0</text>
-<rect x='101.40' y='325.19' width='54.47' height='14.81' fill='#0f766e' rx='2'/>
+<rect x='101.40' y='321.49' width='54.47' height='18.51' fill='#0f766e' rx='2'/>
 <text x='128.64' y='356.00' text-anchor='middle' class='label'>2025-07-21</text>
-<text x='128.64' y='371.00' text-anchor='middle' class='small'>4</text>
+<text x='128.64' y='371.00' text-anchor='middle' class='small'>5</text>
 <rect x='198.67' y='325.19' width='54.47' height='14.81' fill='#1d4ed8' rx='2'/>
 <rect x='198.67' y='306.69' width='54.47' height='18.51' fill='#0f766e' rx='2'/>
 <rect x='198.67' y='284.48' width='54.47' height='22.21' fill='#c2410c' rx='2'/>

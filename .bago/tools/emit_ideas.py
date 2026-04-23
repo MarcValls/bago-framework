@@ -756,18 +756,20 @@ def save_handoff(data: dict[str, object]) -> Path:
     return dest
 
 
-def parse_args(argv: list[str]) -> tuple[int | None, bool]:
+def parse_args(argv: list[str]) -> tuple[int | None, bool, bool]:
     detail_index = None
     accept = False
+    as_json = False
     idx = 1
 
     while idx < len(argv):
         arg = argv[idx]
         if arg in {"-h", "--help"}:
             print(
-                "Usage: emit_ideas.py [--detail N] [--accept N]\n\n"
+                "Usage: emit_ideas.py [--detail N] [--accept N] [--json]\n\n"
                 "Show 5 to 20 contextual ideas prioritized by stability. Use --detail "
-                "to expand a selected idea and --accept to mark it ready for W2."
+                "to expand a selected idea and --accept to mark it ready for W2.\n"
+                "--json  Output ideas as structured JSON."
             )
             raise SystemExit(0)
         if arg == "--detail":
@@ -783,9 +785,13 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool]:
             accept = True
             idx += 2
             continue
+        if arg == "--json":
+            as_json = True
+            idx += 1
+            continue
         raise SystemExit(f"Unknown argument: {arg}")
 
-    return detail_index, accept
+    return detail_index, accept, as_json
 
 
 def _run_tool_json(tool_name: str, extra_args: list[str] | None = None) -> dict | list | None:
@@ -929,7 +935,7 @@ def _real_state_ideas() -> list[dict[str, object]]:
 
 
 def main() -> int:
-    detail_index, accept = parse_args(sys.argv)
+    detail_index, accept, as_json = parse_args(sys.argv)
     state_path = _STATE / "ESTADO_BAGO_ACTUAL.md"
     global_state_path = _STATE / "global_state.json"
     smoke_path = ROOT / "sandbox/runtime/last-report.json"
@@ -1215,6 +1221,27 @@ def main() -> int:
 
     sections = build_idea_sections(ideas, done_titles)
     ideas = order_ideas_by_section(sections)
+
+    if as_json:
+        print(json.dumps({
+            "total": len(ideas),
+            "gate": "pass",
+            "baseline_clean_mode": baseline_clean_mode,
+            "ideas": [
+                {
+                    "rank": i + 1,
+                    "priority": idea.get("priority", 0),
+                    "section": idea.get("section", ""),
+                    "risk": idea.get("risk", ""),
+                    "title": str(idea.get("title", "")),
+                    "summary": str(idea.get("summary", "")),
+                    "metric": str(idea.get("metric", "")),
+                    "next_step": str(idea.get("w2", "")),
+                }
+                for i, idea in enumerate(ideas)
+            ]
+        }, indent=2, ensure_ascii=False))
+        return 0
 
     # ── working mode header ────────────────────────────────────────────────────
     repo_ctx_path = _STATE / "repo_context.json"

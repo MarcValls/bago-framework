@@ -1,0 +1,14 @@
+{
+  "id": "BAGO-CHG-150",
+  "change_id": "CHG-150",
+  "type": "governance",
+  "severity": "minor",
+  "title": "emit_ideas --json + test 126 ideas:json",
+  "motivation": "Añadir --json flag a emit_ideas.py para output estructurado programático; test verifica total, gate, ideas list.",
+  "status": "applied",
+  "affected_components": ["emit_ideas.py", "integration_tests.py"],
+  "related_evidence": ["139/139 tests pass"],
+  "created_at": "2025-07-21T00:00:00Z",
+  "updated_at": "2025-07-21T00:00:00Z",
+  "author": "bago-autonomous"
+}

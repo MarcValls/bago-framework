@@ -1901,6 +1901,30 @@ def test_session_details_json():
     _record("session_details:json", PASS, f"list of {len(data)} sessions, keys OK")
 
 
+def test_ideas_json():
+    """emit_ideas.py --json: rc=0, JSON con total, gate, ideas list."""
+    import json as _j
+    rc, out, err = _run("emit_ideas.py", ["--json"], timeout=20)
+    if rc != 0:
+        _record("ideas:json", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    try:
+        data = _j.loads(out)
+    except Exception as e:
+        _record("ideas:json", FAIL, f"JSON parse error: {e}")
+        return
+    required = {"total", "gate", "ideas"}
+    missing = required - set(data.keys())
+    if missing:
+        _record("ideas:json", FAIL, f"missing keys: {missing}")
+        return
+    if not isinstance(data["ideas"], list):
+        _record("ideas:json", FAIL, "ideas must be a list")
+        return
+    _record("ideas:json", PASS,
+            f"JSON OK, total={data['total']}, gate={data['gate']}")
+
+
 def test_stability_summary():
     """stability_summary.py: rc=0, emite DECISIÓN GO o KO."""
     rc, out, err = _run("stability_summary.py", [], timeout=20)
@@ -2089,6 +2113,7 @@ ALL_TESTS = [
     (123, "health_score:run",            test_health_score),
     (124, "scan:json_output",            test_scan_json_output),
     (125, "session_details:json",        test_session_details_json),
+    (126, "ideas:json",                  test_ideas_json),
 ]
 
 
