@@ -123,6 +123,11 @@
       "title": "Tests para scan --purge",
       "implemented_at": "2026-04-23T05:33:55.769080+00:00",
       "chg": "BAGO-CHG-141"
+    },
+    {
+      "title": "Coverage por módulo en dashboard",
+      "implemented_at": "2026-04-23T05:38:56.325121+00:00",
+      "chg": "BAGO-CHG-142"
     }
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"

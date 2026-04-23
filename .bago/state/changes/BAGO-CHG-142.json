@@ -1,0 +1,19 @@
+{
+  "id": "BAGO-CHG-142",
+  "change_id": "BAGO-CHG-142",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Coverage por módulo en dashboard (118/139 = 84%)",
+  "motivation": "Nueva sección COBERTURA DE TESTS en pack_dashboard.py: parsea ALL_TESTS en integration_tests.py, calcula % de tools cubiertos y lista tools sin test.",
+  "status": "applied",
+  "affected_components": [
+    "pack_dashboard.py"
+  ],
+  "related_evidence": [
+    "126/126 tests pass",
+    "84% coverage visible in dashboard"
+  ],
+  "created_at": "2026-04-23T05:38:56.322342+00:00",
+  "updated_at": "2026-04-23T05:38:56.322717+00:00",
+  "author": "copilot-autonomous"
+}

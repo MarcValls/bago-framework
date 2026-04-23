@@ -435,6 +435,67 @@ def section_recent_chgs(n=5):
         lines.append(_row(f"  {sev_tag} {chg_id}  {title}"))
     return lines
 
+
+def section_tool_coverage():
+    """Coverage por módulo: % de tools con al menos un test en integration_tests.py."""
+    tests_file = TOOLS / "integration_tests.py"
+    lines = [_header("── COBERTURA DE TESTS ──")]
+    if not tests_file.exists():
+        lines.append(_row("  (integration_tests.py no encontrado)"))
+        return lines
+
+    # Extract test key names from ALL_TESTS
+    content = tests_file.read_text(encoding="utf-8", errors="ignore")
+    all_tests_start = content.find("ALL_TESTS = [")
+    test_names: set[str] = set()
+    if all_tests_start != -1:
+        import re as _re
+        block = content[all_tests_start:]
+        bracket_end = block.find("]")
+        if bracket_end != -1:
+            block = block[:bracket_end]
+        for m in _re.finditer(r'\(\s*\d+\s*,\s*"([^"]+)"', block):
+            # Normalize: remove : suffix (e.g. "scan:purge" → "scan")
+            raw = m.group(1).split(":")[0].split("_")[0]
+            test_names.add(m.group(1))  # full name for mapping
+            test_names.add(raw)         # stem only
+
+    # List all tool .py files
+    all_tools = sorted(TOOLS.glob("*.py"))
+    total = len(all_tools)
+    covered = 0
+    covered_names: list[str] = []
+    uncovered_names: list[str] = []
+
+    for tool_path in all_tools:
+        stem = tool_path.stem  # e.g. "sprint_manager"
+        # Check if any test name covers this tool
+        matched = any(
+            stem in name or name.split(":")[0] in stem or stem.startswith(name.split(":")[0])
+            for name in test_names
+        )
+        if matched:
+            covered += 1
+            covered_names.append(stem)
+        else:
+            uncovered_names.append(stem)
+
+    pct = int(covered * 100 / max(total, 1))
+    bar = _bar(pct, 100, 16)
+    lines.append(_row(f"  Tools cubiertos: {covered}/{total}  [{bar}]  {pct}%"))
+
+    # Show up to 5 uncovered tools as hints
+    if uncovered_names:
+        sample = uncovered_names[:5]
+        hint = ", ".join(sample)
+        if len(uncovered_names) > 5:
+            hint += f" +{len(uncovered_names) - 5} más"
+        lines.append(_row(f"  Sin test: {hint}"))
+    else:
+        lines.append(_row("  ✅ Todos los tools tienen cobertura"))
+
+    return lines
+
 # ─── render principal ─────────────────────────────────────────────────────────
 
 def render(full=False, compact=False, as_json=False):
@@ -451,6 +512,7 @@ def render(full=False, compact=False, as_json=False):
     sprint_lines = section_sprint()
     sess_lines  = section_last_session()
     chgs_lines  = section_recent_chgs()
+    cov_lines   = section_tool_coverage()
 
     if as_json:
         # Machine-readable summary
@@ -503,6 +565,8 @@ def render(full=False, compact=False, as_json=False):
     out += sess_lines
     out.append(_divider())
     out += chgs_lines
+    out.append(_divider())
+    out += cov_lines
     out.append(_bottom())
 
     print("\n".join(out))
