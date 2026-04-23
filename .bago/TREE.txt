@@ -473,6 +473,9 @@ state/findings/SCAN-20260423_030904.json
 state/findings/SCAN-20260423_031523.json
 state/findings/SCAN-20260423_031754.json
 state/findings/SCAN-20260423_031942.json
+state/findings/SCAN-20260423_032150.json
+state/findings/SCAN-20260423_032305.json
+state/findings/SCAN-20260423_032759.json
 state/gh_config/
 state/global_state.backup.json
 state/global_state.json
@@ -705,6 +708,10 @@ state/iterations/ITER-0219.json
 state/iterations/ITER-0220.json
 state/iterations/ITER-0221.json
 state/iterations/ITER-0222.json
+state/iterations/ITER-0223.json
+state/iterations/ITER-0224.json
+state/iterations/ITER-0225.json
+state/iterations/ITER-0226.json
 state/linked_projects.json
 state/metrics/
 state/metrics/README.md
@@ -846,6 +853,8 @@ state/reports/RISK-20260423_001914.json
 state/reports/RISK-20260423_031004.json
 state/reports/RISK-20260423_031630.json
 state/reports/RISK-20260423_031759.json
+state/reports/RISK-20260423_032052.json
+state/reports/RISK-20260423_032335.json
 state/scenarios/
 state/scenarios/ESCENARIO-003-COSECHA-CONTEXTUAL.md
 state/scenarios/ESCENARIO-COMPETICION-BAGO.md

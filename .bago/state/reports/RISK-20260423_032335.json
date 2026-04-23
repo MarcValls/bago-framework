@@ -1,0 +1,33 @@
+{
+  "report_id": "RISK-20260423_032335",
+  "scan_id": "SCAN-20260423_032305",
+  "generated_at": "2026-04-23T03:23:35.495617+00:00",
+  "summary": {
+    "by_category": {
+      "VelocityDrag": {
+        "count": 1,
+        "total_exposure": 1.2,
+        "max_exposure": 1.2,
+        "critical": 0,
+        "high": 0
+      }
+    },
+    "total_exposure": 1.2,
+    "items": 1
+  },
+  "items": [
+    {
+      "file": "/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmp80dp4jea/synth.py",
+      "line": 3,
+      "rule": "BAGO-E001",
+      "source": "bago",
+      "severity": "error",
+      "category": "VelocityDrag",
+      "probability": 0.4,
+      "impact": 3,
+      "exposure": 1.2,
+      "level": "BAJO",
+      "consequence": "BAGO governance gap \u2192 audit effort"
+    }
+  ]
+}

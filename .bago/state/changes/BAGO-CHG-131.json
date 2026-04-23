@@ -1,0 +1,19 @@
+{
+  "id": "BAGO-CHG-131",
+  "change_id": "BAGO-CHG-131",
+  "type": "governance",
+  "severity": "minor",
+  "title": "session_preflight + session_opener: GO garantizado desde handoff W2",
+  "motivation": "El preflight rechazaba handoffs válidos por: (1) verbo español faltante (reducir/mejorar/etc.), (2) <3 artefactos útiles, (3) objetivo sin para-que. session_opener ahora auto-complementa artefactos y objetivo desde la métrica del handoff.",
+  "status": "applied",
+  "affected_components": [
+    "session_preflight.py",
+    "session_opener.py"
+  ],
+  "related_evidence": [
+    "SES-AUTONOMOUS-2026-04-23-002"
+  ],
+  "created_at": "2026-04-23T03:28:41.168069+00:00",
+  "updated_at": "2026-04-23T03:28:41.168069+00:00",
+  "author": "copilot-autonomous"
+}

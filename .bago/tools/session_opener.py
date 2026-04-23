@@ -57,6 +57,22 @@ def _load_task() -> dict | None:
         return None
 
 
+PROTOCOL_PREFIXES = {"state/sessions", "state/changes", "state/evidences", "TREE.txt", "CHECKSUMS.sha256"}
+
+# Supplementary artifacts added when the handoff only declares 1–2 useful files.
+# These are always present and useful (never protocol), ordered by relevance.
+SUPPLEMENT_ARTIFACTS = [
+    "README.md",
+    ".bago/tools/integration_tests.py",
+    "workflows/W7_FOCO_SESION.md",
+]
+
+
+def _is_useful(path: str) -> bool:
+    return not any(path.startswith(p) for p in PROTOCOL_PREFIXES)
+
+
+
 def _derive_roles(task: dict) -> str:
     wf = str(task.get("workflow", "")).strip().upper()
     for key, roles in WORKFLOW_ROLES.items():
@@ -69,7 +85,6 @@ def _build_args(task: dict) -> dict[str, str]:
     objetivo  = task.get("objetivo", "").strip()
     roles     = _derive_roles(task)
     archivos  = task.get("archivos_candidatos", [])
-    artefactos = ",".join(archivos[:6]) if archivos else "state/sessions,state/changes,state/evidences"
     wf = str(task.get("workflow", "")).strip().upper()
     handoff_chain = str(task.get("handoff_chain", "")).strip()
     if not handoff_chain:
@@ -79,6 +94,29 @@ def _build_args(task: dict) -> dict[str, str]:
                 break
     if not handoff_chain:
         handoff_chain = DEFAULT_HANDOFF
+
+    # Guarantee ≥3 useful artifacts; supplement with standard ones if needed
+    useful = [a for a in archivos if _is_useful(a)]
+    for extra in SUPPLEMENT_ARTIFACTS:
+        if len(useful) >= 3:
+            break
+        if extra not in useful:
+            useful.append(extra)
+    artefactos = ",".join(useful[:6])
+
+    # Ensure objetivo includes a "done" criterion (Regla C).
+    # If missing "para/que" and a metric exists, append it.
+    low = objetivo.lower()
+    has_done = "para que" in low or "para " in low or " que " in low
+    if not has_done:
+        metric = str(task.get("metric", "")).strip()
+        if metric:
+            objetivo = f"{objetivo.rstrip('.')} para que {metric[0].lower()}{metric[1:]}"
+        else:
+            siguiente = str(task.get("siguiente_paso", "")).strip()
+            if siguiente:
+                objetivo = f"{objetivo.rstrip('.')} para que {siguiente[0].lower()}{siguiente[1:]}"
+
     return {
         "objetivo": objetivo,
         "roles": roles,

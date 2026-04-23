@@ -40,6 +40,9 @@ VERBS_ES = [
     "crear", "actualizar", "corregir", "migrar", "añadir", "eliminar",
     "refactorizar", "documentar", "validar", "analizar", "implementar",
     "generar", "registrar", "cerrar", "optimizar", "diseñar",
+    "reducir", "mejorar", "integrar", "ampliar", "limpiar", "consolidar",
+    "completar", "sincronizar", "garantizar", "habilitar", "simplificar",
+    "depurar", "unificar", "extraer", "configurar", "ajustar",
 ]
 
 

@@ -1,43 +1,27 @@
 {
-  "idea_index": 2,
-  "idea_title": "Reforzar rango del selector",
-  "priority": 64,
+  "idea_index": 4,
+  "idea_title": "Compactar recomendacion final",
+  "priority": 62,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-  "objetivo": "Documentar y hacer explicito el rango de 5 a 20 ideas en la salida del selector, para que el usuario siempre vea el limite operativo.",
-  "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
+  "objetivo": "Reducir la friccion del final del selector con una recomendacion mas directa.",
+  "alcance": "Materializar con el mínimo cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
-    ".bago/tools/emit_ideas.py",
-    "README.md",
-    ".bago/README.md",
-    ".bago/docs/operation/GUIA_DE_USO.md"
+    ".bago/tools/emit_ideas.py"
   ],
   "validacion_minima": [
-    "La salida debe explicar el cambio, los archivos y la verificación mínima.",
-    "Métrica objetivo: El selector siempre publica el rango 5-20 sin desviaciones."
+    "Explica cambio, archivos y verificación mínima.",
+    "Métrica objetivo: La recomendacion final queda en una sola accion explícita."
   ],
-  "siguiente_paso": "Codificar el rango de salida en el selector y verificarlo con una ejecucion real.",
-  "metric": "El selector siempre publica el rango 5-20 sin desviaciones.",
+  "siguiente_paso": "Ajustar el texto final de `./ideas` sin alterar el ranking.",
+  "metric": "La recomendacion final queda en una sola accion explícita.",
   "handoff_chain": "role_analyst>role_architect>role_generator>role_validator>role_vertice",
   "human_validation_prompt": "Describe en 1-2 frases qué experiencia humana mejora y cómo lo verificaste.",
   "contexto": [
-    "Entrada: enumeracion actual del selector.",
-    "Salida: reglas de cantidad visibles para el usuario.",
-    "Ventaja: evita listas demasiado cortas o excesivas."
+    "Entrada: salida de ideas ya ordenadas.",
+    "Salida: siguiente paso corto y visible.",
+    "Ventaja: facilita pasar de idea a decision sin leer de nuevo toda la lista."
   ],
-  "status": "done",
-  "accepted_at": "2026-04-22T23:39:06.234140+00:00",
-  "completed_at": "2026-04-22T23:39:52.059238+00:00",
-  "completion_gate": {
-    "status": "GO",
-    "reason": "Tests de cierre en verde + validación humana declarada.",
-    "tests": [
-      {
-        "cmd": "./bago ideas 2>&1 | grep -q 'rango: 5' && echo OK",
-        "exit_code": 0,
-        "ok": true
-      }
-    ],
-    "human_check": "La salida de bago ideas ahora muestra el rango 5-20 ideas junto al total, de forma que el usuario siempre ve el limite operativo del selector sin necesidad de leer el codigo fuente."
-  }
+  "status": "pending",
+  "accepted_at": "2026-04-23T03:20:36.858220+00:00"
 }

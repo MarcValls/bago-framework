@@ -51,6 +51,20 @@ def _run(tool, args=None, cwd=None, timeout=30):
         return -1, "", str(e)
 
 
+def _run_env(tool, args=None, env=None, cwd=None, timeout=30):
+    """Ejecuta un tool Python con variables de entorno adicionales."""
+    cmd = ["python3", str(TOOLS / tool)] + (args or [])
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True,
+                           timeout=timeout, cwd=str(cwd or PACK_PARENT),
+                           env=env)
+        return r.returncode, r.stdout, r.stderr
+    except subprocess.TimeoutExpired:
+        return -1, "", "TIMEOUT"
+    except Exception as e:
+        return -1, "", str(e)
+
+
 def _run_raw(cmd, cwd=None, timeout=30):
     """Ejecuta comando arbitrario y retorna (returncode, stdout, stderr)."""
     try:
@@ -1242,13 +1256,18 @@ def test_dashboard_sprint_progress():
 def test_scan_finds_issues():
     """scan.py sobre un archivo sintético con patrones conocidos produce findings > 0."""
     import tempfile as _tmp, os as _os
-    # Use a controlled temp file with known bad patterns (not the live tools dir)
+    # Use a controlled temp file with known bad patterns (not the live tools dir).
+    # Redirect BAGO_STATE_DIR to temp so the synthetic scan result doesn't pollute
+    # the real state/findings/ (which would inflate risk_matrix residual exposure).
     with _tmp.TemporaryDirectory() as tmpd:
         # Write a synthetic file with patterns that should always produce findings
         synth = _os.path.join(tmpd, "synth.py")
         with open(synth, "w") as f:
             f.write("try:\n    pass\nexcept:\n    pass\n")  # BAGO-E001: bare except
-        rc, out, _ = _run("scan.py", [tmpd, "--lang", "py", "--json"], timeout=60)
+        state_dir = _os.path.join(tmpd, "state")
+        _os.makedirs(state_dir, exist_ok=True)
+        env = {**_os.environ, "BAGO_STATE_DIR": state_dir}
+        rc, out, _ = _run_env("scan.py", [tmpd, "--lang", "py", "--json"], env=env, timeout=60)
     if rc != 0:
         _record("scan:finds_issues", FAIL, f"rc={rc} {out[-80:]}")
         return
