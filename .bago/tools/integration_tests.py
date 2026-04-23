@@ -2534,6 +2534,30 @@ def test_velocity_top_rolling():
     _record("velocity:top_rolling", PASS, f"{rolling_key} has {len(data[rolling_key])} windows ≤3")
 
 
+def test_ideas_dynamic_scoring():
+    """emit_ideas.py --json: cada idea tiene campo 'penalized' booleano."""
+    rc, out, err = _run("emit_ideas.py", ["--json"], timeout=30)
+    if rc != 0:
+        _record("ideas:dynamic_scoring", FAIL, f"rc={rc} err={err[:80]}")
+        return
+    try:
+        data = json.loads(out)
+    except json.JSONDecodeError:
+        _record("ideas:dynamic_scoring", FAIL, f"invalid JSON: {out[:60]!r}")
+        return
+    ideas = data.get("ideas", [])
+    if not ideas:
+        _record("ideas:dynamic_scoring", FAIL, "no ideas in JSON")
+        return
+    if "penalized" not in ideas[0]:
+        _record("ideas:dynamic_scoring", FAIL, f"'penalized' field missing from idea: {list(ideas[0])}")
+        return
+    if not isinstance(ideas[0]["penalized"], bool):
+        _record("ideas:dynamic_scoring", FAIL, f"'penalized' is not bool: {type(ideas[0]['penalized'])}")
+        return
+    _record("ideas:dynamic_scoring", PASS, f"penalized field present in {len(ideas)} ideas")
+
+
 def test_risk_matrix_since():
     """risk_matrix.py --since 2020-01-01 --csv: rc=0 y header con 'category'."""
     rc, out, err = _run("risk_matrix.py", ["--since", "2020-01-01", "--csv"], timeout=30)
@@ -2699,6 +2723,7 @@ ALL_TESTS = [
     (150, "scan:since",                  test_scan_since),
     (151, "risk_matrix:since",           test_risk_matrix_since),
     (152, "velocity:top_rolling",        test_velocity_top_rolling),
+    (153, "ideas:dynamic_scoring",       test_ideas_dynamic_scoring),
 ]
 
 

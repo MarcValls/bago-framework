@@ -281,7 +281,8 @@
     "health_score --watch mode",
     "scan --since DATE filter",
     "risk_matrix --since DATE",
-    "velocity --top N rolling"
+    "velocity --top N rolling",
+    "Scoring din\u00e1mico por registro"
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"
 }

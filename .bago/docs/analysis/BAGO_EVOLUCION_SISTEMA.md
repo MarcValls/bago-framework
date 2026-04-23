@@ -31,10 +31,10 @@ Ahora trabaja como un sistema operativo más maduro:
 
 | Métrica | Inicio | Ahora |
 | --- | ---:| ---:|
-| Snapshot documental mínimo | 22 artefactos | 275 artefactos |
+| Snapshot documental mínimo | 22 artefactos | 276 artefactos |
 | Sesiones nativas visibles | 19 | 57 |
 | Sesiones migradas preservadas | 3 | 4 preservadas en `state/migrated_sessions/` |
-| Cambios migrados/validados | 0 | 158 |
+| Cambios migrados/validados | 0 | 159 |
 | Evidencias registradas | no consolidado en snapshot inicial | 60 |
 | Integridad del pack | GO | GO / GO / GO |
 
@@ -45,7 +45,7 @@ Hoy local: **23/04/2026**.
 | Métrica | Valor |
 | --- | ---: |
 | Sesiones de hoy | 6 |
-| Cambios de hoy | 71 |
+| Cambios de hoy | 72 |
 | Evidencias de hoy | 7 |
 | Corridas autónomas de hoy | 0 |
 | Solicitudes de hoy en `metrics/runs` | 0 |
@@ -139,12 +139,12 @@ stateDiagram-v2
 ## Observaciones
 
 - **Snapshot:** 23/04/2026 · versión 3.0 · estado del sistema: `stable`.
-- **Corpus total:** 57 sesiones · 158 cambios · 60 evidencias.
-- **Suite de tests:** `pass` · 164 workers registrados.
+- **Corpus total:** 57 sesiones · 159 cambios · 60 evidencias.
+- **Suite de tests:** `pass` · 165 workers registrados.
 - **Últimos cambios aplicados:**
+  - velocity --top N rolling: limita ventanas rolling en JSON output
   - risk_matrix --since DATE filter: agregar hallazgos de scans desde fech
   - scan --since DATE filter
   - health_score --watch mode
   - emit_ideas --section filter
-  - scan --stats flag
 - La evolución del sistema es de especialización progresiva: cada sprint aumenta la capacidad de auto-gobernanza y cierre de ciclos con evidencias.

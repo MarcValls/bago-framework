@@ -1663,6 +1663,7 @@ def main() -> int:
                     "summary": str(idea.get("summary", "")),
                     "metric": str(idea.get("metric", "")),
                     "next_step": str(idea.get("w2", "")),
+                    "penalized": bool(idea.get("_penalized", False)),
                 }
                 for i, idea in enumerate(ideas)
             ]
