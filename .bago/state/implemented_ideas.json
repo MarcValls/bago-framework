@@ -249,6 +249,9 @@
     },
     {
       "title": "risk_matrix --csv export"
+    },
+    {
+      "title": "dashboard --minimal flag"
     }
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"

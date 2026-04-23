@@ -512,8 +512,20 @@ def section_tool_coverage():
 
 # ─── render principal ─────────────────────────────────────────────────────────
 
-def render(full=False, compact=False, as_json=False):
+def render(full=False, compact=False, as_json=False, minimal=False):
     gs = _load_global()
+
+    if minimal:
+        health_val, health_label = _health()
+        chgs = _count("changes")
+        lr_path = Path(__file__).parent.parent.parent / "sandbox" / "runtime" / "last-report.json"
+        try:
+            lr = json.loads(lr_path.read_text())
+            tests_str = f"{lr.get('workers', '?')}/{lr.get('workers', '?')} ✅" if lr.get('status') == 'pass' else f"FAIL ({lr.get('failure_count',0)} errores)"
+        except Exception:
+            tests_str = "?"
+        print(f"health={health_val} ({health_label})  CHGs={chgs}  tests={tests_str}")
+        return
 
     health_lines, score = section_health()
     inv_lines = section_inventory()
@@ -593,5 +605,6 @@ if __name__ == "__main__":
     p.add_argument("--full",    action="store_true", help="Muestra hotspots y secciones extra")
     p.add_argument("--compact", action="store_true", help="Solo salud + inventario")
     p.add_argument("--json",    action="store_true", help="Salida JSON machine-readable")
+    p.add_argument("--minimal", action="store_true", help="3 líneas: health, CHGs, tests")
     args = p.parse_args()
-    render(full=args.full, compact=args.compact, as_json=args.json)
+    render(full=args.full, compact=args.compact, as_json=args.json, minimal=getattr(args, "minimal", False))

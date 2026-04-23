@@ -2218,6 +2218,23 @@ def test_risk_matrix_csv():
     _record("risk_matrix:csv", PASS, f"CSV OK, header={header}, rows={len(lines)-1}")
 
 
+def test_dashboard_minimal():
+    """pack_dashboard.py --minimal: 1 línea con health=, CHGs=, tests=."""
+    rc, out, err = _run("pack_dashboard.py", ["--minimal"], timeout=30)
+    if rc != 0:
+        _record("dashboard:minimal", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    lines = [l for l in out.splitlines() if l.strip()]
+    if not lines:
+        _record("dashboard:minimal", FAIL, "no output")
+        return
+    line = lines[0]
+    if "health=" not in line or "CHGs=" not in line or "tests=" not in line:
+        _record("dashboard:minimal", FAIL, f"missing expected fields: {line}")
+        return
+    _record("dashboard:minimal", PASS, f"minimal OK: {line[:80]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2355,6 +2372,7 @@ ALL_TESTS = [
     (134, "ideas:top_n",                 test_ideas_top_n),
     (135, "debt_ledger:csv",             test_debt_ledger_csv),
     (136, "risk_matrix:csv",             test_risk_matrix_csv),
+    (137, "dashboard:minimal",           test_dashboard_minimal),
 ]
 
 
