@@ -1,6 +1,17 @@
 # CHANGELOG
 
-*Generado automáticamente — 2026-04-22*
+*Generado automáticamente — 2026-04-23*
+
+---
+
+## [3.0] — SPRINT-005 (2026-04-23) 🔄
+
+### 🔄 Mejoras SPRINT-005 — Herramientas clave actualizadas
+
+- **`dashboard_v2.py`** — Dashboard V2 mejorado: health_ring con semáforo visual, sección de riesgo cuantificado (Security/Reliability/Maintainability/VelocityDrag), ledger de deuda técnica en horas/€, sparkline de velocity
+- **`testgen.py`** — Compatibilidad Python 3.9 (`Optional[X]` en lugar de `X | Y`); soporte Go subtests (`t.Run` con función anónima); patrón AAA (Arrange/Act/Assert) en Rust
+- **`validate_state.py`** — RULE-CDTR-001 reporting v2: CDTR-E01 bloquea merge si hay findings críticos sin reconocer >7 días; CDTR-E02 advisory si health < 70 sin sprint de mejora activo
+- **`bago_watch.py`** — Smart watcher de archivos (comando: `bago watch-state`): polling SHA-256 sobre `state/changes/`, `state/sessions/`, `state/findings/`; muestra delta findings; ejecuta health check post-cambio
 
 ---
 

@@ -28,13 +28,14 @@ BAGO amplifica el trabajo con IA resolviendo:
 ./bago setup
 
 # 2. Verifica la salud del pack (esperado: 100/100 🟢)
-./bago health
+./bago health            # o ./bago stability — salud antes de idear
 
-# 3. Abre o gestiona el sprint activo
-./bago sprint status
+# 3. Lista y acepta una idea para implementar
+./bago ideas             # lista ideas priorizadas (solo low-risk con métrica en baseline_clean_mode)
+./bago ideas --accept N  # acepta la idea N → genera handoff W2 en .bago/state/pending_w2_task.json
 
 # 4. Abre una sesión de trabajo con contexto precargado
-./bago session
+./bago session           # lee el handoff aceptado y lanza la sesión W2
 
 # 5. Cosecha el trabajo realizado (protocolo W9)
 ./bago detector       # ¿Hay contexto acumulado para cosechar?
@@ -62,6 +63,7 @@ BAGO amplifica el trabajo con IA resolviendo:
 
 | Comando | Herramienta | Descripción |
 |---------|-------------|-------------|
+| `bago dashboard` | `pack_dashboard.py` | Cockpit de estado: health ring, riesgo, deuda técnica, velocity sparkline (motor: `dashboard_v2.py`) |
 | `bago health` | `health_score.py` | Score 0-100 con 5 dimensiones |
 | `bago audit` | `audit_v2.py` | Auditoría integral del pack |
 | `bago validate` | `validate_pack.py` | Validación profunda del pack |
@@ -82,6 +84,7 @@ BAGO amplifica el trabajo con IA resolviendo:
 | `bago metrics` | `metrics_trends.py` | Tendencias rolling + sparklines ASCII |
 | `bago doctor` | `doctor.py` | Diagnóstico integral del pack |
 | `bago git` | `git_context.py` | Contexto git (branch/log/autores) + inject |
+| `bago testgen` | `testgen.py` | Genera suite de tests para repos desconocidos (Python/JS/Go/Rust) |
 
 ### Fase 2 — Exportación y estado (S8–S15)
 
@@ -89,6 +92,7 @@ BAGO amplifica el trabajo con IA resolviendo:
 |---------|-------------|-------------|
 | `bago export` | `export.py` | HTML dark-theme + CSV con SVG chart |
 | `bago watch` | `watch.py` | Monitor en tiempo real del estado BAGO |
+| `bago watch-state` | `bago_watch.py` | Smart watcher: delta findings + health check post-cambio (SHA-256) |
 | `bago test` | `integration_tests.py` | Suite de integración (55/55 tests) |
 | `bago changelog` | `changelog.py` | CHANGELOG desde BAGO-CHG-*.json |
 | `bago snapshot` | `snapshot.py` | ZIP point-in-time de state/ |
@@ -134,7 +138,7 @@ BAGO amplifica el trabajo con IA resolviendo:
 | Herramienta | Descripción |
 |-------------|-------------|
 | `validate_manifest.py` | Valida integridad y esquema del manifiesto `pack.json` |
-| `validate_state.py` | Valida consistencia del estado: sessions / changes / evidences |
+| `validate_state.py` | Valida consistencia del estado: sessions / changes / evidences · RULE-CDTR-001 v2 (CDTR-E01 blocking, CDTR-E02 advisory) |
 | `contracts.py` | Sistema de contratos de estado verificables con deadline y auditoría |
 | `session_preflight.py` | Preflight W7: verifica reglas ESCENARIO-001 antes de abrir sesión |
 

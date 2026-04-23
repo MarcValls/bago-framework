@@ -1,7 +1,21 @@
 # Changelog — bago_amtec
 
 > Formato: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-> Generado por `bago changelog` el 2026-04-21
+> Generado por `bago changelog` el 2026-04-23
+
+---
+
+## [3.0] — Sprint 005 (2026-04-23)
+
+### Added
+
+- `bago watch-state` → `bago_watch.py` — Smart watcher con delta findings: polling SHA-256 sobre `state/changes/`, `state/sessions/`, `state/findings/`; health check automático post-cambio; `--once` para CI
+- `dashboard_v2.py` — Motor del dashboard V2: health_ring con semáforo, riesgo cuantificado, ledger de deuda técnica en horas y €, sparkline de velocity; consumido por `pack_dashboard.py`
+
+### Changed
+
+- `testgen.py` — Python 3.9 compat: `Optional[X]` en lugar de union syntax `X | Y`; Go: subtests con `t.Run` y función anónima; Rust: patrón AAA (Arrange/Act/Assert) en tests generados
+- `validate_state.py` — RULE-CDTR-001 v2: CDTR-E01 blocking (findings críticos sin reconocer >7 días bloquean merge); CDTR-E02 advisory (health < 70 sin sprint de mejora activo)
 
 ---
 
