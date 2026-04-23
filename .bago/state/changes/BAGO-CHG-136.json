@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-136",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Cosecha contextual W9: Stub reports vm/soak/matrix implementados (4 indicadores act",
+  "motivation": "Formalizar exploración libre. Decisión: Stub reports vm/soak/matrix implementados (4 indicadores activos). Hook post-commit instalado. FALLBACK_IDEAS ampliadas a 12 (9 activas). Mínimo de 5 ideas garantizado.. Descarte: Usar infraestructura real de VM para los indicadores (requiere CI externo, fuera de alcance ahora mismo).",
+  "status": "applied",
+  "affected_components": [
+    "(exploración sin artefactos de fichero)"
+  ],
+  "related_evidence": "BAGO-EVD-078",
+  "created_at": "2026-04-23T04:31:46.330170+00:00",
+  "updated_at": "2026-04-23T04:31:46.330170+00:00",
+  "author": "role_auditor"
+}

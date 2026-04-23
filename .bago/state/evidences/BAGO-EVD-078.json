@@ -1,0 +1,12 @@
+{
+  "evidence_id": "BAGO-EVD-078",
+  "type": "decision",
+  "related_to": [
+    "BAGO-CHG-136",
+    "SES-HARVEST-2026-04-23-003"
+  ],
+  "summary": "Cosecha W9 — SES-HARVEST-2026-04-23-003",
+  "details": "Decisión: Stub reports vm/soak/matrix implementados (4 indicadores activos). Hook post-commit instalado. FALLBACK_IDEAS ampliadas a 12 (9 activas). Mínimo de 5 ideas garantizado. | Descarte: Usar infraestructura real de VM para los indicadores (requiere CI externo, fuera de alcance ahora mismo) | Próximo paso: Implementar auto-limpieza de scans y sync badges README desde global_state | Ficheros afectados: (exploración sin artefactos de fichero)",
+  "status": "recorded",
+  "recorded_at": "2026-04-23T04:31:46.330170+00:00"
+}
