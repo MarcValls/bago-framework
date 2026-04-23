@@ -55,9 +55,12 @@ BAGO amplifica el trabajo con IA resolviendo:
 | Comando | Herramienta | Descripción |
 |---------|-------------|-------------|
 | `bago start` | `bago_start.py` | Menú interactivo — empieza aquí |
-| `bago ideas` | `emit_ideas.py` | Ver y aceptar ideas priorizadas |
+| `bago ideas` | `emit_ideas.py` | Ver y aceptar ideas priorizadas (scoring 0–100, rango 5–20, solo `risk=low` con métrica) |
 | `bago session` | `session_opener.py` | Abrir sesión con contexto precargado |
 | `bago status` | `quick_status.py` | Estado rápido del proyecto |
+
+> **`bago ideas`**: puntúa por `priority` (0–100) · filtra `risk=low` con métrica · retorna 5–20 ideas.
+> Salida: `1. [66] Alinear README   siguiente paso: bago ideas --accept 1`
 
 ### Gobernanza y validación
 

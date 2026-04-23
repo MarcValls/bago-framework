@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-097",
+  "type": "architecture",
+  "severity": "minor",
+  "title": "pack_dashboard: velocity calcula sesiones/semana reales (últimas 4 semanas)",
+  "motivation": "El cockpit mostraba \"—\" porque sessions_per_week siempre era lista vacía",
+  "status": "applied",
+  "affected_components": [
+    "pack_dashboard.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T00:46:55.340279+00:00",
+  "updated_at": "2026-04-23T00:46:55.340279+00:00",
+  "author": "bago-autonomous"
+}

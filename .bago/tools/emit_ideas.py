@@ -284,13 +284,15 @@ def register_implemented_idea(title: str, idea_index: int) -> None:
 
 
 def build_idea_sections(items: list[dict[str, object]]) -> dict[str, list[dict[str, object]]]:
+    # 5–20 range is intentional: below 5 risks too little choice for decision;
+    # above 20 causes cognitive overload. If fewer than 5 are available, show all.
     contextual = [
         item
         for item in items
         if str(item.get("section", "contextuales")) == "contextuales"
     ]
     contextual = sorted(contextual, key=lambda item: (-int(item["priority"]), str(item["title"])))
-    contextual = contextual[:MAX_IDEAS]
+    contextual = contextual[:MAX_IDEAS]  # hard cap: contextual ideas never exceed 20
 
     respaldo: list[dict[str, object]] = []
     if len(contextual) < MIN_IDEAS:
@@ -305,6 +307,12 @@ def build_idea_sections(items: list[dict[str, object]]) -> dict[str, list[dict[s
             seen_titles.add(title)
 
     respaldo = sorted(respaldo, key=lambda item: (-int(item["priority"]), str(item["title"])))
+
+    # Explicit final cap: total output must not exceed MAX_IDEAS (cognitive load boundary)
+    if len(contextual) + len(respaldo) > MAX_IDEAS:
+        excess = len(contextual) + len(respaldo) - MAX_IDEAS
+        respaldo = respaldo[:max(0, len(respaldo) - excess)]
+
     return {"contextuales": contextual, "respaldo": respaldo}
 
 
@@ -333,24 +341,24 @@ def render_handoff(selected: dict[str, object]) -> list[str]:
     metric = str(selected.get("metric", "")).strip()
 
     if title == "Handoff idea -> W2":
-        objective = "Convertir una idea seleccionada en una tarea lista para implementar."
-        scope = "Generar una salida accionable al aceptar una idea sin tocar el ranking ni el detalle."
-        non_scope = "No cambia la selección, el scoring ni los reports de estabilidad."
+        objective = "Idea → tarea W2 lista para implementar."
+        scope = "Salida accionable al aceptar; sin tocar ranking."
+        non_scope = "Sin cambios al ranking ni reports."
         files = [
             ".bago/tools/emit_ideas.py",
         ]
         validation = [
             "`./ideas --detail 1` mantiene la salida actual.",
-            "`./ideas --accept 1` imprime objetivo, alcance, no alcance, archivos candidatos y validación.",
+            "`./ideas --accept 1` muestra objetivo y validación.",
             "`./ideas` sin flags conserva el selector existente.",
         ]
     else:
         objective = summary
-        scope = "Materializar la idea seleccionada con el menor cambio suficiente."
+        scope = "Materializar con el mínimo cambio suficiente."
         non_scope = "No expandir el alcance fuera de la idea elegida."
         files = [".bago/tools/emit_ideas.py"]
         validation = [
-            "La salida debe explicar el cambio, los archivos y la verificación mínima.",
+            "Explica cambio, archivos y verificación mínima.",
         ]
         if metric:
             validation.append(f"Métrica objetivo: {metric}")
@@ -381,21 +389,21 @@ def build_handoff_data(selected: dict[str, object], index: int) -> dict[str, obj
     priority = int(str(selected.get("priority", 0)))
 
     if title == "Handoff idea -> W2":
-        objective = "Convertir una idea seleccionada en una tarea lista para implementar."
-        scope = "Generar una salida accionable al aceptar una idea sin tocar el ranking ni el detalle."
-        non_scope = "No cambia la selección, el scoring ni los reports de estabilidad."
+        objective = "Idea → tarea W2 lista para implementar."
+        scope = "Salida accionable al aceptar; sin tocar ranking."
+        non_scope = "Sin cambios al ranking ni reports."
         files = [".bago/tools/emit_ideas.py"]
         validation = [
             "`./ideas --detail 1` mantiene la salida actual.",
-            "`./ideas --accept 1` imprime objetivo, alcance, no alcance, archivos candidatos y validación.",
+            "`./ideas --accept 1` muestra objetivo y validación.",
             "`./ideas` sin flags conserva el selector existente.",
         ]
     else:
         objective = summary
-        scope = "Materializar la idea seleccionada con el menor cambio suficiente."
+        scope = "Materializar con el mínimo cambio suficiente."
         non_scope = "No expandir el alcance fuera de la idea elegida."
         files = [".bago/tools/emit_ideas.py"]
-        validation = ["La salida debe explicar el cambio, los archivos y la verificación mínima."]
+        validation = ["Explica cambio, archivos y verificación mínima."]
         if metric:
             validation.append(f"Métrica objetivo: {metric}")
 
@@ -788,10 +796,7 @@ def main() -> int:
         metric = str(selected.get("metric", "")).strip()
         if not metric:
             print("- Status: RECHAZADA — sin métrica medible")
-            print("")
-            print("Esta idea no declara una mejora medible en trazabilidad u operación.")
-            print("Para aceptarla, la idea debe tener un campo 'metric' no vacío.")
-            print("Elige una idea que declare un incremento concreto y verificable.")
+            print("  Sin 'metric': elige idea con mejora verificable.")
             return 1
         print("- Status: accepted for W2")
         print("- Workflow: run `make workflow-tactical NAME=W2`")

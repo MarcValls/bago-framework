@@ -1,0 +1,16 @@
+{
+  "change_id": "BAGO-CHG-098",
+  "type": "architecture",
+  "severity": "minor",
+  "title": "ideas selector: README alineado, rango 5-20 reforzado, recomendación compacta",
+  "motivation": "Backlog ideas scored 62-66: alinear README, limitar output cognitivo (5-20), compactar handoff >60chars",
+  "status": "applied",
+  "affected_components": [
+    "README.md",
+    "emit_ideas.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T00:54:34.363279+00:00",
+  "updated_at": "2026-04-23T00:54:34.363279+00:00",
+  "author": "bago-autonomous"
+}

@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-096",
+  "type": "architecture",
+  "severity": "minor",
+  "title": "pack_dashboard: risk cockpit muestra exposición 0.0 (BAJA) cuando no hay riesgos",
+  "motivation": "El cockpit mostraba \"sin datos\" siempre porque risk_matrix --json no tiene clave \"risks\"",
+  "status": "applied",
+  "affected_components": [
+    "pack_dashboard.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T00:46:55.340279+00:00",
+  "updated_at": "2026-04-23T00:46:55.340279+00:00",
+  "author": "bago-autonomous"
+}
