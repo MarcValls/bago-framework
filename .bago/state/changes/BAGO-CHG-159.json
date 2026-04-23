@@ -1,15 +1,20 @@
 {
-  "change_id": "BAGO-CHG-159",
+  "id": "BAGO-CHG-159",
+  "change_id": "CHG-159",
   "type": "governance",
+  "severity": "minor",
   "title": "debt_ledger --csv + risk_matrix --csv (tests 135-136)",
-  "description": "Added --csv export flag to debt_ledger.py and risk_matrix.py. Tests 135 and 136 validate CSV headers and output structure.",
-  "files_changed": [
-    ".bago/tools/debt_ledger.py",
-    ".bago/tools/risk_matrix.py",
-    ".bago/tools/integration_tests.py"
+  "motivation": "Añadir --csv export a debt_ledger.py y risk_matrix.py; tests 135-136 validan headers y estructura CSV.",
+  "status": "applied",
+  "affected_components": [
+    "debt_ledger.py",
+    "risk_matrix.py",
+    "integration_tests.py"
   ],
-  "tests_added": 2,
-  "test_count_before": 147,
-  "test_count_after": 149,
-  "status": "done"
+  "related_evidence": [
+    "149/149 tests pass"
+  ],
+  "created_at": "2025-07-28T00:00:00Z",
+  "updated_at": "2025-07-28T00:00:00Z",
+  "author": "bago-autonomous"
 }
