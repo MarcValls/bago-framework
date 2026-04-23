@@ -1,0 +1,18 @@
+{
+  "id": "BAGO-CHG-177",
+  "change_id": "BAGO-CHG-177",
+  "type": "governance",
+  "severity": "patch",
+  "title": "stability_summary --json: output estructurado para automatizaci\u00f3n",
+  "motivation": "Permite consumir el resumen de estabilidad en pipelines y scripts sin parsear texto.",
+  "status": "applied",
+  "affected_components": [
+    "stability_summary.py"
+  ],
+  "related_evidence": [
+    "test_154_stability_json"
+  ],
+  "created_at": "2026-04-23T09:38:46.018524+00:00",
+  "updated_at": "2026-04-23T09:38:46.018524+00:00",
+  "author": "bago-autonomous"
+}

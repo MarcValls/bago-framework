@@ -60,8 +60,11 @@ def report_gate(name: str, report: dict | None) -> tuple[str, str]:
 # ── main ──────────────────────────────────────────────────────────────────────
 
 def main() -> int:
-    print("BAGO stability summary")
-    print("=" * 44)
+    as_json = "--json" in sys.argv
+
+    if not as_json:
+        print("BAGO stability summary")
+        print("=" * 44)
 
     gates: list[tuple[str, str]] = []
 
@@ -100,16 +103,24 @@ def main() -> int:
             except Exception:
                 pass
 
-    # 4. Print gates
+    # 4. Print gates / JSON
+    has_ko = any(st == "KO" for st, _ in gates)
+    has_warn = any(st == "WARN" for st, _ in gates)
+    decision = "KO" if has_ko else ("WARN" if has_warn else "GO")
+
+    if as_json:
+        print(json.dumps({
+            "decision": decision,
+            "gates": [{"status": st, "detail": line} for st, line in gates],
+        }, indent=2, ensure_ascii=False))
+        return 1 if has_ko else 0
+
     print()
     for st, line in gates:
         icon = "✓" if st == "GO" else ("⚠" if st == "WARN" else "✗")
         print(f"  [{st}] {icon} {line}")
 
     # 5. Overall decision
-    has_ko = any(st == "KO" for st, _ in gates)
-    has_warn = any(st == "WARN" for st, _ in gates)
-
     print()
     if has_ko:
         print("DECISIÓN: KO — reparar antes de avanzar a W2.")

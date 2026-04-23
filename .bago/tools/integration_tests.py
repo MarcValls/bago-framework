@@ -2558,6 +2558,26 @@ def test_ideas_dynamic_scoring():
     _record("ideas:dynamic_scoring", PASS, f"penalized field present in {len(ideas)} ideas")
 
 
+def test_stability_json():
+    """stability_summary.py --json: rc=0, JSON has 'decision' and 'gates' list."""
+    rc, out, err = _run("stability_summary.py", ["--json"], timeout=30)
+    if rc != 0:
+        _record("stability:json", FAIL, f"rc={rc} err={err[:80]}")
+        return
+    try:
+        data = json.loads(out)
+    except json.JSONDecodeError:
+        _record("stability:json", FAIL, f"invalid JSON: {out[:60]!r}")
+        return
+    if "decision" not in data:
+        _record("stability:json", FAIL, f"missing 'decision' key: {list(data)}")
+        return
+    if "gates" not in data or not isinstance(data["gates"], list):
+        _record("stability:json", FAIL, f"missing/invalid 'gates' key")
+        return
+    _record("stability:json", PASS, f"decision={data['decision']} gates={len(data['gates'])}")
+
+
 def test_risk_matrix_since():
     """risk_matrix.py --since 2020-01-01 --csv: rc=0 y header con 'category'."""
     rc, out, err = _run("risk_matrix.py", ["--since", "2020-01-01", "--csv"], timeout=30)
@@ -2724,6 +2744,7 @@ ALL_TESTS = [
     (151, "risk_matrix:since",           test_risk_matrix_since),
     (152, "velocity:top_rolling",        test_velocity_top_rolling),
     (153, "ideas:dynamic_scoring",       test_ideas_dynamic_scoring),
+    (154, "stability:json",              test_stability_json),
 ]
 
 
