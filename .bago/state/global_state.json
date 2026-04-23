@@ -9,7 +9,7 @@
   "active_scenarios": [],
   "active_workflows": [],
   "history_migration_status": "completed_with_preserved_legacy",
-  "updated_at": "2026-04-23T03:47:27.425290+00:00",
+  "updated_at": "2026-04-23T04:25:47.398105+00:00",
   "v2_status": "stable",
   "notes": "Loop-11: README badges, ideas dyn docs, orphan-CLEAN, CHG-126. chg=110, tests 119/119",
   "last_completed_session_id": "SES-HARVEST-2026-04-23-002",

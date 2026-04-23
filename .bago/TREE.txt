@@ -476,6 +476,7 @@ state/findings/SCAN-20260423_030434.json
 state/findings/SCAN-20260423_030553.json
 state/findings/SCAN-20260423_030904.json
 state/findings/SCAN-20260423_031754.json
+state/findings/SCAN-20260423_042724.json
 state/gh_config/
 state/global_state.backup.json
 state/global_state.json
@@ -727,6 +728,17 @@ state/iterations/ITER-0238.json
 state/iterations/ITER-0239.json
 state/iterations/ITER-0240.json
 state/iterations/ITER-0241.json
+state/iterations/ITER-0242.json
+state/iterations/ITER-0243.json
+state/iterations/ITER-0244.json
+state/iterations/ITER-0245.json
+state/iterations/ITER-0246.json
+state/iterations/ITER-0247.json
+state/iterations/ITER-0248.json
+state/iterations/ITER-0249.json
+state/iterations/ITER-0250.json
+state/iterations/ITER-0251.json
+state/iterations/ITER-0252.json
 state/linked_projects.json
 state/metrics/
 state/metrics/README.md
