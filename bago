@@ -26,6 +26,7 @@ Uso:
   ./bago validate             → validate_pack.py
   ./bago dashboard --full     → dashboard extendido
   ./bago health               → health_score.py
+  ./bago smoke                → smoke_runner.py (ejecuta tests + guarda reporte sandbox/)
   ./bago audit                → audit_v2.py
   ./bago workflow             → workflow_selector.py (interactivo)
   ./bago stale                → stale_detector.py
@@ -312,6 +313,11 @@ def main():
     elif cmd == "watch-state":
         subprocess.run(
             ["python3", str(TOOLS / "bago_watch.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
+    elif cmd == "smoke":
+        subprocess.run(
+            ["python3", str(TOOLS / "smoke_runner.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
     elif cmd == "test":

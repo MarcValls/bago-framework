@@ -353,6 +353,7 @@ state/changes/BAGO-CHG-127.json
 state/changes/BAGO-CHG-128.json
 state/changes/BAGO-CHG-129.json
 state/changes/BAGO-CHG-130.json
+state/changes/BAGO-CHG-131.json
 state/changes/BAGO-CHG-MIG-001.json
 state/changes/CHG-010-ux-controles-13fixes.json
 state/changes/CHG-011-caos-12ideas-cosecha.json
@@ -476,6 +477,7 @@ state/findings/SCAN-20260423_031942.json
 state/findings/SCAN-20260423_032150.json
 state/findings/SCAN-20260423_032305.json
 state/findings/SCAN-20260423_032759.json
+state/findings/SCAN-20260423_033519.json
 state/gh_config/
 state/global_state.backup.json
 state/global_state.json
@@ -712,6 +714,13 @@ state/iterations/ITER-0223.json
 state/iterations/ITER-0224.json
 state/iterations/ITER-0225.json
 state/iterations/ITER-0226.json
+state/iterations/ITER-0227.json
+state/iterations/ITER-0228.json
+state/iterations/ITER-0229.json
+state/iterations/ITER-0230.json
+state/iterations/ITER-0231.json
+state/iterations/ITER-0232.json
+state/iterations/ITER-0233.json
 state/linked_projects.json
 state/metrics/
 state/metrics/README.md
@@ -1170,6 +1179,7 @@ tools/session_preflight.py
 tools/session_stats.py
 tools/show_task.py
 tools/size_tracker.py
+tools/smoke_runner.py
 tools/snapshot.py
 tools/sprint_manager.py
 tools/stability_summary.py

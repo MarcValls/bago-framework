@@ -1,0 +1,19 @@
+{
+  "id": "BAGO-CHG-132",
+  "change_id": "BAGO-CHG-132",
+  "type": "governance",
+  "severity": "minor",
+  "title": "smoke_runner: bago smoke genera sandbox/runtime/last-report.json",
+  "motivation": "smoke/vm/soak/matrix mostraban siempre no disponible. Implementado smoke_runner.py que ejecuta integration_tests.py y escribe el reporte en el formato esperado por emit_ideas.py (status=pass, failure_count, workers, duration_seconds). smoke ahora disponible.",
+  "status": "applied",
+  "affected_components": [
+    "smoke_runner.py",
+    "bago"
+  ],
+  "related_evidence": [
+    "SES-AUTONOMOUS-2026-04-23-002"
+  ],
+  "created_at": "2026-04-23T03:36:18.872403+00:00",
+  "updated_at": "2026-04-23T03:36:18.872403+00:00",
+  "author": "copilot-autonomous"
+}

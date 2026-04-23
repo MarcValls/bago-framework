@@ -73,5 +73,15 @@
     "name": "test_isolation",
     "registered_at": "2026-04-23T03:28:25.034502+00:00",
     "state_dir": "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmpiu_gp4vi/test_isolation/.bago/state"
+  },
+  "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmpbkb67zoo/test_proj": {
+    "name": "TestProj",
+    "registered_at": "2026-04-23T03:35:47.992159+00:00",
+    "state_dir": "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmpbkb67zoo/test_proj/.bago/state"
+  },
+  "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmp57iqxxhl/test_isolation": {
+    "name": "test_isolation",
+    "registered_at": "2026-04-23T03:35:48.284439+00:00",
+    "state_dir": "/private/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmp57iqxxhl/test_isolation/.bago/state"
   }
 }
