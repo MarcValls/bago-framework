@@ -442,6 +442,8 @@ def main():
     parser.add_argument("--test",        action="store_true")
     parser.add_argument("--format",      choices=["text", "json", "csv"], default=None,
                         help="Formato de salida: text (default), json, csv")
+    parser.add_argument("--output",      default=None, metavar="FILE",
+                        help="Escribe output a FILE en lugar de stdout (requiere --format csv o json)")
     args = parser.parse_args()
 
     if args.test:
@@ -491,6 +493,16 @@ def main():
         findings = sorted(findings, key=lambda f: sev_order.get(f.severity, 9))[:args.top]
 
     fmt = getattr(args, "format", None)
+    out_path = getattr(args, "output", None)
+
+    def _write(content: str):
+        if out_path:
+            from pathlib import Path as _Path
+            _Path(out_path).write_text(content, encoding="utf-8")
+            print(f"✅ Guardado: {out_path}")
+        else:
+            print(content, end="")
+
     if fmt == "csv":
         import csv as _csv, io as _io
         buf = _io.StringIO()
@@ -498,7 +510,7 @@ def main():
         w.writerow(["file", "line", "col", "severity", "rule", "source", "message"])
         for f in findings:
             w.writerow([f.file, f.line, f.col, f.severity, f.rule, f.source, f.message])
-        print(buf.getvalue(), end="")
+        _write(buf.getvalue())
         return
     elif fmt == "json":
         args.json = True

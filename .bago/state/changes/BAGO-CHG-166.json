@@ -1,0 +1,19 @@
+{
+  "id": "BAGO-CHG-166",
+  "change_id": "CHG-166",
+  "type": "governance",
+  "severity": "minor",
+  "title": "scan --output FILE flag (test 143)",
+  "motivation": "Añadir --output FILE a scan.py para redirigir CSV/JSON a fichero. Test 143 verifica creación y header.",
+  "status": "applied",
+  "affected_components": [
+    "scan.py",
+    "integration_tests.py"
+  ],
+  "related_evidence": [
+    "156/156 tests pass"
+  ],
+  "created_at": "2025-07-28T00:00:00Z",
+  "updated_at": "2025-07-28T00:00:00Z",
+  "author": "bago-autonomous"
+}

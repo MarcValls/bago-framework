@@ -2339,6 +2339,30 @@ def test_debt_ledger_top():
     _record("debt_ledger:top", PASS, f"top OK, {data_rows} data rows")
 
 
+def test_scan_output_file():
+    """scan.py --format csv --quiet --output FILE: crea fichero con header CSV."""
+    import tempfile, os
+    with tempfile.NamedTemporaryFile(suffix=".csv", delete=False) as tf:
+        out_path = tf.name
+    try:
+        rc, out, err = _run("scan.py", ["--format", "csv", "--quiet", "--output", out_path], timeout=60)
+        if rc != 0:
+            _record("scan:output_file", FAIL, f"rc={rc} err={err[:100]}")
+            return
+        if not os.path.exists(out_path):
+            _record("scan:output_file", FAIL, "output file not created")
+            return
+        with open(out_path) as f:
+            header = f.readline().strip()
+        if "file" not in header or "severity" not in header:
+            _record("scan:output_file", FAIL, f"header missing: {header}")
+            return
+        _record("scan:output_file", PASS, f"output file OK, header={header}")
+    finally:
+        if os.path.exists(out_path):
+            os.unlink(out_path)
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2482,6 +2506,7 @@ ALL_TESTS = [
     (140, "health_score:breakdown",      test_health_score_breakdown),
     (141, "metrics_export:since",        test_metrics_export_since),
     (142, "debt_ledger:top",             test_debt_ledger_top),
+    (143, "scan:output_file",            test_scan_output_file),
 ]
 
 
