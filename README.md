@@ -467,3 +467,9 @@ Cada cleanversion incluye su propio pack BAGO con modo de distribución específ
 ---
 
 **¿No sabes por dónde empezar?** → `./bago start`
+
+---
+
+## 📄 License
+
+MIT © 2026 Marc Valls — see [LICENSE](LICENSE).
