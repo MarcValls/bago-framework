@@ -1,0 +1,4370 @@
+{
+  "meta": {
+    "scan_id": "SCAN-20260423_022536",
+    "created_at": "2026-04-23T02:25:36.321888+00:00",
+    "sources": [
+      "bago",
+      "flake8",
+      "pylint",
+      "mypy",
+      "bandit"
+    ],
+    "target": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools",
+    "lang": "py"
+  },
+  "summary": {
+    "total": 215,
+    "autofixable": 4,
+    "by_severity": {
+      "error": 0,
+      "warning": 27,
+      "info": 188,
+      "hint": 0
+    },
+    "by_source": {
+      "bago": 215
+    },
+    "top_files": [
+      [
+        "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+        15
+      ],
+      [
+        "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_lint_cli.py",
+        10
+      ],
+      [
+        "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/findings_engine.py",
+        10
+      ],
+      [
+        "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/template.py",
+        9
+      ],
+      [
+        "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/gh_integration.py",
+        8
+      ],
+      [
+        "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/config.py",
+        7
+      ],
+      [
+        "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/goals.py",
+        6
+      ],
+      [
+        "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/dead_code.py",
+        5
+      ],
+      [
+        "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/legacy_fixer.py",
+        5
+      ],
+      [
+        "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/orchestrator.py",
+        5
+      ]
+    ]
+  },
+  "findings": [
+    {
+      "id": "FIND-310235E3",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/api_check.py",
+      "line": 359,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 357 |     total = 6; passed = total - len(fails)",
+        " 358 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 359 |     if fails: raise SystemExit(1)",
+        " 360 | ",
+        " 361 | "
+      ]
+    },
+    {
+      "id": "FIND-6A490ED2",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/archive.py",
+      "line": 105,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 103 |     if not ARCHIVE_DIR.exists():",
+        " 104 |         print(\"  No existe el directorio de archivo.\")",
+        " 105 |         raise SystemExit(1)",
+        " 106 |     # Try exact match first",
+        " 107 |     candidates = list(ARCHIVE_DIR.glob(f\"*{session_id}*.json\"))"
+      ]
+    },
+    {
+      "id": "FIND-506F0754",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/archive.py",
+      "line": 110,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 108 |     if not candidates:",
+        " 109 |         print(f\"  No se encontró '{session_id}' en el archivo.\")",
+        " 110 |         raise SystemExit(1)",
+        " 111 |     for f in candidates:",
+        " 112 |         dest = SESSIONS_DIR / f.name"
+      ]
+    },
+    {
+      "id": "FIND-BF866DDD",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/archive.py",
+      "line": 173,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 171 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 172 |     if errors:",
+        " 173 |         raise SystemExit(1)",
+        " 174 | ",
+        " 175 | "
+      ]
+    },
+    {
+      "id": "FIND-E5214914",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/artifact_counter.py",
+      "line": 124,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 122 |     if not sessions:",
+        " 123 |         print(\"No se encontraron sesiones.\")",
+        " 124 |         raise SystemExit(1)",
+        " 125 | ",
+        " 126 |     report(sessions, verbose=args.verbose)"
+      ]
+    },
+    {
+      "id": "FIND-F837B7F4",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/auto_heal.py",
+      "line": 360,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 358 |     if \"--help\" in args or \"-h\" in args:",
+        " 359 |         print(__doc__)",
+        " 360 |         raise SystemExit(0)",
+        " 361 | ",
+        " 362 |     if \"--test\" in args:"
+      ]
+    },
+    {
+      "id": "FIND-D87E62F8",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/auto_register.py",
+      "line": 329,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 327 |     if not args or \"--help\" in args or \"-h\" in args:",
+        " 328 |         print(__doc__)",
+        " 329 |         raise SystemExit(0)",
+        " 330 | ",
+        " 331 |     if \"--test\" in args:"
+      ]
+    },
+    {
+      "id": "FIND-2B3784B6",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/auto_register.py",
+      "line": 339,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 337 |     if \"--check-all\" in args:",
+        " 338 |         cmd_check_all()",
+        " 339 |         raise SystemExit(0)",
+        " 340 | ",
+        " 341 |     if \"--check\" in args:"
+      ]
+    },
+    {
+      "id": "FIND-5D2B539C",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/auto_register.py",
+      "line": 347,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 345 |             r = check_registration(tool)",
+        " 346 |             print(f\"\\n  {tool}: test={r['integration']}  route={r['routing']}\")",
+        " 347 |         raise SystemExit(0)",
+        " 348 | ",
+        " 349 |     if not args_clean:"
+      ]
+    },
+    {
+      "id": "FIND-778E1796",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/auto_register.py",
+      "line": 351,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 349 |     if not args_clean:",
+        " 350 |         print(\"  Uso: auto_register.py <tool_file.py> [--cmd cmd-name] [--desc 'descripción']\")",
+        " 351 |         raise SystemExit(1)",
+        " 352 | ",
+        " 353 |     tool_file = args_clean[0]"
+      ]
+    },
+    {
+      "id": "FIND-B530F388",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/autofix.py",
+      "line": 500,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 498 |     total=5; passed_t=total-errors",
+        " 499 |     print(f\"\\n  {passed_t}/{total} tests pasaron\")",
+        " 500 |     if errors: raise SystemExit(1)",
+        " 501 | ",
+        " 502 |     # ── Extended tests ──────────────────────────────────────────────────────"
+      ]
+    },
+    {
+      "id": "FIND-1DD49D62",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/autofix.py",
+      "line": 539,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 537 |     total2 = 3; passed2 = total2 - errors2",
+        " 538 |     print(f\"\\n  {passed2}/{total2} tests adicionales pasaron\")",
+        " 539 |     if errors2: raise SystemExit(1)",
+        " 540 | ",
+        " 541 | "
+      ]
+    },
+    {
+      "id": "FIND-BF43573F",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_ask.py",
+      "line": 361,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 359 |     if errors:",
+        " 360 |         for e in errors: print(f\"  FAIL: {e}\")",
+        " 361 |         raise SystemExit(1)",
+        " 362 | ",
+        " 363 | "
+      ]
+    },
+    {
+      "id": "FIND-A44BF5A0",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_config.py",
+      "line": 327,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 325 |     if \"--help\" in args or \"-h\" in args or not args:",
+        " 326 |         cmd_show()",
+        " 327 |         raise SystemExit(0)",
+        " 328 | ",
+        " 329 |     if \"--get\" in args:"
+      ]
+    },
+    {
+      "id": "FIND-ACBE8686",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_config.py",
+      "line": 349,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 347 |         config = load_config()",
+        " 348 |         print(json.dumps(config, indent=2))",
+        " 349 |         raise SystemExit(0)",
+        " 350 | ",
+        " 351 |     cmd_show()"
+      ]
+    },
+    {
+      "id": "FIND-17CA8451",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_lint_cli.py",
+      "line": 7,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() deprecated — use datetime.now(timezone.utc)",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a//Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_lint_cli.py\n+++ b//Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_lint_cli.py\n@@ -7,1 +7,1 @@\n-  BAGO-W001  datetime.utcnow() deprecated (autofixable)\n+  BAGO-W001  datetime.datetime.now(datetime.timezone.utc) deprecated (autofixable)\n",
+      "context_lines": [
+        "   5 | Scans Python files in a directory and reports code quality issues:",
+        "   6 |   BAGO-E001  bare except: clause (autofixable)",
+        "   7 |   BAGO-W001  datetime.utcnow() deprecated (autofixable)",
+        "   8 |   BAGO-W002  eval()/exec() usage — security risk",
+        "   9 |   BAGO-W003  os.system() — should use subprocess"
+      ]
+    },
+    {
+      "id": "FIND-1B45F4C9",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_lint_cli.py",
+      "line": 8,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "   6 |   BAGO-E001  bare except: clause (autofixable)",
+        "   7 |   BAGO-W001  datetime.utcnow() deprecated (autofixable)",
+        "   8 |   BAGO-W002  eval()/exec() usage — security risk",
+        "   9 |   BAGO-W003  os.system() — should use subprocess",
+        "  10 |   BAGO-W004  hardcoded absolute user path — not portable"
+      ]
+    },
+    {
+      "id": "FIND-01EB674B",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_lint_cli.py",
+      "line": 9,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "   7 |   BAGO-W001  datetime.utcnow() deprecated (autofixable)",
+        "   8 |   BAGO-W002  eval()/exec() usage — security risk",
+        "   9 |   BAGO-W003  os.system() — should use subprocess",
+        "  10 |   BAGO-W004  hardcoded absolute user path — not portable",
+        "  11 |   BAGO-I001  raise SystemExit(1) without visible message"
+      ]
+    },
+    {
+      "id": "FIND-3404F69F",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_lint_cli.py",
+      "line": 40,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  38 | except ImportError:",
+        "  39 |     print(\"ERROR: findings_engine.py no encontrado\", file=sys.stderr)",
+        "  40 |     raise SystemExit(1)",
+        "  41 | ",
+        "  42 | # ── ANSI colours ─────────────────────────────────────────────────────────────"
+      ]
+    },
+    {
+      "id": "FIND-542D308F",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_lint_cli.py",
+      "line": 325,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 323 |         \"import os\\n\"",
+        " 324 |         \"try:\\n    pass\\nexcept:\\n    pass\\n\"",
+        " 325 |         \"x = eval('1+1')\\n\"",
+        " 326 |         \"os.system('ls')\\n\"",
+        " 327 |         \"DATA = '/Users/john/things'\\n\""
+      ]
+    },
+    {
+      "id": "FIND-961F8354",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_lint_cli.py",
+      "line": 326,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 324 |         \"try:\\n    pass\\nexcept:\\n    pass\\n\"",
+        " 325 |         \"x = eval('1+1')\\n\"",
+        " 326 |         \"os.system('ls')\\n\"",
+        " 327 |         \"DATA = '/Users/john/things'\\n\"",
+        " 328 |         \"# TODO: fix\\n\""
+      ]
+    },
+    {
+      "id": "FIND-00D0430B",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_lint_cli.py",
+      "line": 327,
+      "col": 0,
+      "rule": "BAGO-W004",
+      "source": "bago",
+      "message": "Path absoluto hardcoded: '/Users/john/things' — no portable",
+      "fix_suggestion": "Usa Path.home() / os.path.expanduser('~') o variables de entorno",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 325 |         \"x = eval('1+1')\\n\"",
+        " 326 |         \"os.system('ls')\\n\"",
+        " 327 |         \"DATA = '/Users/john/things'\\n\"",
+        " 328 |         \"# TODO: fix\\n\"",
+        " 329 |     )"
+      ]
+    },
+    {
+      "id": "FIND-5AE8A3BC",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_lint_cli.py",
+      "line": 328,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 326 |         \"os.system('ls')\\n\"",
+        " 327 |         \"DATA = '/Users/john/things'\\n\"",
+        " 328 |         \"# TODO: fix\\n\"",
+        " 329 |     )",
+        " 330 |     findings = fe.run_bago_lint(str(tmp))"
+      ]
+    },
+    {
+      "id": "FIND-C6A63028",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_lint_cli.py",
+      "line": 372,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 370 |     # T4: JSON output structure",
+        " 371 |     tmp4 = Path(tempfile.mkdtemp())",
+        " 372 |     (tmp4 / \"j.py\").write_text(\"# TODO: something\\n\")",
+        " 373 |     findings4 = fe.run_bago_lint(str(tmp4))",
+        " 374 |     j = ["
+      ]
+    },
+    {
+      "id": "FIND-766EE08A",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_lint_cli.py",
+      "line": 402,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 400 | ",
+        " 401 |     # \"after\" scan: fixed the except, but added an eval",
+        " 402 |     py5.write_text(\"try:\\n    pass\\nexcept Exception:\\n    pass\\nx = eval('1')\\n\")",
+        " 403 |     after_findings = fe.run_bago_lint(str(tmp5))",
+        " 404 | "
+      ]
+    },
+    {
+      "id": "FIND-0B015A74",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/bago_search.py",
+      "line": 293,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 291 |     if not args.terms:",
+        " 292 |         p.print_help()",
+        " 293 |         raise SystemExit(0)",
+        " 294 | ",
+        " 295 |     results = []"
+      ]
+    },
+    {
+      "id": "FIND-D192AFB2",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/branch_check.py",
+      "line": 224,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 222 |     total = 6; passed = total - len(fails)",
+        " 223 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 224 |     if fails: raise SystemExit(1)",
+        " 225 | ",
+        " 226 | "
+      ]
+    },
+    {
+      "id": "FIND-B9C002F2",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/changelog_gen.py",
+      "line": 397,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 395 |     total = 6; passed = total - len(fails)",
+        " 396 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 397 |     if fails: raise SystemExit(1)",
+        " 398 | ",
+        " 399 | "
+      ]
+    },
+    {
+      "id": "FIND-213593E3",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/chart_engine.py",
+      "line": 502,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 500 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 501 |     if fails:",
+        " 502 |         raise SystemExit(1)",
+        " 503 | ",
+        " 504 | "
+      ]
+    },
+    {
+      "id": "FIND-291B2D2E",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/check.py",
+      "line": 192,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 190 |     if critical_failed:",
+        " 191 |         print(f\"\\n  ⛔ {len(critical_failed)} check(s) crítico(s) fallaron.\")",
+        " 192 |         raise SystemExit(1)",
+        " 193 |     elif passed_count < total:",
+        " 194 |         print(f\"\\n  ⚠️  {total - passed_count} warning(s) — revisa antes de continuar.\\n\")"
+      ]
+    },
+    {
+      "id": "FIND-E4621020",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/check.py",
+      "line": 259,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 257 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 258 |     if errors:",
+        " 259 |         raise SystemExit(1)",
+        " 260 | ",
+        " 261 | "
+      ]
+    },
+    {
+      "id": "FIND-FC4F9356",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/ci_baseline.py",
+      "line": 244,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 242 |         fail(\"ci_baseline:load_returns_data\", f\"loaded: {loaded}\")",
+        " 243 | ",
+        " 244 |     # T3 — diff_findings: sin cambios → todo persistente",
+        " 245 |     result = diff_findings(SAMPLE, SAMPLE)",
+        " 246 |     if not result[\"new\"] and not result[\"fixed\"] and len(result[\"persistent\"]) == 3:"
+      ]
+    },
+    {
+      "id": "FIND-6D56C357",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/ci_baseline.py",
+      "line": 279,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 277 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 278 |     if fails:",
+        " 279 |         raise SystemExit(1)",
+        " 280 | ",
+        " 281 | "
+      ]
+    },
+    {
+      "id": "FIND-E899B1BA",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/ci_generator.py",
+      "line": 96,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  94 |                   for f in critical[:10]:",
+        "  95 |                       print(f\\\"  [{f.get('severity','')}] {f.get('file','')}:{f.get('line','')} — {f.get('rule','')}\\\")",
+        "  96 |                   raise SystemExit(1)",
+        "  97 |               print(f'✅ No critical findings')",
+        "  98 |           except Exception as e:"
+      ]
+    },
+    {
+      "id": "FIND-959E8E28",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/ci_generator.py",
+      "line": 183,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 181 |           if critical:",
+        " 182 |               print(f'FAIL: {len(critical)} critical findings')",
+        " 183 |               raise SystemExit(1)",
+        " 184 |           print('OK: No critical findings')",
+        " 185 |       except Exception as e:"
+      ]
+    },
+    {
+      "id": "FIND-E41B3E95",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/ci_generator.py",
+      "line": 238,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 236 |         for f in critical[:5]:",
+        " 237 |             print(f\\\"    {f.get('file','')}:{f.get('line','')} — {f.get('message','')}\\\")",
+        " 238 |         raise SystemExit(1)",
+        " 239 |     warns = len([f for f in findings if str(f.get('severity','')).lower() == 'warning'])",
+        " 240 |     print(f'  ✅ scan OK ({warns} warnings, 0 critical)')"
+      ]
+    },
+    {
+      "id": "FIND-347784F1",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/ci_generator.py",
+      "line": 378,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 376 |     if errors:",
+        " 377 |         for e in errors: print(f\"  FAIL: {e}\")",
+        " 378 |         raise SystemExit(1)",
+        " 379 | ",
+        " 380 | "
+      ]
+    },
+    {
+      "id": "FIND-42F92DF0",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/ci_report.py",
+      "line": 315,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 313 |     total = 6; passed = total - len(fails)",
+        " 314 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 315 |     if fails: raise SystemExit(1)",
+        " 316 | ",
+        " 317 | "
+      ]
+    },
+    {
+      "id": "FIND-59090691",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/code_review.py",
+      "line": 337,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 335 |     total = 6; passed = total - len(fails)",
+        " 336 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 337 |     if fails: raise SystemExit(1)",
+        " 338 | ",
+        " 339 | "
+      ]
+    },
+    {
+      "id": "FIND-1161E812",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/commit_readiness.py",
+      "line": 316,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 314 |     if not args or \"--help\" in args or \"-h\" in args:",
+        " 315 |         print(__doc__)",
+        " 316 |         raise SystemExit(0)",
+        " 317 | ",
+        " 318 |     if \"--test\" in args:"
+      ]
+    },
+    {
+      "id": "FIND-51AB788F",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/commit_readiness.py",
+      "line": 337,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 335 |         if not files:",
+        " 336 |             print(\"  Sin archivos Python staged. Usa --all o --file <path>\")",
+        " 337 |             raise SystemExit(0)",
+        " 338 | ",
+        " 339 |     if fix_mode:"
+      ]
+    },
+    {
+      "id": "FIND-D2BE59F1",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/commit_readiness.py",
+      "line": 347,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 345 |                 total_fixed += n",
+        " 346 |         print(f\"\\n  Total: {total_fixed} print() comentados\")",
+        " 347 |         raise SystemExit(0)",
+        " 348 | ",
+        " 349 |     result = evaluate_files(files, strict=strict)"
+      ]
+    },
+    {
+      "id": "FIND-CD205FED",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/compare.py",
+      "line": 155,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 153 |         except ValueError as e:",
+        " 154 |             print(f\"  ERROR: {e}\")",
+        " 155 |             raise SystemExit(1)",
+        " 156 | ",
+        " 157 |         def in_period(s, start, end):"
+      ]
+    },
+    {
+      "id": "FIND-CC83A770",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/compare.py",
+      "line": 175,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 173 |     else:",
+        " 174 |         print(\"  ERROR: especifica --wf A B  |  --period P1 P2  |  --role R1 R2\")",
+        " 175 |         raise SystemExit(1)",
+        " 176 | ",
+        " 177 | "
+      ]
+    },
+    {
+      "id": "FIND-407F22BE",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/compare.py",
+      "line": 239,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 237 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 238 |     if errors:",
+        " 239 |         raise SystemExit(1)",
+        " 240 | ",
+        " 241 | "
+      ]
+    },
+    {
+      "id": "FIND-B70D9AAE",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/complexity.py",
+      "line": 294,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 292 |     total = 6; passed = total - len(fails)",
+        " 293 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 294 |     if fails: raise SystemExit(1)",
+        " 295 | ",
+        " 296 | "
+      ]
+    },
+    {
+      "id": "FIND-0E86D11C",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/config.py",
+      "line": 80,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  78 |     if key not in DEFAULTS:",
+        "  79 |         print(f\"Clave desconocida: {key}\", file=sys.stderr)",
+        "  80 |         raise SystemExit(1)",
+        "  81 |     val = pack.get(key, DEFAULTS[key][\"default\"])",
+        "  82 |     print(val)"
+      ]
+    },
+    {
+      "id": "FIND-D574B128",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/config.py",
+      "line": 88,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  86 |     if key not in DEFAULTS:",
+        "  87 |         print(f\"Clave desconocida: {key}\", file=sys.stderr)",
+        "  88 |         raise SystemExit(1)",
+        "  89 |     meta = DEFAULTS[key]",
+        "  90 |     if not meta.get(\"writable\", True):"
+      ]
+    },
+    {
+      "id": "FIND-9F594C26",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/config.py",
+      "line": 92,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  90 |     if not meta.get(\"writable\", True):",
+        "  91 |         print(f\"'{key}' es de solo lectura\", file=sys.stderr)",
+        "  92 |         raise SystemExit(1)",
+        "  93 |     val = _coerce(key, val_str)",
+        "  94 |     if \"choices\" in meta and val not in meta[\"choices\"]:"
+      ]
+    },
+    {
+      "id": "FIND-5C5F83C3",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/config.py",
+      "line": 96,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  94 |     if \"choices\" in meta and val not in meta[\"choices\"]:",
+        "  95 |         print(f\"Valor inválido '{val}'. Opciones: {meta['choices']}\", file=sys.stderr)",
+        "  96 |         raise SystemExit(1)",
+        "  97 |     old = pack.get(key, meta[\"default\"])",
+        "  98 |     pack[key] = val"
+      ]
+    },
+    {
+      "id": "FIND-CE5D8436",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/config.py",
+      "line": 106,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 104 |     if key not in DEFAULTS:",
+        " 105 |         print(f\"Clave desconocida: {key}\", file=sys.stderr)",
+        " 106 |         raise SystemExit(1)",
+        " 107 |     meta = DEFAULTS[key]",
+        " 108 |     if not meta.get(\"writable\", True):"
+      ]
+    },
+    {
+      "id": "FIND-37D607EE",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/config.py",
+      "line": 110,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 108 |     if not meta.get(\"writable\", True):",
+        " 109 |         print(f\"'{key}' es de solo lectura\", file=sys.stderr)",
+        " 110 |         raise SystemExit(1)",
+        " 111 |     old = pack.get(key, meta[\"default\"])",
+        " 112 |     pack[key] = meta[\"default\"]"
+      ]
+    },
+    {
+      "id": "FIND-412EA6AE",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/config.py",
+      "line": 193,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 191 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 192 |     if errors:",
+        " 193 |         raise SystemExit(1)",
+        " 194 | ",
+        " 195 | "
+      ]
+    },
+    {
+      "id": "FIND-D88BC9EA",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/config_check.py",
+      "line": 367,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 365 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 366 |     if fails:",
+        " 367 |         raise SystemExit(1)",
+        " 368 | ",
+        " 369 | "
+      ]
+    },
+    {
+      "id": "FIND-00267D82",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/contracts.py",
+      "line": 326,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 324 |     else:",
+        " 325 |         print(f\"  {RED}{BOLD}❌ CONTRATOS VIOLADOS — REQUIEREN ATENCIÓN{RESET}\\n\")",
+        " 326 |         raise SystemExit(1)",
+        " 327 | ",
+        " 328 | "
+      ]
+    },
+    {
+      "id": "FIND-28941E89",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/contracts.py",
+      "line": 400,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 398 |     total = 6; passed_n = total - errors",
+        " 399 |     print(f\"\\n  {passed_n}/{total} tests pasaron\")",
+        " 400 |     if errors: raise SystemExit(1)",
+        " 401 | ",
+        " 402 | "
+      ]
+    },
+    {
+      "id": "FIND-19617F5C",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/coverage_gate.py",
+      "line": 235,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 233 |     total = 6; passed_count = total - len(fails)",
+        " 234 |     print(f\"\\n  {passed_count}/{total} tests pasaron\")",
+        " 235 |     if fails: raise SystemExit(1)",
+        " 236 | ",
+        " 237 | "
+      ]
+    },
+    {
+      "id": "FIND-6F9F5C51",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/dead_code.py",
+      "line": 42,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "XXX: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  40 | SEVERITY_ORDER = {\"error\": 0, \"warning\": 1, \"info\": 2}",
+        "  41 | ",
+        "  42 | TODO_RE    = re.compile(r'#\\s*(TODO|FIXME|HACK|XXX|BUG)\\b[:\\s]*(.*)', re.IGNORECASE)",
+        "  43 | COMMENTED_CODE_RE = re.compile(",
+        "  44 |     r'^\\s*#\\s*(def |class |return |import |from |if |for |while |with |try:|except)', re.MULTILINE"
+      ]
+    },
+    {
+      "id": "FIND-D3657907",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/dead_code.py",
+      "line": 305,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 303 |         fail(\"dead_code:used_import_not_flagged\", f\"sys fue marcado: {sys_used}\")",
+        " 304 | ",
+        " 305 |     # T3 — TODO detectado",
+        " 306 |     src2 = textwrap.dedent(\"\"\"\\",
+        " 307 |         # TODO: implementar autenticación"
+      ]
+    },
+    {
+      "id": "FIND-F80D88A8",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/dead_code.py",
+      "line": 307,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 305 |     # T3 — TODO detectado",
+        " 306 |     src2 = textwrap.dedent(\"\"\"\\",
+        " 307 |         # TODO: implementar autenticación",
+        " 308 |         x = 1",
+        " 309 |         # FIXME: esto rompe en Python 3.12"
+      ]
+    },
+    {
+      "id": "FIND-568B97BC",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/dead_code.py",
+      "line": 309,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "FIXME: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 307 |         # TODO: implementar autenticación",
+        " 308 |         x = 1",
+        " 309 |         # FIXME: esto rompe en Python 3.12",
+        " 310 |     \"\"\")",
+        " 311 |     with tempfile.NamedTemporaryFile(suffix=\".py\", mode=\"w\", delete=False) as f:"
+      ]
+    },
+    {
+      "id": "FIND-040AE4F7",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/dead_code.py",
+      "line": 363,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 361 |     total = 6; passed = total - len(fails)",
+        " 362 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 363 |     if fails: raise SystemExit(1)",
+        " 364 | ",
+        " 365 | "
+      ]
+    },
+    {
+      "id": "FIND-F679A8F4",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/debt_ledger.py",
+      "line": 271,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 269 |     total = 6; passed = total - errors",
+        " 270 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 271 |     if errors: raise SystemExit(1)",
+        " 272 | ",
+        " 273 | "
+      ]
+    },
+    {
+      "id": "FIND-283477EE",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/debt_ledger.py",
+      "line": 291,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 289 |     if db is None:",
+        " 290 |         print(f\"{RED}✗ Sin scan. Ejecuta 'bago scan' primero.{RESET}\")",
+        " 291 |         raise SystemExit(1)",
+        " 292 | ",
+        " 293 |     findings = db.findings"
+      ]
+    },
+    {
+      "id": "FIND-D40C8BD9",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/dep_audit.py",
+      "line": 324,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 322 |     total = 6; passed = total - len(fails)",
+        " 323 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 324 |     if fails: raise SystemExit(1)",
+        " 325 | ",
+        " 326 | "
+      ]
+    },
+    {
+      "id": "FIND-1A1EC0D6",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/diff.py",
+      "line": 85,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  83 |         if not zip_path.exists():",
+        "  84 |             print(f\"  ERROR: snapshot no encontrado: {zip_path}\")",
+        "  85 |             raise SystemExit(1)",
+        "  86 |     else:",
+        "  87 |         zip_path = _get_latest_snapshot()"
+      ]
+    },
+    {
+      "id": "FIND-CB6CF26D",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/diff.py",
+      "line": 90,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  88 |         if zip_path is None:",
+        "  89 |             print(\"  ERROR: no hay snapshots. Crea uno con: bago snapshot\")",
+        "  90 |             raise SystemExit(1)",
+        "  91 | ",
+        "  92 |     snap_id = zip_path.stem"
+      ]
+    },
+    {
+      "id": "FIND-D3864212",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/diff.py",
+      "line": 107,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 105 |         except ValueError:",
+        " 106 |             print(f\"  ERROR: formato de fecha inválido: {args.since} (usar YYYY-MM-DD)\")",
+        " 107 |             raise SystemExit(1)",
+        " 108 |         def was_modified_since(rel_path: str) -> bool:",
+        " 109 |             p = BAGO_ROOT / rel_path"
+      ]
+    },
+    {
+      "id": "FIND-5BEE8121",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/diff.py",
+      "line": 228,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 226 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 227 |     if errors:",
+        " 228 |         raise SystemExit(1)",
+        " 229 | ",
+        " 230 | "
+      ]
+    },
+    {
+      "id": "FIND-BDE0F799",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/doc_coverage.py",
+      "line": 413,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 411 |     total = 6; passed = total - len(fails)",
+        " 412 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 413 |     if fails: raise SystemExit(1)",
+        " 414 | ",
+        " 415 | "
+      ]
+    },
+    {
+      "id": "FIND-AA329BA1",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/duplicate_check.py",
+      "line": 290,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 288 |     total = 6; passed = total - len(fails)",
+        " 289 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 290 |     if fails: raise SystemExit(1)",
+        " 291 | ",
+        " 292 | "
+      ]
+    },
+    {
+      "id": "FIND-87071978",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/emit_ideas.py",
+      "line": 450,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 448 |                 \"to expand a selected idea and --accept to mark it ready for W2.\"",
+        " 449 |             )",
+        " 450 |             raise SystemExit(0)",
+        " 451 |         if arg == \"--detail\":",
+        " 452 |             if idx + 1 >= len(argv):"
+      ]
+    },
+    {
+      "id": "FIND-5047FC22",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/env_check.py",
+      "line": 218,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 216 |     total = 6; passed = total - len(fails)",
+        " 217 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 218 |     if fails: raise SystemExit(1)",
+        " 219 | ",
+        " 220 | "
+      ]
+    },
+    {
+      "id": "FIND-C7329DA7",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/file_watcher.py",
+      "line": 261,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 259 |     total = 6; passed = total - len(fails)",
+        " 260 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 261 |     if fails: raise SystemExit(1)",
+        " 262 | ",
+        " 263 | "
+      ]
+    },
+    {
+      "id": "FIND-187A5148",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/findings_engine.py",
+      "line": 818,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 816 |       BAGO-E001  bare except: clause — catches SystemExit/KeyboardInterrupt",
+        " 817 |       BAGO-W002  eval() or exec() — security risk # noqa: BAGO-W002",
+        " 818 |       BAGO-W003  os.system() — should use subprocess",
+        " 819 |       BAGO-W004  hardcoded absolute user path (/Users/, /home/, C:\\\\) — not portable",
+        " 820 |       BAGO-I002  TODO/FIXME/HACK comments — technical debt markers"
+      ]
+    },
+    {
+      "id": "FIND-1D8D434F",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/findings_engine.py",
+      "line": 828,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "XXX: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 826 |     _os_system_re    = re.compile(r'\\bos\\.system\\s*\\(')",
+        " 827 |     _hardpath_re     = re.compile(r'[\"\\'](?:/Users/\\w+|/home/\\w+|C:\\\\\\\\Users\\\\\\\\)[^\"\\']*[\"\\']')",
+        " 828 |     _todo_re         = re.compile(r'#.*\\b(TODO|FIXME|HACK|XXX)\\b', re.IGNORECASE)",
+        " 829 |     _noqa_re         = re.compile(r'#\\s*noqa(?::\\s*([\\w,\\s-]+))?')",
+        " 830 | "
+      ]
+    },
+    {
+      "id": "FIND-DA017B18",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/findings_engine.py",
+      "line": 902,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 900 |                         context_lines=_read_context(rel, i),",
+        " 901 |                     ))",
+        " 902 |                 # BAGO-W003: os.system() — skip test and ci_generator",
+        " 903 |                 if not _suppressed(\"BAGO-W003\") and not is_test and _os_system_re.search(line):",
+        " 904 |                     fid = _make_id(\"bago\", rel, i, \"BAGO-W003\")"
+      ]
+    },
+    {
+      "id": "FIND-A0119E36",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/findings_engine.py",
+      "line": 908,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 906 |                         id=fid, severity=\"warning\", file=rel, line=i, col=0,",
+        " 907 |                         rule=\"BAGO-W003\", source=\"bago\",",
+        " 908 |                         message=\"os.system() no captura salida ni maneja errores\",",
+        " 909 |                         fix_suggestion=\"Usa subprocess.run() con capture_output=True\",",
+        " 910 |                         autofixable=False,"
+      ]
+    },
+    {
+      "id": "FIND-9EC2B7C9",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/findings_engine.py",
+      "line": 926,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "HACK: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 924 |                         context_lines=_read_context(rel, i),",
+        " 925 |                     ))",
+        " 926 |                 # BAGO-I002: TODO/FIXME/HACK",
+        " 927 |                 if not _suppressed(\"BAGO-I002\") and _todo_re.search(line):",
+        " 928 |                     m = _todo_re.search(line)"
+      ]
+    },
+    {
+      "id": "FIND-1F067609",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/findings_engine.py",
+      "line": 1168,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "1166 |         \"    pass\\n\"",
+        "1167 |         \"result = eval('1+1')  # BAGO-W002\\n\" # noqa: BAGO-W002",
+        "1168 |         \"os.system('ls')  # BAGO-W003\\n\"",
+        "1169 |         \"# TODO: fix this  # BAGO-I002\\n\"",
+        "1170 |     )"
+      ]
+    },
+    {
+      "id": "FIND-892B3814",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/findings_engine.py",
+      "line": 1169,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "1167 |         \"result = eval('1+1')  # BAGO-W002\\n\" # noqa: BAGO-W002",
+        "1168 |         \"os.system('ls')  # BAGO-W003\\n\"",
+        "1169 |         \"# TODO: fix this  # BAGO-I002\\n\"",
+        "1170 |     )",
+        "1171 |     f3 = run_bago_lint(str(tmp3))"
+      ]
+    },
+    {
+      "id": "FIND-54922A31",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/findings_engine.py",
+      "line": 1236,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "1234 |     total = 12; passed = total - errors",
+        "1235 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        "1236 |     if errors: raise SystemExit(1)",
+        "1237 | ",
+        "1238 |     # ── Extended tests for new parsers ─────────────────────────────────────"
+      ]
+    },
+    {
+      "id": "FIND-E215388E",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/findings_engine.py",
+      "line": 1292,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "1290 |     total2 = 3; passed2 = total2 - errors2",
+        "1291 |     print(f\"\\n  {passed2}/{total2} tests de parsers multi-lenguaje pasaron\")",
+        "1292 |     if errors2: raise SystemExit(1)",
+        "1293 | ",
+        "1294 |     # ── Tests for Phase 1-3 parsers ───────────────────────────────────────"
+      ]
+    },
+    {
+      "id": "FIND-520858C0",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/findings_engine.py",
+      "line": 1445,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "1443 |     total3 = 10; passed3 = total3 - errors3",
+        "1444 |     print(f\"\\n  {passed3}/{total3} tests de parsers Fase 1-3 pasaron\")",
+        "1445 |     if errors3: raise SystemExit(1)",
+        "1446 | ",
+        "1447 | "
+      ]
+    },
+    {
+      "id": "FIND-E35D8CC2",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/flow.py",
+      "line": 238,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 236 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 237 |     if errors:",
+        " 238 |         raise SystemExit(1)",
+        " 239 | ",
+        " 240 | import pathlib"
+      ]
+    },
+    {
+      "id": "FIND-95D93184",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/gh_integration.py",
+      "line": 307,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 305 |     if not token:",
+        " 306 |         print(f\"{RED}✗ Sin token. Usa: bago gh config --token TOKEN{RESET}\")",
+        " 307 |         raise SystemExit(1)",
+        " 308 |     if not repo:",
+        " 309 |         print(f\"{RED}✗ Sin repo. Usa: bago gh config --repo owner/repo{RESET}\")"
+      ]
+    },
+    {
+      "id": "FIND-1E0BD4F5",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/gh_integration.py",
+      "line": 310,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 308 |     if not repo:",
+        " 309 |         print(f\"{RED}✗ Sin repo. Usa: bago gh config --repo owner/repo{RESET}\")",
+        " 310 |         raise SystemExit(1)",
+        " 311 |     if not sha:",
+        " 312 |         print(f\"{RED}✗ No se puede obtener el SHA del HEAD{RESET}\")"
+      ]
+    },
+    {
+      "id": "FIND-2B666C30",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/gh_integration.py",
+      "line": 313,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 311 |     if not sha:",
+        " 312 |         print(f\"{RED}✗ No se puede obtener el SHA del HEAD{RESET}\")",
+        " 313 |         raise SystemExit(1)",
+        " 314 | ",
+        " 315 |     db = fe.FindingsDB.load(scan_id) if scan_id else fe.FindingsDB.latest()"
+      ]
+    },
+    {
+      "id": "FIND-505E04FD",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/gh_integration.py",
+      "line": 318,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 316 |     if db is None:",
+        " 317 |         print(f\"{RED}✗ Sin scan disponible. Ejecuta 'bago scan' primero.{RESET}\")",
+        " 318 |         raise SystemExit(1)",
+        " 319 | ",
+        " 320 |     sev_ord = SEV_ORD.get(min_severity, 3)"
+      ]
+    },
+    {
+      "id": "FIND-513B1AC7",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/gh_integration.py",
+      "line": 364,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 362 |     if not token:",
+        " 363 |         print(f\"{RED}✗ Sin token. Usa: bago gh config --token TOKEN{RESET}\")",
+        " 364 |         raise SystemExit(1)",
+        " 365 |     if not repo:",
+        " 366 |         print(f\"{RED}✗ Sin repo. Usa: bago gh config --repo owner/repo{RESET}\")"
+      ]
+    },
+    {
+      "id": "FIND-61C44C87",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/gh_integration.py",
+      "line": 367,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 365 |     if not repo:",
+        " 366 |         print(f\"{RED}✗ Sin repo. Usa: bago gh config --repo owner/repo{RESET}\")",
+        " 367 |         raise SystemExit(1)",
+        " 368 | ",
+        " 369 |     db = fe.FindingsDB.latest()"
+      ]
+    },
+    {
+      "id": "FIND-3DBA261F",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/gh_integration.py",
+      "line": 372,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 370 |     if db is None:",
+        " 371 |         print(f\"{RED}✗ Sin scan. Ejecuta 'bago scan' primero.{RESET}\")",
+        " 372 |         raise SystemExit(1)",
+        " 373 | ",
+        " 374 |     sev_ord  = SEV_ORD.get(min_severity, 1)  # default: warnings+errors only"
+      ]
+    },
+    {
+      "id": "FIND-C9D572C4",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/gh_integration.py",
+      "line": 504,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 502 |     total=8; passed=total-errors",
+        " 503 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 504 |     if errors: raise SystemExit(1)",
+        " 505 | ",
+        " 506 | "
+      ]
+    },
+    {
+      "id": "FIND-AF560F3B",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/git_context.py",
+      "line": 335,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 333 |     if not git_root:",
+        " 334 |         print(\"  ERROR: no se encontro repositorio git en {}\".format(start))",
+        " 335 |         raise SystemExit(1)",
+        " 336 | ",
+        " 337 |     since_str = _since_str(args.since) if args.since else None"
+      ]
+    },
+    {
+      "id": "FIND-0AE1A9B4",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/goals.py",
+      "line": 58,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  56 |     if not path.exists():",
+        "  57 |         print(f\"  ERROR: objetivo no encontrado: {goal_id}\")",
+        "  58 |         raise SystemExit(1)",
+        "  59 |     return json.loads(path.read_text())",
+        "  60 | "
+      ]
+    },
+    {
+      "id": "FIND-983961D9",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/goals.py",
+      "line": 82,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  80 |     if not args.title:",
+        "  81 |         print(\"  ERROR: indica el título del objetivo\")",
+        "  82 |         raise SystemExit(1)",
+        "  83 |     goal_id = _next_goal_id()",
+        "  84 |     cat = args.cat if args.cat in CATEGORIES else \"other\""
+      ]
+    },
+    {
+      "id": "FIND-04346AAB",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/goals.py",
+      "line": 136,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 134 |     if not args.goal_id:",
+        " 135 |         print(\"  ERROR: indica el ID del objetivo\")",
+        " 136 |         raise SystemExit(1)",
+        " 137 |     g = _load_goal(args.goal_id)",
+        " 138 |     icon = STATUS_ICON.get(g.get(\"status\", \"\"), \"?\")"
+      ]
+    },
+    {
+      "id": "FIND-6F2C9E3B",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/goals.py",
+      "line": 165,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 163 |     if not args.goal_id:",
+        " 164 |         print(\"  ERROR: indica el ID del objetivo\")",
+        " 165 |         raise SystemExit(1)",
+        " 166 |     g = _load_goal(args.goal_id)",
+        " 167 |     g[\"status\"] = STATUS_CLOSED"
+      ]
+    },
+    {
+      "id": "FIND-A212752C",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/goals.py",
+      "line": 178,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 176 |     if not args.goal_id or not args.ref:",
+        " 177 |         print(\"  ERROR: indica GOAL-ID y el REF (sesión o cambio)\")",
+        " 178 |         raise SystemExit(1)",
+        " 179 |     g = _load_goal(args.goal_id)",
+        " 180 |     ref = args.ref"
+      ]
+    },
+    {
+      "id": "FIND-AC59336E",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/goals.py",
+      "line": 335,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 333 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 334 |     if errors:",
+        " 335 |         raise SystemExit(1)",
+        " 336 | ",
+        " 337 | # Need pathlib imported at module level for tests"
+      ]
+    },
+    {
+      "id": "FIND-58978057",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/habit.py",
+      "line": 322,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 320 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 321 |     if errors:",
+        " 322 |         raise SystemExit(1)",
+        " 323 | ",
+        " 324 | "
+      ]
+    },
+    {
+      "id": "FIND-2743706F",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/health_report.py",
+      "line": 491,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 489 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 490 |     if fails:",
+        " 491 |         raise SystemExit(1)",
+        " 492 | ",
+        " 493 | "
+      ]
+    },
+    {
+      "id": "FIND-667F2BE4",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/hotspot.py",
+      "line": 556,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 554 |     total=5; passed=total-errors",
+        " 555 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 556 |     if errors: raise SystemExit(1)",
+        " 557 | ",
+        " 558 |     # ── Extended tests ─────────────────────────────────────────────────────"
+      ]
+    },
+    {
+      "id": "FIND-68DAD7F8",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/hotspot.py",
+      "line": 649,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 647 |     total2 = 6; passed2 = total2 - errors2",
+        " 648 |     print(f\"\\n  {passed2}/{total2} tests multi-lenguaje pasaron\")",
+        " 649 |     if errors2: raise SystemExit(1)",
+        " 650 | ",
+        " 651 | "
+      ]
+    },
+    {
+      "id": "FIND-1AA11701",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/impact_engine.py",
+      "line": 330,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 328 |     total = 6; passed = total - errors",
+        " 329 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 330 |     if errors: raise SystemExit(1)",
+        " 331 | ",
+        " 332 | "
+      ]
+    },
+    {
+      "id": "FIND-A95D65DA",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/impact_map.py",
+      "line": 287,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 285 |     total = 6; passed = total - len(fails)",
+        " 286 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 287 |     if fails: raise SystemExit(1)",
+        " 288 | ",
+        " 289 | "
+      ]
+    },
+    {
+      "id": "FIND-E39F9FB6",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/insights.py",
+      "line": 427,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 425 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 426 |     if errors:",
+        " 427 |         raise SystemExit(1)",
+        " 428 | ",
+        " 429 | "
+      ]
+    },
+    {
+      "id": "FIND-3529FC09",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/install_deps.py",
+      "line": 305,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 303 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 304 |     if fails:",
+        " 305 |         raise SystemExit(1)",
+        " 306 | ",
+        " 307 | "
+      ]
+    },
+    {
+      "id": "FIND-CE4ED6C3",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/integration_tests.py",
+      "line": 732,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 730 |             \"os.system('ls')  # os.system\\n\"",
+        " 731 |             \"DATA = '/Users/john/data'\\n\"",
+        " 732 |             \"# TODO: arreglar esto\\n\"",
+        " 733 |         )",
+        " 734 |         findings = run_bago_lint(str(tmp))"
+      ]
+    },
+    {
+      "id": "FIND-BF246393",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/intent_router.py",
+      "line": 351,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 349 |     if not args or \"--help\" in args or \"-h\" in args:",
+        " 350 |         print(__doc__)",
+        " 351 |         raise SystemExit(0)",
+        " 352 | ",
+        " 353 |     if \"--test\" in args:"
+      ]
+    },
+    {
+      "id": "FIND-A740BD55",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/intent_router.py",
+      "line": 358,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 356 |     if \"--list-intents\" in args:",
+        " 357 |         cmd_list_intents()",
+        " 358 |         raise SystemExit(0)",
+        " 359 | ",
+        " 360 |     dry_run = \"--dry-run\" in args"
+      ]
+    },
+    {
+      "id": "FIND-DE7ED3E7",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/intent_router.py",
+      "line": 368,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 366 |     if not query_parts:",
+        " 367 |         print(\"  Describe el problema: bago intent 'mi código tiene secretos'\")",
+        " 368 |         raise SystemExit(1)",
+        " 369 | ",
+        " 370 |     query = \" \".join(query_parts)"
+      ]
+    },
+    {
+      "id": "FIND-6C6F921E",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/legacy_fixer.py",
+      "line": 59,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  57 | ",
+        "  58 |     # Test 4: (reservado) — implementar test específico del tool",
+        "  59 |     ok4 = True  # TODO: añadir test real",
+        "  60 |     results.append((\"{toolname}:placeholder_4\", ok4, \"placeholder\"))",
+        "  61 | "
+      ]
+    },
+    {
+      "id": "FIND-C4672A80",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/legacy_fixer.py",
+      "line": 63,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  61 | ",
+        "  62 |     # Test 5: (reservado) — implementar test específico del tool",
+        "  63 |     ok5 = True  # TODO: añadir test real",
+        "  64 |     results.append((\"{toolname}:placeholder_5\", ok5, \"placeholder\"))",
+        "  65 | "
+      ]
+    },
+    {
+      "id": "FIND-ACC1C019",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/legacy_fixer.py",
+      "line": 67,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  65 | ",
+        "  66 |     # Test 6: (reservado) — implementar test específico del tool",
+        "  67 |     ok6 = True  # TODO: añadir test real",
+        "  68 |     results.append((\"{toolname}:placeholder_6\", ok6, \"placeholder\"))",
+        "  69 | "
+      ]
+    },
+    {
+      "id": "FIND-057B5F7A",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/legacy_fixer.py",
+      "line": 302,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 300 |     if not args or \"--help\" in args or \"-h\" in args:",
+        " 301 |         print(__doc__)",
+        " 302 |         raise SystemExit(0)",
+        " 303 | ",
+        " 304 |     if \"--test\" in args:"
+      ]
+    },
+    {
+      "id": "FIND-55C7CAAE",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/legacy_fixer.py",
+      "line": 321,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 319 |     print(f\"  Argumento desconocido: {args}\")",
+        " 320 |     print(\"  Usa: legacy_fixer.py --help\")",
+        " 321 |     raise SystemExit(1)"
+      ]
+    },
+    {
+      "id": "FIND-C28C8122",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/license_check.py",
+      "line": 308,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 306 |     total = 6; passed = total - len(fails)",
+        " 307 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 308 |     if fails: raise SystemExit(1)",
+        " 309 | ",
+        " 310 | "
+      ]
+    },
+    {
+      "id": "FIND-36D19F9E",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/lint.py",
+      "line": 231,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 229 |     print()",
+        " 230 |     if errors:",
+        " 231 |         raise SystemExit(1)",
+        " 232 | ",
+        " 233 | "
+      ]
+    },
+    {
+      "id": "FIND-3EA8A528",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/lint.py",
+      "line": 301,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 299 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 300 |     if errors:",
+        " 301 |         raise SystemExit(1)",
+        " 302 | ",
+        " 303 | "
+      ]
+    },
+    {
+      "id": "FIND-8BB4BE76",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/lint_report.py",
+      "line": 226,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 224 |         {\"file\": \"src/main.py\", \"line\": 10, \"severity\": \"error\",   \"rule\": \"BAGO-E001\", \"message\": \"bare except\"},",
+        " 225 |         {\"file\": \"src/main.py\", \"line\": 25, \"severity\": \"warning\", \"rule\": \"BAGO-W001\", \"message\": \"utcnow deprecated\"},",
+        " 226 |         {\"file\": \"src/utils.py\",\"line\": 5,  \"severity\": \"warning\", \"rule\": \"BAGO-W002\", \"message\": \"eval() used\"},",
+        " 227 |         {\"file\": \"src/utils.py\",\"line\": 8,  \"severity\": \"info\",    \"rule\": \"BAGO-I002\", \"message\": \"TODO comment\"},",
+        " 228 |         {\"file\": \"src/api.js\",  \"line\": 30, \"severity\": \"error\",   \"rule\": \"JS-E001\",   \"message\": \"eval detected\"},"
+      ]
+    },
+    {
+      "id": "FIND-F19A5CCD",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/lint_report.py",
+      "line": 283,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 281 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 282 |     if fails:",
+        " 283 |         raise SystemExit(1)",
+        " 284 | ",
+        " 285 | "
+      ]
+    },
+    {
+      "id": "FIND-689C644F",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/metrics_export.py",
+      "line": 289,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 287 |     total = 6; passed = total - len(fails)",
+        " 288 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 289 |     if fails: raise SystemExit(1)",
+        " 290 | ",
+        " 291 | "
+      ]
+    },
+    {
+      "id": "FIND-022F140A",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/multi_scan.py",
+      "line": 40,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  38 | except ImportError:",
+        "  39 |     print(\"ERROR: findings_engine.py no encontrado\", file=sys.stderr)",
+        "  40 |     raise SystemExit(1)",
+        "  41 | ",
+        "  42 | try:"
+      ]
+    },
+    {
+      "id": "FIND-602E088F",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/multi_scan.py",
+      "line": 447,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 445 |     (tmp3 / \"code.py\").write_text(",
+        " 446 |         \"import os\\ntry:\\n    pass\\nexcept:\\n    pass\\n\"",
+        " 447 |         \"os.system('ls')\\n# TODO: fix\\n\"",
+        " 448 |     )",
+        " 449 |     result3 = run_multi_scan(str(tmp3), langs=[\"py\"])"
+      ]
+    },
+    {
+      "id": "FIND-D870D9EA",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/multi_scan.py",
+      "line": 447,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 445 |     (tmp3 / \"code.py\").write_text(",
+        " 446 |         \"import os\\ntry:\\n    pass\\nexcept:\\n    pass\\n\"",
+        " 447 |         \"os.system('ls')\\n# TODO: fix\\n\"",
+        " 448 |     )",
+        " 449 |     result3 = run_multi_scan(str(tmp3), langs=[\"py\"])"
+      ]
+    },
+    {
+      "id": "FIND-E6063396",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/multi_scan.py",
+      "line": 459,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 457 |     # T4: by_lang breakdown keys are correct",
+        " 458 |     tmp4 = Path(tempfile.mkdtemp())",
+        " 459 |     (tmp4 / \"x.py\").write_text(\"# TODO: fix\\n\")",
+        " 460 |     result4 = run_multi_scan(str(tmp4), langs=[\"py\", \"go\"])",
+        " 461 |     if \"py\" in result4[\"by_lang\"] and \"go\" in result4[\"by_lang\"]:"
+      ]
+    },
+    {
+      "id": "FIND-966BB6C0",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/naming_check.py",
+      "line": 299,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 297 |     total = 6; passed = total - len(fails)",
+        " 298 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 299 |     if fails: raise SystemExit(1)",
+        " 300 | ",
+        " 301 | "
+      ]
+    },
+    {
+      "id": "FIND-B888F47E",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/notes.py",
+      "line": 42,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  40 |     if not f.exists():",
+        "  41 |         print(f\"Nota '{note_id}' no encontrada.\")",
+        "  42 |         raise SystemExit(1)",
+        "  43 |     return json.loads(f.read_text())",
+        "  44 | "
+      ]
+    },
+    {
+      "id": "FIND-C2C096AF",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/notes.py",
+      "line": 111,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 109 |     if not f.exists():",
+        " 110 |         print(f\"Nota '{note_id}' no encontrada.\")",
+        " 111 |         raise SystemExit(1)",
+        " 112 |     f.unlink()",
+        " 113 |     print(f\"  Nota {note_id} eliminada.\")"
+      ]
+    },
+    {
+      "id": "FIND-610E0753",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/notes.py",
+      "line": 187,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 185 |     total = 5; passed = total - errors",
+        " 186 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 187 |     if errors: raise SystemExit(1)",
+        " 188 | ",
+        " 189 | "
+      ]
+    },
+    {
+      "id": "FIND-AAAB730C",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/orchestrator.py",
+      "line": 301,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 299 |     if not args or \"--help\" in args or \"-h\" in args:",
+        " 300 |         print(__doc__)",
+        " 301 |         raise SystemExit(0)",
+        " 302 | ",
+        " 303 |     if \"--test\" in args:"
+      ]
+    },
+    {
+      "id": "FIND-B25F9179",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/orchestrator.py",
+      "line": 308,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 306 |     if \"--list\" in args:",
+        " 307 |         cmd_list()",
+        " 308 |         raise SystemExit(0)",
+        " 309 | ",
+        " 310 |     dry_run = \"--dry-run\" in args"
+      ]
+    },
+    {
+      "id": "FIND-8BB1F33A",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/orchestrator.py",
+      "line": 319,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 317 |         print(\"  Usa: orchestrator.py <workflow|run> [cmds...]\")",
+        " 318 |         print(\"  Workflows: \" + \", \".join(WORKFLOWS.keys()))",
+        " 319 |         raise SystemExit(1)",
+        " 320 | ",
+        " 321 |     if clean_args[0] == \"run\":"
+      ]
+    },
+    {
+      "id": "FIND-7C0C623D",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/orchestrator.py",
+      "line": 325,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 323 |         if not cmds:",
+        " 324 |             print(\"  Uso: orchestrator.py run cmd1 cmd2 ...\")",
+        " 325 |             raise SystemExit(1)",
+        " 326 |         raise SystemExit(run_adhoc(cmds, dry_run=dry_run, fail_fast=fail_fast))",
+        " 327 | "
+      ]
+    },
+    {
+      "id": "FIND-F03502F2",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/orchestrator.py",
+      "line": 332,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 330 |         print(f\"  [ORC-E002] Workflow desconocido: '{workflow_name}'\")",
+        " 331 |         print(f\"  Disponibles: {', '.join(WORKFLOWS.keys())}\")",
+        " 332 |         raise SystemExit(1)",
+        " 333 | ",
+        " 334 |     result = run_workflow(WORKFLOWS[workflow_name], dry_run=dry_run,"
+      ]
+    },
+    {
+      "id": "FIND-E0F64F22",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/patch.py",
+      "line": 227,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 225 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 226 |     if errors:",
+        " 227 |         raise SystemExit(1)",
+        " 228 | ",
+        " 229 | "
+      ]
+    },
+    {
+      "id": "FIND-99B34D10",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/patch.py",
+      "line": 265,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 263 |         if name not in PATCHES:",
+        " 264 |             print(f\"Parche '{name}' no encontrado. Disponibles: {list(PATCHES.keys())}\")",
+        " 265 |             raise SystemExit(1)",
+        " 266 |         print(f\"\\n  {BOLD}{name}{RESET}  [{mode}]\")",
+        " 267 |         result = PATCHES[name](apply=apply)"
+      ]
+    },
+    {
+      "id": "FIND-70AB7C0C",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/permission_fixer.py",
+      "line": 334,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 332 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 333 |     if errors:",
+        " 334 |         raise SystemExit(1)",
+        " 335 | ",
+        " 336 | "
+      ]
+    },
+    {
+      "id": "FIND-5CAFBAB9",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/pre_commit_gen.py",
+      "line": 255,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 253 |     total = 6; passed = total - len(fails)",
+        " 254 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 255 |     if fails: raise SystemExit(1)",
+        " 256 | ",
+        " 257 | "
+      ]
+    },
+    {
+      "id": "FIND-C9E7BC1B",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/pre_push_guard.py",
+      "line": 288,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 286 |     total = 6; passed = total - len(fails)",
+        " 287 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 288 |     if fails: raise SystemExit(1)",
+        " 289 | ",
+        " 290 | "
+      ]
+    },
+    {
+      "id": "FIND-2EEDB31C",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/readme_check.py",
+      "line": 293,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 291 |     total = 6; passed = total - len(fails)",
+        " 292 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 293 |     if fails: raise SystemExit(1)",
+        " 294 | ",
+        " 295 | "
+      ]
+    },
+    {
+      "id": "FIND-2213ABEA",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/reconcile_state.py",
+      "line": 35,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  33 |     if not GLOBAL_STATE.exists():",
+        "  34 |         print(\"❌ global_state.json no encontrado\")",
+        "  35 |         raise SystemExit(1)",
+        "  36 |     return json.loads(GLOBAL_STATE.read_text(encoding=\"utf-8\"))",
+        "  37 | "
+      ]
+    },
+    {
+      "id": "FIND-B2A1F003",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/refactor_suggest.py",
+      "line": 382,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 380 |     total = 6; passed = total - len(fails)",
+        " 381 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 382 |     if fails: raise SystemExit(1)",
+        " 383 | ",
+        " 384 | "
+      ]
+    },
+    {
+      "id": "FIND-73BB8AC2",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/remind.py",
+      "line": 74,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  72 |     if not REMINDERS_DIR.exists():",
+        "  73 |         print(\"  No hay recordatorios.\")",
+        "  74 |         raise SystemExit(1)",
+        "  75 |     found = list(REMINDERS_DIR.glob(f\"*{rem_id}*.json\"))",
+        "  76 |     if not found:"
+      ]
+    },
+    {
+      "id": "FIND-40B57BF1",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/remind.py",
+      "line": 78,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  76 |     if not found:",
+        "  77 |         print(f\"  No encontrado: {rem_id}\")",
+        "  78 |         raise SystemExit(1)",
+        "  79 |     for f in found:",
+        "  80 |         rem = json.loads(f.read_text())"
+      ]
+    },
+    {
+      "id": "FIND-4E1621B9",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/remind.py",
+      "line": 224,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 222 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 223 |     if errors:",
+        " 224 |         raise SystemExit(1)",
+        " 225 | ",
+        " 226 | "
+      ]
+    },
+    {
+      "id": "FIND-D45469E9",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/review.py",
+      "line": 218,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 216 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 217 |     if errors:",
+        " 218 |         raise SystemExit(1)",
+        " 219 | ",
+        " 220 | "
+      ]
+    },
+    {
+      "id": "FIND-7D8BD793",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/review.py",
+      "line": 245,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 243 |         except ValueError:",
+        " 244 |             print(f\"Período inválido: {period}\", file=sys.stderr)",
+        " 245 |             raise SystemExit(1)",
+        " 246 | ",
+        " 247 |     review = build_review(days=days)"
+      ]
+    },
+    {
+      "id": "FIND-4045F5FF",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/risk_matrix.py",
+      "line": 231,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 229 |     if db is None:",
+        " 230 |         print(f\"{RED}✗ Sin scan disponible. Ejecuta 'bago scan' primero.{RESET}\")",
+        " 231 |         raise SystemExit(1)",
+        " 232 | ",
+        " 233 |     findings = db.findings"
+      ]
+    },
+    {
+      "id": "FIND-89BC4C54",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/risk_matrix.py",
+      "line": 305,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 303 |     total = 6; passed = total - errors",
+        " 304 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 305 |     if errors: raise SystemExit(1)",
+        " 306 | ",
+        " 307 | "
+      ]
+    },
+    {
+      "id": "FIND-17FEEE92",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 62,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() deprecated — use datetime.now(timezone.utc)",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a//Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py\n+++ b//Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py\n@@ -62,1 +62,1 @@\n-        title=\"datetime.utcnow() deprecated\",\n+        title=\"datetime.datetime.now(datetime.timezone.utc) deprecated\",\n",
+      "context_lines": [
+        "  60 |         category=\"reliability\",",
+        "  61 |         source=\"bago\",",
+        "  62 |         title=\"datetime.utcnow() deprecated\",",
+        "  63 |         description=(",
+        "  64 |             \"`datetime.utcnow()` devuelve un `datetime` naive en UTC, lo que \""
+      ]
+    },
+    {
+      "id": "FIND-9EA8FA07",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 64,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() deprecated — use datetime.now(timezone.utc)",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a//Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py\n+++ b//Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py\n@@ -64,1 +64,1 @@\n-            \"`datetime.utcnow()` devuelve un `datetime` naive en UTC, lo que \"\n+            \"`datetime.datetime.now(datetime.timezone.utc)` devuelve un `datetime` naive en UTC, lo que \"\n",
+      "context_lines": [
+        "  62 |         title=\"datetime.utcnow() deprecated\",",
+        "  63 |         description=(",
+        "  64 |             \"`datetime.utcnow()` devuelve un `datetime` naive en UTC, lo que \"",
+        "  65 |             \"induce confusión con zonas horarias. Deprecated desde Python 3.12.\"",
+        "  66 |         ),"
+      ]
+    },
+    {
+      "id": "FIND-09E033A5",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 67,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() deprecated — use datetime.now(timezone.utc)",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a//Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py\n+++ b//Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py\n@@ -67,1 +67,1 @@\n-        example_bad=\"ts = datetime.utcnow()\",\n+        example_bad=\"ts = datetime.datetime.now(datetime.timezone.utc)\",\n",
+      "context_lines": [
+        "  65 |             \"induce confusión con zonas horarias. Deprecated desde Python 3.12.\"",
+        "  66 |         ),",
+        "  67 |         example_bad=\"ts = datetime.utcnow()\",",
+        "  68 |         example_good=\"ts = datetime.now(timezone.utc)\",",
+        "  69 |         autofix=True,"
+      ]
+    },
+    {
+      "id": "FIND-CBCAE060",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 76,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  74 |         category=\"security\",",
+        "  75 |         source=\"bago\",",
+        "  76 |         title=\"eval() / exec() usage\",",
+        "  77 |         description=(",
+        "  78 |             \"`eval()` y `exec()` ejecutan código arbitrario. Si la entrada \""
+      ]
+    },
+    {
+      "id": "FIND-B21EF0E1",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 78,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  76 |         title=\"eval() / exec() usage\",",
+        "  77 |         description=(",
+        "  78 |             \"`eval()` y `exec()` ejecutan código arbitrario. Si la entrada \"",
+        "  79 |             \"proviene de fuentes externas, es una vulnerabilidad crítica RCE.\"",
+        "  80 |         ),"
+      ]
+    },
+    {
+      "id": "FIND-48C990AA",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 81,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  79 |             \"proviene de fuentes externas, es una vulnerabilidad crítica RCE.\"",
+        "  80 |         ),",
+        "  81 |         example_bad=\"result = eval(user_input)\",",
+        "  82 |         example_good=\"# Usa ast.literal_eval() para datos estructurados\\nresult = ast.literal_eval(data)\",",
+        "  83 |     ),"
+      ]
+    },
+    {
+      "id": "FIND-E42D3F1C",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 89,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  87 |         category=\"reliability\",",
+        "  88 |         source=\"bago\",",
+        "  89 |         title=\"os.system() — use subprocess\",",
+        "  90 |         description=(",
+        "  91 |             \"`os.system()` no captura stdout/stderr, no permite control de \""
+      ]
+    },
+    {
+      "id": "FIND-6B533E54",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 91,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  89 |         title=\"os.system() — use subprocess\",",
+        "  90 |         description=(",
+        "  91 |             \"`os.system()` no captura stdout/stderr, no permite control de \"",
+        "  92 |             \"código de retorno y es más vulnerable a inyección de shell.\"",
+        "  93 |         ),"
+      ]
+    },
+    {
+      "id": "FIND-B227AE86",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 94,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  92 |             \"código de retorno y es más vulnerable a inyección de shell.\"",
+        "  93 |         ),",
+        "  94 |         example_bad='os.system(\"ls -la\")',",
+        "  95 |         example_good='subprocess.run([\"ls\", \"-la\"], check=True)',",
+        "  96 |     ),"
+      ]
+    },
+    {
+      "id": "FIND-75E8A729",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 107,
+      "col": 0,
+      "rule": "BAGO-W004",
+      "source": "bago",
+      "message": "Path absoluto hardcoded: '/Users/marc/project/config.json' — no portable",
+      "fix_suggestion": "Usa Path.home() / os.path.expanduser('~') o variables de entorno",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 105 |             \"impiden portabilidad entre máquinas y entornos CI.\"",
+        " 106 |         ),",
+        " 107 |         example_bad='config = \"/Users/marc/project/config.json\"',",
+        " 108 |         example_good='config = Path(__file__).parent / \"config.json\"',",
+        " 109 |     ),"
+      ]
+    },
+    {
+      "id": "FIND-CA6E7548",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 134,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 132 |             \"un issue rastreable.\"",
+        " 133 |         ),",
+        " 134 |         example_bad=\"# TODO: manejar el caso de archivo vacío\",",
+        " 135 |         example_good=\"# Ver issue #123: manejar archivo vacío\",",
+        " 136 |     ),"
+      ]
+    },
+    {
+      "id": "FIND-A86F074A",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 143,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 141 |         category=\"security\",",
+        " 142 |         source=\"js_ast\",",
+        " 143 |         title=\"eval() / Function() constructor\",",
+        " 144 |         description=(",
+        " 145 |             \"`eval()` y `new Function(string)` ejecutan JavaScript arbitrario \""
+      ]
+    },
+    {
+      "id": "FIND-1F03FEC9",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 145,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 143 |         title=\"eval() / Function() constructor\",",
+        " 144 |         description=(",
+        " 145 |             \"`eval()` y `new Function(string)` ejecutan JavaScript arbitrario \"",
+        " 146 |             \"en tiempo de ejecución. Equivalente a RCE si la cadena viene de \"",
+        " 147 |             \"una fuente externa.\""
+      ]
+    },
+    {
+      "id": "FIND-89011EFD",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 203,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 201 |         description=(",
+        " 202 |             \"Pasar una cadena como primer argumento a `setTimeout` o \"",
+        " 203 |             \"`setInterval` es equivalente a `eval()` y comparte sus riesgos.\"",
+        " 204 |         ),",
+        " 205 |         example_bad=\"setTimeout(\\\"doSomething()\\\", 100);\","
+      ]
+    },
+    {
+      "id": "FIND-723B06B6",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/rule_catalog.py",
+      "line": 519,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 517 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 518 |     if fails:",
+        " 519 |         raise SystemExit(1)",
+        " 520 | ",
+        " 521 | "
+      ]
+    },
+    {
+      "id": "FIND-83051480",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/scan.py",
+      "line": 412,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 410 |     total=5; passed=total-errors",
+        " 411 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 412 |     if errors: raise SystemExit(1)",
+        " 413 | ",
+        " 414 | "
+      ]
+    },
+    {
+      "id": "FIND-594788C6",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/scan.py",
+      "line": 441,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 439 |         if db is None:",
+        " 440 |             print(\"Sin scans guardados. Ejecuta 'bago scan' primero.\")",
+        " 441 |             raise SystemExit(1)",
+        " 442 |     else:",
+        " 443 |         lang = \"js\" if args.lang == \"ts\" else args.lang"
+      ]
+    },
+    {
+      "id": "FIND-A9A7E737",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/secret_scan.py",
+      "line": 281,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 279 |     total = 6; passed = total - len(fails)",
+        " 280 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 281 |     if fails: raise SystemExit(1)",
+        " 282 | ",
+        " 283 | "
+      ]
+    },
+    {
+      "id": "FIND-7EBA8C5D",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/session_details.py",
+      "line": 71,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  69 |     if not match:",
+        "  70 |         print(f\"  ERROR: sesión no encontrada: {sid}\")",
+        "  71 |         raise SystemExit(1)",
+        "  72 |     s = match[0]",
+        "  73 | "
+      ]
+    },
+    {
+      "id": "FIND-C37985B0",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/session_details.py",
+      "line": 239,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 237 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 238 |     if errors:",
+        " 239 |         raise SystemExit(1)",
+        " 240 | ",
+        " 241 | "
+      ]
+    },
+    {
+      "id": "FIND-3DADF70A",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/size_tracker.py",
+      "line": 289,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 287 |     total = 6; passed = total - len(fails)",
+        " 288 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 289 |     if fails: raise SystemExit(1)",
+        " 290 | ",
+        " 291 | "
+      ]
+    },
+    {
+      "id": "FIND-91DFF56F",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/snapshot.py",
+      "line": 158,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 156 |     if not args.id:",
+        " 157 |         print(\"  ERROR: indica el ID del snapshot (--show SNAP-YYYYMMDD_HHMMSS)\")",
+        " 158 |         raise SystemExit(1)",
+        " 159 | ",
+        " 160 |     out_dir = Path(args.out) if args.out else SNAPSHOT_DIR"
+      ]
+    },
+    {
+      "id": "FIND-51126550",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/snapshot.py",
+      "line": 164,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 162 |     if not zip_path.exists():",
+        " 163 |         print(f\"  ERROR: snapshot no encontrado: {zip_path}\")",
+        " 164 |         raise SystemExit(1)",
+        " 165 | ",
+        " 166 |     with zipfile.ZipFile(zip_path, \"r\") as zf:"
+      ]
+    },
+    {
+      "id": "FIND-9461679A",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/snapshot.py",
+      "line": 169,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 167 |         if \"SNAPSHOT_INDEX.json\" not in zf.namelist():",
+        " 168 |             print(\"  ERROR: snapshot no tiene índice\")",
+        " 169 |             raise SystemExit(1)",
+        " 170 |         index = json.loads(zf.read(\"SNAPSHOT_INDEX.json\"))",
+        " 171 | "
+      ]
+    },
+    {
+      "id": "FIND-97DAB0AC",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/snapshot.py",
+      "line": 252,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 250 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 251 |     if errors:",
+        " 252 |         raise SystemExit(1)",
+        " 253 | ",
+        " 254 | "
+      ]
+    },
+    {
+      "id": "FIND-21C2C678",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/sprint_manager.py",
+      "line": 101,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  99 |         print(\"  Cierralo primero con: bago sprint close\")",
+        " 100 |         print(\"  O usa --force para crear igualmente.\")",
+        " 101 |         raise SystemExit(1)",
+        " 102 |     sprint_id = _next_sprint_id()",
+        " 103 |     sprint = {"
+      ]
+    },
+    {
+      "id": "FIND-653A00B9",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/sprint_manager.py",
+      "line": 207,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 205 |         if not path.exists():",
+        " 206 |             print(\"  Sprint no encontrado: {}\".format(sprint_id))",
+        " 207 |             raise SystemExit(1)",
+        " 208 |         sprint = _load_json(path)",
+        " 209 |     else:"
+      ]
+    },
+    {
+      "id": "FIND-6895B67E",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/sprint_manager.py",
+      "line": 235,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 233 |     if not path.exists():",
+        " 234 |         print(\"  Sprint no encontrado: {}\".format(sprint_id))",
+        " 235 |         raise SystemExit(1)",
+        " 236 |     print(json.dumps(_load_json(path), indent=2, ensure_ascii=False))",
+        " 237 | "
+      ]
+    },
+    {
+      "id": "FIND-97214478",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/sprint_manager.py",
+      "line": 243,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 241 |     if not path.exists():",
+        " 242 |         print(\"  Sprint no encontrado: {}\".format(sprint_id))",
+        " 243 |         raise SystemExit(1)",
+        " 244 |     sprint = _load_json(path)",
+        " 245 |     sessions = sprint.setdefault(\"sessions\", [])"
+      ]
+    },
+    {
+      "id": "FIND-313566B9",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/stats.py",
+      "line": 293,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 291 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 292 |     if errors:",
+        " 293 |         raise SystemExit(1)",
+        " 294 | ",
+        " 295 | "
+      ]
+    },
+    {
+      "id": "FIND-80474BA2",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/summary.py",
+      "line": 32,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  30 |         if not sessions:",
+        "  31 |             print(\"  ERROR: no hay sesiones\")",
+        "  32 |             raise SystemExit(1)",
+        "  33 |         return json.loads(sessions[-1].read_text())",
+        "  34 | "
+      ]
+    },
+    {
+      "id": "FIND-FC3E4C44",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/summary.py",
+      "line": 46,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  44 | ",
+        "  45 |     print(f\"  ERROR: sesión no encontrada: {sid}\")",
+        "  46 |     raise SystemExit(1)",
+        "  47 | ",
+        "  48 | "
+      ]
+    },
+    {
+      "id": "FIND-D00494E6",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/summary.py",
+      "line": 54,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  52 |         if not sprints:",
+        "  53 |             print(\"  ERROR: no hay sprints\")",
+        "  54 |             raise SystemExit(1)",
+        "  55 |         return json.loads(sprints[-1].read_text())",
+        "  56 | "
+      ]
+    },
+    {
+      "id": "FIND-25B3CBEA",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/summary.py",
+      "line": 64,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  62 |         else:",
+        "  63 |             print(f\"  ERROR: sprint no encontrado: {sprint_id}\")",
+        "  64 |             raise SystemExit(1)",
+        "  65 |     return json.loads(p.read_text())",
+        "  66 | "
+      ]
+    },
+    {
+      "id": "FIND-F4F74224",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/summary.py",
+      "line": 257,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 255 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 256 |     if errors:",
+        " 257 |         raise SystemExit(1)",
+        " 258 | ",
+        " 259 | "
+      ]
+    },
+    {
+      "id": "FIND-6AA563D0",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/tags.py",
+      "line": 65,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  63 |     if not args.entity_id or not args.tags:",
+        "  64 |         print(\"  ERROR: indica entidad ID y tags\")",
+        "  65 |         raise SystemExit(1)",
+        "  66 | ",
+        "  67 |     index = _load_index()"
+      ]
+    },
+    {
+      "id": "FIND-22D53B25",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/tags.py",
+      "line": 100,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  98 |     if not args.tag:",
+        "  99 |         print(\"  ERROR: indica un tag\")",
+        " 100 |         raise SystemExit(1)",
+        " 101 | ",
+        " 102 |     index = _load_index()"
+      ]
+    },
+    {
+      "id": "FIND-11E9EA6C",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/tags.py",
+      "line": 265,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 263 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 264 |     if errors:",
+        " 265 |         raise SystemExit(1)",
+        " 266 | ",
+        " 267 | import pathlib  # ensure available in run_tests scope"
+      ]
+    },
+    {
+      "id": "FIND-E53118AF",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/template.py",
+      "line": 132,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 130 |     if name not in templates:",
+        " 131 |         print(f\"Plantilla '{name}' no encontrada.\")",
+        " 132 |         raise SystemExit(1)",
+        " 133 |     t = templates[name]",
+        " 134 |     print(f\"\\n  {BOLD}{t['name']}{RESET}  {DIM}{t.get('description','')}{RESET}\")"
+      ]
+    },
+    {
+      "id": "FIND-AB0D3F79",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/template.py",
+      "line": 152,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 150 |     if name not in templates:",
+        " 151 |         print(f\"Plantilla '{name}' no encontrada.\")",
+        " 152 |         raise SystemExit(1)",
+        " 153 |     t = templates[name]",
+        " 154 |     now = datetime.datetime.now(datetime.timezone.utc).isoformat().replace(\"+00:00\", \"Z\")"
+      ]
+    },
+    {
+      "id": "FIND-C2699C97",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/template.py",
+      "line": 204,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 202 |     if name in BUILTIN_TEMPLATES:",
+        " 203 |         print(f\"No se puede eliminar plantilla builtin '{name}'.\")",
+        " 204 |         raise SystemExit(1)",
+        " 205 |     f = TMPL_DIR / f\"{name}.json\"",
+        " 206 |     if not f.exists():"
+      ]
+    },
+    {
+      "id": "FIND-6ED375D7",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/template.py",
+      "line": 208,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 206 |     if not f.exists():",
+        " 207 |         print(f\"Plantilla '{name}' no encontrada.\")",
+        " 208 |         raise SystemExit(1)",
+        " 209 |     f.unlink()",
+        " 210 |     print(f\"  Plantilla '{name}' eliminada.\")"
+      ]
+    },
+    {
+      "id": "FIND-E91D4261",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/template.py",
+      "line": 276,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 274 |     total = 5; passed = total - errors",
+        " 275 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 276 |     if errors: raise SystemExit(1)",
+        " 277 | ",
+        " 278 | "
+      ]
+    },
+    {
+      "id": "FIND-0B7AE426",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/template.py",
+      "line": 292,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 290 |         cmd_list()",
+        " 291 |     elif args.subcmd == \"show\":",
+        " 292 |         if not args.name: print(\"Uso: bago template show <nombre>\"); raise SystemExit(1)",
+        " 293 |         cmd_show(args.name)",
+        " 294 |     elif args.subcmd == \"new\":"
+      ]
+    },
+    {
+      "id": "FIND-41155007",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/template.py",
+      "line": 295,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 293 |         cmd_show(args.name)",
+        " 294 |     elif args.subcmd == \"new\":",
+        " 295 |         if not args.name: print(\"Uso: bago template new <nombre>\"); raise SystemExit(1)",
+        " 296 |         cmd_new(args.name)",
+        " 297 |     elif args.subcmd == \"create\":"
+      ]
+    },
+    {
+      "id": "FIND-C35C4213",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/template.py",
+      "line": 298,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 296 |         cmd_new(args.name)",
+        " 297 |     elif args.subcmd == \"create\":",
+        " 298 |         if not args.name: print(\"Uso: bago template create <nombre>\"); raise SystemExit(1)",
+        " 299 |         cmd_create(args.name)",
+        " 300 |     elif args.subcmd == \"delete\":"
+      ]
+    },
+    {
+      "id": "FIND-7854EF3F",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/template.py",
+      "line": 301,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 299 |         cmd_create(args.name)",
+        " 300 |     elif args.subcmd == \"delete\":",
+        " 301 |         if not args.name: print(\"Uso: bago template delete <nombre>\"); raise SystemExit(1)",
+        " 302 |         cmd_delete(args.name)",
+        " 303 | "
+      ]
+    },
+    {
+      "id": "FIND-9D9A0B69",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/test_gen.py",
+      "line": 138,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 136 |             lines.append(f\"{indent}    # arrange\")",
+        " 137 |             for arg in f.args:",
+        " 138 |                 lines.append(f\"{indent}    {arg} = None  # TODO: set value\")",
+        " 139 |         lines += [",
+        " 140 |             f\"{indent}    # act\","
+      ]
+    },
+    {
+      "id": "FIND-B610580A",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/test_gen.py",
+      "line": 143,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 141 |             f\"{indent}    result = {fname}({', '.join(f.args)}){ret_comment}\",",
+        " 142 |             f\"{indent}    # assert\",",
+        " 143 |             f\"{indent}    assert result is not None  # TODO: refine assertion\",",
+        " 144 |         ]",
+        " 145 | "
+      ]
+    },
+    {
+      "id": "FIND-68A4859E",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/test_gen.py",
+      "line": 168,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 166 |             lines.append(f\"        # {f.docstring}\")",
+        " 167 |         for arg in f.args:",
+        " 168 |             lines.append(f\"        {arg} = None  # TODO: set value\")",
+        " 169 |         lines += [",
+        " 170 |             f\"        result = {fname}({', '.join(f.args)}){ret_comment}\","
+      ]
+    },
+    {
+      "id": "FIND-AC429FD0",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/test_gen.py",
+      "line": 171,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 169 |         lines += [",
+        " 170 |             f\"        result = {fname}({', '.join(f.args)}){ret_comment}\",",
+        " 171 |             f\"        self.assertIsNotNone(result)  # TODO: refine\",",
+        " 172 |             f\"\",",
+        " 173 |         ]"
+      ]
+    },
+    {
+      "id": "FIND-5E4AC8EE",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/tool_guardian.py",
+      "line": 299,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 297 |     total = 6; passed = total - len(fails)",
+        " 298 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 299 |     if fails: raise SystemExit(1)",
+        " 300 | ",
+        " 301 | "
+      ]
+    },
+    {
+      "id": "FIND-9FD940A3",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/tool_search.py",
+      "line": 211,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 209 |     if not args or \"--help\" in args or \"-h\" in args:",
+        " 210 |         print(__doc__)",
+        " 211 |         raise SystemExit(0)",
+        " 212 | ",
+        " 213 |     if \"--test\" in args:"
+      ]
+    },
+    {
+      "id": "FIND-3D207A1D",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/tool_search.py",
+      "line": 222,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 220 |                 cat = args[i + 1]",
+        " 221 |         cmd_list_all(cat)",
+        " 222 |         raise SystemExit(0)",
+        " 223 | ",
+        " 224 |     if \"--category\" in args:"
+      ]
+    },
+    {
+      "id": "FIND-9CAF8F08",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/tool_search.py",
+      "line": 228,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 226 |         cat = args[i + 1] if i + 1 < len(args) else \"\"",
+        " 227 |         cmd_list_all(cat)",
+        " 228 |         raise SystemExit(0)",
+        " 229 | ",
+        " 230 |     if \"--code\" in args:"
+      ]
+    },
+    {
+      "id": "FIND-17F9F556",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/type_check.py",
+      "line": 291,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 289 |     total = 6; passed = total - len(fails)",
+        " 290 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 291 |     if fails: raise SystemExit(1)",
+        " 292 | ",
+        " 293 | "
+      ]
+    },
+    {
+      "id": "FIND-5CF64CD5",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/validate_manifest.py",
+      "line": 53,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  51 |     for e in errors:",
+        "  52 |         print(e)",
+        "  53 |     raise SystemExit(1)",
+        "  54 | ",
+        "  55 | print(\"GO manifest\")"
+      ]
+    },
+    {
+      "id": "FIND-353E83E9",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/validate_pack.py",
+      "line": 76,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  74 |         print(\"KO\")",
+        "  75 |         print(f\"legacy 2.1 reference found outside migration/legacy: {rel}\")",
+        "  76 |         raise SystemExit(1)",
+        "  77 | ",
+        "  78 | role_dir_to_family = {"
+      ]
+    },
+    {
+      "id": "FIND-7842AFE6",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/validate_pack.py",
+      "line": 92,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  90 |         print(\"KO\")",
+        "  91 |         print(f\"unknown role directory family for {rel}\")",
+        "  92 |         raise SystemExit(1)",
+        "  93 |     text = p.read_text(encoding=\"utf-8\")",
+        "  94 |     m = role_family_re.search(text)"
+      ]
+    },
+    {
+      "id": "FIND-752F7D51",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/validate_pack.py",
+      "line": 98,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  96 |         print(\"KO\")",
+        "  97 |         print(f\"role without parseable family: {rel}\")",
+        "  98 |         raise SystemExit(1)",
+        "  99 |     declared_family = m.group(1).strip()",
+        " 100 |     if declared_family != physical_family:"
+      ]
+    },
+    {
+      "id": "FIND-46E773DD",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/validate_pack.py",
+      "line": 105,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 103 |             f\"role family mismatch for {rel}: declared={declared_family} physical={physical_family}\"",
+        " 104 |         )",
+        " 105 |         raise SystemExit(1)",
+        " 106 | ",
+        " 107 | print(\"GO pack\")"
+      ]
+    },
+    {
+      "id": "FIND-F639A63E",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/validate_state.py",
+      "line": 380,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 378 |     for e in errors:",
+        " 379 |         print(e)",
+        " 380 |     raise SystemExit(1)",
+        " 381 | ",
+        " 382 | print(\"GO state\")"
+      ]
+    },
+    {
+      "id": "FIND-D372AD36",
+      "severity": "info",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/velocity.py",
+      "line": 211,
+      "col": 0,
+      "rule": "BAGO-I001",
+      "source": "bago",
+      "message": "raise SystemExit(1) sin mensaje de error claro para el usuario",
+      "fix_suggestion": "Añade print(mensaje) antes de raise SystemExit(1)",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 209 |     print(f\"\\n  {passed}/{total} tests pasaron\")",
+        " 210 |     if errors:",
+        " 211 |         raise SystemExit(1)",
+        " 212 | ",
+        " 213 | "
+      ]
+    },
+    {
+      "id": "FIND-F753D528",
+      "severity": "warning",
+      "file": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA/.bago/tools/watch.py",
+      "line": 88,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  86 | ",
+        "  87 | def _clear():",
+        "  88 |     os.system(\"clear\" if os.name == \"posix\" else \"cls\")",
+        "  89 | ",
+        "  90 | "
+      ]
+    }
+  ]
+}

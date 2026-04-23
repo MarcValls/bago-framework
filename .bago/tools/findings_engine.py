@@ -860,8 +860,10 @@ def run_bago_lint(target_dir: str) -> list:
                         fix_patch=_make_utcnow_patch(rel, i, line),
                         context_lines=_read_context(rel, i),
                     ))
-                # BAGO-I001: bare sys.exit(1)
-                if not _suppressed("BAGO-I001") and re.search(r'\bsys\.exit\(1\)\s*$', line) and not is_test:
+                # BAGO-I001: bare sys.exit(1) without message (skip comments and raise SystemExit)
+                _stripped_i001 = line.lstrip()
+                if (not _suppressed("BAGO-I001") and not _stripped_i001.startswith('#')
+                        and re.search(r'\bsys\.exit\(\d+\)\s*$', line) and not is_test):
                     fid = _make_id("bago", rel, i, "BAGO-I001")
                     findings.append(Finding(
                         id=fid, severity="info", file=rel, line=i, col=0,
