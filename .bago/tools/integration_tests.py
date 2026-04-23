@@ -2318,6 +2318,27 @@ def test_metrics_export_since():
     _record("metrics_export:since", PASS, f"since OK, commits={data['git_commits_30d']}")
 
 
+def test_debt_ledger_top():
+    """debt_ledger.py --top 2 --csv: ≤3 líneas (header + max 2 rows)."""
+    rc, out, err = _run("debt_ledger.py", ["--top", "2", "--csv"], timeout=30)
+    if rc != 0:
+        _record("debt_ledger:top", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    lines = [l for l in out.splitlines() if l.strip()]
+    if not lines:
+        _record("debt_ledger:top", FAIL, "no output")
+        return
+    header = lines[0]
+    if "file" not in header or "hours" not in header:
+        _record("debt_ledger:top", FAIL, f"header missing: {header}")
+        return
+    data_rows = len(lines) - 1
+    if data_rows > 2:
+        _record("debt_ledger:top", FAIL, f"--top 2 returned {data_rows} rows (expected ≤2)")
+        return
+    _record("debt_ledger:top", PASS, f"top OK, {data_rows} data rows")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2460,6 +2481,7 @@ ALL_TESTS = [
     (139, "scan:format_csv",             test_scan_format_csv),
     (140, "health_score:breakdown",      test_health_score_breakdown),
     (141, "metrics_export:since",        test_metrics_export_since),
+    (142, "debt_ledger:top",             test_debt_ledger_top),
 ]
 
 

@@ -310,10 +310,11 @@ def main():
 
     if getattr(args, "csv", False):
         import csv as _csv, io as _io
+        top_items = items[:args.top] if args.top else items
         buf = _io.StringIO()
         w = _csv.writer(buf)
         w.writerow(["file", "severity", "hours", "cost_eur", "quadrant"])
-        for item in items:
+        for item in top_items:
             f = item.finding
             w.writerow([
                 getattr(f, "file", ""),
