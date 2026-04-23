@@ -12,3 +12,7 @@ _finish_session.sh
 .bago/state/global_state.backup.json
 LaunchBAGO.app/
 node_modules/
+TESTS/TEST_BAGO_02/CAOS_SIGARRITO
+TESTS/TEST_BAGO_02/bago-framework
+RELEASE/bago-framework
+TESTS/TEST_BAGO_01/bago-framework
