@@ -315,9 +315,10 @@ def register_implemented_idea(title: str, idea_index: int) -> None:
     impl_file.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
-def build_idea_sections(items: list[dict[str, object]]) -> dict[str, list[dict[str, object]]]:
+def build_idea_sections(items: list[dict[str, object]], done_titles: set[str] | None = None) -> dict[str, list[dict[str, object]]]:
     # 5–20 range is intentional: below 5 risks too little choice for decision;
     # above 20 causes cognitive overload. If fewer than 5 are available, show all.
+    done_titles = done_titles or set()
     contextual = [
         item
         for item in items
@@ -333,7 +334,7 @@ def build_idea_sections(items: list[dict[str, object]]) -> dict[str, list[dict[s
             if len(contextual) + len(respaldo) >= MIN_IDEAS:
                 break
             title = str(fallback["title"])
-            if title in seen_titles:
+            if title in seen_titles or title in done_titles:
                 continue
             respaldo.append(dict(fallback))
             seen_titles.add(title)
@@ -923,7 +924,7 @@ def main() -> int:
     done_titles = load_implemented_titles()
     ideas = apply_dynamic_scoring(ideas, done_titles)
 
-    sections = build_idea_sections(ideas)
+    sections = build_idea_sections(ideas, done_titles)
     ideas = order_ideas_by_section(sections)
 
     # ── working mode header ────────────────────────────────────────────────────

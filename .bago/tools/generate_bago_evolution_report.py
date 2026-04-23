@@ -274,6 +274,90 @@ def phase_task_mix_chart(early_counts, late_counts, title, out_path: Path) -> No
     grouped_bar_chart(phases, categories, values, title, out_path)
 
 
+def radar_chart(
+    labels: list[str],
+    values: list[float],
+    title: str,
+    out_path: Path,
+    color: str = "#2563eb",
+    max_val: float = 100.0,
+) -> None:
+    """Renders a radar/spider chart as SVG (pure Python, no external deps)."""
+    import math
+
+    n = len(labels)
+    if n < 3:
+        return
+
+    width, height = 520, 480
+    cx, cy = width // 2, height // 2 + 10
+    r = min(cx, cy) - 70  # radius of the outermost ring
+
+    body: list[str] = []
+
+    # Draw concentric grid rings (5 levels)
+    levels = 5
+    for lvl in range(1, levels + 1):
+        ring_r = r * lvl / levels
+        points = []
+        for i in range(n):
+            angle = math.pi / 2 - 2 * math.pi * i / n
+            px = cx + ring_r * math.cos(angle)
+            py = cy - ring_r * math.sin(angle)
+            points.append(f"{px:.1f},{py:.1f}")
+        body.append(f"<polygon points='{' '.join(points)}' fill='none' stroke='#cbd5e1' stroke-width='1' stroke-dasharray='3 3'/>")
+        # Label the % at the top axis
+        top_angle = math.pi / 2
+        lx = cx + ring_r * math.cos(top_angle)
+        ly = cy - ring_r * math.sin(top_angle)
+        body.append(f"<text x='{lx+4:.1f}' y='{ly:.1f}' class='small' fill='#94a3b8'>{int(lvl * max_val / levels)}</text>")
+
+    # Draw axis lines from center to each vertex
+    for i in range(n):
+        angle = math.pi / 2 - 2 * math.pi * i / n
+        px = cx + r * math.cos(angle)
+        py = cy - r * math.sin(angle)
+        body.append(f"<line x1='{cx}' y1='{cy}' x2='{px:.1f}' y2='{py:.1f}' class='axis'/>")
+
+    # Draw data polygon
+    data_points = []
+    for i, val in enumerate(values):
+        clipped = max(0.0, min(float(val), max_val))
+        frac = clipped / max_val
+        angle = math.pi / 2 - 2 * math.pi * i / n
+        px = cx + r * frac * math.cos(angle)
+        py = cy - r * frac * math.sin(angle)
+        data_points.append(f"{px:.1f},{py:.1f}")
+    hex_color = color
+    body.append(f"<polygon points='{' '.join(data_points)}' fill='{hex_color}' fill-opacity='0.25' stroke='{hex_color}' stroke-width='2'/>")
+
+    # Dots at data points
+    for pt in data_points:
+        px, py = pt.split(",")
+        body.append(f"<circle cx='{px}' cy='{py}' r='4' fill='{hex_color}'/>")
+
+    # Axis labels (outside the ring)
+    for i, label in enumerate(labels):
+        angle = math.pi / 2 - 2 * math.pi * i / n
+        lx = cx + (r + 26) * math.cos(angle)
+        ly = cy - (r + 26) * math.sin(angle)
+        # Choose anchor based on position
+        if abs(math.cos(angle)) < 0.15:
+            anchor = "middle"
+        elif math.cos(angle) > 0:
+            anchor = "start"
+        else:
+            anchor = "end"
+        val_str = f"{values[i]:.0f}%"
+        body.append(f"<text x='{lx:.1f}' y='{ly:.1f}' text-anchor='{anchor}' class='label' font-weight='600'>{esc(label)}</text>")
+        # Value label slightly inward
+        vx = cx + (r + 44) * math.cos(angle)
+        vy = cy - (r + 44) * math.sin(angle)
+        body.append(f"<text x='{vx:.1f}' y='{vy+13:.1f}' text-anchor='{anchor}' class='small' fill='{hex_color}'>{val_str}</text>")
+
+    write_svg(out_path, svg_template(title, width, height, "\n".join(body)))
+
+
 def build_html_report(
     *,
     metrics_snapshot: dict,
@@ -293,6 +377,8 @@ def build_html_report(
     task_types: list[str],
     all_days: list[str],
     task_values: dict,
+    radar_labels: list[str] | None = None,
+    radar_values: list[float] | None = None,
 ) -> str:
     def card(title: str, value: str, subtitle: str = "") -> str:
         return f"""
@@ -459,6 +545,11 @@ def build_html_report(
     <div class="panel">
       <h2>Actividad diaria</h2>
       <img class="svg" src="figures/activity_by_day.svg" alt="Actividad diaria" />
+    </div>
+
+    <div class="panel">
+      <h2>Radar de salud BAGO</h2>
+      <img class="svg" src="figures/health_radar.svg" alt="Radar de salud del sistema" />
     </div>
 
     <div class="panel">
@@ -686,6 +777,45 @@ def main() -> int:
         color="#7c3aed",
     )
 
+    # Health radar chart — derived from global_state and smoke report.
+    smoke_report_path = ROOT / "sandbox" / "runtime" / "last-report.json"
+    smoke_data: dict = {}
+    if smoke_report_path.exists():
+        try:
+            smoke_data = load_json(smoke_report_path)
+        except Exception:
+            pass
+    _test_suite = str(current_state.get("integration_suite", "0/0"))
+    _parts = _test_suite.split("/")
+    _passed = int(_parts[0]) if _parts and _parts[0].isdigit() else 0
+    _total = int(_parts[1]) if len(_parts) > 1 and _parts[1].isdigit() else max(1, _passed)
+    test_score = round(100.0 * _passed / _total) if _total else 0
+
+    changes_total = int(current_state.get("changes", 0))
+    changes_score = min(100, round(changes_total / 1.2))  # 120 changes → 100%
+
+    sessions_total = int(current_state.get("inventory", {}).get("sessions", 0))
+    sessions_score = min(100, round(sessions_total / 0.6))  # 60 sessions → 100%
+
+    tools_total = len(list((ROOT / "tools").glob("*.py"))) if (ROOT / "tools").is_dir() else 0
+    tools_score = min(100, round(tools_total / 1.5))  # 150 tools → 100%
+
+    _smoke_ok = smoke_data.get("status", "fail") in ("pass", "ok", "green", "success") and smoke_data.get("failure_count", 1) == 0
+    smoke_score = 100 if _smoke_ok else 0
+
+    evidences_total = int(current_state.get("inventory", {}).get("evidences", 0))
+    evidences_score = min(100, round(evidences_total / 0.5))  # 50 evidences → 100%
+
+    radar_labels = ["Tests", "CHGs", "Sesiones", "Tools", "Smoke", "Evidencias"]
+    radar_values = [float(test_score), float(changes_score), float(sessions_score), float(tools_score), float(smoke_score), float(evidences_score)]
+    radar_chart(
+        radar_labels,
+        radar_values,
+        "Radar de salud BAGO",
+        FIG_DIR / "health_radar.svg",
+        color="#0f766e",
+    )
+
     # Runs clusters.
     runs = []
     for item in run_summaries:
@@ -903,6 +1033,8 @@ stateDiagram-v2
         task_types=task_types,
         all_days=all_days,
         task_values=task_values,
+        radar_labels=radar_labels,
+        radar_values=radar_values,
     ), encoding="utf-8")
 
     print(f"OK {report_path}")
@@ -912,6 +1044,7 @@ stateDiagram-v2
     print(f"OK {FIG_DIR / 'task_type_evolution.svg'}")
     print(f"OK {FIG_DIR / 'corpus_growth.svg'}")
     print(f"OK {FIG_DIR / 'runs_clusters.svg'}")
+    print(f"OK {FIG_DIR / 'health_radar.svg'}")
     return 0
 
 

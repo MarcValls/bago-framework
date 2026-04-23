@@ -31,22 +31,22 @@ Ahora trabaja como un sistema operativo más maduro:
 
 | Métrica | Inicio | Ahora |
 | --- | ---:| ---:|
-| Snapshot documental mínimo | 22 artefactos | 154 artefactos |
-| Sesiones nativas visibles | 19 | 50 |
+| Snapshot documental mínimo | 22 artefactos | 229 artefactos |
+| Sesiones nativas visibles | 19 | 55 |
 | Sesiones migradas preservadas | 3 | 4 preservadas en `state/migrated_sessions/` |
-| Cambios migrados/validados | 0 | 52 |
-| Evidencias registradas | no consolidado en snapshot inicial | 52 |
+| Cambios migrados/validados | 0 | 116 |
+| Evidencias registradas | no consolidado en snapshot inicial | 58 |
 | Integridad del pack | GO | GO / GO / GO |
 
 ## Métricas de hoy
 
-Hoy local: **21/04/2026**.
+Hoy local: **23/04/2026**.
 
 | Métrica | Valor |
 | --- | ---: |
-| Sesiones de hoy | 9 |
-| Cambios de hoy | 10 |
-| Evidencias de hoy | 10 |
+| Sesiones de hoy | 4 |
+| Cambios de hoy | 52 |
+| Evidencias de hoy | 5 |
 | Corridas autónomas de hoy | 0 |
 | Solicitudes de hoy en `metrics/runs` | 0 |
 
@@ -68,7 +68,7 @@ Rango visible del estado actual: **14/04/2026-15/04/2026** en el árbol local, c
 
 - La sesión incluye tareas más especializadas.
 - La mezcla de trabajo se diversifica:
-  - `role_adaptador_proyecto, role_architect, role_auditor, role_canonical_auditor, role_executor, role_generator, role_iniciador_maestro, role_master_bago, role_orchestrator, role_organizer, role_validator, role_vertice`
+  - `role_adaptador_proyecto, role_architect, role_auditor, role_canonical_auditor, role_dev, role_developer, role_executor, role_generator, role_iniciador_maestro, role_master_bago, role_orchestrator, role_organizer, role_validator, role_vertice`
 - El sistema ya no solo corrige canon:
   - arranca repo,
   - audita,
@@ -88,7 +88,7 @@ Rango visible del estado actual: **14/04/2026-15/04/2026** en el árbol local, c
 | Fase | system_change | project_bootstrap | analysis | repository_audit | execution | Total |
 | --- | ---:| ---:| ---:| ---:| ---:| ---:|
 | Inicio | 7 | 0 | 0 | 0 | 0 | 7 |
-| Ahora | 19 | 3 | 4 | 2 | 4 | 43 |
+| Ahora | 19 | 3 | 4 | 2 | 6 | 48 |
 
 ## Evolución de tipos de trabajo
 

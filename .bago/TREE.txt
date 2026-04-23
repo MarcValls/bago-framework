@@ -77,6 +77,7 @@ docs/analysis/INFORME_EFICACIA_WORKFLOWS.md
 docs/analysis/figures/
 docs/analysis/figures/activity_by_day.svg
 docs/analysis/figures/corpus_growth.svg
+docs/analysis/figures/health_radar.svg
 docs/analysis/figures/runs_clusters.svg
 docs/analysis/figures/session_mix_by_phase.svg
 docs/analysis/figures/task_type_evolution.svg
@@ -354,6 +355,7 @@ state/changes/BAGO-CHG-128.json
 state/changes/BAGO-CHG-129.json
 state/changes/BAGO-CHG-130.json
 state/changes/BAGO-CHG-131.json
+state/changes/BAGO-CHG-132.json
 state/changes/BAGO-CHG-MIG-001.json
 state/changes/CHG-010-ux-controles-13fixes.json
 state/changes/CHG-011-caos-12ideas-cosecha.json
@@ -469,15 +471,9 @@ state/findings/SCAN-20260423_025414.json
 state/findings/SCAN-20260423_025759.json
 state/findings/SCAN-20260423_030434.json
 state/findings/SCAN-20260423_030553.json
-state/findings/SCAN-20260423_030811.json
 state/findings/SCAN-20260423_030904.json
-state/findings/SCAN-20260423_031523.json
 state/findings/SCAN-20260423_031754.json
-state/findings/SCAN-20260423_031942.json
-state/findings/SCAN-20260423_032150.json
-state/findings/SCAN-20260423_032305.json
-state/findings/SCAN-20260423_032759.json
-state/findings/SCAN-20260423_033519.json
+state/findings/SCAN-20260423_034417.json
 state/gh_config/
 state/global_state.backup.json
 state/global_state.json
@@ -721,6 +717,13 @@ state/iterations/ITER-0230.json
 state/iterations/ITER-0231.json
 state/iterations/ITER-0232.json
 state/iterations/ITER-0233.json
+state/iterations/ITER-0234.json
+state/iterations/ITER-0235.json
+state/iterations/ITER-0236.json
+state/iterations/ITER-0237.json
+state/iterations/ITER-0238.json
+state/iterations/ITER-0239.json
+state/iterations/ITER-0240.json
 state/linked_projects.json
 state/metrics/
 state/metrics/README.md
@@ -864,6 +867,7 @@ state/reports/RISK-20260423_031630.json
 state/reports/RISK-20260423_031759.json
 state/reports/RISK-20260423_032052.json
 state/reports/RISK-20260423_032335.json
+state/reports/RISK-20260423_033700.json
 state/scenarios/
 state/scenarios/ESCENARIO-003-COSECHA-CONTEXTUAL.md
 state/scenarios/ESCENARIO-COMPETICION-BAGO.md

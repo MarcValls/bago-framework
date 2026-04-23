@@ -108,8 +108,8 @@
       
         <div class="card">
           <div class="card-title">Corpus actual</div>
-          <div class="card-value">154 artefactos</div>
-          <div class="card-subtitle">Inventario visible: 50 sesiones, 52 cambios, 52 evidencias</div>
+          <div class="card-value">229 artefactos</div>
+          <div class="card-subtitle">Inventario visible: 55 sesiones, 116 cambios, 58 evidencias</div>
         </div>
         
       
@@ -122,7 +122,7 @@
       
         <div class="card">
           <div class="card-title">Última sesión</div>
-          <div class="card-value">SES-HARVEST-2026-04-21-007</div>
+          <div class="card-value">SES-HARVEST-2026-04-23-001</div>
           <div class="card-subtitle">w9_cosecha</div>
         </div>
         
@@ -139,7 +139,7 @@
         <div class="box">
           <h3 class="diagram-title">Ahora</h3>
           <p>El sistema trabaja de forma más madura: bootstrap del repo, análisis, auditoría, ejecución y cierre de ciclos con evidencias y estado vivo actualizado.</p>
-          <p class="muted">system_change: 19 | project_bootstrap: 3 | analysis: 4 | repository_audit: 2 | execution: 4</p>
+          <p class="muted">system_change: 19 | project_bootstrap: 3 | analysis: 4 | repository_audit: 2 | execution: 6</p>
         </div>
       </div>
     </div>
@@ -150,28 +150,28 @@
         
         <div class="card">
           <div class="card-title">Hoy local</div>
-          <div class="card-value">21/04/2026</div>
+          <div class="card-value">23/04/2026</div>
           <div class="card-subtitle">reloj del entorno de trabajo</div>
         </div>
         
         
         <div class="card">
           <div class="card-title">Sesiones de hoy</div>
-          <div class="card-value">9</div>
+          <div class="card-value">4</div>
           <div class="card-subtitle">sin actividad si vale 0</div>
         </div>
         
         
         <div class="card">
           <div class="card-title">Cambios de hoy</div>
-          <div class="card-value">10</div>
+          <div class="card-value">52</div>
           <div class="card-subtitle">sin actividad si vale 0</div>
         </div>
         
         
         <div class="card">
           <div class="card-title">Evidencias de hoy</div>
-          <div class="card-value">10</div>
+          <div class="card-value">5</div>
           <div class="card-subtitle">sin actividad si vale 0</div>
         </div>
         
@@ -199,13 +199,18 @@
     </div>
 
     <div class="panel">
+      <h2>Radar de salud BAGO</h2>
+      <img class="svg" src="figures/health_radar.svg" alt="Radar de salud del sistema" />
+    </div>
+
+    <div class="panel">
       <h2>Mezcla de trabajo por fase</h2>
       <img class="svg" src="figures/session_mix_by_phase.svg" alt="Mezcla de trabajo por fase" />
       <table>
         <thead><tr><th>Fase</th><th>system_change</th><th>project_bootstrap</th><th>analysis</th><th>repository_audit</th><th>execution</th><th>Total</th></tr></thead>
         <tbody>
           <tr><td>Inicio</td><td>7</td><td>0</td><td>0</td><td>0</td><td>0</td><td>7</td></tr>
-          <tr><td>Ahora</td><td>19</td><td>3</td><td>4</td><td>2</td><td>4</td><td>43</td></tr>
+          <tr><td>Ahora</td><td>19</td><td>3</td><td>4</td><td>2</td><td>6</td><td>48</td></tr>
         </tbody>
       </table>
     </div>
@@ -215,7 +220,7 @@
       <img class="svg" src="figures/task_type_evolution.svg" alt="Evolución de tipos de trabajo por día" />
       <table>
         <thead><tr><th>Día</th><th>analysis</th><th>design</th><th>execution</th><th>validation</th><th>organization</th><th>system_change</th><th>project_bootstrap</th><th>repository_audit</th><th>history_migration</th></tr></thead>
-        <tbody><tr><td>2026-04-11</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-04-13</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-04-14</td><td>0</td><td>0</td><td>2</td><td>0</td><td>0</td><td>2</td><td>0</td><td>1</td><td>0</td></tr><tr><td>2026-04-15</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>1</td><td>0</td><td>0</td></tr><tr><td>2026-04-17</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>2026-04-18</td><td>3</td><td>0</td><td>2</td><td>0</td><td>0</td><td>13</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-04-19</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-04-21</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>2026-04-22</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tbody>
+        <tbody><tr><td>2026-04-11</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>4</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-04-13</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-04-14</td><td>0</td><td>0</td><td>2</td><td>0</td><td>0</td><td>2</td><td>0</td><td>1</td><td>0</td></tr><tr><td>2026-04-15</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>1</td><td>0</td><td>0</td></tr><tr><td>2026-04-17</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td></tr><tr><td>2026-04-18</td><td>3</td><td>0</td><td>2</td><td>0</td><td>0</td><td>13</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-04-19</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-04-21</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td></tr><tr><td>2026-04-22</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><td>2026-04-23</td><td>0</td><td>0</td><td>2</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr></tbody>
       </table>
     </div>
 
@@ -260,7 +265,7 @@
 
     <div class="panel">
       <h2>Observaciones técnicas</h2>
-      <p class="muted">Snapshot canónico de referencia: 21/04/2026 desde <code>global_state.updated_at</code>.</p>
+      <p class="muted">Snapshot canónico de referencia: 23/04/2026 desde <code>global_state.updated_at</code>.</p>
       <p class="muted">El árbol local visible tiene menos archivos que <code>global_state.json</code> anticipa en su inventario. Eso sugiere que el estado canónico va por delante de esta copia del árbol.</p>
       <p class="muted">La evolución principal no es solo de volumen; es de especialización y de capacidad para cerrar ciclos de trabajo con evidencias y validación.</p>
     </div>

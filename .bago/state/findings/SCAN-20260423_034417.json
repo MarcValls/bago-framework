@@ -1,7 +1,7 @@
 {
   "meta": {
-    "scan_id": "SCAN-20260423_031523",
-    "created_at": "2026-04-23T03:15:23.094878+00:00",
+    "scan_id": "SCAN-20260423_034417",
+    "created_at": "2026-04-23T03:44:17.230969+00:00",
     "sources": [
       "bago",
       "flake8",
@@ -9,7 +9,7 @@
       "mypy",
       "bandit"
     ],
-    "target": "/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmpbry4wcbw",
+    "target": "/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmp30uztuo0",
     "lang": "py"
   },
   "summary": {
@@ -26,16 +26,16 @@
     },
     "top_files": [
       [
-        "/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmpbry4wcbw/synth.py",
+        "/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmp30uztuo0/synth.py",
         1
       ]
     ]
   },
   "findings": [
     {
-      "id": "FIND-30702033",
+      "id": "FIND-A0D18B2C",
       "severity": "error",
-      "file": "/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmpbry4wcbw/synth.py",
+      "file": "/var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmp30uztuo0/synth.py",
       "line": 3,
       "col": 0,
       "rule": "BAGO-E001",
@@ -43,7 +43,7 @@
       "message": "bare except: captura SystemExit y KeyboardInterrupt",
       "fix_suggestion": "Usa 'except Exception:' para capturar solo errores de aplicación",
       "autofixable": true,
-      "fix_patch": "--- a//var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmpbry4wcbw/synth.py\n+++ b//var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmpbry4wcbw/synth.py\n@@ -3,1 +3,1 @@\n-except:\n+except Exception:\n",
+      "fix_patch": "--- a//var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmp30uztuo0/synth.py\n+++ b//var/folders/rz/zz1vbm9s7cvfq_tl04rt17mc0000gp/T/tmp30uztuo0/synth.py\n@@ -3,1 +3,1 @@\n-except:\n+except Exception:\n",
       "context_lines": [
         "   1 | try:",
         "   2 |     pass",
