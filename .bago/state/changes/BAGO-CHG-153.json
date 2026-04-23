@@ -1,0 +1,10 @@
+{
+  "id": "CHG-153",
+  "title": "scan --quiet flag: suppress progress line",
+  "type": "feature",
+  "impact": "low",
+  "files": [".bago/tools/scan.py", ".bago/tools/integration_tests.py"],
+  "tests_added": ["scan:quiet"],
+  "description": "Added --quiet argparse flag to scan.py to suppress the 'Escaneando...' progress line in stdout. Useful for piping or scripting.",
+  "date": "2025-07-28"
+}

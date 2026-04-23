@@ -2051,6 +2051,47 @@ def test_scan_json_output():
         _record("scan:json_output", PASS, f"JSON OK, findings={n}, scan_id={data['scan_id']}")
 
 
+def test_scan_quiet():
+    """scan.py --quiet: progress line 'Escaneando' NOT in stdout."""
+    import tempfile, subprocess as _sp, os as _os
+    with tempfile.TemporaryDirectory() as tmp:
+        env = {**_os.environ, "BAGO_STATE_DIR": tmp}
+        r = _sp.run(
+            [sys.executable, str(ROOT / "tools" / "scan.py"), "--quiet"],
+            capture_output=True, text=True, cwd=str(ROOT.parent),
+            env=env, timeout=60
+        )
+        if r.returncode != 0:
+            _record("scan:quiet", FAIL, f"rc={r.returncode} err={r.stderr[:100]}")
+            return
+        if "Escaneando" in r.stdout:
+            _record("scan:quiet", FAIL, "'Escaneando' found in stdout despite --quiet")
+            return
+        _record("scan:quiet", PASS, "--quiet suppressed progress line")
+
+
+def test_dashboard_production_score():
+    """pack_dashboard.py --json: JSON contiene production_score numérico."""
+    import json as _j
+    rc, out, err = _run("pack_dashboard.py", ["--json"], timeout=60)
+    if rc != 0:
+        _record("dashboard:production_score", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    try:
+        data = _j.loads(out)
+    except Exception as e:
+        _record("dashboard:production_score", FAIL, f"JSON parse error: {e}")
+        return
+    if "production_score" not in data:
+        _record("dashboard:production_score", FAIL, "missing production_score key")
+        return
+    score = data["production_score"]
+    if not isinstance(score, (int, float)):
+        _record("dashboard:production_score", FAIL, f"production_score not numeric: {score!r}")
+        return
+    _record("dashboard:production_score", PASS, f"production_score={score}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2180,6 +2221,8 @@ ALL_TESTS = [
     (126, "ideas:json",                  test_ideas_json),
     (127, "scan:top",                    test_scan_top),
     (128, "velocity:json",               test_velocity_json),
+    (129, "scan:quiet",                  test_scan_quiet),
+    (130, "dashboard:production_score",  test_dashboard_production_score),
 ]
 
 

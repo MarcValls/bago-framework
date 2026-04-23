@@ -1,0 +1,10 @@
+{
+  "id": "CHG-154",
+  "title": "dashboard --json: add production_score field",
+  "type": "feature",
+  "impact": "low",
+  "files": [".bago/tools/pack_dashboard.py", ".bago/tools/integration_tests.py"],
+  "tests_added": ["dashboard:production_score"],
+  "description": "Added _production_score() helper to pack_dashboard.py that reads artifact_counter.py score. Added 'production_score' field to --json output. Test verifies numeric value present.",
+  "date": "2025-07-28"
+}

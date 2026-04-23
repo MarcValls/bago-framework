@@ -203,6 +203,16 @@
       "title": "Test para velocity --json",
       "chg": "CHG-152",
       "date": "2025-07-21"
+    },
+    {
+      "title": "scan --quiet flag",
+      "chg": "CHG-153",
+      "date": "2025-07-28"
+    },
+    {
+      "title": "Dashboard --json con production_score",
+      "chg": "CHG-154",
+      "date": "2025-07-28"
     }
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"

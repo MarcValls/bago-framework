@@ -166,6 +166,20 @@ def _debt_summary():
     except Exception:
         return 0, 0, 0, {}
 
+
+def _production_score() -> float:
+    """Reads artifact production score from artifact_counter.py output."""
+    try:
+        import re as _re, subprocess as _sp
+        r = _sp.run(
+            [sys.executable, str(TOOLS / "artifact_counter.py")],
+            capture_output=True, text=True, timeout=10
+        )
+        m = _re.search(r"Score produc[^:]+:\s*([\d.]+)", r.stdout)
+        return float(m.group(1)) if m else 0.0
+    except Exception:
+        return 0.0
+
 def _velocity_data():
     """Lee velocity directo desde sesiones (sin subprocess)."""
     try:
@@ -518,6 +532,7 @@ def render(full=False, compact=False, as_json=False):
         # Machine-readable summary
         data = {
             "health_score": score,
+            "production_score": _production_score(),
             "validate": _validate(),
             "detector": _detector()[0],
             "inventory": {

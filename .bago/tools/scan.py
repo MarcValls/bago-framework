@@ -432,6 +432,8 @@ def main():
                         help="Escanea sin escribir SCAN file (solo muestra conteo)")
     parser.add_argument("--top",         type=int, default=None,
                         help="Muestra solo los N hallazgos más importantes")
+    parser.add_argument("--quiet",       action="store_true",
+                        help="Suprime la línea de progreso 'Escaneando...'")
     parser.add_argument("--lang",        default="auto",
                         choices=["auto","py","js","ts","go","rust",
                                  "java","csharp","ruby","php",
@@ -467,7 +469,8 @@ def main():
             raise SystemExit(1)
     else:
         lang = "js" if args.lang == "ts" else args.lang
-        print(f"  Escaneando {args.target} ... [lang={lang}]")
+        if not getattr(args, "quiet", False):
+            print(f"  Escaneando {args.target} ... [lang={lang}]")
         dry = getattr(args, "dry_run", False)
         db = run_scan(args.target, lang=lang, dry_run=dry)
 
