@@ -1,7 +1,7 @@
 {
   "id": "BAGO-CHG-174",
   "change_id": "BAGO-CHG-174",
-  "type": "feature",
+  "type": "governance",
   "severity": "patch",
   "title": "risk_matrix --since DATE filter: agregar hallazgos de scans desde fecha",
   "motivation": "Permite analizar solo scans recientes sin especificar un ID concreto.",

@@ -223,6 +223,8 @@ def main():
                         help="Exporta métricas a CSV (period,sessions,artifacts,sess_per_day)")
     parser.add_argument("--since", type=str, default=None, metavar="DATE",
                         help="Filtra sesiones desde DATE (YYYY-MM-DD) en lugar de --period")
+    parser.add_argument("--top",  type=int, default=None, metavar="N",
+                        help="Limita el rolling a los N primeros ventanas")
     parser.add_argument("--test", action="store_true")
 
     args = parser.parse_args()
@@ -250,6 +252,8 @@ def main():
         previous = velocity_for_period(sessions, today - datetime.timedelta(days=period*2),
                                                  today - datetime.timedelta(days=period))
     rolling  = rolling_velocity(sessions, n_windows=max(1, getattr(args, "windows", 8)))
+    if getattr(args, "top", None) is not None:
+        rolling = rolling[:args.top]
 
     if getattr(args, "csv", False):
         import csv, io

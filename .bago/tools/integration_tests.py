@@ -2513,6 +2513,27 @@ def test_scan_since():
     _record("scan:since", PASS, "scan --since OK")
 
 
+def test_velocity_top_rolling():
+    """velocity.py --rolling --top 3 --json: rolling key has ≤3 windows."""
+    rc, out, err = _run("velocity.py", ["--rolling", "--top", "3", "--json"], timeout=30)
+    if rc != 0:
+        _record("velocity:top_rolling", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    try:
+        data = json.loads(out)
+    except json.JSONDecodeError:
+        _record("velocity:top_rolling", FAIL, f"invalid JSON: {out[:80]!r}")
+        return
+    rolling_key = next((k for k in data if k.startswith("rolling_")), None)
+    if rolling_key is None:
+        _record("velocity:top_rolling", FAIL, f"no rolling_N key in: {list(data)}")
+        return
+    if len(data[rolling_key]) > 3:
+        _record("velocity:top_rolling", FAIL, f"expected ≤3 windows, got {len(data[rolling_key])}")
+        return
+    _record("velocity:top_rolling", PASS, f"{rolling_key} has {len(data[rolling_key])} windows ≤3")
+
+
 def test_risk_matrix_since():
     """risk_matrix.py --since 2020-01-01 --csv: rc=0 y header con 'category'."""
     rc, out, err = _run("risk_matrix.py", ["--since", "2020-01-01", "--csv"], timeout=30)
@@ -2677,6 +2698,7 @@ ALL_TESTS = [
     (149, "health_score:watch",          test_health_score_watch),
     (150, "scan:since",                  test_scan_since),
     (151, "risk_matrix:since",           test_risk_matrix_since),
+    (152, "velocity:top_rolling",        test_velocity_top_rolling),
 ]
 
 
