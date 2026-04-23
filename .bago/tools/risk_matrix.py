@@ -224,7 +224,7 @@ def save_report(items: list, agg: dict, scan_id: str) -> Path:
     return out
 
 
-def cmd_risk(scan_id, category_filter, as_json):
+def cmd_risk(scan_id, category_filter, as_json, as_csv=False):
     db = fe.FindingsDB.load(scan_id) if scan_id else fe.FindingsDB.latest()
     if db is None:
         print(f"{RED}✗ Sin scan disponible. Ejecuta 'bago scan' primero.{RESET}")
@@ -241,6 +241,23 @@ def cmd_risk(scan_id, category_filter, as_json):
 
     if as_json:
         print(json.dumps(agg, indent=2))
+        return
+
+    if as_csv:
+        import csv as _csv, io as _io
+        buf = _io.StringIO()
+        w = _csv.writer(buf)
+        w.writerow(["file", "category", "probability", "impact", "exposure", "level"])
+        for item in items:
+            w.writerow([
+                getattr(item.finding, "file", ""),
+                item.category,
+                item.probability,
+                item.impact,
+                item.exposure,
+                item.level,
+            ])
+        print(buf.getvalue(), end="")
         return
 
     render(items, agg, db.scan_id)
@@ -310,12 +327,14 @@ def main():
     p.add_argument("--scan",     default=None,  help="ID de scan específico")
     p.add_argument("--category", default=None,  help="Filtrar por categoría")
     p.add_argument("--json",     action="store_true")
+    p.add_argument("--csv",      action="store_true",
+                   help="Exporta riesgos a CSV (file,category,probability,impact,exposure,level)")
     p.add_argument("--test",     action="store_true")
     args = p.parse_args()
 
     if args.test:
         run_tests(); return
-    cmd_risk(args.scan, args.category, args.json)
+    cmd_risk(args.scan, args.category, args.json, getattr(args, "csv", False))
 
 
 if __name__ == "__main__":

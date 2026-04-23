@@ -279,6 +279,8 @@ def main():
     p.add_argument("--quadrant",  default=None)
     p.add_argument("--top",       type=int, default=15)
     p.add_argument("--json",      action="store_true")
+    p.add_argument("--csv",       action="store_true",
+                   help="Exporta deuda a CSV (file,severity,hours,cost_eur,quadrant)")
     p.add_argument("--test",      action="store_true")
     args = p.parse_args()
 
@@ -304,6 +306,23 @@ def main():
 
     if args.json:
         print(json.dumps(agg, indent=2))
+        return
+
+    if getattr(args, "csv", False):
+        import csv as _csv, io as _io
+        buf = _io.StringIO()
+        w = _csv.writer(buf)
+        w.writerow(["file", "severity", "hours", "cost_eur", "quadrant"])
+        for item in items:
+            f = item.finding
+            w.writerow([
+                getattr(f, "file", ""),
+                getattr(f, "severity", ""),
+                item.hours,
+                item.cost_eur,
+                item.quadrant,
+            ])
+        print(buf.getvalue(), end="")
         return
 
     render_debt(items, agg, db.scan_id, args.rate, args.top)

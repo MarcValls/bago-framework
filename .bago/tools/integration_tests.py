@@ -2184,6 +2184,40 @@ def test_ideas_top_n():
     _record("ideas:top_n", PASS, f"--top 2 returned {n} ideas")
 
 
+def test_debt_ledger_csv():
+    """debt_ledger.py --csv: CSV con header file,severity,hours,cost_eur,quadrant."""
+    rc, out, err = _run("debt_ledger.py", ["--csv"], timeout=30)
+    if rc != 0:
+        _record("debt_ledger:csv", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    lines = [l for l in out.splitlines() if l.strip()]
+    if not lines:
+        _record("debt_ledger:csv", FAIL, "no output")
+        return
+    header = lines[0]
+    if "file" not in header or "hours" not in header:
+        _record("debt_ledger:csv", FAIL, f"header missing expected columns: {header}")
+        return
+    _record("debt_ledger:csv", PASS, f"CSV OK, header={header}, rows={len(lines)-1}")
+
+
+def test_risk_matrix_csv():
+    """risk_matrix.py --csv: CSV con header file,category,probability,impact,exposure,level."""
+    rc, out, err = _run("risk_matrix.py", ["--csv"], timeout=30)
+    if rc != 0:
+        _record("risk_matrix:csv", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    lines = [l for l in out.splitlines() if l.strip()]
+    if not lines:
+        _record("risk_matrix:csv", FAIL, "no output")
+        return
+    header = lines[0]
+    if "category" not in header or "probability" not in header:
+        _record("risk_matrix:csv", FAIL, f"header missing expected columns: {header}")
+        return
+    _record("risk_matrix:csv", PASS, f"CSV OK, header={header}, rows={len(lines)-1}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2319,6 +2353,8 @@ ALL_TESTS = [
     (132, "velocity:csv",                test_velocity_csv),
     (133, "health_score:json",           test_health_score_json),
     (134, "ideas:top_n",                 test_ideas_top_n),
+    (135, "debt_ledger:csv",             test_debt_ledger_csv),
+    (136, "risk_matrix:csv",             test_risk_matrix_csv),
 ]
 
 

@@ -243,6 +243,12 @@
       "title": "scan --summary flag",
       "chg": "already-exists",
       "date": "2025-07-28"
+    },
+    {
+      "title": "debt_ledger --csv export"
+    },
+    {
+      "title": "risk_matrix --csv export"
     }
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"

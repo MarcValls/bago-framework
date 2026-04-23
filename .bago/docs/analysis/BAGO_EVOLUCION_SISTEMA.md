@@ -31,10 +31,10 @@ Ahora trabaja como un sistema operativo más maduro:
 
 | Métrica | Inicio | Ahora |
 | --- | ---:| ---:|
-| Snapshot documental mínimo | 22 artefactos | 258 artefactos |
+| Snapshot documental mínimo | 22 artefactos | 259 artefactos |
 | Sesiones nativas visibles | 19 | 57 |
 | Sesiones migradas preservadas | 3 | 4 preservadas en `state/migrated_sessions/` |
-| Cambios migrados/validados | 0 | 141 |
+| Cambios migrados/validados | 0 | 142 |
 | Evidencias registradas | no consolidado en snapshot inicial | 60 |
 | Integridad del pack | GO | GO / GO / GO |
 
@@ -139,7 +139,7 @@ stateDiagram-v2
 ## Observaciones
 
 - **Snapshot:** 23/04/2026 · versión 3.0 · estado del sistema: `stable`.
-- **Corpus total:** 57 sesiones · 141 cambios · 60 evidencias.
+- **Corpus total:** 57 sesiones · 142 cambios · 60 evidencias.
 - **Suite de tests:** `pass` · 147 workers registrados.
 - **Últimos cambios aplicados:**
   - debt_ledger --json rc=0 sin scans; tests debt+risk JSON; 130/130
