@@ -83,11 +83,21 @@ def _registered_chg_files():
 
 
 def _unregistered_files():
-    """Ficheros modificados que no están en ningún CHG."""
+    """Ficheros modificados que no están en ningún CHG.
+    
+    Excluye archivos de estado (.bago/state/) — esos son artefactos
+    del propio sistema de gobernanza, no código que requiera CHG.
+    """
     modified = _git_modified_files()
     covered = _registered_chg_files()
     unregistered = []
+    _state_prefixes = (".bago/state/", "state/changes/", "state/sessions/",
+                       "state/evidences/", "state/findings/", "state/reports/",
+                       "state/ideas/", "state/sprints/")
     for mf in modified:
+        # Ignorar archivos de estado BAGO — no son código, son artefactos
+        if any(mf.startswith(p) or ("/.bago/state/" in mf) for p in _state_prefixes):
+            continue
         # Comparar por sufijo (los CHG guardan rutas relativas a .bago)
         if not any(mf.endswith(c) or c.endswith(mf) for c in covered):
             unregistered.append(mf)

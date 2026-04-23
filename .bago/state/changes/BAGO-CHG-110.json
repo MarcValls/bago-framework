@@ -1,0 +1,13 @@
+{
+  "change_id": "BAGO-CHG-110",
+  "type": "governance",
+  "severity": "minor",
+  "title": "integration_tests.py — +4 tests (95-98): detector, stale, ideas_dynamic",
+  "motivation": "Ampliar cobertura de tests para context_detector (json fields, no false positives), stale_detector, y emit_ideas dinámicas. Total: 111 subtests.",
+  "status": "applied",
+  "affected_components": [".bago/tools/integration_tests.py"],
+  "related_evidence": [],
+  "created_at": "2026-04-23T01:50:00.000000+00:00",
+  "updated_at": "2026-04-23T01:50:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

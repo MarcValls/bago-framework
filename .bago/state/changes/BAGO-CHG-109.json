@@ -1,0 +1,13 @@
+{
+  "change_id": "BAGO-CHG-109",
+  "type": "governance",
+  "severity": "patch",
+  "title": "context_detector.py — Excluir .bago/state/ de unregistered_files",
+  "motivation": "El detector marcaba CHG/session JSON como 'unregistered' generando señales falsas. _unregistered_files() ahora filtra prefijos .bago/state/.",
+  "status": "applied",
+  "affected_components": [".bago/tools/context_detector.py"],
+  "related_evidence": [],
+  "created_at": "2026-04-23T01:45:30.000000+00:00",
+  "updated_at": "2026-04-23T01:45:30.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

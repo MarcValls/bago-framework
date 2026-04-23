@@ -1,0 +1,13 @@
+{
+  "change_id": "BAGO-CHG-108",
+  "type": "governance",
+  "severity": "minor",
+  "title": "emit_ideas.py — Ideas dinámicas basadas en riesgo/deuda/detector real",
+  "motivation": "El selector mostraba solo 3 ideas fallback; con _real_state_ideas() ahora inyecta ideas prioritarias basadas en risk_matrix, debt_ledger y context_detector live.",
+  "status": "applied",
+  "affected_components": [".bago/tools/emit_ideas.py"],
+  "related_evidence": [],
+  "created_at": "2026-04-23T01:45:00.000000+00:00",
+  "updated_at": "2026-04-23T01:45:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

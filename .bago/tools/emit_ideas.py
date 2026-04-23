@@ -466,6 +466,146 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool]:
     return detail_index, accept
 
 
+def _run_tool_json(tool_name: str, extra_args: list[str] | None = None) -> dict | list | None:
+    """Ejecuta un tool BAGO con --json y devuelve el resultado parseado."""
+    tool_path = ROOT / ".bago" / "tools" / tool_name
+    cmd = [sys.executable, str(tool_path), "--json"] + (extra_args or [])
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+        text = result.stdout.strip()
+        # Algunos tools emiten una línea de estado antes del JSON; saltar al primer {/[
+        for start_ch in ('{', '['):
+            idx = text.find(start_ch)
+            if idx != -1:
+                return json.loads(text[idx:])
+    except Exception:
+        pass
+    return None
+
+
+def _real_state_ideas() -> list[dict[str, object]]:
+    """Genera ideas contextuales basadas en el estado real de deuda, riesgo y detector."""
+    ideas: list[dict[str, object]] = []
+
+    # ── Riesgo real ────────────────────────────────────────────────────────────
+    risk_data = _run_tool_json("risk_matrix.py")
+    if isinstance(risk_data, dict):
+        exposure = float(risk_data.get("total_exposure", 0))
+        risk_items = int(risk_data.get("items", 0))
+        by_cat = risk_data.get("by_category", {})
+        top_cat = max(by_cat, key=lambda k: by_cat[k].get("total_exposure", 0), default=None) if by_cat else None
+        if exposure > 100:
+            severity_label = "CRÍTICA" if exposure > 200 else "ALTA"
+            ideas.append({
+                "priority": 95,
+                "section": "contextuales",
+                "risk": "low",
+                "metric": f"Reducir exposición total de riesgo desde {exposure:.1f} ({severity_label}) a < 100.",
+                "title": f"Reducir riesgo {severity_label}: {risk_items} hallazgos ({top_cat or 'VelocityDrag'})",
+                "summary": (
+                    f"El risk_matrix reporta exposición {exposure:.1f} ({severity_label}) con {risk_items} items. "
+                    f"Categoría dominante: {top_cat or 'N/A'}. Cada sys.exit() sin manejo añade 1.2h de deuda operativa."
+                ),
+                "detail": [
+                    f"Exposición total: {exposure:.1f} ({severity_label}) — {risk_items} hallazgos activos.",
+                    f"Categoría principal: {top_cat or 'VelocityDrag'} — replace bare sys.exit() with SystemExit o raise.",
+                    "Herramienta: bago scan → bago debt → bago risk para ver la evolución.",
+                    "Reducir al menos 50 items en una sesión baja la exposición a < 183.",
+                ],
+                "w2": "Ejecutar scan.py, identificar los 10 ficheros con más BAGO-I001 y hacer refactor mínimo.",
+            })
+        elif exposure > 0:
+            ideas.append({
+                "priority": 88,
+                "section": "contextuales",
+                "risk": "low",
+                "metric": f"Reducir riesgo desde {exposure:.1f} a 0.",
+                "title": f"Limpiar riesgo residual: {risk_items} hallazgos",
+                "summary": f"Quedan {risk_items} hallazgos con exposición {exposure:.1f}. Eliminarlos consolida el baseline.",
+                "detail": [
+                    f"risk_matrix muestra {risk_items} items con exposición {exposure:.1f}.",
+                    "Ejecuta: bago scan && bago risk para el detalle.",
+                ],
+                "w2": "Resolver los hallazgos de menor esfuerzo (BAGO-I001) en una pasada rápida.",
+            })
+
+    # ── Deuda técnica real ─────────────────────────────────────────────────────
+    debt_data = _run_tool_json("debt_ledger.py")
+    if isinstance(debt_data, dict):
+        hours = float(debt_data.get("total_hours", 0))
+        cost = float(debt_data.get("total_cost", 0))
+        debt_items = int(debt_data.get("items", 0))
+        if hours > 10:
+            ideas.append({
+                "priority": 92,
+                "section": "contextuales",
+                "risk": "low",
+                "metric": f"Reducir deuda técnica desde {hours:.1f}h/€{cost:.0f} a menos de 10h.",
+                "title": f"Reducir deuda técnica: {hours:.1f}h / €{cost:.0f} ({debt_items} items)",
+                "summary": (
+                    f"debt_ledger detecta {debt_items} items de deuda = {hours:.1f}h / €{cost:.0f}. "
+                    "La mayoría son sys.exit() sin manejo adecuado (BAGO-I001). "
+                    "Resolver 50 items en una sesión = ahorrar ~10h de deuda."
+                ),
+                "detail": [
+                    f"Total deuda: {hours:.1f}h / €{cost:.0f} en {debt_items} items.",
+                    "Herramienta: bago scan --lang py → bago debt para ver el desglose.",
+                    "Estrategia: reemplazar sys.exit(N) por raise SystemExit(N) en tools/*.py.",
+                    "Impacto por item: ~0.12h / €9.7 de deuda eliminada.",
+                ],
+                "w2": "Identificar los 10 archivos con más hallazgos BAGO-I001 y hacer refactor masivo.",
+            })
+
+    # ── Detector WATCH/HARVEST ─────────────────────────────────────────────────
+    detector_data = _run_tool_json("context_detector.py")
+    if isinstance(detector_data, dict):
+        verdict = str(detector_data.get("verdict", ""))
+        signals = detector_data.get("signals", [])
+        orphan_signal = next((s for s in signals if "orphan" in s.get("id", "")), None)
+        unregistered = detector_data.get("unregistered_files", [])
+
+        if orphan_signal:
+            ideas.append({
+                "priority": 85,
+                "section": "contextuales",
+                "risk": "low",
+                "metric": "Reducir commits sin sesión BAGO a 0 (detector deja de reportar orphan_commits).",
+                "title": f"Cerrar {orphan_signal.get('desc', 'commits huérfanos')} → W9",
+                "summary": (
+                    f"El detector ({verdict}) detecta {orphan_signal.get('desc', 'commits sin sesión')}. "
+                    "Hacer cosecha (W9) vincula los commits recientes a una sesión y limpia las señales."
+                ),
+                "detail": [
+                    f"Señal activa: {orphan_signal.get('desc')} — detector en {verdict}.",
+                    "Ejecuta: bago cosecha → responde las 3 preguntas de W9.",
+                    "El W9 genera el resumen de sesión y vincula los commits al registro.",
+                    "Tras la cosecha, el detector debería bajar a CLEAR.",
+                ],
+                "w2": "Ejecutar `bago cosecha` con las 3 respuestas: qué decidiste, qué descartaste, próximo paso.",
+            })
+
+        if unregistered:
+            ideas.append({
+                "priority": 83,
+                "section": "contextuales",
+                "risk": "low",
+                "metric": "0 ficheros sin CHG (detector deja de reportar unregistered_files).",
+                "title": f"Registrar {len(unregistered)} fichero(s) sin CHG",
+                "summary": (
+                    f"{len(unregistered)} fichero(s) modificados sin CHG asociado: "
+                    f"{', '.join(unregistered[:3])}{'...' if len(unregistered) > 3 else ''}."
+                ),
+                "detail": [
+                    f"Ficheros sin CHG: {unregistered[:5]}",
+                    "Ejecuta: bago chg new → tipo=governance, severity=patch/minor.",
+                    "Después: bago validate confirma el estado correcto.",
+                ],
+                "w2": "Crear CHG para cada fichero nuevo con affected_components correctos.",
+            })
+
+    return ideas
+
+
 def main() -> int:
     detail_index, accept = parse_args(sys.argv)
     state_path = ROOT / ".bago/state/ESTADO_BAGO_ACTUAL.md"
@@ -740,6 +880,9 @@ def main() -> int:
         ],
         "w2": "Implementar un ranking contextual acotado y validarlo con ejemplos reales del estado.",
     })
+
+    # ── Ideas dinámicas basadas en estado real (debt, risk, detector) ──────────
+    ideas.extend(_real_state_ideas())
 
     if baseline_clean_mode:
         ideas = filter_ideas_for_baseline_mode(ideas)

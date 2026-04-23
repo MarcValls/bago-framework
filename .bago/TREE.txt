@@ -326,6 +326,10 @@ state/changes/BAGO-CHG-103.json
 state/changes/BAGO-CHG-104.json
 state/changes/BAGO-CHG-105.json
 state/changes/BAGO-CHG-106.json
+state/changes/BAGO-CHG-107.json
+state/changes/BAGO-CHG-108.json
+state/changes/BAGO-CHG-109.json
+state/changes/BAGO-CHG-110.json
 state/changes/BAGO-CHG-MIG-001.json
 state/changes/CHG-010-ux-controles-13fixes.json
 state/changes/CHG-011-caos-12ideas-cosecha.json
@@ -414,6 +418,8 @@ state/findings/SCAN-20260423_012455.json
 state/findings/SCAN-20260423_012458.json
 state/findings/SCAN-20260423_012528.json
 state/findings/SCAN-20260423_012654.json
+state/findings/SCAN-20260423_014450.json
+state/findings/SCAN-20260423_014806.json
 state/gh_config/
 state/global_state.backup.json
 state/global_state.json
@@ -596,6 +602,11 @@ state/iterations/ITER-0171.json
 state/iterations/ITER-0172.json
 state/iterations/ITER-0173.json
 state/iterations/ITER-0174.json
+state/iterations/ITER-0175.json
+state/iterations/ITER-0176.json
+state/iterations/ITER-0177.json
+state/iterations/ITER-0178.json
+state/iterations/ITER-0179.json
 state/metrics/
 state/metrics/README.md
 state/metrics/metrics_snapshot.json
@@ -748,6 +759,7 @@ state/schema/workflow.schema.json
 state/sessions/
 state/sessions/README.md
 state/sessions/SES-AUTONOMOUS-2026-04-23-001.json
+state/sessions/SES-AUTONOMOUS-2026-04-23-002.json
 state/sessions/SES-BTS-2026-04-14-001.json
 state/sessions/SES-BTS-CAJAFISICA-2026-04-17-001.json
 state/sessions/SES-CON-2026-04-11-001.json
@@ -951,6 +963,7 @@ tools/branch_check.py
 tools/changelog.py
 tools/changelog_gen.py
 tools/chart_engine.py
+tools/chart_engine_demo.html
 tools/check.py
 tools/ci_baseline.py
 tools/ci_generator.py
@@ -1006,6 +1019,7 @@ tools/legacy_fixer.py
 tools/license_check.py
 tools/lint.py
 tools/lint_report.py
+tools/metrics_dashboard.py
 tools/metrics_export.py
 tools/metrics_trends.py
 tools/multi_scan.py

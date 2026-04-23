@@ -1,0 +1,13 @@
+{
+  "change_id": "BAGO-CHG-107",
+  "type": "governance",
+  "severity": "minor",
+  "title": "metrics_dashboard.py — HTML dashboard con Chart.js, auto-refresh 5min",
+  "motivation": "El usuario solicita gráficos de métricas en tiempo real; el loop autónomo genera el HTML cada 5min via --watch 300",
+  "status": "applied",
+  "affected_components": [".bago/tools/metrics_dashboard.py"],
+  "related_evidence": [],
+  "created_at": "2026-04-23T01:38:30.000000+00:00",
+  "updated_at": "2026-04-23T01:39:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}
