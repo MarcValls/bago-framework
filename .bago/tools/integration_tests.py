@@ -2469,6 +2469,38 @@ def test_emit_ideas_section_filter():
     _record("emit_ideas:section_filter", PASS, f"section filter OK, {len(ideas)} ideas in contextuales")
 
 
+def test_health_score_watch():
+    """health_score.py --watch 1: produce ≥1 línea con 'health=' en 3 segundos."""
+    import subprocess as _sp, sys as _sys, threading, time
+    TOOLS_DIR = Path(__file__).parent
+    tool = TOOLS_DIR / "health_score.py"
+    lines_captured = []
+
+    def _reader(proc):
+        for line in proc.stdout:
+            lines_captured.append(line)
+
+    try:
+        proc = _sp.Popen(
+            [_sys.executable, str(tool), "--watch", "1"],
+            stdout=_sp.PIPE, stderr=_sp.PIPE, text=True
+        )
+        t = threading.Thread(target=_reader, args=(proc,), daemon=True)
+        t.start()
+        time.sleep(5)
+        proc.terminate()
+        proc.wait(timeout=5)
+    except Exception as e:
+        _record("health_score:watch", FAIL, f"subprocess error: {e}")
+        return
+
+    health_lines = [l for l in lines_captured if "health=" in l or "Health Score" in l]
+    if not health_lines:
+        _record("health_score:watch", FAIL, f"no health output in watch mode; got: {lines_captured[:3]}")
+        return
+    _record("health_score:watch", PASS, f"watch OK, {len(health_lines)} health lines")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2618,6 +2650,7 @@ ALL_TESTS = [
     (146, "velocity:json_rolling_windows", test_velocity_json_rolling_windows),
     (147, "scan:stats",                  test_scan_stats),
     (148, "emit_ideas:section_filter",   test_emit_ideas_section_filter),
+    (149, "health_score:watch",          test_health_score_watch),
 ]
 
 

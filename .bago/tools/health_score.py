@@ -166,6 +166,19 @@ def main():
     score_only  = "--score-only" in sys.argv
     as_json     = "--json" in sys.argv
     as_breakdown = "--breakdown" in sys.argv
+    watch_mode  = "--watch" in sys.argv
+
+    # --watch [INTERVAL] — default 5s
+    watch_interval = 5
+    if watch_mode:
+        try:
+            idx = sys.argv.index("--watch")
+            if idx + 1 < len(sys.argv):
+                candidate = sys.argv[idx + 1]
+                if candidate.isdigit():
+                    watch_interval = int(candidate)
+        except (ValueError, IndexError):
+            pass
 
     dimensions = [
         ("Integridad",          score_integridad),
@@ -175,51 +188,66 @@ def main():
         ("Consistencia inv.",   score_consistencia_inventario),
     ]
 
-    results = []
-    for name, fn in dimensions:
-        pts, max_pts, detail = fn()
-        results.append((name, pts, max_pts, detail))
+    def _compute():
+        results = []
+        for name, fn in dimensions:
+            pts, max_pts, detail = fn()
+            results.append((name, pts, max_pts, detail))
+        return results
 
-    total = sum(r[1] for r in results)
-    max_total = sum(r[2] for r in results)
+    def _render(results):
+        total = sum(r[1] for r in results)
+        max_total = sum(r[2] for r in results)
 
-    if score_only:
-        print(total)
-        return 0
+        if score_only:
+            print(total)
+            return
 
-    if as_json:
-        import json as _j
-        checks = [
-            {"name": name, "score": pts, "max": max_pts, "detail": detail}
-            for name, pts, max_pts, detail in results
-        ]
-        print(_j.dumps({"score": total, "max": max_total, "checks": checks},
-                       indent=2, ensure_ascii=False))
-        return 0
+        if as_json:
+            import json as _j
+            checks = [
+                {"name": name, "score": pts, "max": max_pts, "detail": detail}
+                for name, pts, max_pts, detail in results
+            ]
+            print(_j.dumps({"score": total, "max": max_total, "checks": checks},
+                           indent=2, ensure_ascii=False))
+            return
 
-    if as_breakdown:
-        print(f"check,score,max,detail")
+        if as_breakdown:
+            print(f"check,score,max,detail")
+            for name, pts, max_pts, detail in results:
+                print(f"{name},{pts},{max_pts},{detail}")
+            return
+
+        semaforo = "🟢" if total >= 80 else ("🟡" if total >= 50 else "🔴")
+        print()
+        print(f"BAGO Health Score: {total}/{max_total}  {semaforo}")
+        print()
         for name, pts, max_pts, detail in results:
-            print(f"{name},{pts},{max_pts},{detail}")
+            pct = pts / max_pts if max_pts else 0
+            icon = "✅" if pct >= 0.8 else ("⚠️ " if pct >= 0.4 else "❌")
+            print(f"  {icon}  {name:<22} {pts:>3}/{max_pts:<3}  {detail}")
+        print()
+
+    if watch_mode:
+        import time
+        from datetime import datetime as _dt
+        print(f"  [watch mode — interval {watch_interval}s — Ctrl+C to stop]\n")
+        try:
+            while True:
+                results = _compute()
+                total = sum(r[1] for r in results)
+                max_total = sum(r[2] for r in results)
+                semaforo = "🟢" if total >= 80 else ("🟡" if total >= 50 else "🔴")
+                ts = _dt.now().strftime("%H:%M:%S")
+                print(f"  [{ts}] health={total}/{max_total} {semaforo}", flush=True)
+                time.sleep(watch_interval)
+        except KeyboardInterrupt:
+            print("\n  [watch stopped]")
         return 0
 
-    # Semáforo
-    if total >= 80:
-        semaforo = "🟢"
-    elif total >= 50:
-        semaforo = "🟡"
-    else:
-        semaforo = "🔴"
-
-    print()
-    print(f"BAGO Health Score: {total}/{max_total}  {semaforo}")
-    print()
-    for name, pts, max_pts, detail in results:
-        pct = pts / max_pts if max_pts else 0
-        icon = "✅" if pct >= 0.8 else ("⚠️ " if pct >= 0.4 else "❌")
-        print(f"  {icon}  {name:<22} {pts:>3}/{max_pts:<3}  {detail}")
-    print()
-
+    results = _compute()
+    _render(results)
     return 0
 
 

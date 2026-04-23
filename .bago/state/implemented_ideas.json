@@ -277,7 +277,8 @@
     "dashboard --json test_count field",
     "velocity --json rolling windows",
     "scan --stats flag",
-    "emit_ideas --section filter"
+    "emit_ideas --section filter",
+    "health_score --watch mode"
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"
 }

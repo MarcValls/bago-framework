@@ -1,0 +1,17 @@
+{
+  "id": "BAGO-CHG-172",
+  "change_id": "CHG-172",
+  "type": "governance",
+  "severity": "patch",
+  "title": "health_score --watch mode",
+  "motivation": "Add --watch [INTERVAL] mode to health_score.py so teams can monitor health in a terminal loop, with configurable polling interval (default 5s).",
+  "status": "applied",
+  "affected_components": [
+    "health_score.py",
+    "integration_tests.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T08:51:00.769983+00:00",
+  "updated_at": "2026-04-23T08:51:00.770350+00:00",
+  "author": "bago-autonomous-loop"
+}
