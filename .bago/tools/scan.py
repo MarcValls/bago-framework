@@ -89,7 +89,7 @@ def _detect_lang(target: str) -> str:
 
 
 def run_scan(target: str, sources: Optional[list] = None,
-             lang: str = "auto") -> "fe.FindingsDB":
+             lang: str = "auto", dry_run: bool = False) -> "fe.FindingsDB":
     db = fe.FindingsDB()
     db.meta["target"] = target
 
@@ -265,7 +265,8 @@ def run_scan(target: str, sources: Optional[list] = None,
         if not err:
             db.add(findings); db.meta["sources"].append("yamllint")
 
-    db.save()
+    if not dry_run:
+        db.save()
     return db
 
 
@@ -427,6 +428,8 @@ def main():
                         help="Elimina SCAN files más antiguos de --days días (default 30)")
     parser.add_argument("--days",        type=int, default=30,
                         help="Antigüedad en días para --purge (default: 30)")
+    parser.add_argument("--dry-run",     action="store_true",
+                        help="Escanea sin escribir SCAN file (solo muestra conteo)")
     parser.add_argument("--lang",        default="auto",
                         choices=["auto","py","js","ts","go","rust",
                                  "java","csharp","ruby","php",
@@ -463,7 +466,13 @@ def main():
     else:
         lang = "js" if args.lang == "ts" else args.lang
         print(f"  Escaneando {args.target} ... [lang={lang}]")
-        db = run_scan(args.target, lang=lang)
+        dry = getattr(args, "dry_run", False)
+        db = run_scan(args.target, lang=lang, dry_run=dry)
+
+    if getattr(args, "dry_run", False):
+        n = len(db.findings)
+        print(f"(dry-run) {n} hallazgos encontrados — SCAN file no escrito")
+        return
 
     findings = filter_findings(
         db.findings,

@@ -1771,6 +1771,91 @@ def test_risk_matrix_json_format():
             f"--json rc=0, keys OK, exposure={exposure:.1f}")
 
 
+def test_scan_dry_run():
+    """scan.py --dry-run: escanea sin escribir SCAN file y reporta conteo."""
+    import tempfile, subprocess as _sp, os as _os
+    from pathlib import Path as _P
+
+    with tempfile.TemporaryDirectory() as tmp:
+        env = {**_os.environ, "BAGO_STATE_DIR": tmp}
+        r = _sp.run(
+            [sys.executable, str(ROOT / "tools" / "scan.py"), "--dry-run"],
+            capture_output=True, text=True, cwd=str(ROOT.parent),
+            env=env, timeout=60
+        )
+        if r.returncode != 0:
+            _record("scan:dry_run", FAIL, f"rc={r.returncode} err={r.stderr[:100]}")
+            return
+        # Verify no SCAN file was written
+        findings_dir = _P(tmp) / "findings"
+        scan_files = list(findings_dir.glob("SCAN-*.json")) if findings_dir.exists() else []
+        if scan_files:
+            _record("scan:dry_run", FAIL, f"--dry-run wrote {len(scan_files)} SCAN file(s)")
+            return
+        if "dry-run" not in r.stdout.lower():
+            _record("scan:dry_run", FAIL, f"missing 'dry-run' in output: {r.stdout[:100]}")
+            return
+        _record("scan:dry_run", PASS, f"--dry-run: no SCAN written, output={r.stdout.strip()[:60]}")
+
+
+def test_evolution_report_html():
+    """generate_bago_evolution_report.py: genera HTML con secciones requeridas."""
+    import subprocess as _sp, sys as _sys
+    from pathlib import Path as _P
+
+    html_path = ROOT / "docs" / "analysis" / "BAGO_EVOLUCION_SISTEMA.html"
+    r = _sp.run(
+        [_sys.executable, str(ROOT / "tools" / "generate_bago_evolution_report.py")],
+        capture_output=True, text=True, cwd=str(ROOT.parent), timeout=30
+    )
+    if r.returncode != 0:
+        _record("evolution_report:html", FAIL, f"rc={r.returncode} err={r.stderr[:100]}")
+        return
+    if not html_path.exists():
+        _record("evolution_report:html", FAIL, "HTML file not created")
+        return
+    content = html_path.read_text(encoding="utf-8", errors="replace")
+    required_markers = ["<html", "<h", "Observaci"]
+    missing = [m for m in required_markers if m.lower() not in content.lower()]
+    if missing:
+        _record("evolution_report:html", FAIL, f"missing markers: {missing}")
+        return
+    _record("evolution_report:html", PASS,
+            f"HTML file {html_path.stat().st_size} bytes, required markers present")
+
+
+def test_dashboard_inventory_accuracy():
+    """pack_dashboard --json: conteo sesiones/cambios coincide con state/ real (margen ±2)."""
+    import json as _j
+    from pathlib import Path as _P
+
+    state_dir = ROOT / "state"
+    real_chgs = len(list((state_dir / "changes").glob("BAGO-CHG-*.json")))
+    real_sess = len(list((state_dir / "sessions").glob("*.json")))
+
+    rc, out, err = _run("pack_dashboard.py", ["--json"], timeout=60)
+    if rc != 0:
+        _record("dashboard:inventory_accuracy", FAIL, f"rc={rc}")
+        return
+    try:
+        data = _j.loads(out)
+        inv = data.get("inventory", {})
+        dash_chgs = int(inv.get("changes", -1))
+        dash_sess = int(inv.get("sessions", -1))
+    except Exception as e:
+        _record("dashboard:inventory_accuracy", FAIL, f"JSON parse error: {e}")
+        return
+
+    chg_ok = abs(dash_chgs - real_chgs) <= 2
+    ses_ok = abs(dash_sess - real_sess) <= 2
+    if chg_ok and ses_ok:
+        _record("dashboard:inventory_accuracy", PASS,
+                f"CHGs: dash={dash_chgs} real={real_chgs}; sessions: dash={dash_sess} real={real_sess}")
+    else:
+        _record("dashboard:inventory_accuracy", FAIL,
+                f"Mismatch — CHGs: dash={dash_chgs} real={real_chgs}; sessions: dash={dash_sess} real={real_sess}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1889,6 +1974,9 @@ ALL_TESTS = [
     (115, "sync_badges:compute",       test_sync_badges_compute),
     (116, "debt_ledger:json_empty",    test_debt_ledger_json_empty),
     (117, "risk_matrix:json_format",   test_risk_matrix_json_format),
+    (118, "scan:dry_run",              test_scan_dry_run),
+    (119, "evolution_report:html",     test_evolution_report_html),
+    (120, "dashboard:inventory_accuracy", test_dashboard_inventory_accuracy),
 ]
 
 

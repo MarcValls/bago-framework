@@ -148,6 +148,21 @@
       "title": "Dashboard riesgo real desde risk_matrix --json",
       "implemented_at": "2026-04-23T05:50:15.199031+00:00",
       "chg": "BAGO-CHG-144"
+    },
+    {
+      "title": "scan --dry-run mode",
+      "chg": "CHG-145",
+      "date": "2025-07-21"
+    },
+    {
+      "title": "Test para evolution report HTML",
+      "chg": "CHG-145",
+      "date": "2025-07-21"
+    },
+    {
+      "title": "Test inventario dashboard vs state real",
+      "chg": "CHG-145",
+      "date": "2025-07-21"
     }
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"

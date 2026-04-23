@@ -1,0 +1,14 @@
+{
+  "id": "BAGO-CHG-145",
+  "change_id": "CHG-145",
+  "type": "governance",
+  "severity": "minor",
+  "title": "scan --dry-run + 3 nuevos tests (scan, evolution report, dashboard accuracy)",
+  "motivation": "Añadir modo dry-run a scan.py para inspección sin escribir SCAN files; tests de regresión para evolution report HTML, dashboard inventory accuracy, y scan --dry-run.",
+  "status": "applied",
+  "affected_components": ["scan.py", "integration_tests.py"],
+  "related_evidence": ["133/133 tests pass"],
+  "created_at": "2025-07-21T00:00:00Z",
+  "updated_at": "2025-07-21T00:00:00Z",
+  "author": "bago-autonomous"
+}

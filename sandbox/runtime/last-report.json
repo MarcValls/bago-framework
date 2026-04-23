@@ -4,9 +4,9 @@
   "passed": 130,
   "skipped": 0,
   "total": 130,
-  "workers": 130,
-  "duration_seconds": 0.0,
-  "generated_at": "2026-04-23T05:50:15.199986+00:00",
+  "workers": 133,
+  "duration_seconds": 152.97,
+  "generated_at": "2026-04-23T05:52:58.697970+00:00",
   "tool": "integration_tests.py",
   "returncode": 0
 }

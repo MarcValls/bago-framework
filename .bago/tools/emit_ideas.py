@@ -271,6 +271,61 @@ FALLBACK_IDEAS: list[dict[str, object]] = [
         ],
         "w2": "Añadir test_sync_badges() a integration_tests.py, registrar en ALL_TESTS.",
     },
+    {
+        "priority": 50,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "scan.py no tiene modo --dry-run para previsualizar sin escribir archivos.",
+        "title": "scan --dry-run mode",
+        "summary": "Añadir --dry-run a scan.py: ejecuta análisis pero no escribe SCAN-*.json, solo imprime conteo.",
+        "detail": [
+            "Añadir argparse flag --dry-run en scan.py main().",
+            "Cuando --dry-run, realizar el scan normal pero no llamar db.save().",
+            "Imprimir '(dry-run) N hallazgos encontrados, no se escribió SCAN file'.",
+        ],
+        "w2": "Añadir --dry-run flag a scan.py y test_scan_dry_run() en integration_tests.py.",
+    },
+    {
+        "priority": 48,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "generate_bago_evolution_report.py no tiene test en ALL_TESTS.",
+        "title": "Test para evolution report HTML",
+        "summary": "Añadir test que verifique que generate_bago_evolution_report.py produce HTML válido con secciones requeridas.",
+        "detail": [
+            "Ejecutar generate_bago_evolution_report.py con --html.",
+            "Verificar que el output contiene <html>, <h1>, Observaciones.",
+            "Verificar rc=0.",
+        ],
+        "w2": "Añadir test_evolution_report_html() a integration_tests.py, registrar en ALL_TESTS.",
+    },
+    {
+        "priority": 46,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "Dashboard sección INVENTARIO no está verificada contra state/ real.",
+        "title": "Test inventario dashboard vs state real",
+        "summary": "Añadir test que compare conteos de sesiones/cambios del dashboard con ficheros reales en state/.",
+        "detail": [
+            "Contar BAGO-CHG-*.json en state/changes/ y sesiones en state/sessions/.",
+            "Ejecutar pack_dashboard.py --json y comparar con conteos reales.",
+            "Verificar que la diferencia es ≤2 (margen de race condition).",
+        ],
+        "w2": "Añadir test_dashboard_inventory_accuracy() a integration_tests.py, registrar en ALL_TESTS.",
+    },
+    {
+        "priority": 42,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "artifact_counter.py no tiene test en ALL_TESTS.",
+        "title": "Test para artifact_counter",
+        "summary": "Añadir test que verifique que artifact_counter.py cuenta artefactos correctamente.",
+        "detail": [
+            "Ejecutar artifact_counter.py con --json si disponible.",
+            "Verificar rc=0 y que retorna un número entero de artefactos.",
+        ],
+        "w2": "Añadir test_artifact_counter() a integration_tests.py, registrar en ALL_TESTS.",
+    },
 ]
 
 

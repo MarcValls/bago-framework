@@ -31,10 +31,10 @@ Ahora trabaja como un sistema operativo más maduro:
 
 | Métrica | Inicio | Ahora |
 | --- | ---:| ---:|
-| Snapshot documental mínimo | 22 artefactos | 240 artefactos |
+| Snapshot documental mínimo | 22 artefactos | 245 artefactos |
 | Sesiones nativas visibles | 19 | 57 |
 | Sesiones migradas preservadas | 3 | 4 preservadas en `state/migrated_sessions/` |
-| Cambios migrados/validados | 0 | 123 |
+| Cambios migrados/validados | 0 | 128 |
 | Evidencias registradas | no consolidado en snapshot inicial | 60 |
 | Integridad del pack | GO | GO / GO / GO |
 
@@ -45,7 +45,7 @@ Hoy local: **23/04/2026**.
 | Métrica | Valor |
 | --- | ---: |
 | Sesiones de hoy | 6 |
-| Cambios de hoy | 59 |
+| Cambios de hoy | 64 |
 | Evidencias de hoy | 7 |
 | Corridas autónomas de hoy | 0 |
 | Solicitudes de hoy en `metrics/runs` | 0 |
@@ -139,12 +139,12 @@ stateDiagram-v2
 ## Observaciones
 
 - **Snapshot:** 23/04/2026 · versión 3.0 · estado del sistema: `stable`.
-- **Corpus total:** 57 sesiones · 123 cambios · 60 evidencias.
-- **Suite de tests:** `pass` · 125 workers registrados.
+- **Corpus total:** 57 sesiones · 128 cambios · 60 evidencias.
+- **Suite de tests:** `pass` · 130 workers registrados.
 - **Últimos cambios aplicados:**
-  - Tests de integracion para smoke_runner (3 nuevos tests)
-  - Dashboard CHGs section + scan --purge auto-cleanup
-  - sync_badges + FINDINGS_DIR fix + context_detector sandbox exclusion
-  - Cosecha contextual W9: Stub reports vm/soak/matrix implementados (4 in
-  - Stub reports vm/soak/matrix + hook post-commit + FALLBACK_IDEAS amplia
+  - debt_ledger --json rc=0 sin scans; tests debt+risk JSON; 130/130
+  - Tests findings_engine:parse y sync_badges:compute; 128/128 tests
+  - Coverage por módulo en dashboard (118/139 = 84%)
+  - test_scan_purge; dashboard timeouts 60s; smoke_runner show_last rc=0
+  - Observaciones dinamicas en reporte de evolucion + 2 FALLBACK_IDEAS
 - La evolución del sistema es de especialización progresiva: cada sprint aumenta la capacidad de auto-gobernanza y cierre de ciclos con evidencias.
