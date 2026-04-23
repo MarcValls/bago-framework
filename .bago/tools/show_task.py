@@ -89,6 +89,20 @@ def _register_implemented(task: dict) -> None:
         pass  # registro no crítico
 
 
+def _generate_close_artifact(task: dict) -> None:
+    """Llama a session_close_generator para crear el artefacto de cierre."""
+    try:
+        import importlib.util
+        gen_path = Path(__file__).parent / "session_close_generator.py"
+        spec = importlib.util.spec_from_file_location("session_close_generator", gen_path)
+        mod = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
+        spec.loader.exec_module(mod)  # type: ignore[union-attr]
+        result = mod.generate(task=task)
+        print(f"  📄 Artefacto de cierre: {result.relative_to(ROOT)}")
+    except Exception as exc:
+        print(f"  ⚠  No se pudo generar el artefacto de cierre: {exc}")
+
+
 def main() -> int:
     args = sys.argv[1:]
     clear = "--clear" in args
@@ -115,6 +129,7 @@ def main() -> int:
         TASK_FILE.write_text(json.dumps(task, ensure_ascii=False, indent=2), encoding="utf-8")
         _register_implemented(task)
         print("  ✅ Tarea marcada como completada.")
+        _generate_close_artifact(task)
         _display(task)
         return 0
 
