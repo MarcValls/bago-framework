@@ -102,12 +102,12 @@ def cmd_run(days: int, yes: bool):
 def cmd_restore(session_id: str):
     if not ARCHIVE_DIR.exists():
         print("  No existe el directorio de archivo.")
-        sys.exit(1)
+        raise SystemExit(1)
     # Try exact match first
     candidates = list(ARCHIVE_DIR.glob(f"*{session_id}*.json"))
     if not candidates:
         print(f"  No se encontró '{session_id}' en el archivo.")
-        sys.exit(1)
+        raise SystemExit(1)
     for f in candidates:
         dest = SESSIONS_DIR / f.name
         if dest.exists():
@@ -170,7 +170,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def main():

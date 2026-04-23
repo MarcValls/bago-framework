@@ -523,4 +523,4 @@ if __name__ == "__main__":
     if "--test" in sys.argv:
         _self_test()
     else:
-        sys.exit(main(sys.argv[1:]))
+        raise SystemExit(main(sys.argv[1:]))

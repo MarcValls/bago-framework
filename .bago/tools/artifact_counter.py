@@ -121,7 +121,7 @@ def main():
 
     if not sessions:
         print("No se encontraron sesiones.")
-        sys.exit(1)
+        raise SystemExit(1)
 
     report(sessions, verbose=args.verbose)
 

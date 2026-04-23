@@ -232,11 +232,11 @@ def _self_test() -> None:
 
     total = 6; passed_count = total - len(fails)
     print(f"\n  {passed_count}/{total} tests pasaron")
-    if fails: sys.exit(1)
+    if fails: raise SystemExit(1)
 
 
 if __name__ == "__main__":
     if "--test" in sys.argv:
         _self_test()
     else:
-        sys.exit(main(sys.argv[1:]))
+        raise SystemExit(main(sys.argv[1:]))

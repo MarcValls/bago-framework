@@ -189,7 +189,7 @@ def run_checklist(quick_only: bool, as_json: bool):
 
     if critical_failed:
         print(f"\n  ⛔ {len(critical_failed)} check(s) crítico(s) fallaron.")
-        sys.exit(1)
+        raise SystemExit(1)
     elif passed_count < total:
         print(f"\n  ⚠️  {total - passed_count} warning(s) — revisa antes de continuar.\n")
     else:
@@ -256,7 +256,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def main():

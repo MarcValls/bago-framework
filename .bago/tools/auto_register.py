@@ -329,7 +329,7 @@ if __name__ == "__main__":
         raise SystemExit(0)
 
     if "--test" in args:
-        sys.exit(run_tests())
+        raise SystemExit(run_tests())
 
     dry_run = "--dry-run" in args
     args_clean = [a for a in args if not a.startswith("--")]
@@ -356,4 +356,4 @@ if __name__ == "__main__":
         i = args.index("--desc")
         description = args[i + 1] if i + 1 < len(args) else ""
 
-    sys.exit(cmd_register(tool_file, description=description, dry_run=dry_run))
+    raise SystemExit(cmd_register(tool_file, description=description, dry_run=dry_run))

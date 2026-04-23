@@ -71,11 +71,11 @@ def cmd_add(text: str, due: str = None, sprint: str = None):
 def cmd_done(rem_id: str):
     if not REMINDERS_DIR.exists():
         print("  No hay recordatorios.")
-        sys.exit(1)
+        raise SystemExit(1)
     found = list(REMINDERS_DIR.glob(f"*{rem_id}*.json"))
     if not found:
         print(f"  No encontrado: {rem_id}")
-        sys.exit(1)
+        raise SystemExit(1)
     for f in found:
         rem = json.loads(f.read_text())
         rem["status"] = "done"
@@ -221,7 +221,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def main():

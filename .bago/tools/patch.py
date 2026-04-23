@@ -224,7 +224,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def main():
@@ -262,7 +262,7 @@ def main():
     for name in to_run:
         if name not in PATCHES:
             print(f"Parche '{name}' no encontrado. Disponibles: {list(PATCHES.keys())}")
-            sys.exit(1)
+            raise SystemExit(1)
         print(f"\n  {BOLD}{name}{RESET}  [{mode}]")
         result = PATCHES[name](apply=apply)
         if result["affected"] == 0:

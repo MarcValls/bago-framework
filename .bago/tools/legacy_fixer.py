@@ -80,7 +80,7 @@ MAIN_GUARD_TEMPLATE = '''
 if __name__ == "__main__":
     import sys
     if "--test" in sys.argv:
-        sys.exit(_run_self_tests())
+        raise SystemExit(_run_self_tests())
 '''
 
 
@@ -170,7 +170,7 @@ def _patch_main_guard(src: str, toolname: str) -> str:
         return src  # already has it somehow
     # Find the main block and try to add test handling at start
     pattern = r'(if __name__\s*==\s*["\']__main__["\']\s*:)'
-    replacement = r'\1\n    if "--test" in sys.argv:\n        sys.exit(_run_self_tests())\n'
+    replacement = r'\1\n    if "--test" in sys.argv:\n        raise SystemExit(_run_self_tests())\n'
     patched = re.sub(pattern, replacement, src, count=1)
     # Only use if still valid
     try:
@@ -302,19 +302,19 @@ if __name__ == "__main__":
         raise SystemExit(0)
 
     if "--test" in args:
-        sys.exit(run_tests())
+        raise SystemExit(run_tests())
 
     dry_run = "--dry-run" in args
     args = [a for a in args if a != "--dry-run"]
 
     if not args or args[0] == "--list":
-        sys.exit(cmd_list())
+        raise SystemExit(cmd_list())
 
     if args[0] == "--fix-all":
-        sys.exit(cmd_fix_all(dry_run=dry_run))
+        raise SystemExit(cmd_fix_all(dry_run=dry_run))
 
     if args[0] == "--fix" and len(args) > 1:
-        sys.exit(cmd_fix(args[1], dry_run=dry_run))
+        raise SystemExit(cmd_fix(args[1], dry_run=dry_run))
 
     print(f"  Argumento desconocido: {args}")
     print("  Usa: legacy_fixer.py --help")

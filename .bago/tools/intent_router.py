@@ -351,7 +351,7 @@ if __name__ == "__main__":
         raise SystemExit(0)
 
     if "--test" in args:
-        sys.exit(run_tests())
+        raise SystemExit(run_tests())
 
     if "--list-intents" in args:
         cmd_list_intents()
@@ -368,4 +368,4 @@ if __name__ == "__main__":
         raise SystemExit(1)
 
     query = " ".join(query_parts)
-    sys.exit(cmd_route(query, dry_run=dry_run, yes=yes, verbose=verbose))
+    raise SystemExit(cmd_route(query, dry_run=dry_run, yes=yes, verbose=verbose))

@@ -332,7 +332,7 @@ def main():
 
     if not git_root:
         print("  ERROR: no se encontro repositorio git en {}".format(start))
-        sys.exit(1)
+        raise SystemExit(1)
 
     since_str = _since_str(args.since) if args.since else None
     ctx = collect_context(git_root, n_log=args.n_log, since=since_str)

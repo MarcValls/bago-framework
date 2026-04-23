@@ -316,7 +316,7 @@ if __name__ == "__main__":
         raise SystemExit(0)
 
     if "--test" in args:
-        sys.exit(run_tests())
+        raise SystemExit(run_tests())
 
     strict = "--strict" in args
     fix_mode = "--fix" in args
@@ -348,4 +348,4 @@ if __name__ == "__main__":
 
     result = evaluate_files(files, strict=strict)
     print_report(result)
-    sys.exit(0 if result["status"] != "BLOCKED" else 1)
+    raise SystemExit(0 if result["status"] != "BLOCKED" else 1)

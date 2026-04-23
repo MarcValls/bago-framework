@@ -331,7 +331,7 @@ def run_tests():
     total = 6; passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

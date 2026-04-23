@@ -1,0 +1,20 @@
+{
+  "change_id": "BAGO-CHG-123",
+  "type": "governance",
+  "severity": "patch",
+  "title": "Cobertura CHG retroactiva: bago_lint_cli, config_check, doc_coverage, impact_map, test_gen, v2_close_checklist",
+  "motivation": "6 tools modificados por el refactor sys.exit→SystemExit (batch-3/4) no tenían CHG propio. Se registra este CHG retroactivo para cubrir bago_lint_cli.py, config_check.py, doc_coverage.py, impact_map.py, test_gen.py, v2_close_checklist.py.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/bago_lint_cli.py",
+    ".bago/tools/config_check.py",
+    ".bago/tools/doc_coverage.py",
+    ".bago/tools/impact_map.py",
+    ".bago/tools/test_gen.py",
+    ".bago/tools/v2_close_checklist.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T03:10:00.000000+00:00",
+  "updated_at": "2026-04-23T03:10:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

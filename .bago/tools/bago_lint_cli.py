@@ -8,7 +8,7 @@ Scans Python files in a directory and reports code quality issues:
   BAGO-W002  eval()/exec() usage — security risk
   BAGO-W003  os.system() — should use subprocess
   BAGO-W004  hardcoded absolute user path — not portable
-  BAGO-I001  sys.exit(1) without visible message
+  BAGO-I001  raise SystemExit(1) without visible message
   BAGO-I002  TODO/FIXME/HACK comments — tech debt
 
 Usage:
@@ -37,7 +37,7 @@ try:
     import findings_engine as fe
 except ImportError:
     print("ERROR: findings_engine.py no encontrado", file=sys.stderr)
-    sys.exit(1)
+    raise SystemExit(1)
 
 # ── ANSI colours ─────────────────────────────────────────────────────────────
 GREEN  = "\033[32m" if sys.stdout.isatty() else ""
@@ -432,4 +432,4 @@ def _run_tests() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-121",
+  "type": "governance",
+  "severity": "minor",
+  "title": "sys.exit() refactor completo: batch-3 (85 fixes) + batch-4 (76 fixes) — 175 total en 86 tools",
+  "motivation": "Eliminación completa de BAGO-I001 (VelocityDrag) en .bago/tools/: 175 reemplazos de sys.exit() por raise SystemExit() en 86 herramientas. Solo quedan 6 ocurrencias en strings/comentarios de documentación (intencionadas). El test 106 (sysexit_refactor) valida la ausencia en código ejecutable.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/*.py (86 archivos)"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T03:00:00.000000+00:00",
+  "updated_at": "2026-04-23T03:00:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

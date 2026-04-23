@@ -152,7 +152,7 @@ def cmd_compare(args):
             start_b, end_b = _parse_period(args.period[1])
         except ValueError as e:
             print(f"  ERROR: {e}")
-            sys.exit(1)
+            raise SystemExit(1)
 
         def in_period(s, start, end):
             d = _session_date(s)
@@ -172,7 +172,7 @@ def cmd_compare(args):
 
     else:
         print("  ERROR: especifica --wf A B  |  --period P1 P2  |  --role R1 R2")
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def run_tests():
@@ -236,7 +236,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def main():

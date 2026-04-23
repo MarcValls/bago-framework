@@ -268,7 +268,7 @@ def run_tests():
 
     total = 6; passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
-    if errors: sys.exit(1)
+    if errors: raise SystemExit(1)
 
 
 def main():
@@ -288,7 +288,7 @@ def main():
     db = fe.FindingsDB.load(args.scan) if args.scan else fe.FindingsDB.latest()
     if db is None:
         print(f"{RED}✗ Sin scan. Ejecuta 'bago scan' primero.{RESET}")
-        sys.exit(1)
+        raise SystemExit(1)
 
     findings = db.findings
     if args.quadrant:

@@ -1463,6 +1463,46 @@ def test_sprint_manager_status():
         _record("sprint:status", FAIL, f"unexpected output: {out[:80]}")
 
 
+def test_emit_ideas_count():
+    """emit_ideas devuelve ≥3 ideas en total (combinando dinámicas + fallback)."""
+    rc, out, _ = _run("emit_ideas.py", [], timeout=20)
+    if rc != 0:
+        _record("ideas:count", FAIL, f"rc={rc}")
+        return
+    # Count idea lines: lines starting with digit followed by dot/bracket
+    import re as _re
+    idea_lines = [l for l in out.splitlines() if _re.match(r'^\d+\.', l.strip())]
+    n = len(idea_lines)
+    if n >= 3:
+        _record("ideas:count", PASS, f"{n} ideas returned (≥3 threshold met)")
+    else:
+        _record("ideas:count", FAIL, f"only {n} ideas returned (expected ≥3)")
+
+
+def test_sysexit_refactor():
+    """Ningún tool usa sys.exit() fuera de strings/comentarios (BAGO-I001)."""
+    import re as _re
+    tools_dir = ROOT / "tools"
+    violations = []
+    for f in tools_dir.glob("*.py"):
+        lines = f.read_text(encoding='utf-8', errors='replace').splitlines()
+        for i, line in enumerate(lines, 1):
+            stripped = line.lstrip()
+            if stripped.startswith('#'):
+                continue
+            # Remove string literals before checking
+            code_part = line.partition('#')[0]
+            # Skip if sys.exit is inside a string (naive check: inside quotes)
+            if _re.search(r'''['"][^'"]*sys\.exit[^'"]*['"]''', code_part):
+                continue
+            if _re.search(r'\bsys\.exit\(', code_part):
+                violations.append(f"{f.name}:{i}")
+    if len(violations) == 0:
+        _record("sysexit:refactor", PASS, "No bare sys.exit() calls in tools (BAGO-I001 clear)")
+    else:
+        _record("sysexit:refactor", FAIL, f"{len(violations)} violations: {violations[:3]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1568,6 +1608,8 @@ ALL_TESTS = [
     (102, "sprint_list",             test_sprint_manager_list),
     (103, "sprint_active",           test_sprint_manager_active),
     (104, "sprint_status",           test_sprint_manager_status),
+    (105, "ideas_count",             test_emit_ideas_count),
+    (106, "sysexit_refactor",        test_sysexit_refactor),
 ]
 
 
@@ -1617,5 +1659,5 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())
 

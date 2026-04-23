@@ -290,7 +290,7 @@ def main():
 
     if not args.terms:
         p.print_help()
-        sys.exit(0)
+        raise SystemExit(0)
 
     results = []
     search_type = args.type

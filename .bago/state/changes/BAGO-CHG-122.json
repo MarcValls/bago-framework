@@ -1,0 +1,16 @@
+{
+  "change_id": "BAGO-CHG-122",
+  "type": "governance",
+  "severity": "patch",
+  "title": "Tests 105-106: ideas_count ≥3 + sysexit_refactor BAGO-I001 gate",
+  "motivation": "Test 105: verifica que emit_ideas produce ≥3 ideas (dinámicas+fallback). Test 106: gate que valida la ausencia de sys.exit() en código ejecutable de tools — consolida el refactor BAGO-I001. SPRINT-007 goals_completed y goals_metrics añadidos al JSON del sprint.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/integration_tests.py",
+    ".bago/state/sprints/SPRINT-007.json"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T03:00:00.000000+00:00",
+  "updated_at": "2026-04-23T03:00:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

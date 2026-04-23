@@ -228,7 +228,7 @@ def cmd_risk(scan_id, category_filter, as_json):
     db = fe.FindingsDB.load(scan_id) if scan_id else fe.FindingsDB.latest()
     if db is None:
         print(f"{RED}✗ Sin scan disponible. Ejecuta 'bago scan' primero.{RESET}")
-        sys.exit(1)
+        raise SystemExit(1)
 
     findings = db.findings
     if category_filter:
@@ -302,7 +302,7 @@ def run_tests():
 
     total = 6; passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
-    if errors: sys.exit(1)
+    if errors: raise SystemExit(1)
 
 
 def main():

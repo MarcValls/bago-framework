@@ -360,7 +360,7 @@ if __name__ == "__main__":
         raise SystemExit(0)
 
     if "--test" in args:
-        sys.exit(run_tests())
+        raise SystemExit(run_tests())
 
     dry_run = "--dry-run" in args
     only = None
@@ -370,10 +370,10 @@ if __name__ == "__main__":
         # Optional: --fix R001
         if i + 1 < len(args) and not args[i + 1].startswith("--"):
             only = args[i + 1]
-        sys.exit(cmd_fix(only=only, dry_run=dry_run))
+        raise SystemExit(cmd_fix(only=only, dry_run=dry_run))
 
     # Default: diagnosis
     diagnosis = run_diagnosis()
     print_diagnosis(diagnosis)
     has_issues = any(d["count"] > 0 for d in diagnosis)
-    sys.exit(1 if has_issues else 0)
+    raise SystemExit(1 if has_issues else 0)

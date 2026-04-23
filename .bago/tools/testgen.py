@@ -537,7 +537,7 @@ def main():
     target = Path(args.target).resolve()
     if not target.exists():
         print(f"✗ No existe: {target}", file=sys.stderr)
-        sys.exit(1)
+        raise SystemExit(1)
 
     output_dir = Path(args.output).resolve() if args.output else (
         (target if target.is_dir() else target.parent) / "tests" / "generated")
@@ -739,7 +739,7 @@ def _self_test():
     if errors:
         for e in errors:
             print(f"  FAIL: {e}")
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

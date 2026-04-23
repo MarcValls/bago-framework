@@ -39,7 +39,7 @@ def _load(note_id: str) -> dict:
     f = NOTES_DIR / f"{note_id}.json"
     if not f.exists():
         print(f"Nota '{note_id}' no encontrada.")
-        sys.exit(1)
+        raise SystemExit(1)
     return json.loads(f.read_text())
 
 
@@ -108,7 +108,7 @@ def cmd_delete(note_id: str):
     f = NOTES_DIR / f"{note_id}.json"
     if not f.exists():
         print(f"Nota '{note_id}' no encontrada.")
-        sys.exit(1)
+        raise SystemExit(1)
     f.unlink()
     print(f"  Nota {note_id} eliminada.")
 
@@ -184,7 +184,7 @@ def run_tests():
     shutil.rmtree(tmp.parent)
     total = 5; passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
-    if errors: sys.exit(1)
+    if errors: raise SystemExit(1)
 
 
 def main():

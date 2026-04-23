@@ -497,7 +497,7 @@ def run_tests():
     shutil.rmtree(tmp)
     total=5; passed_t=total-errors
     print(f"\n  {passed_t}/{total} tests pasaron")
-    if errors: sys.exit(1)
+    if errors: raise SystemExit(1)
 
     # ── Extended tests ──────────────────────────────────────────────────────
     errors2 = 0
@@ -536,7 +536,7 @@ def run_tests():
     shutil.rmtree(tmp2)
     total2 = 3; passed2 = total2 - errors2
     print(f"\n  {passed2}/{total2} tests adicionales pasaron")
-    if errors2: sys.exit(1)
+    if errors2: raise SystemExit(1)
 
 
 def main():

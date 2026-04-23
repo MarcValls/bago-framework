@@ -238,7 +238,7 @@ def run_tests():
         else:
             fail("summary:load_last_session", "no session_id")
     except SystemExit as e:
-        fail("summary:load_last_session", f"sys.exit({e})")
+        fail("summary:load_last_session", f"raise SystemExit({e})")
 
     # Test 5: load last sprint works
     try:
@@ -248,7 +248,7 @@ def run_tests():
         else:
             fail("summary:load_last_sprint", "no sprint_id")
     except SystemExit as e:
-        fail("summary:load_last_sprint", f"sys.exit({e})")
+        fail("summary:load_last_sprint", f"raise SystemExit({e})")
 
     total = 5
     passed = total - errors

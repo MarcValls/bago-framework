@@ -377,6 +377,6 @@ if errors:
     print("KO")
     for e in errors:
         print(e)
-    sys.exit(1)
+    raise SystemExit(1)
 
 print("GO state")

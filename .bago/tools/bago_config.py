@@ -320,7 +320,7 @@ if __name__ == "__main__":
     args = sys.argv[1:]
 
     if "--test" in args:
-        sys.exit(run_tests())
+        raise SystemExit(run_tests())
 
     if "--help" in args or "-h" in args or not args:
         cmd_show()
@@ -329,19 +329,19 @@ if __name__ == "__main__":
     if "--get" in args:
         i = args.index("--get")
         key = args[i + 1] if i + 1 < len(args) else ""
-        sys.exit(cmd_get(key))
+        raise SystemExit(cmd_get(key))
 
     if "--set" in args:
         i = args.index("--set")
         key = args[i + 1] if i + 1 < len(args) else ""
         val = args[i + 2] if i + 2 < len(args) else ""
-        sys.exit(cmd_set(key, val))
+        raise SystemExit(cmd_set(key, val))
 
     if "--reset" in args:
-        sys.exit(cmd_reset(dry_run="--dry-run" in args))
+        raise SystemExit(cmd_reset(dry_run="--dry-run" in args))
 
     if "--validate" in args:
-        sys.exit(cmd_validate())
+        raise SystemExit(cmd_validate())
 
     if "--export" in args:
         config = load_config()

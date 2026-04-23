@@ -176,7 +176,7 @@ def main():
         print("     Ver reglas completas en: workflows/W7_FOCO_SESION.md")
     print()
 
-    sys.exit(0 if all_ok else 1)
+    raise SystemExit(0 if all_ok else 1)
 
 
 if __name__ == "__main__":

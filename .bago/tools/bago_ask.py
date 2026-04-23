@@ -358,7 +358,7 @@ def _self_test():
     print(f"\n  {n - len(errors)}/{n} tests pasaron")
     if errors:
         for e in errors: print(f"  FAIL: {e}")
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

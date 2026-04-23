@@ -215,7 +215,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def main():
@@ -242,7 +242,7 @@ def main():
             days = int(period)
         except ValueError:
             print(f"Período inválido: {period}", file=sys.stderr)
-            sys.exit(1)
+            raise SystemExit(1)
 
     review = build_review(days=days)
 

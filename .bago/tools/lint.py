@@ -228,7 +228,7 @@ def run_lint(fix_mode: bool, as_json: bool):
 
     print()
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def run_tests():
@@ -298,7 +298,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def main():

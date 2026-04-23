@@ -37,7 +37,7 @@ try:
     import findings_engine as fe
 except ImportError:
     print("ERROR: findings_engine.py no encontrado", file=sys.stderr)
-    sys.exit(1)
+    raise SystemExit(1)
 
 try:
     import scan as scan_mod
@@ -482,4 +482,4 @@ def _run_tests() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

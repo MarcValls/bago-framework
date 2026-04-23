@@ -211,7 +211,7 @@ if __name__ == "__main__":
         raise SystemExit(0)
 
     if "--test" in args:
-        sys.exit(run_tests())
+        raise SystemExit(run_tests())
 
     if "--list-all" in args:
         cat = ""
@@ -230,8 +230,8 @@ if __name__ == "__main__":
     if "--code" in args:
         i = args.index("--code")
         code = args[i + 1] if i + 1 < len(args) else ""
-        sys.exit(cmd_code(code))
+        raise SystemExit(cmd_code(code))
 
     # default: search
     query_parts = [a for a in args if not a.startswith("--")]
-    sys.exit(cmd_search(query_parts))
+    raise SystemExit(cmd_search(query_parts))

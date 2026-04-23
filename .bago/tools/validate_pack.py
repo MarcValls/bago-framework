@@ -15,7 +15,7 @@ def run(script: str):
     if result.returncode != 0:
         if result.stderr.strip():
             print(result.stderr.strip())
-        sys.exit(result.returncode)
+        raise SystemExit(result.returncode)
 
 run("validate_manifest.py")
 run("validate_state.py")

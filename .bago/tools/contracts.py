@@ -323,7 +323,7 @@ def cmd_check(contract_id: Optional[str], verbose: bool):
         print(f"  {GREEN}{BOLD}✅ TODOS LOS CONTRATOS EN CURSO{RESET}\n")
     else:
         print(f"  {RED}{BOLD}❌ CONTRATOS VIOLADOS — REQUIEREN ATENCIÓN{RESET}\n")
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def cmd_status():
@@ -397,7 +397,7 @@ def run_tests():
 
     total = 6; passed_n = total - errors
     print(f"\n  {passed_n}/{total} tests pasaron")
-    if errors: sys.exit(1)
+    if errors: raise SystemExit(1)
 
 
 def main():

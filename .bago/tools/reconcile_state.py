@@ -32,7 +32,7 @@ def count_files(folder: Path, pattern: str = "*.json") -> int:
 def load_global() -> dict:
     if not GLOBAL_STATE.exists():
         print("❌ global_state.json no encontrado")
-        sys.exit(1)
+        raise SystemExit(1)
     return json.loads(GLOBAL_STATE.read_text(encoding="utf-8"))
 
 
@@ -100,4 +100,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

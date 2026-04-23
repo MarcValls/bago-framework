@@ -63,7 +63,7 @@ def run_inline_tests(test_fn, label: str = ""):
     print(banner)
     test_fn()
     code = finish_tests()
-    sys.exit(code)
+    raise SystemExit(code)
 
 # ─── JSON I/O ─────────────────────────────────────────────────────────────────
 def load_json(path: Path | str, default=None):
@@ -134,4 +134,4 @@ if __name__ == "__main__":
         reset_test_state()
         _run_self_tests()
         code = finish_tests(5)
-        sys.exit(code)
+        raise SystemExit(code)

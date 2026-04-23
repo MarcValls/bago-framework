@@ -68,7 +68,7 @@ def cmd_show_id(sid: str):
     match = [s for s in sessions if s.get("session_id", "") == sid or s["_file"].startswith(sid)]
     if not match:
         print(f"  ERROR: sesión no encontrada: {sid}")
-        sys.exit(1)
+        raise SystemExit(1)
     s = match[0]
 
     arts = s.get("artifacts", [])
@@ -236,7 +236,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def main():

@@ -409,7 +409,7 @@ def run_tests():
 
     total=5; passed=total-errors
     print(f"\n  {passed}/{total} tests pasaron")
-    if errors: sys.exit(1)
+    if errors: raise SystemExit(1)
 
 
 def main():
@@ -438,7 +438,7 @@ def main():
         db = fe.FindingsDB.latest()
         if db is None:
             print("Sin scans guardados. Ejecuta 'bago scan' primero.")
-            sys.exit(1)
+            raise SystemExit(1)
     else:
         lang = "js" if args.lang == "ts" else args.lang
         print(f"  Escaneando {args.target} ... [lang={lang}]")

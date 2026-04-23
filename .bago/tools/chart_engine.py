@@ -499,7 +499,7 @@ def _self_test() -> None:
     passed = total - len(fails)
     print(f"\n  {passed}/{total} tests pasaron")
     if fails:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

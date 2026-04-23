@@ -301,7 +301,7 @@ if __name__ == "__main__":
         raise SystemExit(0)
 
     if "--test" in args:
-        sys.exit(run_tests())
+        raise SystemExit(run_tests())
 
     if "--list" in args:
         cmd_list()
@@ -323,7 +323,7 @@ if __name__ == "__main__":
         if not cmds:
             print("  Uso: orchestrator.py run cmd1 cmd2 ...")
             raise SystemExit(1)
-        sys.exit(run_adhoc(cmds, dry_run=dry_run, fail_fast=fail_fast))
+        raise SystemExit(run_adhoc(cmds, dry_run=dry_run, fail_fast=fail_fast))
 
     workflow_name = clean_args[0]
     if workflow_name not in WORKFLOWS:
@@ -333,4 +333,4 @@ if __name__ == "__main__":
 
     result = run_workflow(WORKFLOWS[workflow_name], dry_run=dry_run,
                           fail_fast=fail_fast, verbose=verbose)
-    sys.exit(1 if result["critical_failed"] else 0)
+    raise SystemExit(1 if result["critical_failed"] else 0)
