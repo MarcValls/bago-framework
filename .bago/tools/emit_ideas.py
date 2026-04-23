@@ -955,7 +955,7 @@ def main() -> int:
     print("")
     if detail_index is None:
         print(
-            f"→ Acepta la idea con mayor score: `bago ideas --accept 1`"
+            f"→ `bago ideas --accept 1`"
         )
         return 0
 

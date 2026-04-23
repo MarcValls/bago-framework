@@ -351,6 +351,8 @@ state/changes/BAGO-CHG-125.json
 state/changes/BAGO-CHG-126.json
 state/changes/BAGO-CHG-127.json
 state/changes/BAGO-CHG-128.json
+state/changes/BAGO-CHG-129.json
+state/changes/BAGO-CHG-130.json
 state/changes/BAGO-CHG-MIG-001.json
 state/changes/CHG-010-ux-controles-13fixes.json
 state/changes/CHG-011-caos-12ideas-cosecha.json
@@ -468,6 +470,9 @@ state/findings/SCAN-20260423_030434.json
 state/findings/SCAN-20260423_030553.json
 state/findings/SCAN-20260423_030811.json
 state/findings/SCAN-20260423_030904.json
+state/findings/SCAN-20260423_031523.json
+state/findings/SCAN-20260423_031754.json
+state/findings/SCAN-20260423_031942.json
 state/gh_config/
 state/global_state.backup.json
 state/global_state.json
@@ -696,6 +701,10 @@ state/iterations/ITER-0215.json
 state/iterations/ITER-0216.json
 state/iterations/ITER-0217.json
 state/iterations/ITER-0218.json
+state/iterations/ITER-0219.json
+state/iterations/ITER-0220.json
+state/iterations/ITER-0221.json
+state/iterations/ITER-0222.json
 state/linked_projects.json
 state/metrics/
 state/metrics/README.md
@@ -835,6 +844,8 @@ state/reports/DEBT-20260423_011555.json
 state/reports/DEBT-20260423_011740.json
 state/reports/RISK-20260423_001914.json
 state/reports/RISK-20260423_031004.json
+state/reports/RISK-20260423_031630.json
+state/reports/RISK-20260423_031759.json
 state/scenarios/
 state/scenarios/ESCENARIO-003-COSECHA-CONTEXTUAL.md
 state/scenarios/ESCENARIO-COMPETICION-BAGO.md

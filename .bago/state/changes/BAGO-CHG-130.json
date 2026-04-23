@@ -1,0 +1,20 @@
+{
+  "id": "BAGO-CHG-130",
+  "change_id": "BAGO-CHG-130",
+  "type": "governance",
+  "severity": "minor",
+  "title": "emit_ideas: recomendación final compacta, risk 0.0, README multi-proyecto",
+  "motivation": "Ideas [62][88]: compactar recomendación final del selector + limpiar el hallazgo residual de /tmp en risk_matrix (rescan fresco) + README con sección multi-proyecto y badges sync.",
+  "status": "applied",
+  "affected_components": [
+    "emit_ideas.py",
+    "README.md",
+    "risk_matrix"
+  ],
+  "related_evidence": [
+    "SES-AUTONOMOUS-2026-04-23-002"
+  ],
+  "created_at": "2026-04-23T03:20:26.219379+00:00",
+  "updated_at": "2026-04-23T03:20:26.219379+00:00",
+  "author": "copilot-autonomous"
+}

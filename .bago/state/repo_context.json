@@ -1,7 +1,7 @@
 {
   "bago_host_root": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA",
   "note": "BAGO operando en su propio directorio host (self).",
-  "recorded_at": "2026-04-23T02:45:11+00:00",
+  "recorded_at": "2026-04-23T03:18:58+00:00",
   "repo_fingerprint": "d8851ebdeab9100efe53d2b3da9b9b5beda479dbcaa8c3100f90e4c42f1a5e31",
   "repo_root": "/Users/INTELIA_Manager/Desktop/BAGO_CAJAFISICA",
   "role": "external_repo_pointer",
