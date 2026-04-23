@@ -278,7 +278,8 @@
     "velocity --json rolling windows",
     "scan --stats flag",
     "emit_ideas --section filter",
-    "health_score --watch mode"
+    "health_score --watch mode",
+    "scan --since DATE filter"
   ],
   "updated_at": "2026-04-23T05:11:01.774512+00:00"
 }

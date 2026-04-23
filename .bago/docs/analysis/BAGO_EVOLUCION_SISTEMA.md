@@ -31,10 +31,10 @@ Ahora trabaja como un sistema operativo más maduro:
 
 | Métrica | Inicio | Ahora |
 | --- | ---:| ---:|
-| Snapshot documental mínimo | 22 artefactos | 272 artefactos |
+| Snapshot documental mínimo | 22 artefactos | 273 artefactos |
 | Sesiones nativas visibles | 19 | 57 |
 | Sesiones migradas preservadas | 3 | 4 preservadas en `state/migrated_sessions/` |
-| Cambios migrados/validados | 0 | 155 |
+| Cambios migrados/validados | 0 | 156 |
 | Evidencias registradas | no consolidado en snapshot inicial | 60 |
 | Integridad del pack | GO | GO / GO / GO |
 
@@ -45,7 +45,7 @@ Hoy local: **23/04/2026**.
 | Métrica | Valor |
 | --- | ---: |
 | Sesiones de hoy | 6 |
-| Cambios de hoy | 68 |
+| Cambios de hoy | 69 |
 | Evidencias de hoy | 7 |
 | Corridas autónomas de hoy | 0 |
 | Solicitudes de hoy en `metrics/runs` | 0 |
@@ -139,12 +139,12 @@ stateDiagram-v2
 ## Observaciones
 
 - **Snapshot:** 23/04/2026 · versión 3.0 · estado del sistema: `stable`.
-- **Corpus total:** 57 sesiones · 155 cambios · 60 evidencias.
-- **Suite de tests:** `pass` · 161 workers registrados.
+- **Corpus total:** 57 sesiones · 156 cambios · 60 evidencias.
+- **Suite de tests:** `pass` · 162 workers registrados.
 - **Últimos cambios aplicados:**
+  - health_score --watch mode
   - emit_ideas --section filter
   - scan --stats flag
   - velocity --json rolling windows
   - dashboard --json test_count field
-  - debt_ledger --json rc=0 sin scans; tests debt+risk JSON; 130/130
 - La evolución del sistema es de especialización progresiva: cada sprint aumenta la capacidad de auto-gobernanza y cierre de ciclos con evidencias.

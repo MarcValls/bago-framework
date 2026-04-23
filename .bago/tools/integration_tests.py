@@ -2501,6 +2501,18 @@ def test_health_score_watch():
     _record("health_score:watch", PASS, f"watch OK, {len(health_lines)} health lines")
 
 
+def test_scan_since():
+    """scan.py --since 2020-01-01 --stats: rc=0, produce output de stats."""
+    rc, out, err = _run("scan.py", ["--since", "2020-01-01", "--stats"], timeout=30)
+    if rc != 0:
+        _record("scan:since", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    if "Total hallazgos" not in out and '"total"' not in out and "Sin scans" not in out:
+        _record("scan:since", FAIL, f"unexpected output: {out[:80]!r}")
+        return
+    _record("scan:since", PASS, "scan --since OK")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2651,6 +2663,7 @@ ALL_TESTS = [
     (147, "scan:stats",                  test_scan_stats),
     (148, "emit_ideas:section_filter",   test_emit_ideas_section_filter),
     (149, "health_score:watch",          test_health_score_watch),
+    (150, "scan:since",                  test_scan_since),
 ]
 
 

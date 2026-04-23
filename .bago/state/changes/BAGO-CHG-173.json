@@ -1,0 +1,17 @@
+{
+  "id": "BAGO-CHG-173",
+  "change_id": "CHG-173",
+  "type": "governance",
+  "severity": "patch",
+  "title": "scan --since DATE filter",
+  "motivation": "Add --since DATE flag to scan.py to merge findings from all scans since a given date, enabling cross-scan analysis without re-running linters.",
+  "status": "applied",
+  "affected_components": [
+    "scan.py",
+    "integration_tests.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T08:59:04.037508+00:00",
+  "updated_at": "2026-04-23T08:59:04.037920+00:00",
+  "author": "bago-autonomous-loop"
+}

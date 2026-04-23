@@ -446,6 +446,8 @@ def main():
                         help="Escribe output a FILE en lugar de stdout (requiere --format csv o json)")
     parser.add_argument("--stats",       action="store_true",
                         help="Muestra resumen estadístico: total, por severidad y por fuente")
+    parser.add_argument("--since",       default=None, metavar="DATE",
+                        help="Usa hallazgos de scans desde DATE (YYYY-MM-DD) en lugar del último scan")
     args = parser.parse_args()
 
     if args.test:
@@ -468,11 +470,48 @@ def main():
             print(f"✅ Sin SCAN files con > {args.days} días — nada que limpiar.")
         return
 
-    if args.last:
-        db = fe.FindingsDB.latest()
-        if db is None:
-            print("Sin scans guardados. Ejecuta 'bago scan' primero.")
-            raise SystemExit(1)
+    since_date = getattr(args, "since", None)
+
+    if args.last or since_date:
+        if since_date:
+            # Load all scan files with timestamp >= since_date and merge findings
+            import datetime as _dt
+            try:
+                cutoff = _dt.date.fromisoformat(since_date)
+            except ValueError:
+                print(f"ERROR: --since fecha inválida '{since_date}' (usa YYYY-MM-DD)", file=sys.stderr)
+                raise SystemExit(1)
+            all_scans = sorted(fe.FINDINGS_DIR.glob("SCAN-*.json"))
+            merged = []
+            latest_db = None
+            for sf in all_scans:
+                # SCAN-YYYYMMDD_HHMMSS → extract date part
+                stem = sf.stem  # e.g. SCAN-20260101_120000
+                try:
+                    date_part = stem.split("-", 1)[1].split("_")[0]  # YYYYMMDD
+                    scan_date = _dt.date(int(date_part[:4]), int(date_part[4:6]), int(date_part[6:8]))
+                except Exception:
+                    continue
+                if scan_date >= cutoff:
+                    try:
+                        d = fe.FindingsDB.load(stem)
+                        merged.extend(d.findings)
+                        latest_db = d
+                    except Exception:
+                        pass
+            if latest_db is None:
+                if not getattr(args, "quiet", False):
+                    print(f"Sin scans desde {since_date}.")
+                db = fe.FindingsDB()
+                db.findings = []
+            else:
+                db = latest_db
+                db.findings = merged
+        else:
+            db = fe.FindingsDB.latest()
+            if db is None:
+                print("Sin scans guardados. Ejecuta 'bago scan' primero.")
+                raise SystemExit(1)
     else:
         lang = "js" if args.lang == "ts" else args.lang
         if not getattr(args, "quiet", False):
