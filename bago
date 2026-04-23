@@ -494,6 +494,11 @@ def main():
             ["python3", str(TOOLS / "dead_code.py")] + rest,
             cwd=str(BAGO_ROOT.parent)
         )
+    elif cmd == "branches":
+        subprocess.run(
+            ["python3", str(TOOLS / "branch_manager.py")] + rest,
+            cwd=str(BAGO_ROOT.parent)
+        )
     elif cmd == "branch-check":
         subprocess.run(
             ["python3", str(TOOLS / "branch_check.py")] + rest,
@@ -837,6 +842,7 @@ def main():
                 "health-report": "reporte integral Markdown/HTML: config + lint + git + score 0-100",
                 "changelog-gen": "genera CHANGELOG.md desde git log con conventional commits",
                 "dead-code":     "detecta imports/funciones sin usar, TODOs, código comentado (Python)",
+                "branches":      "gestión integral de ramas: list/create/switch/rename/delete/info/compare",
                 "branch-check":  "valida nombre de rama vs convenciones (gitflow/simple/jira/bago)",
                 "complexity":    "complejidad ciclomática por función — identifica candidatos a refactor",
                 "env-check":     "verifica variables de entorno requeridas (missing/empty/placeholder)",

@@ -1,0 +1,1032 @@
+{
+  "meta": {
+    "scan_id": "SCAN-20260423_115733",
+    "created_at": "2026-04-23T11:57:33.589508+00:00",
+    "sources": [
+      "bago",
+      "flake8",
+      "pylint",
+      "mypy",
+      "bandit"
+    ],
+    "target": ".bago/tools/",
+    "lang": "py"
+  },
+  "summary": {
+    "total": 48,
+    "autofixable": 4,
+    "by_severity": {
+      "error": 0,
+      "warning": 27,
+      "info": 21,
+      "hint": 0
+    },
+    "by_source": {
+      "bago": 48
+    },
+    "top_files": [
+      [
+        ".bago/tools/rule_catalog.py",
+        14
+      ],
+      [
+        ".bago/tools/bago_lint_cli.py",
+        9
+      ],
+      [
+        ".bago/tools/findings_engine.py",
+        7
+      ],
+      [
+        ".bago/tools/dead_code.py",
+        4
+      ],
+      [
+        ".bago/tools/test_gen.py",
+        4
+      ],
+      [
+        ".bago/tools/legacy_fixer.py",
+        3
+      ],
+      [
+        ".bago/tools/multi_scan.py",
+        3
+      ],
+      [
+        ".bago/tools/ci_baseline.py",
+        1
+      ],
+      [
+        ".bago/tools/integration_tests.py",
+        1
+      ],
+      [
+        ".bago/tools/lint_report.py",
+        1
+      ]
+    ]
+  },
+  "findings": [
+    {
+      "id": "FIND-33D32BD1",
+      "severity": "warning",
+      "file": ".bago/tools/bago_lint_cli.py",
+      "line": 7,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() deprecated — use datetime.now(timezone.utc)",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a/.bago/tools/bago_lint_cli.py\n+++ b/.bago/tools/bago_lint_cli.py\n@@ -7,1 +7,1 @@\n-  BAGO-W001  datetime.utcnow() deprecated (autofixable)\n+  BAGO-W001  datetime.datetime.now(datetime.timezone.utc) deprecated (autofixable)\n",
+      "context_lines": [
+        "   5 | Scans Python files in a directory and reports code quality issues:",
+        "   6 |   BAGO-E001  bare except: clause (autofixable)",
+        "   7 |   BAGO-W001  datetime.utcnow() deprecated (autofixable)",
+        "   8 |   BAGO-W002  eval()/exec() usage — security risk",
+        "   9 |   BAGO-W003  os.system() — should use subprocess"
+      ]
+    },
+    {
+      "id": "FIND-29164BBF",
+      "severity": "warning",
+      "file": ".bago/tools/bago_lint_cli.py",
+      "line": 8,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "   6 |   BAGO-E001  bare except: clause (autofixable)",
+        "   7 |   BAGO-W001  datetime.utcnow() deprecated (autofixable)",
+        "   8 |   BAGO-W002  eval()/exec() usage — security risk",
+        "   9 |   BAGO-W003  os.system() — should use subprocess",
+        "  10 |   BAGO-W004  hardcoded absolute user path — not portable"
+      ]
+    },
+    {
+      "id": "FIND-3D235B7B",
+      "severity": "warning",
+      "file": ".bago/tools/bago_lint_cli.py",
+      "line": 9,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "   7 |   BAGO-W001  datetime.utcnow() deprecated (autofixable)",
+        "   8 |   BAGO-W002  eval()/exec() usage — security risk",
+        "   9 |   BAGO-W003  os.system() — should use subprocess",
+        "  10 |   BAGO-W004  hardcoded absolute user path — not portable",
+        "  11 |   BAGO-I001  raise SystemExit(1) without visible message"
+      ]
+    },
+    {
+      "id": "FIND-9EFC4286",
+      "severity": "warning",
+      "file": ".bago/tools/bago_lint_cli.py",
+      "line": 325,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 323 |         \"import os\\n\"",
+        " 324 |         \"try:\\n    pass\\nexcept:\\n    pass\\n\"",
+        " 325 |         \"x = eval('1+1')\\n\"",
+        " 326 |         \"os.system('ls')\\n\"",
+        " 327 |         \"DATA = '/Users/john/things'\\n\""
+      ]
+    },
+    {
+      "id": "FIND-A126F65A",
+      "severity": "warning",
+      "file": ".bago/tools/bago_lint_cli.py",
+      "line": 326,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 324 |         \"try:\\n    pass\\nexcept:\\n    pass\\n\"",
+        " 325 |         \"x = eval('1+1')\\n\"",
+        " 326 |         \"os.system('ls')\\n\"",
+        " 327 |         \"DATA = '/Users/john/things'\\n\"",
+        " 328 |         \"# TODO: fix\\n\""
+      ]
+    },
+    {
+      "id": "FIND-93BE5D38",
+      "severity": "warning",
+      "file": ".bago/tools/bago_lint_cli.py",
+      "line": 327,
+      "col": 0,
+      "rule": "BAGO-W004",
+      "source": "bago",
+      "message": "Path absoluto hardcoded: '/Users/john/things' — no portable",
+      "fix_suggestion": "Usa Path.home() / os.path.expanduser('~') o variables de entorno",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 325 |         \"x = eval('1+1')\\n\"",
+        " 326 |         \"os.system('ls')\\n\"",
+        " 327 |         \"DATA = '/Users/john/things'\\n\"",
+        " 328 |         \"# TODO: fix\\n\"",
+        " 329 |     )"
+      ]
+    },
+    {
+      "id": "FIND-784E1B67",
+      "severity": "info",
+      "file": ".bago/tools/bago_lint_cli.py",
+      "line": 328,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 326 |         \"os.system('ls')\\n\"",
+        " 327 |         \"DATA = '/Users/john/things'\\n\"",
+        " 328 |         \"# TODO: fix\\n\"",
+        " 329 |     )",
+        " 330 |     findings = fe.run_bago_lint(str(tmp))"
+      ]
+    },
+    {
+      "id": "FIND-815A8265",
+      "severity": "info",
+      "file": ".bago/tools/bago_lint_cli.py",
+      "line": 372,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 370 |     # T4: JSON output structure",
+        " 371 |     tmp4 = Path(tempfile.mkdtemp())",
+        " 372 |     (tmp4 / \"j.py\").write_text(\"# TODO: something\\n\")",
+        " 373 |     findings4 = fe.run_bago_lint(str(tmp4))",
+        " 374 |     j = ["
+      ]
+    },
+    {
+      "id": "FIND-C0CCBAE0",
+      "severity": "warning",
+      "file": ".bago/tools/bago_lint_cli.py",
+      "line": 402,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 400 | ",
+        " 401 |     # \"after\" scan: fixed the except, but added an eval",
+        " 402 |     py5.write_text(\"try:\\n    pass\\nexcept Exception:\\n    pass\\nx = eval('1')\\n\")",
+        " 403 |     after_findings = fe.run_bago_lint(str(tmp5))",
+        " 404 | "
+      ]
+    },
+    {
+      "id": "FIND-382D8A80",
+      "severity": "info",
+      "file": ".bago/tools/ci_baseline.py",
+      "line": 244,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 242 |         fail(\"ci_baseline:load_returns_data\", f\"loaded: {loaded}\")",
+        " 243 | ",
+        " 244 |     # T3 — diff_findings: sin cambios → todo persistente",
+        " 245 |     result = diff_findings(SAMPLE, SAMPLE)",
+        " 246 |     if not result[\"new\"] and not result[\"fixed\"] and len(result[\"persistent\"]) == 3:"
+      ]
+    },
+    {
+      "id": "FIND-0B92BCFA",
+      "severity": "info",
+      "file": ".bago/tools/dead_code.py",
+      "line": 42,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "XXX: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  40 | SEVERITY_ORDER = {\"error\": 0, \"warning\": 1, \"info\": 2}",
+        "  41 | ",
+        "  42 | TODO_RE    = re.compile(r'#\\s*(TODO|FIXME|HACK|XXX|BUG)\\b[:\\s]*(.*)', re.IGNORECASE)",
+        "  43 | COMMENTED_CODE_RE = re.compile(",
+        "  44 |     r'^\\s*#\\s*(def |class |return |import |from |if |for |while |with |try:|except)', re.MULTILINE"
+      ]
+    },
+    {
+      "id": "FIND-ED2EB2E7",
+      "severity": "info",
+      "file": ".bago/tools/dead_code.py",
+      "line": 305,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 303 |         fail(\"dead_code:used_import_not_flagged\", f\"sys fue marcado: {sys_used}\")",
+        " 304 | ",
+        " 305 |     # T3 — TODO detectado",
+        " 306 |     src2 = textwrap.dedent(\"\"\"\\",
+        " 307 |         # TODO: implementar autenticación"
+      ]
+    },
+    {
+      "id": "FIND-35900C0A",
+      "severity": "info",
+      "file": ".bago/tools/dead_code.py",
+      "line": 307,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 305 |     # T3 — TODO detectado",
+        " 306 |     src2 = textwrap.dedent(\"\"\"\\",
+        " 307 |         # TODO: implementar autenticación",
+        " 308 |         x = 1",
+        " 309 |         # FIXME: esto rompe en Python 3.12"
+      ]
+    },
+    {
+      "id": "FIND-DBBA410A",
+      "severity": "info",
+      "file": ".bago/tools/dead_code.py",
+      "line": 309,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "FIXME: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 307 |         # TODO: implementar autenticación",
+        " 308 |         x = 1",
+        " 309 |         # FIXME: esto rompe en Python 3.12",
+        " 310 |     \"\"\")",
+        " 311 |     with tempfile.NamedTemporaryFile(suffix=\".py\", mode=\"w\", delete=False) as f:"
+      ]
+    },
+    {
+      "id": "FIND-770B0069",
+      "severity": "warning",
+      "file": ".bago/tools/findings_engine.py",
+      "line": 818,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 816 |       BAGO-E001  bare except: clause — catches SystemExit/KeyboardInterrupt",
+        " 817 |       BAGO-W002  eval() or exec() — security risk # noqa: BAGO-W002",
+        " 818 |       BAGO-W003  os.system() — should use subprocess",
+        " 819 |       BAGO-W004  hardcoded absolute user path (/Users/, /home/, C:\\\\) — not portable",
+        " 820 |       BAGO-I002  TODO/FIXME/HACK comments — technical debt markers"
+      ]
+    },
+    {
+      "id": "FIND-5F98BA72",
+      "severity": "info",
+      "file": ".bago/tools/findings_engine.py",
+      "line": 828,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "XXX: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 826 |     _os_system_re    = re.compile(r'\\bos\\.system\\s*\\(')",
+        " 827 |     _hardpath_re     = re.compile(r'[\"\\'](?:/Users/\\w+|/home/\\w+|C:\\\\\\\\Users\\\\\\\\)[^\"\\']*[\"\\']')",
+        " 828 |     _todo_re         = re.compile(r'#.*\\b(TODO|FIXME|HACK|XXX)\\b', re.IGNORECASE)",
+        " 829 |     _noqa_re         = re.compile(r'#\\s*noqa(?::\\s*([\\w,\\s-]+))?')",
+        " 830 | "
+      ]
+    },
+    {
+      "id": "FIND-03EA95B3",
+      "severity": "warning",
+      "file": ".bago/tools/findings_engine.py",
+      "line": 900,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 898 |                         context_lines=_read_context(rel, i),",
+        " 899 |                     ))",
+        " 900 |                 # BAGO-W003: os.system() — skip test and ci_generator",
+        " 901 |                 if not _suppressed(\"BAGO-W003\") and not is_test and _os_system_re.search(line):",
+        " 902 |                     fid = _make_id(\"bago\", rel, i, \"BAGO-W003\")"
+      ]
+    },
+    {
+      "id": "FIND-54659CD0",
+      "severity": "warning",
+      "file": ".bago/tools/findings_engine.py",
+      "line": 906,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 904 |                         id=fid, severity=\"warning\", file=rel, line=i, col=0,",
+        " 905 |                         rule=\"BAGO-W003\", source=\"bago\",",
+        " 906 |                         message=\"os.system() no captura salida ni maneja errores\",",
+        " 907 |                         fix_suggestion=\"Usa subprocess.run() con capture_output=True\",",
+        " 908 |                         autofixable=False,"
+      ]
+    },
+    {
+      "id": "FIND-6A2FE56D",
+      "severity": "info",
+      "file": ".bago/tools/findings_engine.py",
+      "line": 924,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "HACK: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 922 |                         context_lines=_read_context(rel, i),",
+        " 923 |                     ))",
+        " 924 |                 # BAGO-I002: TODO/FIXME/HACK",
+        " 925 |                 if not _suppressed(\"BAGO-I002\") and _todo_re.search(line):",
+        " 926 |                     m = _todo_re.search(line)"
+      ]
+    },
+    {
+      "id": "FIND-0FEE8442",
+      "severity": "warning",
+      "file": ".bago/tools/findings_engine.py",
+      "line": 1166,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "1164 |         \"    pass\\n\"",
+        "1165 |         \"result = eval('1+1')  # BAGO-W002\\n\" # noqa: BAGO-W002",
+        "1166 |         \"os.system('ls')  # BAGO-W003\\n\"",
+        "1167 |         \"# TODO: fix this  # BAGO-I002\\n\"",
+        "1168 |     )"
+      ]
+    },
+    {
+      "id": "FIND-FA82188F",
+      "severity": "info",
+      "file": ".bago/tools/findings_engine.py",
+      "line": 1167,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "1165 |         \"result = eval('1+1')  # BAGO-W002\\n\" # noqa: BAGO-W002",
+        "1166 |         \"os.system('ls')  # BAGO-W003\\n\"",
+        "1167 |         \"# TODO: fix this  # BAGO-I002\\n\"",
+        "1168 |     )",
+        "1169 |     f3 = run_bago_lint(str(tmp3))"
+      ]
+    },
+    {
+      "id": "FIND-A20CFB5D",
+      "severity": "info",
+      "file": ".bago/tools/integration_tests.py",
+      "line": 732,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 730 |             \"os.system('ls')  # os.system\\n\"",
+        " 731 |             \"DATA = '/Users/john/data'\\n\"",
+        " 732 |             \"# TODO: arreglar esto\\n\"",
+        " 733 |         )",
+        " 734 |         findings = run_bago_lint(str(tmp))"
+      ]
+    },
+    {
+      "id": "FIND-CE7C774E",
+      "severity": "info",
+      "file": ".bago/tools/legacy_fixer.py",
+      "line": 59,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  57 | ",
+        "  58 |     # Test 4: (reservado) — implementar test específico del tool",
+        "  59 |     ok4 = True  # TODO: añadir test real",
+        "  60 |     results.append((\"{toolname}:placeholder_4\", ok4, \"placeholder\"))",
+        "  61 | "
+      ]
+    },
+    {
+      "id": "FIND-357AEC1C",
+      "severity": "info",
+      "file": ".bago/tools/legacy_fixer.py",
+      "line": 63,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  61 | ",
+        "  62 |     # Test 5: (reservado) — implementar test específico del tool",
+        "  63 |     ok5 = True  # TODO: añadir test real",
+        "  64 |     results.append((\"{toolname}:placeholder_5\", ok5, \"placeholder\"))",
+        "  65 | "
+      ]
+    },
+    {
+      "id": "FIND-138D9239",
+      "severity": "info",
+      "file": ".bago/tools/legacy_fixer.py",
+      "line": 67,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  65 | ",
+        "  66 |     # Test 6: (reservado) — implementar test específico del tool",
+        "  67 |     ok6 = True  # TODO: añadir test real",
+        "  68 |     results.append((\"{toolname}:placeholder_6\", ok6, \"placeholder\"))",
+        "  69 | "
+      ]
+    },
+    {
+      "id": "FIND-3E2909BF",
+      "severity": "warning",
+      "file": ".bago/tools/lint_report.py",
+      "line": 226,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 224 |         {\"file\": \"src/main.py\", \"line\": 10, \"severity\": \"error\",   \"rule\": \"BAGO-E001\", \"message\": \"bare except\"},",
+        " 225 |         {\"file\": \"src/main.py\", \"line\": 25, \"severity\": \"warning\", \"rule\": \"BAGO-W001\", \"message\": \"utcnow deprecated\"},",
+        " 226 |         {\"file\": \"src/utils.py\",\"line\": 5,  \"severity\": \"warning\", \"rule\": \"BAGO-W002\", \"message\": \"eval() used\"},",
+        " 227 |         {\"file\": \"src/utils.py\",\"line\": 8,  \"severity\": \"info\",    \"rule\": \"BAGO-I002\", \"message\": \"TODO comment\"},",
+        " 228 |         {\"file\": \"src/api.js\",  \"line\": 30, \"severity\": \"error\",   \"rule\": \"JS-E001\",   \"message\": \"eval detected\"},"
+      ]
+    },
+    {
+      "id": "FIND-6FD2CAFA",
+      "severity": "warning",
+      "file": ".bago/tools/multi_scan.py",
+      "line": 447,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 445 |     (tmp3 / \"code.py\").write_text(",
+        " 446 |         \"import os\\ntry:\\n    pass\\nexcept:\\n    pass\\n\"",
+        " 447 |         \"os.system('ls')\\n# TODO: fix\\n\"",
+        " 448 |     )",
+        " 449 |     result3 = run_multi_scan(str(tmp3), langs=[\"py\"])"
+      ]
+    },
+    {
+      "id": "FIND-11398D2F",
+      "severity": "info",
+      "file": ".bago/tools/multi_scan.py",
+      "line": 447,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 445 |     (tmp3 / \"code.py\").write_text(",
+        " 446 |         \"import os\\ntry:\\n    pass\\nexcept:\\n    pass\\n\"",
+        " 447 |         \"os.system('ls')\\n# TODO: fix\\n\"",
+        " 448 |     )",
+        " 449 |     result3 = run_multi_scan(str(tmp3), langs=[\"py\"])"
+      ]
+    },
+    {
+      "id": "FIND-802253D2",
+      "severity": "info",
+      "file": ".bago/tools/multi_scan.py",
+      "line": 459,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 457 |     # T4: by_lang breakdown keys are correct",
+        " 458 |     tmp4 = Path(tempfile.mkdtemp())",
+        " 459 |     (tmp4 / \"x.py\").write_text(\"# TODO: fix\\n\")",
+        " 460 |     result4 = run_multi_scan(str(tmp4), langs=[\"py\", \"go\"])",
+        " 461 |     if \"py\" in result4[\"by_lang\"] and \"go\" in result4[\"by_lang\"]:"
+      ]
+    },
+    {
+      "id": "FIND-2A9C52E5",
+      "severity": "warning",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 62,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() deprecated — use datetime.now(timezone.utc)",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a/.bago/tools/rule_catalog.py\n+++ b/.bago/tools/rule_catalog.py\n@@ -62,1 +62,1 @@\n-        title=\"datetime.utcnow() deprecated\",\n+        title=\"datetime.datetime.now(datetime.timezone.utc) deprecated\",\n",
+      "context_lines": [
+        "  60 |         category=\"reliability\",",
+        "  61 |         source=\"bago\",",
+        "  62 |         title=\"datetime.utcnow() deprecated\",",
+        "  63 |         description=(",
+        "  64 |             \"`datetime.utcnow()` devuelve un `datetime` naive en UTC, lo que \""
+      ]
+    },
+    {
+      "id": "FIND-0C1A18D3",
+      "severity": "warning",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 64,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() deprecated — use datetime.now(timezone.utc)",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a/.bago/tools/rule_catalog.py\n+++ b/.bago/tools/rule_catalog.py\n@@ -64,1 +64,1 @@\n-            \"`datetime.utcnow()` devuelve un `datetime` naive en UTC, lo que \"\n+            \"`datetime.datetime.now(datetime.timezone.utc)` devuelve un `datetime` naive en UTC, lo que \"\n",
+      "context_lines": [
+        "  62 |         title=\"datetime.utcnow() deprecated\",",
+        "  63 |         description=(",
+        "  64 |             \"`datetime.utcnow()` devuelve un `datetime` naive en UTC, lo que \"",
+        "  65 |             \"induce confusión con zonas horarias. Deprecated desde Python 3.12.\"",
+        "  66 |         ),"
+      ]
+    },
+    {
+      "id": "FIND-956C5077",
+      "severity": "warning",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 67,
+      "col": 0,
+      "rule": "BAGO-W001",
+      "source": "bago",
+      "message": "datetime.utcnow() deprecated — use datetime.now(timezone.utc)",
+      "fix_suggestion": "Usa datetime.datetime.now(datetime.timezone.utc)",
+      "autofixable": true,
+      "fix_patch": "--- a/.bago/tools/rule_catalog.py\n+++ b/.bago/tools/rule_catalog.py\n@@ -67,1 +67,1 @@\n-        example_bad=\"ts = datetime.utcnow()\",\n+        example_bad=\"ts = datetime.datetime.now(datetime.timezone.utc)\",\n",
+      "context_lines": [
+        "  65 |             \"induce confusión con zonas horarias. Deprecated desde Python 3.12.\"",
+        "  66 |         ),",
+        "  67 |         example_bad=\"ts = datetime.utcnow()\",",
+        "  68 |         example_good=\"ts = datetime.now(timezone.utc)\",",
+        "  69 |         autofix=True,"
+      ]
+    },
+    {
+      "id": "FIND-1E290FF3",
+      "severity": "warning",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 76,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  74 |         category=\"security\",",
+        "  75 |         source=\"bago\",",
+        "  76 |         title=\"eval() / exec() usage\",",
+        "  77 |         description=(",
+        "  78 |             \"`eval()` y `exec()` ejecutan código arbitrario. Si la entrada \""
+      ]
+    },
+    {
+      "id": "FIND-6249888D",
+      "severity": "warning",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 78,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  76 |         title=\"eval() / exec() usage\",",
+        "  77 |         description=(",
+        "  78 |             \"`eval()` y `exec()` ejecutan código arbitrario. Si la entrada \"",
+        "  79 |             \"proviene de fuentes externas, es una vulnerabilidad crítica RCE.\"",
+        "  80 |         ),"
+      ]
+    },
+    {
+      "id": "FIND-8BFA25A6",
+      "severity": "warning",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 81,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  79 |             \"proviene de fuentes externas, es una vulnerabilidad crítica RCE.\"",
+        "  80 |         ),",
+        "  81 |         example_bad=\"result = eval(user_input)\",",
+        "  82 |         example_good=\"# Usa ast.literal_eval() para datos estructurados\\nresult = ast.literal_eval(data)\",",
+        "  83 |     ),"
+      ]
+    },
+    {
+      "id": "FIND-2BF6F6FF",
+      "severity": "warning",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 89,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  87 |         category=\"reliability\",",
+        "  88 |         source=\"bago\",",
+        "  89 |         title=\"os.system() — use subprocess\",",
+        "  90 |         description=(",
+        "  91 |             \"`os.system()` no captura stdout/stderr, no permite control de \""
+      ]
+    },
+    {
+      "id": "FIND-B2C5244D",
+      "severity": "warning",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 91,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  89 |         title=\"os.system() — use subprocess\",",
+        "  90 |         description=(",
+        "  91 |             \"`os.system()` no captura stdout/stderr, no permite control de \"",
+        "  92 |             \"código de retorno y es más vulnerable a inyección de shell.\"",
+        "  93 |         ),"
+      ]
+    },
+    {
+      "id": "FIND-E696D928",
+      "severity": "warning",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 94,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  92 |             \"código de retorno y es más vulnerable a inyección de shell.\"",
+        "  93 |         ),",
+        "  94 |         example_bad='os.system(\"ls -la\")',",
+        "  95 |         example_good='subprocess.run([\"ls\", \"-la\"], check=True)',",
+        "  96 |     ),"
+      ]
+    },
+    {
+      "id": "FIND-094B2330",
+      "severity": "warning",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 107,
+      "col": 0,
+      "rule": "BAGO-W004",
+      "source": "bago",
+      "message": "Path absoluto hardcoded: '/Users/marc/project/config.json' — no portable",
+      "fix_suggestion": "Usa Path.home() / os.path.expanduser('~') o variables de entorno",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 105 |             \"impiden portabilidad entre máquinas y entornos CI.\"",
+        " 106 |         ),",
+        " 107 |         example_bad='config = \"/Users/marc/project/config.json\"',",
+        " 108 |         example_good='config = Path(__file__).parent / \"config.json\"',",
+        " 109 |     ),"
+      ]
+    },
+    {
+      "id": "FIND-EFD7500A",
+      "severity": "info",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 134,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 132 |             \"un issue rastreable.\"",
+        " 133 |         ),",
+        " 134 |         example_bad=\"# TODO: manejar el caso de archivo vacío\",",
+        " 135 |         example_good=\"# Ver issue #123: manejar archivo vacío\",",
+        " 136 |     ),"
+      ]
+    },
+    {
+      "id": "FIND-57874483",
+      "severity": "warning",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 143,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 141 |         category=\"security\",",
+        " 142 |         source=\"js_ast\",",
+        " 143 |         title=\"eval() / Function() constructor\",",
+        " 144 |         description=(",
+        " 145 |             \"`eval()` y `new Function(string)` ejecutan JavaScript arbitrario \""
+      ]
+    },
+    {
+      "id": "FIND-FBFB0586",
+      "severity": "warning",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 145,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 143 |         title=\"eval() / Function() constructor\",",
+        " 144 |         description=(",
+        " 145 |             \"`eval()` y `new Function(string)` ejecutan JavaScript arbitrario \"",
+        " 146 |             \"en tiempo de ejecución. Equivalente a RCE si la cadena viene de \"",
+        " 147 |             \"una fuente externa.\""
+      ]
+    },
+    {
+      "id": "FIND-05434D97",
+      "severity": "warning",
+      "file": ".bago/tools/rule_catalog.py",
+      "line": 203,
+      "col": 0,
+      "rule": "BAGO-W002",
+      "source": "bago",
+      "message": "eval() es un riesgo de seguridad — evitar en producción",
+      "fix_suggestion": "Reemplaza eval() por lógica explícita o ast.literal_eval()",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 201 |         description=(",
+        " 202 |             \"Pasar una cadena como primer argumento a `setTimeout` o \"",
+        " 203 |             \"`setInterval` es equivalente a `eval()` y comparte sus riesgos.\"",
+        " 204 |         ),",
+        " 205 |         example_bad=\"setTimeout(\\\"doSomething()\\\", 100);\","
+      ]
+    },
+    {
+      "id": "FIND-D6A60985",
+      "severity": "info",
+      "file": ".bago/tools/test_gen.py",
+      "line": 138,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 136 |             lines.append(f\"{indent}    # arrange\")",
+        " 137 |             for arg in f.args:",
+        " 138 |                 lines.append(f\"{indent}    {arg} = None  # TODO: set value\")",
+        " 139 |         lines += [",
+        " 140 |             f\"{indent}    # act\","
+      ]
+    },
+    {
+      "id": "FIND-636CA77B",
+      "severity": "info",
+      "file": ".bago/tools/test_gen.py",
+      "line": 143,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 141 |             f\"{indent}    result = {fname}({', '.join(f.args)}){ret_comment}\",",
+        " 142 |             f\"{indent}    # assert\",",
+        " 143 |             f\"{indent}    assert result is not None  # TODO: refine assertion\",",
+        " 144 |         ]",
+        " 145 | "
+      ]
+    },
+    {
+      "id": "FIND-EBA927AD",
+      "severity": "info",
+      "file": ".bago/tools/test_gen.py",
+      "line": 168,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 166 |             lines.append(f\"        # {f.docstring}\")",
+        " 167 |         for arg in f.args:",
+        " 168 |             lines.append(f\"        {arg} = None  # TODO: set value\")",
+        " 169 |         lines += [",
+        " 170 |             f\"        result = {fname}({', '.join(f.args)}){ret_comment}\","
+      ]
+    },
+    {
+      "id": "FIND-DB47A71C",
+      "severity": "info",
+      "file": ".bago/tools/test_gen.py",
+      "line": 171,
+      "col": 0,
+      "rule": "BAGO-I002",
+      "source": "bago",
+      "message": "TODO: deuda técnica pendiente",
+      "fix_suggestion": "Resuelve o registra en bago debt",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        " 169 |         lines += [",
+        " 170 |             f\"        result = {fname}({', '.join(f.args)}){ret_comment}\",",
+        " 171 |             f\"        self.assertIsNotNone(result)  # TODO: refine\",",
+        " 172 |             f\"\",",
+        " 173 |         ]"
+      ]
+    },
+    {
+      "id": "FIND-BBA4454B",
+      "severity": "warning",
+      "file": ".bago/tools/watch.py",
+      "line": 88,
+      "col": 0,
+      "rule": "BAGO-W003",
+      "source": "bago",
+      "message": "os.system() no captura salida ni maneja errores",
+      "fix_suggestion": "Usa subprocess.run() con capture_output=True",
+      "autofixable": false,
+      "fix_patch": "",
+      "context_lines": [
+        "  86 | ",
+        "  87 | def _clear():",
+        "  88 |     os.system(\"clear\" if os.name == \"posix\" else \"cls\")",
+        "  89 | ",
+        "  90 | "
+      ]
+    }
+  ]
+}

@@ -455,6 +455,9 @@ state/findings/SCAN-20260423_022536.json
 state/findings/SCAN-20260423_022600.json
 state/findings/SCAN-20260423_022611.json
 state/findings/SCAN-20260423_022736.json
+state/findings/SCAN-20260423_115709.json
+state/findings/SCAN-20260423_115733.json
+state/gh_config/
 state/global_state.json
 state/goals/
 state/goals/GOAL-001.json
@@ -659,6 +662,8 @@ state/iterations/ITER-0193.json
 state/iterations/ITER-0194.json
 state/iterations/ITER-0195.json
 state/iterations/ITER-0196.json
+state/iterations/ITER-0197.json
+state/iterations/ITER-0198.json
 state/metrics/
 state/metrics/README.md
 state/metrics/metrics_snapshot.json
@@ -881,6 +886,7 @@ state/sprints/SPRINT-005.json
 state/sprints/SPRINT-006.json
 state/sprints/SPRINT-007.json
 state/tags_index.json
+state/templates/
 state/user_personality_profile.json
 templates/
 templates/plantilla_cambio.md
@@ -890,6 +896,14 @@ templates/plantilla_rol.md
 templates/plantilla_workflow.md
 tools/
 tools/README.md
+tools/__pycache__/
+tools/__pycache__/chart_engine.cpython-312.pyc
+tools/__pycache__/context_detector.cpython-312.pyc
+tools/__pycache__/findings_engine.cpython-312.pyc
+tools/__pycache__/health_score.cpython-312.pyc
+tools/__pycache__/permission_check.cpython-312.pyc
+tools/__pycache__/permission_fixer.cpython-312.pyc
+tools/__pycache__/scan.cpython-312.pyc
 tools/api_check.py
 tools/archive.py
 tools/artifact_counter.py
@@ -910,6 +924,7 @@ tools/bago_start.py
 tools/bago_utils.py
 tools/bago_watch.py
 tools/branch_check.py
+tools/branch_manager.py
 tools/changelog.py
 tools/changelog_gen.py
 tools/chart_engine.py
