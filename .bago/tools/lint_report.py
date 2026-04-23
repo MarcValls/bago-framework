@@ -223,7 +223,7 @@ def _self_test() -> None:
     SAMPLE_FINDINGS = [
         {"file": "src/main.py", "line": 10, "severity": "error",   "rule": "BAGO-E001", "message": "bare except"},
         {"file": "src/main.py", "line": 25, "severity": "warning", "rule": "BAGO-W001", "message": "utcnow deprecated"},
-        {"file": "src/utils.py","line": 5,  "severity": "warning", "rule": "BAGO-W002", "message": "eval() used"},
+        {"file": "src/utils.py","line": 5,  "severity": "warning", "rule": "BAGO-W002", "message": "eval() used"},  # noqa: BAGO-W002
         {"file": "src/utils.py","line": 8,  "severity": "info",    "rule": "BAGO-I002", "message": "TODO comment"},
         {"file": "src/api.js",  "line": 30, "severity": "error",   "rule": "JS-E001",   "message": "eval detected"},
     ]

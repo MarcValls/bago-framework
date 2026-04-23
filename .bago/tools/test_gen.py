@@ -135,12 +135,12 @@ def generate_pytest(funcs: list[FuncInfo], module_name: str,
         if f.args:
             lines.append(f"{indent}    # arrange")
             for arg in f.args:
-                lines.append(f"{indent}    {arg} = None  # TODO: set value")
+                lines.append(f"{indent}    {arg} = None  # TODO: set value")  # noqa: BAGO-I002
         lines += [
             f"{indent}    # act",
             f"{indent}    result = {fname}({', '.join(f.args)}){ret_comment}",
             f"{indent}    # assert",
-            f"{indent}    assert result is not None  # TODO: refine assertion",
+            f"{indent}    assert result is not None  # TODO: refine assertion",  # noqa: BAGO-I002
         ]
 
     lines.append("")
@@ -165,10 +165,10 @@ def generate_unittest(funcs: list[FuncInfo], module_name: str) -> str:
         if f.docstring:
             lines.append(f"        # {f.docstring}")
         for arg in f.args:
-            lines.append(f"        {arg} = None  # TODO: set value")
+            lines.append(f"        {arg} = None  # TODO: set value")  # noqa: BAGO-I002
         lines += [
             f"        result = {fname}({', '.join(f.args)}){ret_comment}",
-            f"        self.assertIsNotNone(result)  # TODO: refine",
+            f"        self.assertIsNotNone(result)  # TODO: refine",  # noqa: BAGO-I002
             f"",
         ]
     lines += [

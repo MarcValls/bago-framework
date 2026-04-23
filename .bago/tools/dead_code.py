@@ -39,7 +39,7 @@ _RST  = "\033[0m"
 
 SEVERITY_ORDER = {"error": 0, "warning": 1, "info": 2}
 
-TODO_RE    = re.compile(r'#\s*(TODO|FIXME|HACK|XXX|BUG)\b[:\s]*(.*)', re.IGNORECASE)
+TODO_RE    = re.compile(r'#\s*(TODO|FIXME|HACK|XXX|BUG)\b[:\s]*(.*)', re.IGNORECASE)  # noqa: BAGO-I002
 COMMENTED_CODE_RE = re.compile(
     r'^\s*#\s*(def |class |return |import |from |if |for |while |with |try:|except)', re.MULTILINE
 )
@@ -302,11 +302,11 @@ def _self_test() -> None:
     else:
         fail("dead_code:used_import_not_flagged", f"sys fue marcado: {sys_used}")
 
-    # T3 — TODO detectado
+    # T3 — TODO detectado  # noqa: BAGO-I002
     src2 = textwrap.dedent("""\
-        # TODO: implementar autenticación
+        # TODO: implementar autenticación  # noqa: BAGO-I002
         x = 1
-        # FIXME: esto rompe en Python 3.12
+        # FIXME: esto rompe en Python 3.12  # noqa: BAGO-I002
     """)
     with tempfile.NamedTemporaryFile(suffix=".py", mode="w", delete=False) as f:
         f.write(src2); tmp2 = f.name

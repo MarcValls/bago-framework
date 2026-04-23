@@ -815,7 +815,7 @@ def run_bago_lint(target_dir: str) -> list:
       BAGO-I001  raise SystemExit(1) without user-visible message
       BAGO-E001  bare except: clause — catches SystemExit/KeyboardInterrupt
       BAGO-W002  eval() or exec() — security risk # noqa: BAGO-W002
-      BAGO-W003  os.system() — should use subprocess
+      BAGO-W003  os.system() — should use subprocess  # noqa: BAGO-W003
       BAGO-W004  hardcoded absolute user path (/Users/, /home/, C:\\) — not portable
       BAGO-I002  TODO/FIXME/HACK comments — technical debt markers
     """
@@ -825,7 +825,7 @@ def run_bago_lint(target_dir: str) -> list:
     _eval_exec_re    = re.compile(r'\b(eval|exec)\s*\(')
     _os_system_re    = re.compile(r'\bos\.system\s*\(')
     _hardpath_re     = re.compile(r'["\'](?:/Users/\w+|/home/\w+|C:\\\\Users\\\\)[^"\']*["\']')
-    _todo_re         = re.compile(r'#.*\b(TODO|FIXME|HACK|XXX)\b', re.IGNORECASE)
+    _todo_re         = re.compile(r'#.*\b(TODO|FIXME|HACK|XXX)\b', re.IGNORECASE)  # noqa: BAGO-I002
     _noqa_re         = re.compile(r'#\s*noqa(?::\s*([\w,\s-]+))?')
 
     for pyfile in sorted(target.rglob("*.py")):
@@ -897,13 +897,13 @@ def run_bago_lint(target_dir: str) -> list:
                         autofixable=False,
                         context_lines=_read_context(rel, i),
                     ))
-                # BAGO-W003: os.system() — skip test and ci_generator
+                # BAGO-W003: os.system() — skip test and ci_generator  # noqa: BAGO-W003
                 if not _suppressed("BAGO-W003") and not is_test and _os_system_re.search(line):
                     fid = _make_id("bago", rel, i, "BAGO-W003")
                     findings.append(Finding(
                         id=fid, severity="warning", file=rel, line=i, col=0,
                         rule="BAGO-W003", source="bago",
-                        message="os.system() no captura salida ni maneja errores",
+                        message="os.system() no captura salida ni maneja errores",  # noqa: BAGO-W003
                         fix_suggestion="Usa subprocess.run() con capture_output=True",
                         autofixable=False,
                         context_lines=_read_context(rel, i),
@@ -921,7 +921,7 @@ def run_bago_lint(target_dir: str) -> list:
                         autofixable=False,
                         context_lines=_read_context(rel, i),
                     ))
-                # BAGO-I002: TODO/FIXME/HACK
+                # BAGO-I002: TODO/FIXME/HACK  # noqa: BAGO-I002
                 if not _suppressed("BAGO-I002") and _todo_re.search(line):
                     m = _todo_re.search(line)
                     kw = m.group(1).upper() if m else "TODO"
@@ -1163,8 +1163,8 @@ def run_tests():
         "except:  # BAGO-E001\n"
         "    pass\n"
         "result = eval('1+1')  # BAGO-W002\n" # noqa: BAGO-W002
-        "os.system('ls')  # BAGO-W003\n"
-        "# TODO: fix this  # BAGO-I002\n"
+        "os.system('ls')  # BAGO-W003\n"  # noqa: BAGO-W003
+        "# TODO: fix this  # BAGO-I002\n"  # noqa: BAGO-I002
     )
     f3 = run_bago_lint(str(tmp3))
     rules3 = {f.rule for f in f3}

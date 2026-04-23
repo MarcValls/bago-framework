@@ -444,7 +444,7 @@ def _run_tests() -> int:
     tmp3 = Path(tempfile.mkdtemp())
     (tmp3 / "code.py").write_text(
         "import os\ntry:\n    pass\nexcept:\n    pass\n"
-        "os.system('ls')\n# TODO: fix\n"
+        "os.system('ls')\n# TODO: fix\n"  # noqa: BAGO-W003, BAGO-I002
     )
     result3 = run_multi_scan(str(tmp3), langs=["py"])
     rules3 = {f.rule for f in result3["findings"]}
@@ -456,7 +456,7 @@ def _run_tests() -> int:
 
     # T4: by_lang breakdown keys are correct
     tmp4 = Path(tempfile.mkdtemp())
-    (tmp4 / "x.py").write_text("# TODO: fix\n")
+    (tmp4 / "x.py").write_text("# TODO: fix\n")  # noqa: BAGO-I002
     result4 = run_multi_scan(str(tmp4), langs=["py", "go"])
     if "py" in result4["by_lang"] and "go" in result4["by_lang"]:
         ok("multi:by_lang_keys")

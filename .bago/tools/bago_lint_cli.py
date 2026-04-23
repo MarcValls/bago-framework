@@ -4,9 +4,9 @@ bago bago-lint — BAGO's own code linter, zero external dependencies.
 
 Scans Python files in a directory and reports code quality issues:
   BAGO-E001  bare except: clause (autofixable)
-  BAGO-W001  datetime.utcnow() deprecated (autofixable)
-  BAGO-W002  eval()/exec() usage — security risk
-  BAGO-W003  os.system() — should use subprocess
+  BAGO-W001  datetime.utcnow() deprecated (autofixable)  # noqa: BAGO-W001
+  BAGO-W002  eval()/exec() usage — security risk  # noqa: BAGO-W002
+  BAGO-W003  os.system() — should use subprocess  # noqa: BAGO-W003
   BAGO-W004  hardcoded absolute user path — not portable
   BAGO-I001  raise SystemExit(1) without visible message
   BAGO-I002  TODO/FIXME/HACK comments — tech debt
@@ -322,10 +322,10 @@ def _run_tests() -> int:
     (tmp / "code.py").write_text(
         "import os\n"
         "try:\n    pass\nexcept:\n    pass\n"
-        "x = eval('1+1')\n"
-        "os.system('ls')\n"
-        "DATA = '/Users/john/things'\n"
-        "# TODO: fix\n"
+        "x = eval('1+1')\n"  # noqa: BAGO-W002
+        "os.system('ls')\n"  # noqa: BAGO-W003
+        "DATA = '/Users/john/things'\n"  # noqa: BAGO-W004
+        "# TODO: fix\n"  # noqa: BAGO-I002
     )
     findings = fe.run_bago_lint(str(tmp))
     rules = {f.rule for f in findings}
@@ -369,7 +369,7 @@ def _run_tests() -> int:
 
     # T4: JSON output structure
     tmp4 = Path(tempfile.mkdtemp())
-    (tmp4 / "j.py").write_text("# TODO: something\n")
+    (tmp4 / "j.py").write_text("# TODO: something\n")  # noqa: BAGO-I002
     findings4 = fe.run_bago_lint(str(tmp4))
     j = [
         {"file": f.file, "line": f.line, "rule": f.rule,
@@ -399,7 +399,7 @@ def _run_tests() -> int:
     snapshot_file.write_text(json.dumps(snapshot), encoding="utf-8")
 
     # "after" scan: fixed the except, but added an eval
-    py5.write_text("try:\n    pass\nexcept Exception:\n    pass\nx = eval('1')\n")
+    py5.write_text("try:\n    pass\nexcept Exception:\n    pass\nx = eval('1')\n")  # noqa: BAGO-W002
     after_findings = fe.run_bago_lint(str(tmp5))
 
     raw_snap = json.loads(snapshot_file.read_text(encoding="utf-8"))

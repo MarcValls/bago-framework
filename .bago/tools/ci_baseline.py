@@ -241,7 +241,7 @@ def _self_test() -> None:
     else:
         fail("ci_baseline:load_returns_data", f"loaded: {loaded}")
 
-    # T3 — diff_findings: sin cambios → todo persistente
+    # T3 — diff_findings: sin cambios → todo persistente  # noqa: BAGO-I002
     result = diff_findings(SAMPLE, SAMPLE)
     if not result["new"] and not result["fixed"] and len(result["persistent"]) == 3:
         ok("ci_baseline:diff_no_changes")

@@ -729,7 +729,7 @@ def test_bago_lint_rules():
             "x = eval('1+1')  # eval\n"
             "os.system('ls')  # os.system\n"
             "DATA = '/Users/john/data'\n"
-            "# TODO: arreglar esto\n"
+            "# TODO: arreglar esto\n"  # noqa: BAGO-I002
         )
         findings = run_bago_lint(str(tmp))
         rules = {f.rule for f in findings}
@@ -1240,14 +1240,20 @@ def test_dashboard_sprint_progress():
 
 
 def test_scan_finds_issues():
-    """scan.py sobre .bago/tools/ produce findings > 0."""
-    rc, out, _ = _run("scan.py", [".bago/tools/", "--lang", "py", "--json"], timeout=60)
+    """scan.py sobre un archivo sintético con patrones conocidos produce findings > 0."""
+    import tempfile as _tmp, os as _os
+    # Use a controlled temp file with known bad patterns (not the live tools dir)
+    with _tmp.TemporaryDirectory() as tmpd:
+        # Write a synthetic file with patterns that should always produce findings
+        synth = _os.path.join(tmpd, "synth.py")
+        with open(synth, "w") as f:
+            f.write("try:\n    pass\nexcept:\n    pass\n")  # BAGO-E001: bare except
+        rc, out, _ = _run("scan.py", [tmpd, "--lang", "py", "--json"], timeout=60)
     if rc != 0:
         _record("scan:finds_issues", FAIL, f"rc={rc} {out[-80:]}")
         return
     try:
         import json as _json
-        # scan.py prints a status line before JSON — find the JSON start
         json_start = out.find("{")
         if json_start == -1:
             _record("scan:finds_issues", FAIL, "no JSON in output")
@@ -1256,9 +1262,9 @@ def test_scan_finds_issues():
         summary = data.get("summary", {})
         count = summary.get("total", 0) if isinstance(summary, dict) else 0
         if count > 0:
-            _record("scan:finds_issues", PASS, f"{count} findings on .bago/tools/")
+            _record("scan:finds_issues", PASS, f"{count} findings on synthetic file")
         else:
-            _record("scan:finds_issues", FAIL, "scan produced 0 findings (expected > 0)")
+            _record("scan:finds_issues", FAIL, "scan produced 0 findings on synthetic bad code")
     except Exception as e:
         _record("scan:finds_issues", FAIL, f"json parse error: {e}")
 

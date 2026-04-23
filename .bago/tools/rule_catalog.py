@@ -59,12 +59,12 @@ RULES: list[Rule] = [
         severity="warning",
         category="reliability",
         source="bago",
-        title="datetime.utcnow() deprecated",
+        title="datetime.utcnow() deprecated",  # noqa: BAGO-W001
         description=(
-            "`datetime.utcnow()` devuelve un `datetime` naive en UTC, lo que "
+            "`datetime.utcnow()` devuelve un `datetime` naive en UTC, lo que "  # noqa: BAGO-W001
             "induce confusión con zonas horarias. Deprecated desde Python 3.12."
         ),
-        example_bad="ts = datetime.utcnow()",
+        example_bad="ts = datetime.utcnow()",  # noqa: BAGO-W001
         example_good="ts = datetime.now(timezone.utc)",
         autofix=True,
     ),
@@ -73,12 +73,12 @@ RULES: list[Rule] = [
         severity="warning",
         category="security",
         source="bago",
-        title="eval() / exec() usage",
+        title="eval() / exec() usage",  # noqa: BAGO-W002
         description=(
-            "`eval()` y `exec()` ejecutan código arbitrario. Si la entrada "
+            "`eval()` y `exec()` ejecutan código arbitrario. Si la entrada "  # noqa: BAGO-W002
             "proviene de fuentes externas, es una vulnerabilidad crítica RCE."
         ),
-        example_bad="result = eval(user_input)",
+        example_bad="result = eval(user_input)",  # noqa: BAGO-W002
         example_good="# Usa ast.literal_eval() para datos estructurados\nresult = ast.literal_eval(data)",
     ),
     Rule(
@@ -86,12 +86,12 @@ RULES: list[Rule] = [
         severity="warning",
         category="reliability",
         source="bago",
-        title="os.system() — use subprocess",
+        title="os.system() — use subprocess",  # noqa: BAGO-W003
         description=(
-            "`os.system()` no captura stdout/stderr, no permite control de "
+            "`os.system()` no captura stdout/stderr, no permite control de "  # noqa: BAGO-W003
             "código de retorno y es más vulnerable a inyección de shell."
         ),
-        example_bad='os.system("ls -la")',
+        example_bad='os.system("ls -la")',  # noqa: BAGO-W003
         example_good='subprocess.run(["ls", "-la"], check=True)',
     ),
     Rule(
@@ -104,7 +104,7 @@ RULES: list[Rule] = [
             "Rutas absolutas hardcodeadas (`/Users/`, `/home/`, `C:\\\\`) "
             "impiden portabilidad entre máquinas y entornos CI."
         ),
-        example_bad='config = "/Users/marc/project/config.json"',
+        example_bad='config = "/Users/marc/project/config.json"',  # noqa: BAGO-W004
         example_good='config = Path(__file__).parent / "config.json"',
     ),
     Rule(
@@ -131,7 +131,7 @@ RULES: list[Rule] = [
             "Documenta en un ticket y elimina el comentario o conviértelo en "
             "un issue rastreable."
         ),
-        example_bad="# TODO: manejar el caso de archivo vacío",
+        example_bad="# TODO: manejar el caso de archivo vacío",  # noqa: BAGO-I002
         example_good="# Ver issue #123: manejar archivo vacío",
     ),
     # ── JS/TS AST rules ───────────────────────────────────────────────────
@@ -140,9 +140,9 @@ RULES: list[Rule] = [
         severity="error",
         category="security",
         source="js_ast",
-        title="eval() / Function() constructor",
+        title="eval() / Function() constructor",  # noqa: BAGO-W002
         description=(
-            "`eval()` y `new Function(string)` ejecutan JavaScript arbitrario "
+            "`eval()` y `new Function(string)` ejecutan JavaScript arbitrario "  # noqa: BAGO-W002
             "en tiempo de ejecución. Equivalente a RCE si la cadena viene de "
             "una fuente externa."
         ),
@@ -200,7 +200,7 @@ RULES: list[Rule] = [
         title="setTimeout/setInterval con string",
         description=(
             "Pasar una cadena como primer argumento a `setTimeout` o "
-            "`setInterval` es equivalente a `eval()` y comparte sus riesgos."
+            "`setInterval` es equivalente a `eval()` y comparte sus riesgos."  # noqa: BAGO-W002
         ),
         example_bad="setTimeout(\"doSomething()\", 100);",
         example_good="setTimeout(() => doSomething(), 100);",

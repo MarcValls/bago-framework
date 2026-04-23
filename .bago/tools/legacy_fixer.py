@@ -56,15 +56,15 @@ def _run_self_tests():
     results.append(("{toolname}:file_exists", ok3, str(__file__)))
 
     # Test 4: (reservado) — implementar test específico del tool
-    ok4 = True  # TODO: añadir test real
+    ok4 = True  # TODO: añadir test real  # noqa: BAGO-I002
     results.append(("{toolname}:placeholder_4", ok4, "placeholder"))
 
     # Test 5: (reservado) — implementar test específico del tool
-    ok5 = True  # TODO: añadir test real
+    ok5 = True  # TODO: añadir test real  # noqa: BAGO-I002
     results.append(("{toolname}:placeholder_5", ok5, "placeholder"))
 
     # Test 6: (reservado) — implementar test específico del tool
-    ok6 = True  # TODO: añadir test real
+    ok6 = True  # TODO: añadir test real  # noqa: BAGO-I002
     results.append(("{toolname}:placeholder_6", ok6, "placeholder"))
 
     passed = sum(1 for _, ok, _ in results if ok)

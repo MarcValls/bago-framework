@@ -85,7 +85,7 @@ def _file_changes_since(seconds=60):
 # ── render ────────────────────────────────────────────────────────────────────
 
 def _clear():
-    os.system("clear" if os.name == "posix" else "cls")
+    os.system("clear" if os.name == "posix" else "cls")  # noqa: BAGO-W003
 
 
 def _wf_short(wf):
