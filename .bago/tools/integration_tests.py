@@ -1856,6 +1856,27 @@ def test_dashboard_inventory_accuracy():
                 f"Mismatch — CHGs: dash={dash_chgs} real={real_chgs}; sessions: dash={dash_sess} real={real_sess}")
 
 
+def test_artifact_counter():
+    """artifact_counter.py: rc=0, muestra sesiones y score producción."""
+    rc, out, err = _run("artifact_counter.py", [], timeout=15)
+    if rc != 0:
+        _record("artifact_counter:run", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    required = ["Media artefactos", "Score producci"]
+    missing = [m for m in required if m not in out]
+    if missing:
+        _record("artifact_counter:run", FAIL, f"missing output: {missing}")
+        return
+    # Score should be present and parseable
+    import re
+    m = re.search(r"Score produc[^:]+:\s*([\d.]+)", out)
+    if not m:
+        _record("artifact_counter:run", FAIL, "score line not found")
+        return
+    score = float(m.group(1))
+    _record("artifact_counter:run", PASS, f"rc=0, score={score}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1977,6 +1998,7 @@ ALL_TESTS = [
     (118, "scan:dry_run",              test_scan_dry_run),
     (119, "evolution_report:html",     test_evolution_report_html),
     (120, "dashboard:inventory_accuracy", test_dashboard_inventory_accuracy),
+    (121, "artifact_counter:run",        test_artifact_counter),
 ]
 
 
