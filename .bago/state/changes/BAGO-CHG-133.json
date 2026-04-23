@@ -1,15 +1,18 @@
 {
   "id": "BAGO-CHG-133",
-  "type": "feature",
+  "change_id": "BAGO-CHG-133",
+  "type": "governance",
+  "severity": "minor",
   "title": "Radar SVG de salud, filtro FALLBACK_IDEAS, limpieza scan sintético",
-  "description": "Añade radar/spider chart SVG al reporte de evolución (6 dimensiones: tests, CHGs, sesiones, tools, smoke, evidencias). Corrige build_idea_sections() para filtrar FALLBACK_IDEAS contra done_titles igual que el catálogo dinámico. Elimina 7 SCAN-*.json con findings sintéticos de /tmp que contaminaban risk_matrix.",
+  "motivation": "Añade radar/spider chart SVG (6 ejes: Tests/CHGs/Sesiones/Tools/Smoke/Evidencias) al reporte de evolución. Corrige build_idea_sections() filtrando FALLBACK_IDEAS contra done_titles. Elimina 7 SCAN-*.json con findings sintéticos de /tmp que contaminaban risk_matrix.",
+  "status": "applied",
   "affected_components": [
     "generate_bago_evolution_report.py",
     "emit_ideas.py",
     "state/findings/"
   ],
-  "created_at": "2026-04-23T03:45:01.755613+00:00",
-  "status": "done",
-  "risk": "low",
-  "session": "SES-AUTONOMOUS-2026-04-23-002"
+  "related_evidence": [],
+  "created_at": "2026-04-23T03:46:33.224045+00:00",
+  "updated_at": "2026-04-23T03:46:33.224045+00:00",
+  "author": "copilot-autonomous"
 }
