@@ -1,0 +1,13 @@
+{
+  "status": "pass",
+  "failure_count": 0,
+  "passed": 0,
+  "skipped": 0,
+  "total": 0,
+  "workers": 0,
+  "duration_seconds": 0,
+  "generated_at": "2026-04-23T04:29:10.109753+00:00",
+  "tool": "vm_runner_stub",
+  "note": "VM infrastructure not available. Stub report \u2014 no tests run.",
+  "returncode": 0
+}

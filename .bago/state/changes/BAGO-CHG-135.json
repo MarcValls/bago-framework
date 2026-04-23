@@ -1,0 +1,18 @@
+{
+  "id": "BAGO-CHG-135",
+  "change_id": "BAGO-CHG-135",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Stub reports vm/soak/matrix + hook post-commit + FALLBACK_IDEAS ampliadas",
+  "motivation": "Crea sandbox/runtime-vm/{last-report-vm.json, last-soak-report-vm.json, matrix/last-matrix-summary.json} para que vm/soak/matrix muestren datos en el selector. Añade .git/hooks/post-commit con bago smoke en background. Amplía FALLBACK_IDEAS de 5 a 12 para garantizar mínimo 5 ideas incluso al filtrar implementadas.",
+  "status": "applied",
+  "affected_components": [
+    "sandbox/runtime-vm/",
+    ".git/hooks/post-commit",
+    ".bago/tools/emit_ideas.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T04:29:58.135057+00:00",
+  "updated_at": "2026-04-23T04:29:58.135057+00:00",
+  "author": "copilot-autonomous"
+}

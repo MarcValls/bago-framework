@@ -83,7 +83,17 @@
       "title": "Compactar recomendacion final",
       "idea_index": 3,
       "registered_at": "2026-04-22T23:22:09.577018+00:00"
+    },
+    {
+      "title": "Stub report para indicador vm",
+      "idea_index": 2,
+      "registered_at": "2026-04-23T04:29:44.845563+00:00"
+    },
+    {
+      "title": "Hook post-commit para bago smoke",
+      "idea_index": 4,
+      "registered_at": "2026-04-23T04:30:37.706974+00:00"
     }
   ],
-  "updated_at": "2026-04-21T14:13:01.701325+00:00"
+  "updated_at": "2026-04-23T04:30:37.706974+00:00"
 }
