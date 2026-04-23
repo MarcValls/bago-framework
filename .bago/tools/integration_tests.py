@@ -2271,6 +2271,28 @@ def test_scan_format_csv():
     _record("scan:format_csv", PASS, f"CSV OK, header={header}, rows={len(lines)-1}")
 
 
+def test_health_score_breakdown():
+    """health_score.py --breakdown: CSV con header check,score,max,detail y ≥5 filas."""
+    rc, out, err = _run("health_score.py", ["--breakdown"], timeout=20)
+    if rc != 0:
+        _record("health_score:breakdown", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    lines = [l for l in out.splitlines() if l.strip()]
+    if len(lines) < 2:
+        _record("health_score:breakdown", FAIL, f"too few lines: {len(lines)}")
+        return
+    header = lines[0]
+    if "check" not in header or "score" not in header:
+        _record("health_score:breakdown", FAIL, f"header missing: {header}")
+        return
+    # at least 5 data rows (one per dimension)
+    data_rows = [l for l in lines[1:] if "/" not in l or "," in l]
+    if len(lines) - 1 < 5:
+        _record("health_score:breakdown", FAIL, f"expected ≥5 data rows, got {len(lines)-1}")
+        return
+    _record("health_score:breakdown", PASS, f"breakdown OK, {len(lines)-1} check rows")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2411,6 +2433,7 @@ ALL_TESTS = [
     (137, "dashboard:minimal",           test_dashboard_minimal),
     (138, "velocity:since",              test_velocity_since),
     (139, "scan:format_csv",             test_scan_format_csv),
+    (140, "health_score:breakdown",      test_health_score_breakdown),
 ]
 
 
