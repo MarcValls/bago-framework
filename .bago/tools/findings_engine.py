@@ -12,13 +12,15 @@ Parsea salida de: flake8, pylint, mypy, pyflakes, bandit, custom-bago,
   tflint (Terraform), yamllint (YAML)
 Persiste en state/findings/SCAN-{timestamp}.json
 """
-import json, re, subprocess, sys, datetime, hashlib, xml.etree.ElementTree as ET
+import json, os, re, subprocess, sys, datetime, hashlib, xml.etree.ElementTree as ET
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Optional
 
 BAGO_ROOT    = Path(__file__).parent.parent
-FINDINGS_DIR = BAGO_ROOT / "state" / "findings"
+# Allow tests to isolate scan output by setting BAGO_STATE_DIR env var
+_state_env   = os.environ.get("BAGO_STATE_DIR")
+FINDINGS_DIR = Path(_state_env) / "findings" if _state_env else BAGO_ROOT / "state" / "findings"
 FINDINGS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Import permission fixer — graceful fallback if not yet available

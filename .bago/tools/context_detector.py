@@ -95,7 +95,7 @@ def _unregistered_files():
     unregistered = []
     _state_prefixes = (".bago/state/", "state/changes/", "state/sessions/",
                        "state/evidences/", "state/findings/", "state/reports/",
-                       "state/ideas/", "state/sprints/")
+                       "state/ideas/", "state/sprints/", "sandbox/runtime/")
     for mf in modified:
         # Ignorar archivos de estado BAGO — no son código, son artefactos
         if any(mf.startswith(p) or ("/.bago/state/" in mf) for p in _state_prefixes):
