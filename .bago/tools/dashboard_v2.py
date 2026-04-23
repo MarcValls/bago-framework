@@ -17,10 +17,12 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent))
+from bago_utils import get_state_dir, get_bago_tools_dir
 
-ROOT = Path(__file__).parent.parent
-STATE = ROOT / "state"
-TOOLS = ROOT / "tools"
+ROOT  = Path(__file__).parent.parent
+STATE = get_state_dir()
+TOOLS = get_bago_tools_dir()
 
 
 def _run(script: str, args: list = None) -> tuple[int, str]:

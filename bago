@@ -36,6 +36,12 @@ Wrappers root disponibles:
   ./ideas               → bago ideas (con todos los flags)
   ./stability-summary   → bago stability
 
+Multi-project mode:
+  Cada proyecto puede tener su propia estructura .bago/ con state local.
+  El launcher del proyecto inyecta BAGO_STATE_DIR y apunta a este BAGO central.
+  bago init /ruta/proyecto  → scaffold de nuevo proyecto
+  bago home                 → info de BAGO_HOME y proyectos vinculados
+
 Instalar como alias global:
   echo 'alias bago="python3 $(pwd)/bago"' >> ~/.zshrc
 """
@@ -765,6 +771,10 @@ def main():
         subprocess.run(["python3", str(TOOLS / "workspace_selector.py")] + rest, cwd=str(BAGO_ROOT.parent))
     elif cmd == "iterations":
         subprocess.run(["python3", str(TOOLS / "iteration_logger.py"), "summary"] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "init":
+        subprocess.run(["python3", str(TOOLS / "bago_init.py")] + rest, cwd=str(BAGO_ROOT.parent))
+    elif cmd == "home":
+        subprocess.run(["python3", str(TOOLS / "bago_home.py")] + rest, cwd=str(BAGO_ROOT.parent))
     elif cmd in COMMANDS:
         subprocess.run(COMMANDS[cmd] + rest, cwd=str(BAGO_ROOT.parent))
     elif cmd in ("help", "--help", "-h"):

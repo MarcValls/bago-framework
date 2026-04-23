@@ -24,11 +24,13 @@ import json
 import subprocess
 import sys
 from datetime import datetime, timezone
+sys.path.insert(0, str(Path(__file__).parent))
+from bago_utils import get_state_dir, get_bago_tools_dir
 
-ROOT = Path(__file__).resolve().parents[1]
-TOOLS = ROOT / "tools"
-PACK_JSON = ROOT / "pack.json"
-GLOBAL_STATE = ROOT / "state" / "global_state.json"
+ROOT         = Path(__file__).resolve().parents[1]
+TOOLS        = get_bago_tools_dir()
+PACK_JSON    = ROOT / "pack.json"
+GLOBAL_STATE = get_state_dir() / "global_state.json"
 
 
 def run_script(script: str, args: list = None) -> tuple[int, str]:

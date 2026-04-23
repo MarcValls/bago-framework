@@ -9,9 +9,16 @@
   "status": "in_progress",
   "context": "MODO BAGO AUTONOMO — Loop 2: metrics dashboard live, ideas-dynamic, tests, dep_audit fix, docs, git push",
   "created_at": "2026-04-23T01:38:00.000000+00:00",
-  "updated_at": "2026-04-23T01:57:06.761928+00:00",
+  "updated_at": "2026-04-23T02:32:01.460090+00:00",
   "linked_commits": [
+    "a3a99c3",
+    "bd430b0",
     "bdbaf14",
-    "15ca662"
+    "15ca662",
+    "04d947d",
+    "0633ce8",
+    "33599e9",
+    "1f19101",
+    "c6e9539"
   ]
 }

@@ -35,5 +35,10 @@
   "roles_plan": 2,
   "artefactos_plan": 3,
   "artefactos_utiles_entregados": 3,
-  "summary": "SES-1 ESCENARIO-001. Creado session_preflight.py con validación de las 3 reglas W7. Preflight GO. 2 roles, 3 artefactos útiles."
+  "summary": "SES-1 ESCENARIO-001. Creado session_preflight.py con validación de las 3 reglas W7. Preflight GO. 2 roles, 3 artefactos útiles.",
+  "linked_commits": [
+    "6eedde6",
+    "e8bd5d5",
+    "19400b2"
+  ]
 }

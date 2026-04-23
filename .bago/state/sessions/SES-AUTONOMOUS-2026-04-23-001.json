@@ -31,6 +31,7 @@
   "next_step": "Continuar con ideas dinámicas, dep_audit fix, docs index, push",
   "summary": "Loop autónomo: 6 CHGs (101-106), 5 tests (90-94), 3 cockpit fixes, scan real, sprint cycle",
   "linked_commits": [
-    "a5f9b8f"
+    "a5f9b8f",
+    "067622e"
   ]
 }

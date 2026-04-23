@@ -1479,6 +1479,59 @@ def test_emit_ideas_count():
         _record("ideas:count", FAIL, f"only {n} ideas returned (expected ≥3)")
 
 
+def test_bago_init_scaffold():
+    """bago_init.py --test: 5/5 self-tests pasan (multi-project scaffolder)."""
+    import subprocess as _sp
+    r = _sp.run(
+        [sys.executable, str(ROOT / "tools" / "bago_init.py"), "--test"],
+        capture_output=True, text=True, cwd=str(ROOT.parent)
+    )
+    if r.returncode == 0 and "5/5 tests pasaron" in r.stdout:
+        _record("bago_init:scaffold", PASS, "bago_init --test 5/5 passed")
+    else:
+        _record("bago_init:scaffold", FAIL, f"rc={r.returncode} stdout={r.stdout[-200:]}")
+
+
+def test_bago_home_info():
+    """bago_home.py --test: 3/3 self-tests pasan (framework info viewer)."""
+    import subprocess as _sp
+    r = _sp.run(
+        [sys.executable, str(ROOT / "tools" / "bago_home.py"), "--test"],
+        capture_output=True, text=True, cwd=str(ROOT.parent)
+    )
+    if r.returncode == 0 and "3/3 tests pasaron" in r.stdout:
+        _record("bago_home:info", PASS, "bago_home --test 3/3 passed")
+    else:
+        _record("bago_home:info", FAIL, f"rc={r.returncode} stdout={r.stdout[-200:]}")
+
+
+def test_project_mode_isolation():
+    """BAGO_STATE_DIR env var enruta health_score al state del proyecto (aislamiento)."""
+    import tempfile, subprocess as _sp
+    from pathlib import Path as _P
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_p = _P(tmp) / "test_isolation"
+        # Scaffold a fresh project
+        tmp_p.mkdir(parents=True, exist_ok=True)
+        r = _sp.run(
+            [sys.executable, str(ROOT / "tools" / "bago_init.py"), str(tmp_p)],
+            capture_output=True, text=True
+        )
+        if r.returncode != 0:
+            _record("project_mode:isolation", FAIL, f"scaffold failed: {r.stderr[:200]}")
+            return
+        proj_state = str(tmp_p / ".bago" / "state")
+        env = {**os.environ, "BAGO_STATE_DIR": proj_state, "BAGO_PROJECT_ROOT": str(tmp_p)}
+        r2 = _sp.run(
+            [sys.executable, str(ROOT / "tools" / "health_score.py")],
+            capture_output=True, text=True, env=env
+        )
+        if "Score:" in r2.stdout:
+            _record("project_mode:isolation", PASS, "health_score reads project state (isolated)")
+        else:
+            _record("project_mode:isolation", FAIL, f"unexpected output: {r2.stdout[:200]}")
+
+
 def test_sysexit_refactor():
     """Ningún tool usa sys.exit() fuera de strings/comentarios (BAGO-I001)."""
     import re as _re
@@ -1610,6 +1663,9 @@ ALL_TESTS = [
     (104, "sprint_status",           test_sprint_manager_status),
     (105, "ideas_count",             test_emit_ideas_count),
     (106, "sysexit_refactor",        test_sysexit_refactor),
+    (107, "bago_init_scaffold",      test_bago_init_scaffold),
+    (108, "bago_home_info",          test_bago_home_info),
+    (109, "project_mode_isolation",  test_project_mode_isolation),
 ]
 
 

@@ -10,12 +10,49 @@ Proporciona:
   - ensure_dir — crea directorio si no existe
   - format_timedelta — "2h 15m", "45s"
   - truncate — trunca texto a N chars con "…"
+  - get_state_dir() — resolución env-aware de state dir (multi-proyecto)
+  - get_bago_tools_dir() — directorio central de tools (siempre BAGO_HOME)
+
+Multi-project mode:
+  Cuando BAGO_STATE_DIR está definido en el entorno, todos los tools
+  usan ese path para leer/escribir state (sesiones, cambios, sprints).
+  Si no está definido, se usa el state local (modo framework/self).
 
 NO tiene dependencias externas.
 """
-import json, sys
+import json, os, sys
 from datetime import timedelta
 from pathlib import Path
+
+# ─── Multi-project path resolver ──────────────────────────────────────────────
+_TOOLS_DIR = Path(__file__).resolve().parent   # .bago/tools/
+_BAGO_ROOT = _TOOLS_DIR.parent                 # .bago/
+
+
+def get_state_dir() -> Path:
+    """Resolve BAGO state directory.
+
+    Priority:
+      1. BAGO_STATE_DIR env var  → project mode (set by project's bago launcher)
+      2. Default                 → framework/self mode (.bago/state/)
+    """
+    env = os.environ.get('BAGO_STATE_DIR')
+    if env:
+        return Path(env).resolve()
+    return _BAGO_ROOT / 'state'
+
+
+def get_bago_tools_dir() -> Path:
+    """Central BAGO tools directory (always BAGO_HOME's tools, not project copy)."""
+    return _TOOLS_DIR
+
+
+def get_project_root() -> Path:
+    """Project root: BAGO_PROJECT_ROOT env var or parent of .bago/ tools."""
+    env = os.environ.get('BAGO_PROJECT_ROOT')
+    if env:
+        return Path(env).resolve()
+    return _BAGO_ROOT.parent
 
 # ─── ANSI ─────────────────────────────────────────────────────────────────────
 BOLD="\033[1m"; DIM="\033[2m"; RESET="\033[0m"

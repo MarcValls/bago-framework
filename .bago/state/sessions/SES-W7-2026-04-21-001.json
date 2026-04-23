@@ -28,6 +28,8 @@
   "next_step": "continuada en SES-W1-2026-04-21-001 sobre repo visor ER",
   "summary": "Sesión W7 cerrada sin artefactos. Pivot de repo: usuario redirige a /Volumes/Warehouse/visor ER. Continuidad en SES-W1-2026-04-21-001.",
   "linked_commits": [
+    "69f600d",
+    "49edb95",
     "a5b6b28"
   ]
 }

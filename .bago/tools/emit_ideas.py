@@ -8,9 +8,13 @@ from pathlib import Path
 import json
 import subprocess
 import sys
+sys.path.insert(0, str(Path(__file__).parent))
+from bago_utils import get_state_dir, get_bago_tools_dir, get_project_root
 
-
-ROOT = Path(__file__).resolve().parents[2]
+_BAGO_ROOT  = Path(__file__).resolve().parent.parent   # .bago/
+ROOT        = get_project_root()                        # project root (BAGO_PROJECT_ROOT or parent of .bago)
+_STATE      = get_state_dir()                           # env-aware state dir
+_TOOLS      = get_bago_tools_dir()
 MIN_IDEAS = 5
 MAX_IDEAS = 20
 
@@ -130,7 +134,7 @@ def run_canonical_gate(smoke_path: Path) -> tuple[bool, list[str], list[str]]:
     KO on any canonical validator failure or if smoke is available but failing.
     WARN (non-blocking) if smoke is unavailable.
     """
-    bago_tools = ROOT / ".bago" / "tools"
+    bago_tools = _TOOLS
     ko: list[str] = []
     warn: list[str] = []
 
@@ -186,9 +190,9 @@ def filter_ideas_for_baseline_mode(items: list[dict[str, object]]) -> list[dict[
 
 def detect_implemented_features() -> dict[str, bool]:
     """Detecta qué ideas ya están implementadas inspeccionando el filesystem."""
-    tools = ROOT / ".bago" / "tools"
-    state = ROOT / ".bago" / "state"
-    bago_readme = ROOT / ".bago" / "README.md"
+    tools = _TOOLS
+    state = _STATE
+    bago_readme = _BAGO_ROOT / "README.md"
     banner_text = (tools / "bago_banner.py").read_text(encoding="utf-8") if (tools / "bago_banner.py").exists() else ""
 
     def _pending_task_is_active() -> bool:
@@ -216,7 +220,7 @@ def detect_implemented_features() -> dict[str, bool]:
 
 def load_implemented_titles() -> set[str]:
     """Devuelve el conjunto de títulos de ideas ya registradas como implementadas."""
-    impl_file = ROOT / ".bago" / "state" / "implemented_ideas.json"
+    impl_file = _STATE / "implemented_ideas.json"
     if not impl_file.exists():
         return set()
     try:
@@ -267,7 +271,7 @@ def apply_dynamic_scoring(
 
 def register_implemented_idea(title: str, idea_index: int) -> None:
     """Registra una idea como implementada en implemented_ideas.json."""
-    impl_file = ROOT / ".bago" / "state" / "implemented_ideas.json"
+    impl_file = _STATE / "implemented_ideas.json"
     try:
         data = json.loads(impl_file.read_text(encoding="utf-8")) if impl_file.exists() else {}
     except Exception:
@@ -429,7 +433,7 @@ def build_handoff_data(selected: dict[str, object], index: int) -> dict[str, obj
 
 def save_handoff(data: dict[str, object]) -> Path:
     """Escribe el handoff en .bago/state/pending_w2_task.json y devuelve la ruta."""
-    dest = ROOT / ".bago" / "state" / "pending_w2_task.json"
+    dest = _STATE / "pending_w2_task.json"
     dest.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
     return dest
 
@@ -468,7 +472,7 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool]:
 
 def _run_tool_json(tool_name: str, extra_args: list[str] | None = None) -> dict | list | None:
     """Ejecuta un tool BAGO con --json y devuelve el resultado parseado."""
-    tool_path = ROOT / ".bago" / "tools" / tool_name
+    tool_path = _TOOLS / tool_name
     cmd = [sys.executable, str(tool_path), "--json"] + (extra_args or [])
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
@@ -608,8 +612,8 @@ def _real_state_ideas() -> list[dict[str, object]]:
 
 def main() -> int:
     detail_index, accept = parse_args(sys.argv)
-    state_path = ROOT / ".bago/state/ESTADO_BAGO_ACTUAL.md"
-    global_state_path = ROOT / ".bago/state/global_state.json"
+    state_path = _STATE / "ESTADO_BAGO_ACTUAL.md"
+    global_state_path = _STATE / "global_state.json"
     smoke_path = ROOT / "sandbox/runtime/last-report.json"
     vm_path = ROOT / "sandbox/runtime-vm/last-report-vm.json"
     soak_path = ROOT / "sandbox/runtime-vm/last-soak-report-vm.json"
@@ -895,7 +899,7 @@ def main() -> int:
     ideas = order_ideas_by_section(sections)
 
     # ── working mode header ────────────────────────────────────────────────────
-    repo_ctx_path = ROOT / ".bago/state/repo_context.json"
+    repo_ctx_path = _STATE / "repo_context.json"
     repo_ctx = load_json(repo_ctx_path) if file_exists(repo_ctx_path) else {}
     working_mode = repo_ctx.get("working_mode", "self")
     ext_repo = Path(repo_ctx.get("repo_root", "")).name if working_mode == "external" else ""

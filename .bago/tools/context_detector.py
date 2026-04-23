@@ -13,11 +13,13 @@ Uso:
 import json, os, re, subprocess, sys
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
+sys.path.insert(0, str(Path(__file__).parent))
+from bago_utils import get_state_dir
 
 # ─── Configuración ────────────────────────────────────────────────────────────
 BAGO_ROOT   = Path(__file__).resolve().parent.parent
 REPO_ROOT   = BAGO_ROOT.parent
-STATE_DIR   = BAGO_ROOT / "state"
+STATE_DIR   = get_state_dir()
 SESSIONS    = STATE_DIR / "sessions"
 CHANGES     = STATE_DIR / "changes"
 

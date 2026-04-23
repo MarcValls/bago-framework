@@ -11,10 +11,12 @@ Uso:
 import json, sys
 from datetime import datetime, timezone
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent))
+from bago_utils import get_state_dir
 
 # ─── Rutas ────────────────────────────────────────────────────────────────────
 BAGO_ROOT  = Path(__file__).resolve().parent.parent
-STATE_DIR  = BAGO_ROOT / "state"
+STATE_DIR  = get_state_dir()
 SESSIONS   = STATE_DIR / "sessions"
 CHANGES    = STATE_DIR / "changes"
 EVIDENCES  = STATE_DIR / "evidences"

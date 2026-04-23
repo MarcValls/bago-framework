@@ -2,9 +2,9 @@
 
 > Sistema operativo de trabajo técnico para programación con IA
 
-![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%20117%2F117-brightgreen) ![tools](https://img.shields.io/badge/tools-135-blue) ![chg](https://img.shields.io/badge/CHGs-101%20🏆-gold) ![version](https://img.shields.io/badge/versión-3.0-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
+![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%20119%2F119-brightgreen) ![tools](https://img.shields.io/badge/tools-135-blue) ![chg](https://img.shields.io/badge/CHGs-109%20🏆-gold) ![version](https://img.shields.io/badge/versión-3.0-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
 
-**`health 🟢 100/100`** · **`tests ✅ 117/117`** · **`tools 🔧 135`** · **`CHGs 🏆 101`** · **`versión 3.0`** · 10 workflows · Auto-gobernanza e inteligencia de intent integrada
+**`health 🟢 100/100`** · **`tests ✅ 122/122`** · **`tools 🔧 137`** · **`CHGs 🏆 111`** · **`versión 3.0`** · 10 workflows · Auto-gobernanza e inteligencia de intent integrada
 
 ---
 
@@ -55,11 +55,11 @@ BAGO amplifica el trabajo con IA resolviendo:
 | Comando | Herramienta | Descripción |
 |---------|-------------|-------------|
 | `bago start` | `bago_start.py` | Menú interactivo — empieza aquí |
-| `bago ideas` | `emit_ideas.py` | Ver y aceptar ideas priorizadas (scoring 0–100, rango 5–20, solo `risk=low` con métrica) |
+| `bago ideas` | `emit_ideas.py` | Ver y aceptar ideas priorizadas (scoring 0–100, rango 5–20). Ideas **dinámicas** basadas en estado real (risk_matrix, debt_ledger, context_detector) + fallback baseline |
 | `bago session` | `session_opener.py` | Abrir sesión con contexto precargado |
 | `bago status` | `quick_status.py` | Estado rápido del proyecto |
 
-> **`bago ideas`**: puntúa por `priority` (0–100) · filtra `risk=low` con métrica · retorna 5–20 ideas.
+> **`bago ideas`**: genera ideas **dinámicas** (state-aware: risk_matrix, debt_ledger, context_detector) + fallback. Puntúa por `priority` (0–100) · retorna 5–20 ideas · historial en `IDEAS_BACKLOG.json`.
 > Salida: `1. [66] Alinear README   siguiente paso: bago ideas --accept 1`
 
 ### Gobernanza y validación
@@ -67,6 +67,7 @@ BAGO amplifica el trabajo con IA resolviendo:
 | Comando | Herramienta | Descripción |
 |---------|-------------|-------------|
 | `bago dashboard` | `pack_dashboard.py` | Cockpit de estado: health ring, riesgo, deuda técnica, velocity sparkline (motor: `dashboard_v2.py`) |
+| `bago metrics-html` | `metrics_dashboard.py` | Dashboard HTML interactivo con Chart.js (9 cards: velocity, risk, deuda, health, tests). `--watch 300` para auto-refresh cada 5min → `BAGO_METRICS.html` |
 | `bago health` | `health_score.py` | Score 0-100 con 5 dimensiones |
 | `bago audit` | `audit_v2.py` | Auditoría integral del pack |
 | `bago validate` | `validate_pack.py` | Validación profunda del pack |
@@ -75,6 +76,8 @@ BAGO amplifica el trabajo con IA resolviendo:
 | `bago v2` | `v2_close_checklist.py` | Checklist GO/KO de cierre V2 |
 | `bago cosecha` | `cosecha.py` | Protocolo W9 de cosecha contextual |
 | `bago detector` | `context_detector.py` | Detector de contexto acumulado |
+| `bago init <dir>` | `bago_init.py` | Inicializa estructura BAGO en un proyecto nuevo (multi-project mode) |
+| `bago home` | `bago_home.py` | Muestra BAGO_HOME, versión, y proyectos vinculados |
 
 ### Fase 1 — Análisis y productividad (S1–S7)
 
@@ -96,7 +99,7 @@ BAGO amplifica el trabajo con IA resolviendo:
 | `bago export` | `export.py` | HTML dark-theme + CSV con SVG chart |
 | `bago watch` | `watch.py` | Monitor en tiempo real del estado BAGO |
 | `bago watch-state` | `bago_watch.py` | Smart watcher: delta findings + health check post-cambio (SHA-256) |
-| `bago test` | `integration_tests.py` | Suite de integración (55/55 tests) |
+| `bago test` | `integration_tests.py` | Suite de integración (122/122 tests) |
 | `bago changelog` | `changelog.py` | CHANGELOG desde BAGO-CHG-*.json |
 | `bago snapshot` | `snapshot.py` | ZIP point-in-time de state/ |
 | `bago diff` | `diff.py` | Delta de state/ vs último snapshot |

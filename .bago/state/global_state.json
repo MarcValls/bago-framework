@@ -9,9 +9,9 @@
   "active_scenarios": [],
   "active_workflows": [],
   "history_migration_status": "completed_with_preserved_legacy",
-  "updated_at": "2026-04-23T02:28:11.044273+00:00",
+  "updated_at": "2026-04-23T02:56:32.930143+00:00",
   "v2_status": "stable",
-  "notes": "v3.0 — 135 tools. SPRINT-007. 119/119 tests. CHG-109. sys.exit CLEAR (0 BAGO-I001). CHG coverage 100%. CHG-100 🏆. detector CLEAN.",
+  "notes": "Loop-11: README badges, ideas dyn docs, orphan-CLEAN, CHG-126. chg=110, tests 119/119",
   "last_completed_session_id": "SES-HARVEST-2026-04-23-001",
   "last_completed_task_type": "harvest",
   "last_completed_workflow": "w9_cosecha",
@@ -22,7 +22,7 @@
   "last_completed_evidence_id": "BAGO-EVD-076",
   "inventory": {
     "sessions": 55,
-    "changes": 109,
+    "changes": 111,
     "evidences": 58
   },
   "last_validation": {
@@ -43,6 +43,6 @@
     "SPRINT-008": "closed"
   },
   "tool_count": 135,
-  "integration_suite": "119/119",
-  "changes": 109
+  "integration_suite": "122/122",
+  "changes": 111
 }

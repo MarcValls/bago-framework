@@ -1,0 +1,15 @@
+{
+  "change_id": "BAGO-CHG-126",
+  "type": "governance",
+  "severity": "minor",
+  "title": "README: badges 119/119, CHG-110, ideas dinámicas, metrics_dashboard; orphan commits CLEAN",
+  "motivation": "README tenía badges obsoletos (117/117 tests, CHG-101). Updated to 119/119, CHG-110. Added metrics_dashboard command. Updated ideas description with dynamic ideas. Linked 9 orphan commits to SES-AUTONOMOUS-2026-04-23-002 → detector CLEAN.",
+  "status": "applied",
+  "affected_components": [
+    "README.md"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T02:35:20.313078+00:00",
+  "updated_at": "2026-04-23T02:35:20.313560+00:00",
+  "author": "autonomous_loop"
+}

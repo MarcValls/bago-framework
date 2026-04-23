@@ -1,0 +1,29 @@
+{
+  "id": "BAGO-CHG-127",
+  "change_id": "BAGO-CHG-127",
+  "type": "architecture",
+  "severity": "major",
+  "title": "Multi-project BAGO: env-aware path resolution, bago init/home commands",
+  "motivation": "Permite que cualquier proyecto use la instalación central de BAGO (BAGO_HOME) con estado local aislado en .bago/state/. Los tools leen BAGO_STATE_DIR y BAGO_PROJECT_ROOT del entorno para enrutar al state correcto. Añade bago init (scaffolder) y bago home (info).",
+  "status": "applied",
+  "affected_components": [
+    "bago_utils.py",
+    "context_detector.py",
+    "health_score.py",
+    "reconcile_state.py",
+    "cosecha.py",
+    "dashboard_v2.py",
+    "audit_v2.py",
+    "session_opener.py",
+    "emit_ideas.py",
+    "bago_init.py",
+    "bago_home.py",
+    "bago"
+  ],
+  "related_evidence": [
+    "SES-AUTONOMOUS-2026-04-23-002"
+  ],
+  "created_at": "2026-04-23T02:52:24.230323+00:00",
+  "updated_at": "2026-04-23T02:52:24.230323+00:00",
+  "author": "copilot-autonomous"
+}

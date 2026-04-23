@@ -17,10 +17,14 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent))
+from bago_utils import get_state_dir, get_bago_tools_dir, get_project_root
 
-ROOT       = Path(__file__).resolve().parents[2]
-TASK_FILE  = ROOT / ".bago" / "state" / "pending_w2_task.json"
-PREFLIGHT  = ROOT / ".bago" / "tools" / "session_preflight.py"
+ROOT       = get_project_root()
+_STATE     = get_state_dir()
+_TOOLS     = get_bago_tools_dir()
+TASK_FILE  = _STATE / "pending_w2_task.json"
+PREFLIGHT  = _TOOLS / "session_preflight.py"
 
 WORKFLOW_ROLES: dict[str, str] = {
     "W2":  "role_architect,role_validator",

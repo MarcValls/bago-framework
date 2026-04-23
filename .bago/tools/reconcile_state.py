@@ -16,9 +16,11 @@ Uso:
 from pathlib import Path
 import json
 import sys
+sys.path.insert(0, str(Path(__file__).parent))
+from bago_utils import get_state_dir
 
-ROOT = Path(__file__).resolve().parents[1]
-STATE = ROOT / "state"
+ROOT  = Path(__file__).resolve().parents[1]
+STATE = get_state_dir()
 GLOBAL_STATE = STATE / "global_state.json"
 
 
