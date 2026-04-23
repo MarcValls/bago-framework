@@ -313,7 +313,7 @@ if __name__ == "__main__":
 
     if not args or "--help" in args or "-h" in args:
         print(__doc__)
-        sys.exit(0)
+        raise SystemExit(0)
 
     if "--test" in args:
         sys.exit(run_tests())
@@ -334,7 +334,7 @@ if __name__ == "__main__":
         files = get_staged_files()
         if not files:
             print("  Sin archivos Python staged. Usa --all o --file <path>")
-            sys.exit(0)
+            raise SystemExit(0)
 
     if fix_mode:
         total_fixed = 0
@@ -344,7 +344,7 @@ if __name__ == "__main__":
                 print(f"  [FIX] {f.name}: {n} print() comentados")
                 total_fixed += n
         print(f"\n  Total: {total_fixed} print() comentados")
-        sys.exit(0)
+        raise SystemExit(0)
 
     result = evaluate_files(files, strict=strict)
     print_report(result)

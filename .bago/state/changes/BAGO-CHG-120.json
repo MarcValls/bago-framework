@@ -1,0 +1,25 @@
+{
+  "change_id": "BAGO-CHG-120",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Refactor sys.exit() → raise SystemExit() en batch-2: 37 reemplazos en 12 tools",
+  "motivation": "Continuación del refactor BAGO-I001. 37 llamadas a sys.exit() en auto_register, validate_pack, intent_router, commit_readiness, sprint_manager, snapshot, rule_catalog, diff, ci_generator, auto_heal, tags reemplazadas por raise SystemExit(N). Total acumulado: 90 reemplazos en 22 herramientas.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/auto_register.py",
+    ".bago/tools/validate_pack.py",
+    ".bago/tools/intent_router.py",
+    ".bago/tools/commit_readiness.py",
+    ".bago/tools/sprint_manager.py",
+    ".bago/tools/snapshot.py",
+    ".bago/tools/rule_catalog.py",
+    ".bago/tools/diff.py",
+    ".bago/tools/ci_generator.py",
+    ".bago/tools/auto_heal.py",
+    ".bago/tools/tags.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T02:50:00.000000+00:00",
+  "updated_at": "2026-04-23T02:50:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

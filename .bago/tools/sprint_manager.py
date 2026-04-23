@@ -98,7 +98,7 @@ def cmd_new(name: str, goal: str = "", tags: list = None, force: bool = False) -
         print("  Ya hay un sprint abierto: {} -- {}".format(active["sprint_id"], active["name"]))
         print("  Cierralo primero con: bago sprint close")
         print("  O usa --force para crear igualmente.")
-        sys.exit(1)
+        raise SystemExit(1)
     sprint_id = _next_sprint_id()
     sprint = {
         "sprint_id": sprint_id,
@@ -204,7 +204,7 @@ def cmd_close(sprint_id: str = None, summary: str = "") -> None:
         path = _sprint_file(sprint_id)
         if not path.exists():
             print("  Sprint no encontrado: {}".format(sprint_id))
-            sys.exit(1)
+            raise SystemExit(1)
         sprint = _load_json(path)
     else:
         sprint = _active_sprint()
@@ -232,7 +232,7 @@ def cmd_show(sprint_id: str) -> None:
     path = _sprint_file(sprint_id)
     if not path.exists():
         print("  Sprint no encontrado: {}".format(sprint_id))
-        sys.exit(1)
+        raise SystemExit(1)
     print(json.dumps(_load_json(path), indent=2, ensure_ascii=False))
 
 
@@ -240,7 +240,7 @@ def cmd_link(sprint_id: str, session_id: str) -> None:
     path = _sprint_file(sprint_id)
     if not path.exists():
         print("  Sprint no encontrado: {}".format(sprint_id))
-        sys.exit(1)
+        raise SystemExit(1)
     sprint = _load_json(path)
     sessions = sprint.setdefault("sessions", [])
     if session_id not in sessions:

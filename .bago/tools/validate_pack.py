@@ -73,7 +73,7 @@ for p in sorted(root.rglob("*")):
     if legacy_re.search(text):
         print("KO")
         print(f"legacy 2.1 reference found outside migration/legacy: {rel}")
-        sys.exit(1)
+        raise SystemExit(1)
 
 role_dir_to_family = {
     "gobierno": "government",
@@ -89,19 +89,19 @@ for p in sorted((root / "roles").glob("*/*.md")):
     if not physical_family:
         print("KO")
         print(f"unknown role directory family for {rel}")
-        sys.exit(1)
+        raise SystemExit(1)
     text = p.read_text(encoding="utf-8")
     m = role_family_re.search(text)
     if not m:
         print("KO")
         print(f"role without parseable family: {rel}")
-        sys.exit(1)
+        raise SystemExit(1)
     declared_family = m.group(1).strip()
     if declared_family != physical_family:
         print("KO")
         print(
             f"role family mismatch for {rel}: declared={declared_family} physical={physical_family}"
         )
-        sys.exit(1)
+        raise SystemExit(1)
 
 print("GO pack")

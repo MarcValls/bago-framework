@@ -93,7 +93,7 @@ jobs:
                   print(f'❌ {len(critical)} critical findings found:')
                   for f in critical[:10]:
                       print(f\"  [{f.get('severity','')}] {f.get('file','')}:{f.get('line','')} — {f.get('rule','')}\")
-                  sys.exit(1)
+                  raise SystemExit(1)
               print(f'✅ No critical findings')
           except Exception as e:
               print(f'Warning: could not parse findings: {e}')
@@ -180,7 +180,7 @@ bago-scan:
                       if str(f.get('severity','')).lower() in ('critical','error')]
           if critical:
               print(f'FAIL: {len(critical)} critical findings')
-              sys.exit(1)
+              raise SystemExit(1)
           print('OK: No critical findings')
       except Exception as e:
           print(f'Warning: {e}')
@@ -235,7 +235,7 @@ try:
         print(f'  ❌ {len(critical)} errores críticos detectados')
         for f in critical[:5]:
             print(f\"    {f.get('file','')}:{f.get('line','')} — {f.get('message','')}\")
-        sys.exit(1)
+        raise SystemExit(1)
     warns = len([f for f in findings if str(f.get('severity','')).lower() == 'warning'])
     print(f'  ✅ scan OK ({warns} warnings, 0 critical)')
 except Exception:
@@ -375,7 +375,7 @@ def _self_test():
     print(f"\n  {n - len(errors)}/{n} tests pasaron")
     if errors:
         for e in errors: print(f"  FAIL: {e}")
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

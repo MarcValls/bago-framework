@@ -62,7 +62,7 @@ def cmd_list(args):
 def cmd_add(args):
     if not args.entity_id or not args.tags:
         print("  ERROR: indica entidad ID y tags")
-        sys.exit(1)
+        raise SystemExit(1)
 
     index = _load_index()
     eid = args.entity_id
@@ -97,7 +97,7 @@ def cmd_add(args):
 def cmd_find(args):
     if not args.tag:
         print("  ERROR: indica un tag")
-        sys.exit(1)
+        raise SystemExit(1)
 
     index = _load_index()
     tag = args.tag.lower().strip()
@@ -262,7 +262,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 import pathlib  # ensure available in run_tests scope
 

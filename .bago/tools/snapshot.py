@@ -155,18 +155,18 @@ def cmd_list(args):
 def cmd_show(args):
     if not args.id:
         print("  ERROR: indica el ID del snapshot (--show SNAP-YYYYMMDD_HHMMSS)")
-        sys.exit(1)
+        raise SystemExit(1)
 
     out_dir = Path(args.out) if args.out else SNAPSHOT_DIR
     zip_path = out_dir / f"{args.id}.zip"
     if not zip_path.exists():
         print(f"  ERROR: snapshot no encontrado: {zip_path}")
-        sys.exit(1)
+        raise SystemExit(1)
 
     with zipfile.ZipFile(zip_path, "r") as zf:
         if "SNAPSHOT_INDEX.json" not in zf.namelist():
             print("  ERROR: snapshot no tiene índice")
-            sys.exit(1)
+            raise SystemExit(1)
         index = json.loads(zf.read("SNAPSHOT_INDEX.json"))
 
     print(f"\n  Snapshot: {index['snapshot_id']}")
@@ -249,7 +249,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def main():

@@ -348,14 +348,14 @@ if __name__ == "__main__":
 
     if not args or "--help" in args or "-h" in args:
         print(__doc__)
-        sys.exit(0)
+        raise SystemExit(0)
 
     if "--test" in args:
         sys.exit(run_tests())
 
     if "--list-intents" in args:
         cmd_list_intents()
-        sys.exit(0)
+        raise SystemExit(0)
 
     dry_run = "--dry-run" in args
     yes = "--yes" in args
@@ -365,7 +365,7 @@ if __name__ == "__main__":
     query_parts = [a for a in args if not a.startswith("--")]
     if not query_parts:
         print("  Describe el problema: bago intent 'mi código tiene secretos'")
-        sys.exit(1)
+        raise SystemExit(1)
 
     query = " ".join(query_parts)
     sys.exit(cmd_route(query, dry_run=dry_run, yes=yes, verbose=verbose))

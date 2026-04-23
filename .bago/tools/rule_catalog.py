@@ -112,12 +112,12 @@ RULES: list[Rule] = [
         severity="info",
         category="maintainability",
         source="bago",
-        title="sys.exit(1) without visible message",
+        title="raise SystemExit(1) without visible message",
         description=(
             "Salir con código 1 sin mensaje previo dificulta el diagnóstico "
             "en CI/CD. El usuario/operador no sabe qué falló."
         ),
-        example_bad="sys.exit(1)",
+        example_bad="raise SystemExit(1)",
         example_good='print("ERROR: no se encontró config.json", file=sys.stderr)\nsys.exit(1)',
     ),
     Rule(
@@ -516,7 +516,7 @@ def _self_test() -> None:
     passed = total - len(fails)
     print(f"\n  {passed}/{total} tests pasaron")
     if fails:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

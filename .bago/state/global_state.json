@@ -9,9 +9,9 @@
   "active_scenarios": [],
   "active_workflows": [],
   "history_migration_status": "completed_with_preserved_legacy",
-  "updated_at": "2026-04-23T02:09:38.152460+00:00",
+  "updated_at": "2026-04-23T02:13:18.719734+00:00",
   "v2_status": "stable",
-  "notes": "v3.0 — 135 tools. SPRINT-007. 117/117 tests. chg=103. CHG-100 hito superado 🏆. detector CLEAN. docs: TOOLS_INDEX+WORKFLOWS_REFERENCE. sys.exit→SystemExit 53 fixes.",
+  "notes": "v3.0 — 135 tools. SPRINT-007. 117/117 tests. CHG-104. CHG-100 hito 🏆. detector CLEAN. sys.exit→SystemExit 90 fixes (22 tools). docs: TOOLS_INDEX+WORKFLOWS_REFERENCE.",
   "last_completed_session_id": "SES-HARVEST-2026-04-23-001",
   "last_completed_task_type": "harvest",
   "last_completed_workflow": "w9_cosecha",
@@ -22,7 +22,7 @@
   "last_completed_evidence_id": "BAGO-EVD-076",
   "inventory": {
     "sessions": 55,
-    "changes": 103,
+    "changes": 104,
     "evidences": 58
   },
   "last_validation": {
@@ -44,5 +44,5 @@
   },
   "tool_count": 135,
   "integration_suite": "117/117",
-  "changes": 59
+  "changes": 104
 }

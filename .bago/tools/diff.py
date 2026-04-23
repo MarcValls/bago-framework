@@ -82,12 +82,12 @@ def cmd_diff(args):
         zip_path = SNAPSHOT_DIR / f"{args.snap}.zip"
         if not zip_path.exists():
             print(f"  ERROR: snapshot no encontrado: {zip_path}")
-            sys.exit(1)
+            raise SystemExit(1)
     else:
         zip_path = _get_latest_snapshot()
         if zip_path is None:
             print("  ERROR: no hay snapshots. Crea uno con: bago snapshot")
-            sys.exit(1)
+            raise SystemExit(1)
 
     snap_id = zip_path.stem
 
@@ -104,7 +104,7 @@ def cmd_diff(args):
             since = datetime.datetime.fromisoformat(args.since)
         except ValueError:
             print(f"  ERROR: formato de fecha inválido: {args.since} (usar YYYY-MM-DD)")
-            sys.exit(1)
+            raise SystemExit(1)
         def was_modified_since(rel_path: str) -> bool:
             p = BAGO_ROOT / rel_path
             if not p.exists():
@@ -225,7 +225,7 @@ def run_tests():
     passed = total - errors
     print(f"\n  {passed}/{total} tests pasaron")
     if errors:
-        sys.exit(1)
+        raise SystemExit(1)
 
 
 def main():

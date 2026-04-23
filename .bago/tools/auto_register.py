@@ -326,7 +326,7 @@ if __name__ == "__main__":
 
     if not args or "--help" in args or "-h" in args:
         print(__doc__)
-        sys.exit(0)
+        raise SystemExit(0)
 
     if "--test" in args:
         sys.exit(run_tests())
@@ -336,7 +336,7 @@ if __name__ == "__main__":
 
     if "--check-all" in args:
         cmd_check_all()
-        sys.exit(0)
+        raise SystemExit(0)
 
     if "--check" in args:
         i = args.index("--check")
@@ -344,11 +344,11 @@ if __name__ == "__main__":
         if tool:
             r = check_registration(tool)
             print(f"\n  {tool}: test={r['integration']}  route={r['routing']}")
-        sys.exit(0)
+        raise SystemExit(0)
 
     if not args_clean:
         print("  Uso: auto_register.py <tool_file.py> [--cmd cmd-name] [--desc 'descripción']")
-        sys.exit(1)
+        raise SystemExit(1)
 
     tool_file = args_clean[0]
     description = ""
