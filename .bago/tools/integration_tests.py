@@ -2513,6 +2513,18 @@ def test_scan_since():
     _record("scan:since", PASS, "scan --since OK")
 
 
+def test_risk_matrix_since():
+    """risk_matrix.py --since 2020-01-01 --csv: rc=0 y header con 'category'."""
+    rc, out, err = _run("risk_matrix.py", ["--since", "2020-01-01", "--csv"], timeout=30)
+    if rc != 0:
+        _record("risk_matrix:since", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    if "category" not in out and "Sin scans" not in out:
+        _record("risk_matrix:since", FAIL, f"unexpected output: {out[:80]!r}")
+        return
+    _record("risk_matrix:since", PASS, "risk_matrix --since OK")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2664,6 +2676,7 @@ ALL_TESTS = [
     (148, "emit_ideas:section_filter",   test_emit_ideas_section_filter),
     (149, "health_score:watch",          test_health_score_watch),
     (150, "scan:since",                  test_scan_since),
+    (151, "risk_matrix:since",           test_risk_matrix_since),
 ]
 
 

@@ -396,6 +396,7 @@ state/changes/BAGO-CHG-169.json
 state/changes/BAGO-CHG-170.json
 state/changes/BAGO-CHG-171.json
 state/changes/BAGO-CHG-172.json
+state/changes/BAGO-CHG-173.json
 state/changes/BAGO-CHG-MIG-001.json
 state/changes/CHG-010-ux-controles-13fixes.json
 state/changes/CHG-011-caos-12ideas-cosecha.json
@@ -599,6 +600,14 @@ state/findings/SCAN-20260423_085535.json
 state/findings/SCAN-20260423_085745.json
 state/findings/SCAN-20260423_085824.json
 state/findings/SCAN-20260423_085835.json
+state/findings/SCAN-20260423_085940.json
+state/findings/SCAN-20260423_090108.json
+state/findings/SCAN-20260423_090218.json
+state/findings/SCAN-20260423_090300.json
+state/findings/SCAN-20260423_090313.json
+state/findings/SCAN-20260423_090342.json
+state/findings/SCAN-20260423_090421.json
+state/findings/SCAN-20260423_090431.json
 state/gh_config/
 state/global_state.backup.json
 state/global_state.json
@@ -954,6 +963,8 @@ state/iterations/ITER-0342.json
 state/iterations/ITER-0343.json
 state/iterations/ITER-0344.json
 state/iterations/ITER-0345.json
+state/iterations/ITER-0346.json
+state/iterations/ITER-0347.json
 state/linked_projects.json
 state/metrics/
 state/metrics/README.md

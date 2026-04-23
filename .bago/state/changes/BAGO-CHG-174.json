@@ -1,0 +1,18 @@
+{
+  "id": "BAGO-CHG-174",
+  "change_id": "BAGO-CHG-174",
+  "type": "feature",
+  "severity": "patch",
+  "title": "risk_matrix --since DATE filter: agregar hallazgos de scans desde fecha",
+  "motivation": "Permite analizar solo scans recientes sin especificar un ID concreto.",
+  "status": "applied",
+  "affected_components": [
+    "risk_matrix.py"
+  ],
+  "related_evidence": [
+    "test_151_risk_matrix_since"
+  ],
+  "created_at": "2026-04-23T09:04:58.788372+00:00",
+  "updated_at": "2026-04-23T09:04:58.788372+00:00",
+  "author": "bago-autonomous"
+}

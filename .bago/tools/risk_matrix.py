@@ -334,12 +334,64 @@ def main():
                    help="Exporta riesgos a CSV (file,category,probability,impact,exposure,level)")
     p.add_argument("--top",      type=int, default=None,
                    help="Limita output a los N riesgos de mayor exposición")
+    p.add_argument("--since",    default=None, metavar="DATE",
+                   help="Agregar hallazgos de todos los scans desde DATE (YYYY-MM-DD)")
     p.add_argument("--test",     action="store_true")
     args = p.parse_args()
 
     if args.test:
         run_tests(); return
-    cmd_risk(args.scan, args.category, args.json, getattr(args, "csv", False), getattr(args, "top", None))
+
+    since = getattr(args, "since", None)
+    if since:
+        import datetime as _dt
+        try:
+            cutoff = _dt.date.fromisoformat(since)
+        except ValueError:
+            print(f"ERROR: --since fecha inválida '{since}'", file=sys.stderr)
+            raise SystemExit(1)
+        all_scans = sorted(fe.FINDINGS_DIR.glob("SCAN-*.json"))
+        merged_findings = []
+        latest_db = None
+        for sf in all_scans:
+            stem = sf.stem
+            try:
+                date_part = stem.split("-", 1)[1].split("_")[0]
+                scan_date = _dt.date(int(date_part[:4]), int(date_part[4:6]), int(date_part[6:8]))
+            except Exception:
+                continue
+            if scan_date >= cutoff:
+                try:
+                    d = fe.FindingsDB.load(stem)
+                    merged_findings.extend(d.findings)
+                    latest_db = d
+                except Exception:
+                    pass
+        if latest_db is None:
+            print(f"{RED}✗ Sin scans desde {since}.{RESET}")
+            raise SystemExit(1)
+        latest_db.findings = merged_findings
+        scan_id = args.scan  # still respect --scan override? No — since overrides
+        category_filter = args.category
+        items = build_risk_items(merged_findings)
+        if category_filter:
+            items = [i for i in items if i.category.lower() == category_filter.lower()]
+        if args.top is not None:
+            items = items[:args.top]
+        agg = aggregate(items)
+        if args.json:
+            print(json.dumps(agg, indent=2)); return
+        if getattr(args, "csv", False):
+            import csv as _csv, io as _io
+            buf = _io.StringIO(); w = _csv.writer(buf)
+            w.writerow(["file","category","probability","impact","exposure","level"])
+            for item in items:
+                w.writerow([getattr(item.finding,"file",""), item.category, item.probability,
+                            item.impact, item.exposure, item.level])
+            print(buf.getvalue(), end=""); return
+        render(items, agg, f"since:{since}")
+    else:
+        cmd_risk(args.scan, args.category, args.json, getattr(args, "csv", False), getattr(args, "top", None))
 
 
 if __name__ == "__main__":
