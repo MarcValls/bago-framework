@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+
+# BAGO — session data (private)
+.bago/state/sessions/
+.bago/state/changes/
+.bago/state/evidences/
+!.bago/state/sessions/.gitkeep
+!.bago/state/changes/.gitkeep
+!.bago/state/evidences/.gitkeep
+
+# BAGO — volatile runtime files (generated on demand, not canonical)
+# Generated on `bago setup` / sync-cmds; excluded from CHECKSUMS in sync_pack_metadata.py.
+.bago/state/repo_context.json
+
+
+# Editor
+.vscode/
+.idea/
+*.swp

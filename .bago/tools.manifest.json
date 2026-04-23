@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "generated_by": "auto_register.py --gen-manifest",
+  "tool_count": 29,
+  "tools": {
+    "artifact_counter": {
+      "file": "artifact_counter.py",
+      "sha256": "155b6391e27e8723d7ba1170d291bce7f5a51bd325d4e200449112c1beb9d6ee",
+      "cmd": "artifact-counter"
+    },
+    "audit_v2": {
+      "file": "audit_v2.py",
+      "sha256": "5d15f781ee67df8efeac82775b5c6abadbff34684f8a03b34d94bd04c330c103",
+      "cmd": "audit-v2"
+    },
+    "check_validate_purity": {
+      "file": "check_validate_purity.py",
+      "sha256": "78fc7f811950b44792649b1347c3b199fbb573c9c636f7cff0b6681f516f6aa4",
+      "cmd": "check-validate-purity"
+    },
+    "competition_report": {
+      "file": "competition_report.py",
+      "sha256": "f743860e7fcfce2a41311e5f44ac02842d6e53ed368af58bc42bc19899e0541c",
+      "cmd": "competition-report"
+    },
+    "context_detector": {
+      "file": "context_detector.py",
+      "sha256": "c33ce4c6d64df822a7b8fec9256462643b5bb884638d3063d7fd58c0d2461a7b",
+      "cmd": "context-detector"
+    },
+    "cosecha": {
+      "file": "cosecha.py",
+      "sha256": "a53b46dfc23d2ebd2e37ff9bf65f6e2d77b22841222384faef8589ecdad714e3",
+      "cmd": "cosecha"
+    },
+    "dashboard_v2": {
+      "file": "dashboard_v2.py",
+      "sha256": "5eb393c69e71a5d08625c207962a8c791326a88ec994c38744a4aae1bbc4744c",
+      "cmd": "dashboard-v2"
+    },
+    "efficiency_meter": {
+      "file": "efficiency_meter.py",
+      "sha256": "fbbaf573a1a90b2563cf9cc0a89580a8aacfb9fda68432aa09a30fd1258e59bb",
+      "cmd": "efficiency-meter"
+    },
+    "emit_ideas": {
+      "file": "emit_ideas.py",
+      "sha256": "5a54cc9aed4564804cad97163cc7d7d6f373b8b331e7f9207571681a7d35954d",
+      "cmd": "emit-ideas"
+    },
+    "generate_bago_evolution_report": {
+      "file": "generate_bago_evolution_report.py",
+      "sha256": "fd68f41db1d8219d7e776496407a06716338da984ee551ac36b3af34fa226acc",
+      "cmd": "generate-bago-evolution-report"
+    },
+    "health_score": {
+      "file": "health_score.py",
+      "sha256": "84a09eea6819b2b396e9cc958b500ff6d796083942e3e32d9ccee753a30adbf8",
+      "cmd": "health-score"
+    },
+    "inspect_workflow": {
+      "file": "inspect_workflow.py",
+      "sha256": "81dce40f498b8381d60c73d9adf5fe3263a8a66a5c705fae39288fd20dd3e4aa",
+      "cmd": "inspect-workflow"
+    },
+    "pack_dashboard": {
+      "file": "pack_dashboard.py",
+      "sha256": "bd353de89ebedcf76af89370ec0e626a1fb61632a0b1921c745828037d112814",
+      "cmd": "pack-dashboard"
+    },
+    "personality_panel": {
+      "file": "personality_panel.py",
+      "sha256": "84ddca118d9f9dd67c3c2ad2bc7d0c46e4dd759a512d6285784e23c2a95f3f23",
+      "cmd": "personality-panel"
+    },
+    "reconcile_state": {
+      "file": "reconcile_state.py",
+      "sha256": "80a2061485b76880bd8e8b3d71f0375463c81b8c16b9cdf2ac9ea27fb835ec00",
+      "cmd": "reconcile-state"
+    },
+    "repo_context_guard": {
+      "file": "repo_context_guard.py",
+      "sha256": "7c8891b2ccde55e6bf55abd77122617d65c506417f6472d0d096a2b74a3d2009",
+      "cmd": "repo-context-guard"
+    },
+    "session_opener": {
+      "file": "session_opener.py",
+      "sha256": "7e15681921f66e0e8c227fe157f0ba1fe56bb4c3a289bc93f7e928459aea92d3",
+      "cmd": "session-opener"
+    },
+    "session_preflight": {
+      "file": "session_preflight.py",
+      "sha256": "22dd87a2e94caa53f49a5fafd2da07ad0ae979d1ed3b845bb70a1f4a1dcac28a",
+      "cmd": "session-preflight"
+    },
+    "session_stats": {
+      "file": "session_stats.py",
+      "sha256": "f088372c906d2b138cb59d3b0fdd4c3043785213260224c5e0f0bf3966db5b6a",
+      "cmd": "session-stats"
+    },
+    "show_task": {
+      "file": "show_task.py",
+      "sha256": "94a853e6db0acb14395e57fffc4af36cc2ba0b893c7241c04fb17b480a43187c",
+      "cmd": "show-task"
+    },
+    "stability_summary": {
+      "file": "stability_summary.py",
+      "sha256": "8db6c997a564e6c045c2033548ce5856a7c5d47f6fdcceabde38e771d0690bc7",
+      "cmd": "stability-summary"
+    },
+    "stale_detector": {
+      "file": "stale_detector.py",
+      "sha256": "0f422d756c1b3e8d612acf0c9267bcd218596576b73e8d1c6c31f8cdb559a3ad",
+      "cmd": "stale-detector"
+    },
+    "sync_pack_metadata": {
+      "file": "sync_pack_metadata.py",
+      "sha256": "63e2a486f76b768b7140ca24ec83f29744e351a5d22c94dc262620e54c3b6c93",
+      "cmd": "sync-pack-metadata"
+    },
+    "v2_close_checklist": {
+      "file": "v2_close_checklist.py",
+      "sha256": "376195f522e073c3d4fdb5b51b5abe0c146b69e1febbc86755b797fb28e2120b",
+      "cmd": "v2-close-checklist"
+    },
+    "validate_manifest": {
+      "file": "validate_manifest.py",
+      "sha256": "6bc07eb1697353b929c9ef3cf6a6946de7a8cf7aa6cac305366c4f5c17d49de8",
+      "cmd": "validate-manifest"
+    },
+    "validate_pack": {
+      "file": "validate_pack.py",
+      "sha256": "893e46ad84525d57cebbe1b8701246cdaf7177f75a3db6e97dc13d3f08042d76",
+      "cmd": "validate-pack"
+    },
+    "validate_state": {
+      "file": "validate_state.py",
+      "sha256": "a5f2a9e4a512d47912051f8cc6e34d12f097370140e6c43b65cef9977125a5c1",
+      "cmd": "validate-state"
+    },
+    "vertice_activator": {
+      "file": "vertice_activator.py",
+      "sha256": "5bb24c3a2189363ce90fc13144e148226f83d25a72a6750cdd18cecb938b2af2",
+      "cmd": "vertice-activator"
+    },
+    "workflow_selector": {
+      "file": "workflow_selector.py",
+      "sha256": "1bf9369e95c595b75b245ae06bc09726aeb1379853437a0084ebc2980dee0e70",
+      "cmd": "workflow-selector"
+    }
+  }
+}

@@ -1,0 +1,514 @@
+#!/usr/bin/env python3
+"""
+bago — script de activación BAGO
+Muestra banner + gestiona comandos rápidos.
+
+Uso:
+  ./bago                    → banner + estado (o prompt de arranque si es template)
+  ./bago setup              → sincroniza repo_context + instala extensiones Copilot
+  ./bago extensions         → gestiona extensiones BAGO (.bago/extensions/)
+  ./bago versions           → lista todas las cleanversions disponibles
+  ./bago stability          → resumen único de estabilidad (smoke/VM/soak/validadores)
+  ./bago dashboard          → pack_dashboard.py
+  ./bago ideas              → emit_ideas.py
+  ./bago ideas --accept N   → acepta idea N y genera tarea W2
+  ./bago task               → muestra la tarea W2 pendiente
+  ./bago task --done        → marca la tarea como completada (registra en implemented_ideas.json)
+  ./bago session            → abre sesión W2 con preflight pre-rellenado desde handoff
+  ./bago session --dry      → muestra args del preflight sin ejecutar
+  ./bago efficiency         → medidor de eficiencia inter-versiones
+  ./bago cosecha            → cosecha.py
+  ./bago detector           → context_detector.py
+  ./bago validate           → validate_pack.py  (solo verifica)
+  ./bago sync               → sync_pack_metadata.py  (regenera TREE.txt y CHECKSUMS)
+  ./bago check              → check_validate_purity.py  (chequeo estático de pureza)
+  ./bago dashboard --full   → dashboard extendido
+  ./bago health             → health_score.py
+  ./bago audit              → audit_v2.py
+  ./bago workflow           → workflow_selector.py (interactivo)
+  ./bago stale              → stale_detector.py
+  ./bago sincerity          → sincerity_detector.py (centinela anti-sincofancía)
+  ./bago cabinet            → cabinet_orchestrator.py (gabinete unificado)
+  ./bago v2                 → v2_close_checklist.py
+  ./bago last               → muestra las últimas 5 sesiones ejecutadas
+  ./bago history            → estadísticas de todas las sesiones
+  ./bago registry           → lista de herramientas registradas en tool_registry.py
+  ./bago <cmd> --preflight  → verifica precondiciones sin ejecutar el comando
+
+Instalar como alias global:
+  echo 'alias bago="python3 $(pwd)/bago"' >> ~/.zshrc
+"""
+
+import importlib.util
+import json, os, shutil, subprocess, sys
+from pathlib import Path
+
+BAGO_ROOT = Path(__file__).resolve().parent / ".bago"
+TOOLS     = BAGO_ROOT / "tools"
+
+
+# ── Tool registry — single source of truth ────────────────────────────────────
+
+def _load_registry_mod():
+    """Load tool_registry module via importlib (avoids sys.path pollution)."""
+    registry_path = TOOLS / "tool_registry.py"
+    if not registry_path.exists():
+        return None
+    spec = importlib.util.spec_from_file_location("_bago_tool_registry", str(registry_path))
+    if spec is None:
+        return None
+    mod = importlib.util.module_from_spec(spec)
+    # Registrar en sys.modules ANTES de exec_module: Python 3.13 + @dataclass
+    # requiere que cls.__module__ sea resoluble via sys.modules.get().
+    sys.modules[spec.name] = mod
+    try:
+        spec.loader.exec_module(mod)
+        return mod
+    except Exception:
+        sys.modules.pop(spec.name, None)
+        return None
+
+
+def _build_commands() -> dict:
+    """Return COMMANDS dict from tool_registry, with hardcoded fallback."""
+    mod = _load_registry_mod()
+    if mod and hasattr(mod, "get_commands"):
+        try:
+            return mod.get_commands()
+        except Exception:
+            pass
+    # Hardcoded fallback if tool_registry.py is unavailable
+    return {
+        "dashboard": ["python3", str(TOOLS / "pack_dashboard.py")],
+        "ideas":     ["python3", str(TOOLS / "emit_ideas.py")],
+        "cosecha":   ["python3", str(TOOLS / "cosecha.py")],
+        "detector":  ["python3", str(TOOLS / "context_detector.py")],
+        "validate":  ["python3", str(TOOLS / "validate_pack.py")],
+        "sync":      ["python3", str(TOOLS / "sync_pack_metadata.py")],
+        "check":     ["python3", str(TOOLS / "check_validate_purity.py")],
+        "health":    ["python3", str(TOOLS / "health_score.py")],
+        "audit":     ["python3", str(TOOLS / "audit_v2.py")],
+        "workflow":  ["python3", str(TOOLS / "workflow_selector.py")],
+        "stale":     ["python3", str(TOOLS / "stale_detector.py")],
+        "v2":        ["python3", str(TOOLS / "v2_close_checklist.py")],
+        "task":      ["python3", str(TOOLS / "show_task.py")],
+        "stability": ["python3", str(TOOLS / "stability_summary.py")],
+        "session":   ["python3", str(TOOLS / "session_opener.py")],
+        "efficiency":["python3", str(TOOLS / "efficiency_meter.py")],
+        "sincerity": ["python3", str(TOOLS / "sincerity_detector.py")],
+        "cabinet":   ["python3", str(TOOLS / "cabinet_orchestrator.py")],
+        "git":       ["python3", str(TOOLS / "git_context.py")],
+        "deps":      ["python3", str(TOOLS / "dep_audit.py")],
+        "naming":    ["python3", str(TOOLS / "naming_check.py")],
+        "types":     ["python3", str(TOOLS / "type_check.py")],
+        "map":       ["python3", str(TOOLS / "context_map.py")],
+        "doctor":    ["python3", str(TOOLS / "doctor.py")],
+        "report":    ["python3", str(TOOLS / "health_report.py")],
+        "commit":    ["python3", str(TOOLS / "commit_readiness.py")],
+        "flow":      ["python3", str(TOOLS / "flow.py")],
+        "find-tool": ["python3", str(TOOLS / "tool_search.py")],
+        "ask":       ["python3", str(TOOLS / "intent_router.py")],
+        "rules":     ["python3", str(TOOLS / "rule_catalog.py")],
+    }
+
+
+COMMANDS = _build_commands()
+
+
+# ── Dispatcher — preflight + session log + exit-code propagation ───────────────
+
+def _get_module_for_cmd(cmd: str) -> str:
+    """Return the module stem for a command (for session logging)."""
+    mod = _load_registry_mod()
+    if mod:
+        entry = getattr(mod, "REGISTRY", {}).get(cmd)
+        if entry:
+            return entry.module
+    cmd_list = COMMANDS.get(cmd, [])
+    if len(cmd_list) >= 2:
+        return Path(cmd_list[-1]).stem
+    return cmd
+
+
+def _run_preflight(cmd: str) -> bool:
+    """Run registry preflight checks for cmd. Returns True if all pass."""
+    pf_path = TOOLS / "preflight.py"
+    if not pf_path.exists():
+        return True
+    spec = importlib.util.spec_from_file_location("_bago_preflight", str(pf_path))
+    if spec is None:
+        return True
+    mod = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(mod)
+        return mod.run_from_registry(cmd, exit_on_fail=False)
+    except Exception:
+        return True
+
+
+def _start_session(cmd: str, args: list) -> object:
+    """Start a session logger. Returns logger or None on failure."""
+    sl_path = TOOLS / "session_logger.py"
+    if not sl_path.exists():
+        return None
+    spec = importlib.util.spec_from_file_location("_bago_session_logger", str(sl_path))
+    if spec is None:
+        return None
+    mod = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(mod)
+        module = _get_module_for_cmd(cmd)
+        return mod.SessionLogger(cmd, args, module)
+    except Exception:
+        return None
+
+
+def _dispatch(cmd: str, rest: list, preflight_only: bool = False) -> None:
+    """Dispatch a registered command with preflight + session logging + exit propagation."""
+    # 1. Preflight
+    if not _run_preflight(cmd):
+        sys.exit(1)
+    if preflight_only:
+        print(f"  ✅ Preflight OK para '{cmd}'")
+        return
+
+    # 2. Start session log
+    session = _start_session(cmd, rest)
+
+    # 3. Execute
+    result = subprocess.run(
+        COMMANDS[cmd] + rest,
+        cwd=str(BAGO_ROOT.parent),
+    )
+
+    # 4. Log result
+    if session:
+        if result.returncode == 0:
+            session.success()
+        else:
+            session.failure(exit_code=result.returncode)
+
+    # 5. Propagate exit code (was previously swallowed)
+    if result.returncode != 0:
+        sys.exit(result.returncode)
+
+
+def _cmd_session_last(args: list) -> None:
+    """Show last N sessions via session_logger.py."""
+    sl_path = TOOLS / "session_logger.py"
+    if not sl_path.exists():
+        print("  session_logger.py no encontrado en", TOOLS)
+        return
+    n = int(args[0]) if args and args[0].isdigit() else 5
+    subprocess.run(["python3", str(sl_path), "--last", str(n)],
+                   cwd=str(BAGO_ROOT.parent))
+
+
+def _cmd_session_history() -> None:
+    """Show session history via session_logger.py."""
+    sl_path = TOOLS / "session_logger.py"
+    if not sl_path.exists():
+        print("  session_logger.py no encontrado en", TOOLS)
+        return
+    subprocess.run(["python3", str(sl_path), "--history"],
+                   cwd=str(BAGO_ROOT.parent))
+
+
+def _cmd_registry() -> None:
+    """Show tool registry listing."""
+    reg_path = TOOLS / "tool_registry.py"
+    if not reg_path.exists():
+        print("  tool_registry.py no encontrado en", TOOLS)
+        return
+    subprocess.run(["python3", str(reg_path), "--list"],
+                   cwd=str(BAGO_ROOT.parent))
+
+# ── Extensiones Copilot CLI ────────────────────────────────────────────────────
+
+def _install_extensions(bago_root=None, silent=False):
+    """Copia .bago/extensions/*/extension.mjs → .github/extensions/*/extension.mjs"""
+    src_base  = (bago_root or BAGO_ROOT) / "extensions"
+    repo_root = (bago_root or BAGO_ROOT).parent
+    dest_base = repo_root / ".github" / "extensions"
+
+    if not src_base.exists():
+        if not silent:
+            print("  ℹ  No hay extensiones en .bago/extensions/")
+        return []
+
+    installed = []
+    for ext_dir in sorted(src_base.iterdir()):
+        src_file = ext_dir / "extension.mjs"
+        if not src_file.exists():
+            continue
+        dest_dir  = dest_base / ext_dir.name
+        dest_file = dest_dir / "extension.mjs"
+        dest_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(str(src_file), str(dest_file))
+        installed.append(ext_dir.name)
+
+    if installed and not silent:
+        for name in installed:
+            print(f"  🔌 Extensión instalada: {name}")
+    return installed
+
+def _cmd_extensions():
+    """Lista extensiones disponibles e instala si hay cambios."""
+    src_base = BAGO_ROOT / "extensions"
+    if not src_base.exists() or not any(src_base.iterdir()):
+        print("  No hay extensiones BAGO en .bago/extensions/")
+        return
+
+    print()
+    print("  ┌──────────────────────────────────────────────┐")
+    print("  │  BAGO · Extensiones Copilot CLI              │")
+    print("  └──────────────────────────────────────────────┘")
+    for ext_dir in sorted(src_base.iterdir()):
+        if (ext_dir / "extension.mjs").exists():
+            dest = BAGO_ROOT.parent / ".github" / "extensions" / ext_dir.name / "extension.mjs"
+            status = "✅ instalada" if dest.exists() else "⚠️  pendiente"
+            print(f"  🔌 {ext_dir.name:30s} {status}")
+    print()
+    print("  Reinstalar: bago setup")
+    print()
+
+# ── Helpers de estado ──────────────────────────────────────────────────────────
+
+def _read_state(bago_root=None):
+    f = (bago_root or BAGO_ROOT) / "state" / "global_state.json"
+    if not f.exists():
+        return {}
+    with open(f) as fh:
+        return json.load(fh)
+
+def _write_state(state, bago_root=None):
+    f = (bago_root or BAGO_ROOT) / "state" / "global_state.json"
+    with open(f, "w") as fh:
+        json.dump(state, fh, indent=2, ensure_ascii=False)
+        fh.write("\n")
+
+def _set_mode(mode, bago_root=None):
+    s = _read_state(bago_root)
+    s["distribution_mode"] = mode
+    _write_state(s, bago_root)
+
+def _is_template_seed():
+    return _read_state().get("distribution_mode") == "template_seed"
+
+# ── Scaffold de proyecto nuevo ─────────────────────────────────────────────────
+
+def _scaffold_project(dest_input):
+    src = BAGO_ROOT.parent
+    dest = Path(dest_input.strip()).expanduser().resolve() if dest_input.strip() else src
+
+    if dest == src:
+        _set_mode("project_active")
+        _auto_sync(src)
+        _install_extensions(silent=True)
+        print(f"\n  ✅ Proyecto inicializado en: {dest}\n")
+        return True
+
+    try:
+        dest.relative_to(src)
+        print("  ⚠  El destino no puede estar dentro del directorio fuente.")
+        return False
+    except ValueError:
+        pass
+
+    if dest.exists() and any(dest.iterdir()):
+        print(f"  ⚠  El directorio ya existe y no está vacío:\n     {dest}")
+        return False
+
+    print(f"\n  📦 Copiando pack a: {dest}")
+    dest.mkdir(parents=True, exist_ok=True)
+
+    shutil.copytree(str(BAGO_ROOT), str(dest / ".bago"))
+    shutil.copy2(str(src / "bago"), str(dest / "bago"))
+    os.chmod(str(dest / "bago"), 0o755)
+    if (src / "Makefile").exists():
+        shutil.copy2(str(src / "Makefile"), str(dest / "Makefile"))
+
+    _set_mode("project_active", dest / ".bago")
+
+    subprocess.run(
+        ["python3", str(dest / "bago"), "setup"],
+        cwd=str(dest)
+    )
+
+    print(f"\n  ✅ Proyecto listo en: {dest}")
+    print(f"  ▶  cd \"{dest}\" && python3 bago\n")
+    return True
+
+# ── Prompt de arranque ─────────────────────────────────────────────────────────
+
+def _prompt_mode():
+    """Mostrado la primera vez que se ejecuta una cleanversion."""
+    print()
+    print("  ┌─────────────────────────────────────────────┐")
+    print("  │  BAGO · Primera ejecución                   │")
+    print("  ├─────────────────────────────────────────────┤")
+    print("  │  [1] Evolucionar el framework BAGO          │")
+    print("  │  [2] Iniciar un proyecto nuevo              │")
+    print("  └─────────────────────────────────────────────┘")
+    print()
+
+    try:
+        choice = input("  Elige [1/2]: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        sys.exit(0)
+
+    if choice == "1":
+        _set_mode("framework_host")
+        print("\n  ✅ Modo framework activado.\n")
+        return "banner"
+
+    elif choice == "2":
+        default = str(BAGO_ROOT.parent)
+        print(f"\n  Ruta del proyecto nuevo")
+        print(f"  (Enter = directorio actual: {default})")
+        try:
+            dest_input = input("  > ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            sys.exit(0)
+        return "done" if _scaffold_project(dest_input) else "error"
+
+    else:
+        print("\n  Opción no válida. Usa 1 o 2.\n")
+        return "invalid"
+
+# ── bago versions ─────────────────────────────────────────────────────────────
+
+def _cmd_versions():
+    """Lista todas las cleanversions encontradas junto al script."""
+    cv_dir = Path(__file__).resolve().parent.parent / "cleanversion"
+    if not cv_dir.exists():
+        cv_dir = Path(__file__).resolve().parent / "cleanversion"
+    if not cv_dir.exists():
+        print("  No se encontró directorio cleanversion/")
+        return
+
+    entries = sorted(d for d in cv_dir.iterdir() if d.is_dir() and not d.name.startswith('.'))
+    if not entries:
+        print("  No hay cleanversions.")
+        return
+
+    print()
+    print("  ┌─────────────────────────────────────────────────────────────┐")
+    print("  │  BAGO · Cleanversions disponibles                          │")
+    print("  └─────────────────────────────────────────────────────────────┘")
+
+    for d in entries:
+        info_file  = d / "VERSION_INFO.json"
+        state_file = d / ".bago" / "state" / "global_state.json"
+
+        info  = json.loads(info_file.read_text())  if info_file.exists()  else {}
+        state = json.loads(state_file.read_text()) if state_file.exists() else {}
+
+        chg_dir   = d / ".bago" / "state" / "changes"
+        chg_count = len(list(chg_dir.glob("BAGO-CHG-*.json"))) if chg_dir.exists() else 0
+
+        slug   = info.get("slug", d.name)
+        name   = info.get("display_name", "—")
+        desc   = info.get("description", "")
+        mode   = state.get("distribution_mode") or "—"
+        script = info.get("bago_script", "—")
+        notes  = info.get("notes", "")
+
+        print()
+        print(f"  📦 {slug}")
+        print(f"     {name}")
+        print(f"     {desc}")
+        print(f"     mode={mode} | CHG={chg_count} | bago={script}")
+        if notes:
+            print(f"     💡 {notes}")
+
+    print()
+
+# ── Auto-sync silencioso ───────────────────────────────────────────────────────
+
+# Commands that need fresh repo context — only these trigger _auto_sync().
+# Read-only / diagnostic commands must NOT write repo_context.json on every run
+# (it is a git-tracked generated_artifact and causes permanent git status noise).
+_SYNC_CMDS = frozenset({
+    "setup", "session", "cosecha", "audit", "dashboard", "detector", "task",
+})
+
+def _auto_sync(cwd=None):
+    try:
+        subprocess.run(
+            ["python3", str(TOOLS / "repo_context_guard.py"), "sync"],
+            cwd=str(cwd or BAGO_ROOT.parent),
+            capture_output=True,
+            timeout=5
+        )
+    except Exception:
+        pass
+
+# ── Main ───────────────────────────────────────────────────────────────────────
+
+def main():
+    args = sys.argv[1:]
+
+    # Prompt de primera ejecución (solo sin args y con TTY)
+    if not args and sys.stdin.isatty() and _is_template_seed():
+        result = _prompt_mode()
+        if result in ("done", "error", "invalid"):
+            sys.exit(1 if result == "error" else 0)
+        # result == "banner" → continúa al banner normal
+
+    if not args:
+        subprocess.run(
+            ["python3", str(TOOLS / "bago_banner.py")],
+            cwd=str(BAGO_ROOT.parent)
+        )
+        return
+
+    cmd = args[0].lower()
+    rest = args[1:]
+
+    # Only run auto-sync for commands that need fresh context.
+    # Avoids writing repo_context.json (git-tracked generated_artifact) on
+    # every bago invocation (bago help, bago health, etc. were dirtying git status).
+    if cmd in _SYNC_CMDS:
+        _auto_sync()
+
+    if cmd == "setup":
+        subprocess.run(
+            ["python3", str(TOOLS / "repo_context_guard.py"), "sync"],
+            cwd=str(BAGO_ROOT.parent)
+        )
+        _install_extensions()
+    elif cmd == "extensions":
+        _cmd_extensions()
+    elif cmd == "versions":
+        _cmd_versions()
+    elif cmd == "last":
+        _cmd_session_last(rest)
+    elif cmd == "history":
+        _cmd_session_history()
+    elif cmd == "registry":
+        _cmd_registry()
+    elif cmd in COMMANDS:
+        preflight_only = "--preflight" in rest
+        clean_rest = [a for a in rest if a != "--preflight"]
+        _dispatch(cmd, clean_rest, preflight_only=preflight_only)
+    elif cmd in ("help", "--help", "-h"):
+        subprocess.run(
+            ["python3", str(TOOLS / "bago_banner.py"), "--mini"],
+            cwd=str(BAGO_ROOT.parent)
+        )
+        print("  Comandos disponibles:")
+        print("    bago setup | extensions | versions | registry | last | history")
+        for k in sorted(COMMANDS):
+            print(f"    bago {k}")
+        print()
+    else:
+        print(f"  Comando desconocido: '{cmd}'")
+        print("  Usa: bago help")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
