@@ -2,8 +2,8 @@
 
 > Sistema operativo de trabajo técnico para programación con IA
 
-![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%20122/122-brightgreen) ![tools](https://img.shields.io/badge/tools-139-blue) ![chg](https://img.shields.io/badge/CHGs-122%20%F0%9F%8F%86-gold) ![version](https://img.shields.io/badge/versión-3.0-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
-**`health 🟢 100/100`** · **`tests ✅ 122/122`** · **`tools 🔧 139`** · **`CHGs 🏆 122`** · **`versión 3.0`** · 10 workflows · Auto-gobernanza e inteligencia de intent integrada
+![health](https://img.shields.io/badge/health-%F0%9F%9F%A2%20100%2F100-brightgreen) ![tests](https://img.shields.io/badge/tests-%E2%9C%85%20125/125-brightgreen) ![tools](https://img.shields.io/badge/tools-139-blue) ![chg](https://img.shields.io/badge/CHGs-123%20%F0%9F%8F%86-gold) ![version](https://img.shields.io/badge/versión-3.0-blue) ![langs](https://img.shields.io/badge/languages-py%20%7C%20js%20%7C%20go%20%7C%20rust-orange)
+**`health 🟢 100/100`** · **`tests ✅ 125/125`** · **`tools 🔧 139`** · **`CHGs 🏆 123`** · **`versión 3.0`** · 10 workflows · Auto-gobernanza e inteligencia de intent integrada
 
 ---
 

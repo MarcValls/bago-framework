@@ -1,0 +1,16 @@
+{
+  "id": "BAGO-CHG-139",
+  "change_id": "BAGO-CHG-139",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Tests de integracion para smoke_runner (3 nuevos tests)",
+  "motivation": "integration_tests.py ahora cubre smoke_runner end-to-end: report_keys, status_valid, isolated; pasa de 122 a 125 tests",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/integration_tests.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T05:03:40.240381+00:00",
+  "updated_at": "2026-04-23T05:03:40.241009+00:00",
+  "author": "copilot-autonomous"
+}

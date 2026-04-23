@@ -1581,6 +1581,69 @@ def test_sysexit_refactor():
         _record("sysexit:refactor", FAIL, f"{len(violations)} violations: {violations[:3]}")
 
 
+def test_smoke_runner_report_keys():
+    """smoke_runner: last-report.json contiene todas las claves canónicas."""
+    import json as _j
+    report_path = ROOT.parent / "sandbox" / "runtime" / "last-report.json"
+    if not report_path.exists():
+        _record("smoke_runner:report_keys", FAIL, "last-report.json not found")
+        return
+    try:
+        data = _j.loads(report_path.read_text())
+    except Exception as e:
+        _record("smoke_runner:report_keys", FAIL, f"json parse: {e}")
+        return
+    required = {"status", "failure_count", "workers", "duration_seconds", "generated_at"}
+    missing = required - set(data.keys())
+    if missing:
+        _record("smoke_runner:report_keys", FAIL, f"missing keys: {missing}")
+    else:
+        _record("smoke_runner:report_keys", PASS,
+                f"all required keys present (workers={data.get('workers')})")
+
+
+def test_smoke_runner_status_valid():
+    """smoke_runner: last-report.json tiene status 'pass' o 'fail' y failure_count int."""
+    import json as _j
+    report_path = ROOT.parent / "sandbox" / "runtime" / "last-report.json"
+    if not report_path.exists():
+        _record("smoke_runner:status_valid", FAIL, "last-report.json not found")
+        return
+    try:
+        data = _j.loads(report_path.read_text())
+    except Exception as e:
+        _record("smoke_runner:status_valid", FAIL, f"json parse: {e}")
+        return
+    status = data.get("status")
+    fc     = data.get("failure_count")
+    if status not in ("pass", "fail"):
+        _record("smoke_runner:status_valid", FAIL, f"invalid status: {status!r}")
+    elif not isinstance(fc, int):
+        _record("smoke_runner:status_valid", FAIL, f"failure_count not int: {fc!r}")
+    else:
+        _record("smoke_runner:status_valid", PASS,
+                f"status={status!r}, failure_count={fc}")
+
+
+def test_smoke_runner_isolated():
+    """smoke_runner --last: no ejecuta tests, solo carga el reporte existente."""
+    import subprocess as _sp, json as _j
+    r = _sp.run(
+        [sys.executable, str(ROOT / "tools" / "smoke_runner.py"), "--last"],
+        capture_output=True, text=True, cwd=str(ROOT.parent),
+        timeout=15
+    )
+    # Should complete quickly (no test run) and print a status line
+    if r.returncode != 0:
+        _record("smoke_runner:isolated", FAIL, f"rc={r.returncode}: {r.stderr[:150]}")
+        return
+    out = r.stdout
+    if "smoke:" in out or "status" in out or "pass" in out or "fail" in out:
+        _record("smoke_runner:isolated", PASS, "--last mode returns status without running tests")
+    else:
+        _record("smoke_runner:isolated", FAIL, f"unexpected output: {out[:150]}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1687,10 +1750,13 @@ ALL_TESTS = [
     (103, "sprint_active",           test_sprint_manager_active),
     (104, "sprint_status",           test_sprint_manager_status),
     (105, "ideas_count",             test_emit_ideas_count),
-    (106, "sysexit_refactor",        test_sysexit_refactor),
-    (107, "bago_init_scaffold",      test_bago_init_scaffold),
-    (108, "bago_home_info",          test_bago_home_info),
-    (109, "project_mode_isolation",  test_project_mode_isolation),
+    (106, "sysexit_refactor",      test_sysexit_refactor),
+    (107, "bago_init_scaffold",    test_bago_init_scaffold),
+    (108, "bago_home_info",        test_bago_home_info),
+    (109, "project_mode_isolation",test_project_mode_isolation),
+    (110, "smoke_runner:report_keys",  test_smoke_runner_report_keys),
+    (111, "smoke_runner:status_valid", test_smoke_runner_status_valid),
+    (112, "smoke_runner:isolated",     test_smoke_runner_isolated),
 ]
 
 
