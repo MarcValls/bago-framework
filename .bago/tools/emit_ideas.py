@@ -61,6 +61,34 @@ FALLBACK_IDEAS: list[dict[str, object]] = [
         ],
         "w2": "Ajustar el texto final de `./ideas` sin alterar el ranking.",
     },
+    {
+        "priority": 58,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "Sesión activa abierta con summary y workflow antes de W2.",
+        "title": "Abrir sesión de trabajo con contexto",
+        "summary": "Registrar una sesión BAGO antes de iniciar trabajo para que los commits queden vinculados.",
+        "detail": [
+            "Entrada: sesiones recientes y estado del detector.",
+            "Salida: SES-*.json con descripcion y workflow asignado.",
+            "Ventaja: evita commits huérfanos y preserva continuidad.",
+        ],
+        "w2": "Ejecutar `bago session` para abrir o continuar la sesión activa.",
+    },
+    {
+        "priority": 54,
+        "section": "respaldo",
+        "risk": "low",
+        "metric": "Documentación del sprint activo refleja el estado real.",
+        "title": "Sincronizar documentación de sprint",
+        "summary": "Actualizar el sprint activo con decisiones, cambios y progreso del ciclo en curso.",
+        "detail": [
+            "Entrada: SPRINT-*.json activo y cambios pendientes.",
+            "Salida: sprint con status, goals y evidencias actualizadas.",
+            "Ventaja: el estado del sprint es auditable y no requiere reconstrucción.",
+        ],
+        "w2": "Ejecutar `bago sprint status` y actualizar los campos desactualizados.",
+    },
 ]
 
 

@@ -1,0 +1,18 @@
+{
+  "id": "BAGO-CHG-129",
+  "change_id": "BAGO-CHG-129",
+  "type": "governance",
+  "severity": "minor",
+  "title": "emit_ideas: 2 nuevas ideas de respaldo para garantizar mínimo 5",
+  "motivation": "FALLBACK_IDEAS solo tenía 3 entradas pero MIN_IDEAS=5. Con 0 ideas contextuales, el selector devolvía 3 en lugar de 5. Se añaden ideas de respaldo: abrir sesión de trabajo y sincronizar sprint.",
+  "status": "applied",
+  "affected_components": [
+    "emit_ideas.py"
+  ],
+  "related_evidence": [
+    "SES-AUTONOMOUS-2026-04-23-002"
+  ],
+  "created_at": "2026-04-23T03:12:31.742614+00:00",
+  "updated_at": "2026-04-23T03:12:31.742614+00:00",
+  "author": "copilot-autonomous"
+}

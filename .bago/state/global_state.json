@@ -22,7 +22,7 @@
   "last_completed_evidence_id": "BAGO-EVD-076",
   "inventory": {
     "sessions": 55,
-    "changes": 112,
+    "changes": 113,
     "evidences": 58
   },
   "last_validation": {
@@ -44,5 +44,5 @@
   },
   "tool_count": 135,
   "integration_suite": "122/122",
-  "changes": 112
+  "changes": 113
 }
