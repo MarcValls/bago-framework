@@ -1728,6 +1728,49 @@ def test_sync_badges_compute():
             f"compute_badges OK: tests=126/126, CHGs=99 in URLs")
 
 
+def test_debt_ledger_json_empty():
+    """debt_ledger.py --json: retorna rc=0 con JSON válido incluso cuando no hay scans."""
+    import json as _j
+    rc, out, err = _run("debt_ledger.py", ["--json"], timeout=15)
+    if rc != 0:
+        _record("debt_ledger:json_empty", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    try:
+        data = _j.loads(out)
+    except Exception as e:
+        _record("debt_ledger:json_empty", FAIL, f"invalid JSON: {e}")
+        return
+    required = {"total_hours", "total_cost", "items", "by_quadrant"}
+    missing = required - set(data.keys())
+    if missing:
+        _record("debt_ledger:json_empty", FAIL, f"missing keys: {missing}")
+        return
+    _record("debt_ledger:json_empty", PASS,
+            f"--json rc=0, keys OK, total_hours={data['total_hours']}")
+
+
+def test_risk_matrix_json_format():
+    """risk_matrix.py --json: retorna rc=0 con campos requeridos."""
+    import json as _j
+    rc, out, err = _run("risk_matrix.py", ["--json"], timeout=15)
+    if rc != 0:
+        _record("risk_matrix:json_format", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    try:
+        data = _j.loads(out)
+    except Exception as e:
+        _record("risk_matrix:json_format", FAIL, f"invalid JSON: {e}")
+        return
+    required = {"by_category", "total_exposure", "items"}
+    missing = required - set(data.keys())
+    if missing:
+        _record("risk_matrix:json_format", FAIL, f"missing keys: {missing}")
+        return
+    exposure = float(data.get("total_exposure", 0))
+    _record("risk_matrix:json_format", PASS,
+            f"--json rc=0, keys OK, exposure={exposure:.1f}")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1844,6 +1887,8 @@ ALL_TESTS = [
     (113, "scan:purge",                test_scan_purge),
     (114, "findings_engine:parse",     test_findings_engine_parse),
     (115, "sync_badges:compute",       test_sync_badges_compute),
+    (116, "debt_ledger:json_empty",    test_debt_ledger_json_empty),
+    (117, "risk_matrix:json_format",   test_risk_matrix_json_format),
 ]
 
 

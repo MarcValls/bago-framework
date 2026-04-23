@@ -287,6 +287,9 @@ def main():
 
     db = fe.FindingsDB.load(args.scan) if args.scan else fe.FindingsDB.latest()
     if db is None:
+        if args.json:
+            print(json.dumps({"total_hours": 0, "total_cost": 0, "items": 0, "by_quadrant": {}}, indent=2))
+            return
         print(f"{RED}✗ Sin scan. Ejecuta 'bago scan' primero.{RESET}")
         raise SystemExit(1)
 

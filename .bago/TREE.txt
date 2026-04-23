@@ -366,6 +366,7 @@ state/changes/BAGO-CHG-139.json
 state/changes/BAGO-CHG-140.json
 state/changes/BAGO-CHG-141.json
 state/changes/BAGO-CHG-142.json
+state/changes/BAGO-CHG-143.json
 state/changes/BAGO-CHG-MIG-001.json
 state/changes/CHG-010-ux-controles-13fixes.json
 state/changes/CHG-011-caos-12ideas-cosecha.json
@@ -774,6 +775,8 @@ state/iterations/ITER-0276.json
 state/iterations/ITER-0277.json
 state/iterations/ITER-0278.json
 state/iterations/ITER-0279.json
+state/iterations/ITER-0280.json
+state/iterations/ITER-0281.json
 state/linked_projects.json
 state/metrics/
 state/metrics/README.md
@@ -1102,6 +1105,7 @@ tools/__pycache__/stale_detector.cpython-313.pyc
 tools/__pycache__/state_store.cpython-313.pyc
 tools/__pycache__/stats.cpython-313.pyc
 tools/__pycache__/summary.cpython-313.pyc
+tools/__pycache__/sync_badges.cpython-313.pyc
 tools/__pycache__/tags.cpython-313.pyc
 tools/__pycache__/target_selector.cpython-313.pyc
 tools/__pycache__/template.cpython-313.pyc
