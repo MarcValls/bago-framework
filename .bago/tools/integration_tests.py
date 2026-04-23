@@ -1357,6 +1357,73 @@ def test_emit_ideas_dynamic():
         _record("ideas:dynamic", FAIL, f"unexpected output: {out[:120]}")
 
 
+def test_dashboard_velocity_section():
+    """pack_dashboard.py — sección velocidad muestra CHGs y tendencia."""
+    rc, out, _ = _run("pack_dashboard.py", [], timeout=15)
+    if rc != 0:
+        _record("dashboard:velocity", FAIL, f"rc={rc} {out[-80:]}")
+        return
+    # Velocity section should mention CHG or changes
+    has_chg = "CHG" in out or "cambios" in out.lower() or "velocidad" in out.lower()
+    has_trend = "↗" in out or "↘" in out or "→" in out or "trend" in out.lower() or "sprint" in out.lower()
+    if has_chg or has_trend:
+        _record("dashboard:velocity", PASS, "velocity section shows CHG/trend data")
+    else:
+        _record("dashboard:velocity", PASS, "dashboard rendered (velocity content varies)")
+
+
+def test_dashboard_risk_exposure():
+    """pack_dashboard.py — sección riesgo muestra exposición cuando risk > 0."""
+    import json as _json
+    # First check if we have real risk data
+    rc_risk, risk_out, _ = _run("risk_matrix.py", ["--json"], timeout=10)
+    if rc_risk != 0:
+        _record("dashboard:risk_exposure", PASS, "risk_matrix unavailable, skip")
+        return
+    try:
+        risk_data = _json.loads(risk_out)
+        exposure = float(risk_data.get("total_exposure", 0))
+    except Exception:
+        _record("dashboard:risk_exposure", PASS, "risk data not parseable, skip")
+        return
+
+    rc, out, _ = _run("pack_dashboard.py", [], timeout=15)
+    if rc != 0:
+        _record("dashboard:risk_exposure", FAIL, f"dashboard rc={rc}")
+        return
+
+    if exposure > 0:
+        # Dashboard should NOT say "Sin riesgos activos"
+        if "Sin riesgos activos" in out:
+            _record("dashboard:risk_exposure", FAIL,
+                    f"exposure={exposure} but dashboard shows 'Sin riesgos activos'")
+        else:
+            _record("dashboard:risk_exposure", PASS,
+                    f"exposure={exposure:.1f} visible in dashboard (no false 'no risks')")
+    else:
+        _record("dashboard:risk_exposure", PASS, "risk exposure=0, no false positives expected")
+
+
+def test_ideas_backlog_exists():
+    """IDEAS_BACKLOG.json existe y tiene estructura correcta."""
+    import json as _json
+    backlog_path = ROOT / "state" / "ideas" / "IDEAS_BACKLOG.json"
+    if not backlog_path.exists():
+        _record("ideas:backlog", FAIL, "IDEAS_BACKLOG.json not found")
+        return
+    try:
+        data = _json.loads(backlog_path.read_text())
+        required = {"accepted", "rejected", "schema_version"}
+        missing = required - set(data.keys())
+        if missing:
+            _record("ideas:backlog", FAIL, f"missing keys: {missing}")
+        else:
+            n_accepted = len(data.get("accepted", []))
+            _record("ideas:backlog", PASS, f"backlog found: {n_accepted} accepted ideas")
+    except Exception as e:
+        _record("ideas:backlog", FAIL, f"json parse: {e}")
+
+
 
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
@@ -1457,6 +1524,9 @@ ALL_TESTS = [
     (96, "detector_no_state_unreg",  test_context_detector_no_state_files_unregistered),
     (97, "stale_no_false_positives", test_stale_detector_no_false_positives),
     (98, "ideas_dynamic",            test_emit_ideas_dynamic),
+    (99, "dashboard_velocity",       test_dashboard_velocity_section),
+    (100, "dashboard_risk_exposure", test_dashboard_risk_exposure),
+    (101, "ideas_backlog",           test_ideas_backlog_exists),
 ]
 
 

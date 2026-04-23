@@ -9,9 +9,9 @@
   "active_scenarios": [],
   "active_workflows": [],
   "history_migration_status": "completed_with_preserved_legacy",
-  "updated_at": "2026-04-23T01:48:29.978833+00:00",
+  "updated_at": "2026-04-23T01:54:59.500358+00:00",
   "v2_status": "stable",
-  "notes": "v3.0 — 135 tools. SPRINT-007 open. 111/111 tests. ideas-dynamic live. debt=23.9h/197 items. risk=243.6 CRITICA.",
+  "notes": "v3.0 — 135 tools. SPRINT-007 open. 114/114 tests. ideas-dynamic+backlog. chg=97 (111→135 retroactive coverage). debt=23.9h/197 items. risk=243.6 CRITICA.",
   "last_completed_session_id": "SES-HARVEST-2026-04-23-001",
   "last_completed_task_type": "harvest",
   "last_completed_workflow": "w9_cosecha",
@@ -22,7 +22,7 @@
   "last_completed_evidence_id": "BAGO-EVD-076",
   "inventory": {
     "sessions": 55,
-    "changes": 93,
+    "changes": 97,
     "evidences": 58
   },
   "last_validation": {
@@ -43,6 +43,6 @@
     "SPRINT-008": "closed"
   },
   "tool_count": 135,
-  "integration_suite": "111/111",
+  "integration_suite": "114/114",
   "changes": 59
 }

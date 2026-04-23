@@ -1,0 +1,24 @@
+{
+  "change_id": "BAGO-CHG-113",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Registro retroactivo — tools de análisis de código (v3.0)",
+  "motivation": "59 tools sin CHG. Grupo 3: análisis de calidad, complejidad, seguridad.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/dep_audit.py",
+    ".bago/tools/complexity.py",
+    ".bago/tools/dead_code.py",
+    ".bago/tools/duplicate_check.py",
+    ".bago/tools/secret_scan.py",
+    ".bago/tools/license_check.py",
+    ".bago/tools/naming_check.py",
+    ".bago/tools/type_check.py",
+    ".bago/tools/code_review.py",
+    ".bago/tools/refactor_suggest.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T01:56:00.000000+00:00",
+  "updated_at": "2026-04-23T01:56:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}

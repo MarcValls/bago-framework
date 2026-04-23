@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "description": "Backlog persistente de ideas BAGO — historial de aceptadas y descartadas",
+  "created_at": "2026-04-23T01:57:00.000000+00:00",
+  "updated_at": "2026-04-23T01:57:00.000000+00:00",
+  "accepted": [
+    {
+      "id": "idea-001",
+      "title": "Handoff idea -> W2",
+      "priority": 90,
+      "accepted_at": "2026-04-20T00:00:00.000000+00:00",
+      "session_id": "SES-W7-2026-04-18-001",
+      "outcome": "implemented — show_task.py + pending_w2_task.json workflow"
+    },
+    {
+      "id": "idea-002",
+      "title": "Gate seguro antes de implementar",
+      "priority": 84,
+      "accepted_at": "2026-04-21T00:00:00.000000+00:00",
+      "session_id": "SES-W7-2026-04-18-003",
+      "outcome": "implemented — run_canonical_gate() en emit_ideas.py"
+    },
+    {
+      "id": "idea-003",
+      "title": "Registro de ideas implementadas",
+      "priority": 84,
+      "accepted_at": "2026-04-22T00:00:00.000000+00:00",
+      "session_id": "SES-W8-2026-04-18-001",
+      "outcome": "implemented — implemented_ideas.json + apply_dynamic_scoring()"
+    },
+    {
+      "id": "idea-004",
+      "title": "Ideas dinámicas basadas en estado real",
+      "priority": 95,
+      "accepted_at": "2026-04-23T01:45:00.000000+00:00",
+      "session_id": "SES-AUTONOMOUS-2026-04-23-002",
+      "outcome": "implemented — _real_state_ideas() en emit_ideas.py"
+    }
+  ],
+  "rejected": [
+    {
+      "id": "idea-rej-001",
+      "title": "Selector por intención",
+      "priority": 82,
+      "rejected_at": "2026-04-22T00:00:00.000000+00:00",
+      "reason": "Requiere matrix sandbox activo; sin sandbox no tiene señal para actuar. Pospuesta."
+    }
+  ],
+  "pending_review": []
+}

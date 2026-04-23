@@ -1,0 +1,23 @@
+{
+  "change_id": "BAGO-CHG-111",
+  "type": "governance",
+  "severity": "minor",
+  "title": "Registro retroactivo — tools de gobernanza central (v3.0)",
+  "motivation": "59 tools sin CHG. Grupo 1: herramientas de gobernanza central que existen desde v3.0 baseline.",
+  "status": "applied",
+  "affected_components": [
+    ".bago/tools/reconcile_state.py",
+    ".bago/tools/validate_pack.py",
+    ".bago/tools/validate_manifest.py",
+    ".bago/tools/health_report.py",
+    ".bago/tools/health_score.py",
+    ".bago/tools/audit_v2.py",
+    ".bago/tools/stale_detector.py",
+    ".bago/tools/iteration_logger.py",
+    ".bago/tools/bago_config.py"
+  ],
+  "related_evidence": [],
+  "created_at": "2026-04-23T01:55:00.000000+00:00",
+  "updated_at": "2026-04-23T01:55:00.000000+00:00",
+  "author": "BAGO-AUTONOMOUS-002"
+}
