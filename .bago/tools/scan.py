@@ -444,6 +444,8 @@ def main():
                         help="Formato de salida: text (default), json, csv")
     parser.add_argument("--output",      default=None, metavar="FILE",
                         help="Escribe output a FILE en lugar de stdout (requiere --format csv o json)")
+    parser.add_argument("--stats",       action="store_true",
+                        help="Muestra resumen estadístico: total, por severidad y por fuente")
     args = parser.parse_args()
 
     if args.test:
@@ -494,6 +496,32 @@ def main():
 
     fmt = getattr(args, "format", None)
     out_path = getattr(args, "output", None)
+
+    if getattr(args, "stats", False):
+        from collections import Counter
+        sev_counts = Counter(f.severity for f in findings)
+        src_counts = Counter(f.source   for f in findings)
+        total = len(findings)
+        if args.json:
+            import json as _json
+            print(_json.dumps({
+                "total": total,
+                "by_severity": dict(sev_counts),
+                "by_source":   dict(src_counts),
+            }, indent=2))
+        else:
+            print(f"\n  Scan stats  (scan_id={db.scan_id})\n")
+            print(f"  Total hallazgos: {total}\n")
+            print(f"  Por severidad:")
+            for sev in ("error", "warning", "info", "hint"):
+                n = sev_counts.get(sev, 0)
+                if n:
+                    print(f"    {sev:10s} {n:>5}")
+            print(f"\n  Por fuente:")
+            for src, n in src_counts.most_common():
+                print(f"    {src:20s} {n:>5}")
+            print()
+        return
 
     def _write(content: str):
         if out_path:

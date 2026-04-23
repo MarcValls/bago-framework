@@ -2437,6 +2437,18 @@ def test_velocity_json_rolling_windows():
     _record("velocity:json_rolling_windows", PASS, f"rolling_4w OK, {len(windows)} windows")
 
 
+def test_scan_stats():
+    """scan.py --stats --quiet: output contiene 'Total hallazgos' o JSON con 'total'."""
+    rc, out, err = _run("scan.py", ["--stats", "--quiet"], timeout=60)
+    if rc != 0:
+        _record("scan:stats", FAIL, f"rc={rc} err={err[:100]}")
+        return
+    if "Total hallazgos" not in out and '"total"' not in out:
+        _record("scan:stats", FAIL, f"expected stats output, got: {out[:80]!r}")
+        return
+    _record("scan:stats", PASS, "stats OK")
+
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2584,6 +2596,7 @@ ALL_TESTS = [
     (144, "risk_matrix:top",             test_risk_matrix_top),
     (145, "dashboard:json_test_count",   test_dashboard_json_test_count),
     (146, "velocity:json_rolling_windows", test_velocity_json_rolling_windows),
+    (147, "scan:stats",                  test_scan_stats),
 ]
 
 
