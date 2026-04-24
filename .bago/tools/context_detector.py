@@ -249,7 +249,7 @@ def print_report(result):
 
     print()
     print("╔══════════════════════════════════════════╗")
-    print(f"║   BAGO · Context Detector                ║")
+    print("║   BAGO · Context Detector                ║")
     print("╠══════════════════════════════════════════╣")
     print(f"║  {icon} {color_open}{v:<10}{color_close}  {result['message'][:28]:<28} ║")
     bar = _bar(result["score"], result["threshold"])

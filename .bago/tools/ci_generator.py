@@ -14,7 +14,7 @@ Uso:
   bago ci --provider all
   bago ci --dry-run          → muestra sin escribir
 """
-import argparse, sys, textwrap
+import argparse
 from pathlib import Path
 
 # ─── Templates ───────────────────────────────────────────────────────────────
@@ -444,10 +444,10 @@ def main():
     provider   = args.provider
     dry_run    = args.dry_run
 
-    print(f"\n  bago ci — Generador de CI/CD")
+    print("\n  bago ci — Generador de CI/CD")
     print(f"  Provider: {provider}  |  Output: {output_dir}")
     if dry_run:
-        print(f"  [dry-run activo — no se escriben archivos]")
+        print("  [dry-run activo — no se escriben archivos]")
     print()
 
     written = []

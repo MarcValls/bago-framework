@@ -21,7 +21,7 @@ Códigos: REG-I001 (registrado), REG-W001 (ya registrado), REG-E001 (error)
 import sys
 import re
 import json
-import subprocess
+import hashlib
 from pathlib import Path
 
 BAGO_ROOT = Path(__file__).parent.parent
@@ -201,8 +201,6 @@ def register_in_integration_tests(tool_file: str, dry_run: bool = False) -> str:
         new_src = src[:all_tests_pos] + test_func + src[all_tests_pos:]
 
         # 3. Find last entry in ALL_TESTS and insert after it
-        # Pattern: last "(N, "..." , test_...)" entry
-        pattern = r'(\s*\(\d+,\s*"[^"]*",\s*\w+\),)\n(\])'
         next_num = get_next_test_number(new_src)
         new_entry = f'\n    ({next_num}, "{stem}", {func_name}),'
         # Insert before the closing ]
@@ -269,7 +267,6 @@ def regen_checksums(dry_run: bool = False) -> bool:
         all_files = py_files + js_files
         lines = []
         for f in all_files:
-            import hashlib
             content = f.read_bytes()
             sha = hashlib.sha256(content).hexdigest()
             rel = f.relative_to(BAGO_ROOT)
@@ -323,7 +320,7 @@ def cmd_register(tool_file: str, description: str = "", dry_run: bool = False) -
     if code == "REG-I001" or code.startswith("REG-I001"):
         print(f"  [REG-I001] ✅  integration_tests.py → test_{tool_file_to_stem(tool_file)}")
     elif code == "REG-W001":
-        print(f"  [REG-W001] ⚠️  integration_tests.py → ya registrado")
+        print("  [REG-W001] ⚠️  integration_tests.py → ya registrado")
     else:
         print(f"  [{code}] ❌  integration_tests.py")
 
@@ -333,7 +330,7 @@ def cmd_register(tool_file: str, description: str = "", dry_run: bool = False) -
     if code2 == "REG-I001":
         print(f"  [REG-I001] ✅  bago script → elif cmd == '{cmd}'")
     elif code2 == "REG-W001":
-        print(f"  [REG-W001] ⚠️  bago script → ya registrado")
+        print("  [REG-W001] ⚠️  bago script → ya registrado")
     else:
         print(f"  [{code2}] ❌  bago script")
 
@@ -342,7 +339,7 @@ def cmd_register(tool_file: str, description: str = "", dry_run: bool = False) -
         ok = regen_checksums()
         print(f"  [REG-I001] {'✅' if ok else '❌'}  CHECKSUMS + TREE regenerados")
     else:
-        print(f"  [REG-I001] DRY  CHECKSUMS sería regenerado")
+        print("  [REG-I001] DRY  CHECKSUMS sería regenerado")
 
     print()
     return 0
@@ -362,7 +359,6 @@ def cmd_check_all():
 
 
 def run_tests():
-    import tempfile, os
     results = []
 
     # Test 1: tool_file_to_cmd
@@ -395,7 +391,7 @@ def run_tests():
     try:
         ast.parse(func_src)
         ok6 = True
-    except SyntaxError as e:
+    except SyntaxError:
         ok6 = False
     results.append(("auto_register:generate_func_valid_python", ok6, ""))
 
@@ -420,7 +416,6 @@ if __name__ == "__main__":
 
     if "--gen-manifest" in args:
         # Trap #8: generate canonical .bago/tools.manifest.json
-        import hashlib
         internal = {
             "integration_tests", "bago_utils", "bago_banner", "bago_start", "bago_on",
             "bago_debug", "bago_watch", "bago_chat_server", "bago_ask", "bago_lint_cli",

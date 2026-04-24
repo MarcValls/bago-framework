@@ -15,7 +15,6 @@ Códigos: SRCH-I001 (match exacto), SRCH-I002 (match parcial),
          SRCH-W001 (sin resultados)
 """
 import sys
-import json
 import re
 from pathlib import Path
 
@@ -67,6 +66,7 @@ def score_match(query_tokens: list, tool: tuple) -> int:
     all_tokens = tokenize(all_text)
     kw_text = " ".join(kws).lower()
 
+
     for qt in query_tokens:
         # exact code match
         for code in codes:
@@ -85,7 +85,7 @@ def score_match(query_tokens: list, tool: tuple) -> int:
         if qt == cat.lower():
             score += 8
         # partial substring
-        if qt in all_text and qt not in tokenize(all_text):
+        if qt in all_text and qt not in all_tokens:
             score += 2
     return score
 

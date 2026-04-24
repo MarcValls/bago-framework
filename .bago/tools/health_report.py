@@ -20,7 +20,6 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
-import os
 import datetime
 from pathlib import Path
 from typing import Optional
@@ -31,7 +30,7 @@ BAGO_ROOT = Path(__file__).parent.parent
 try:
     import sys as _sys
     _sys.path.insert(0, str(Path(__file__).parent))
-    from chart_engine import render_gauge, render_bar, render_doughnut, html_page as _html_page
+    from chart_engine import render_gauge, render_bar, render_doughnut
     _CHARTS_OK = True
 except Exception:
     _CHARTS_OK = False
@@ -157,15 +156,15 @@ def generate_markdown(target: str, lint_data: dict, cfg_data: dict,
 
     lines = [
         f"# {title}",
-        f"",
+        "",
         f"> Generado por **BAGO health-report** · {now}",
-        f"",
-        f"---",
-        f"",
+        "",
+        "---",
+        "",
         f"## {score['emoji']} Score de Salud: {score['score']}/100 — {score['status']}",
-        f"",
-        f"| Métrica | Valor |",
-        f"|---------|-------|",
+        "",
+        "| Métrica | Valor |",
+        "|---------|-------|",
         f"| Score   | **{score['score']}/100** |",
         f"| Errores de código  | {score['errors']} |",
         f"| Advertencias de código | {score['warnings']} |",
@@ -182,11 +181,11 @@ def generate_markdown(target: str, lint_data: dict, cfg_data: dict,
         ]
 
     lines += [
-        f"",
-        f"---",
-        f"",
-        f"## 📦 Configuración (pack.json)",
-        f"",
+        "",
+        "---",
+        "",
+        "## 📦 Configuración (pack.json)",
+        "",
     ]
     if cfg_data.get("error"):
         lines.append(f"⚠️ `{cfg_data['error']}`")
@@ -200,22 +199,22 @@ def generate_markdown(target: str, lint_data: dict, cfg_data: dict,
     # Top reglas
     top_r = _top_rules(findings)
     lines += [
-        f"",
-        f"---",
-        f"",
-        f"## 🔍 Análisis de Código",
-        f"",
+        "",
+        "---",
+        "",
+        "## 🔍 Análisis de Código",
+        "",
         f"**Total de hallazgos:** {len(findings)} "
         f"({score['errors']} errores, {score['warnings']} advertencias, {score['infos']} info)",
-        f"",
+        "",
     ]
 
     if top_r:
         lines += [
-            f"### Top Reglas",
-            f"",
-            f"| Regla | Ocurrencias |",
-            f"|-------|------------|",
+            "### Top Reglas",
+            "",
+            "| Regla | Ocurrencias |",
+            "|-------|------------|",
         ]
         for rule, cnt in top_r:
             lines.append(f"| `{rule}` | {cnt} |")
@@ -223,11 +222,11 @@ def generate_markdown(target: str, lint_data: dict, cfg_data: dict,
     top_f = _top_files(findings)
     if top_f:
         lines += [
-            f"",
-            f"### Archivos con más hallazgos",
-            f"",
-            f"| Archivo | Hallazgos |",
-            f"|---------|-----------|",
+            "",
+            "### Archivos con más hallazgos",
+            "",
+            "| Archivo | Hallazgos |",
+            "|---------|-----------|",
         ]
         for fname, cnt in top_f:
             lines.append(f"| `{fname}` | {cnt} |")
@@ -248,16 +247,16 @@ def generate_markdown(target: str, lint_data: dict, cfg_data: dict,
         recs.append("✅ El proyecto está en buen estado — sin acciones críticas")
 
     lines += [
-        f"",
-        f"---",
-        f"",
-        f"## 💡 Recomendaciones",
-        f"",
+        "",
+        "---",
+        "",
+        "## 💡 Recomendaciones",
+        "",
     ]
     for r in recs:
         lines.append(f"- {r}")
 
-    lines += ["", "---", f"*Generado con BAGO Framework — `bago health-report`*", ""]
+    lines += ["", "---", "*Generado con BAGO Framework — `bago health-report`*", ""]
     return "\n".join(lines)
 
 
@@ -346,7 +345,7 @@ def generate_html(target: str, lint_data: dict, cfg_data: dict,
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BAGO Health Report</title>
+<title>{page_title}</title>
 <style>
 :root{{--text-muted:#666;}}
 @media(prefers-color-scheme:dark){{body{{background:#1a1a2e;color:#e0e0e0;}}:root{{--text-muted:#aaa;}}}}
@@ -362,7 +361,7 @@ code{{background:#ecf0f1;padding:2px 6px;border-radius:3px;font-size:0.9em;}}
 </style>
 </head>
 <body>
-<h1>🏥 BAGO Health Report</h1>
+<h1>🏥 {page_title}</h1>
 <p style="color:var(--text-muted);">Generado por BAGO Framework · {now}</p>
 {charts_section}
 {git_html}

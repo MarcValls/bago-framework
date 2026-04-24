@@ -23,7 +23,6 @@ import sys
 import re
 import subprocess
 from pathlib import Path
-from typing import Optional
 
 BAGO_ROOT = Path(__file__).parent.parent
 TOOLS_DIR = Path(__file__).parent
@@ -276,7 +275,7 @@ def cmd_route(query: str, dry_run: bool = False, yes: bool = False, verbose: boo
     print(f"  Tools a ejecutar: {' → '.join(best['tools'])}")
 
     if len(intents) > 1 and verbose:
-        print(f"\n  Alternativas:")
+        print("\n  Alternativas:")
         for s, intent in intents[1:]:
             print(f"    • {intent['name']} (score={s})")
 

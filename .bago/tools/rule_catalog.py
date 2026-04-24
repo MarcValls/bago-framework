@@ -17,9 +17,7 @@ Opciones:
 from __future__ import annotations
 
 import sys
-import json
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 # ─── Catálogo de reglas ────────────────────────────────────────────────────
 
