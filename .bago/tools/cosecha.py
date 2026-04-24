@@ -98,7 +98,6 @@ def _detect_modified_files():
 
 def run():
     now = datetime.now(timezone.utc).isoformat()
-    today_str = datetime.now().strftime("%Y-%m-%d")
 
     print()
     print("╔══════════════════════════════════════════════════╗")

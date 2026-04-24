@@ -23,9 +23,8 @@ Uso:
   python3 integration_tests.py --verbose
 """
 from __future__ import annotations
-import argparse, json, subprocess, sys, tempfile, os
+import argparse, json, subprocess, tempfile
 from pathlib import Path
-from datetime import datetime
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
@@ -1274,7 +1273,7 @@ def test_context_detector_skip_dirs():
         # HARVEST with no mention of TESTS in trigger is ok — it means real signals
         _record("detector:skip_dirs", PASS, "HARVEST from real signals only")
     elif "HARVEST" not in out:
-        _record("detector:skip_dirs", PASS, f"detector not in false-positive HARVEST state")
+        _record("detector:skip_dirs", PASS, "detector not in false-positive HARVEST state")
     else:
         _record("detector:skip_dirs", PASS, "detector running")
 

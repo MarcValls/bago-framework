@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import csv
 import datetime as dt
 import json
 from collections import Counter, defaultdict
@@ -730,7 +729,6 @@ def main() -> int:
     timeline_chart(cluster_rows, "Ventanas de trabajo autónomo en metrics/runs", FIG_DIR / "runs_clusters.svg")
 
     # Session counts by type for the report.
-    session_type_counts = Counter(s["task_type"] for s in sessions)
     phase_role_early = sorted({r for s in early_sessions for r in s.get("roles_activated", [])})
     phase_role_late = sorted({r for s in late_sessions for r in s.get("roles_activated", [])})
 

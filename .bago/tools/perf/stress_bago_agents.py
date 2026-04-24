@@ -66,6 +66,8 @@ def build_prompt(role_name: str, role_path: str, prompt_size: int):
 
 
 def post_json(url: str, payload: dict, headers: dict, timeout_s: int):
+    if not url.startswith("https://"):
+        raise ValueError(f"URL must use https scheme, got: {url!r}")
     req = urllib.request.Request(
         url,
         data=json.dumps(payload).encode("utf-8"),

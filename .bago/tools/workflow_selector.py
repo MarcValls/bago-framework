@@ -92,7 +92,6 @@ def auto_recommend() -> tuple[str, dict]:
     }
 
     # Heurísticas desde global_state
-    last_workflow = global_state.get("last_completed_workflow", "")
     last_type = global_state.get("last_completed_task_type", "")
     active_scenarios = global_state.get("active_scenarios", [])
     system_health = global_state.get("system_health", "stable")
