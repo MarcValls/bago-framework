@@ -80,7 +80,7 @@ def _get_git_info(target: str) -> dict:
     """Información básica del repositorio git."""
     try:
         branch = subprocess.run(
-            ["git", "rev-parse", "--abbrev-re", "HEAD"],
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"],
             capture_output=True, text=True, cwd=target
         ).stdout.strip()
         commit = subprocess.run(

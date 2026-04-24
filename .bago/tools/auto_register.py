@@ -21,6 +21,7 @@ Códigos: REG-I001 (registrado), REG-W001 (ya registrado), REG-E001 (error)
 import sys
 import re
 import json
+import hashlib
 from pathlib import Path
 
 BAGO_ROOT = Path(__file__).parent.parent
@@ -261,7 +262,6 @@ def regen_checksums(dry_run: bool = False) -> bool:
     if dry_run:
         return True
     try:
-        import hashlib
         py_files = sorted(TOOLS_DIR.glob("*.py"))
         js_files = sorted(TOOLS_DIR.glob("*.js"))
         all_files = py_files + js_files
@@ -416,7 +416,6 @@ if __name__ == "__main__":
 
     if "--gen-manifest" in args:
         # Trap #8: generate canonical .bago/tools.manifest.json
-        import hashlib
         internal = {
             "integration_tests", "bago_utils", "bago_banner", "bago_start", "bago_on",
             "bago_debug", "bago_watch", "bago_chat_server", "bago_ask", "bago_lint_cli",
