@@ -1,0 +1,26 @@
+{
+  "idea_index": 1,
+  "idea_title": "Cierre automático de sesión",
+  "priority": 100,
+  "workflow": "W2_IMPLEMENTACION_CONTROLADA",
+  "objetivo": "Al marcar la tarea como done, generar automáticamente el artefacto de cierre con resumen de cambios y evidencias.",
+  "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
+  "no_alcance": "No expandir el alcance fuera de la idea elegida.",
+  "archivos_candidatos": [
+    ".bago/tools/emit_ideas.py"
+  ],
+  "validacion_minima": [
+    "La salida debe explicar el cambio, los archivos y la verificación mínima.",
+    "Métrica objetivo: bago task --done genera y guarda automáticamente el artefacto de cierre de sesión."
+  ],
+  "siguiente_paso": "Extender show_task.py --done para llamar al generador de cierre de sesión.",
+  "metric": "bago task --done genera y guarda automáticamente el artefacto de cierre de sesión.",
+  "contexto": [
+    "Entrada: tarea W2 completada (pending_w2_task.json con status=done).",
+    "Salida: artefacto de cierre con resumen, CHG/EVD generados y estado actualizado.",
+    "Ventaja: elimina el paso manual de redactar el cierre después de implementar."
+  ],
+  "status": "done",
+  "accepted_at": "2026-04-28T10:32:56.056866+00:00",
+  "done_at": "2026-04-30T15:40:59.618364+00:00"
+}

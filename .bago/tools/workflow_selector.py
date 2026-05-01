@@ -24,6 +24,13 @@ from pathlib import Path
 import json
 import sys
 
+# Windows UTF-8 fix for box-drawing characters
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 ROOT = Path(__file__).resolve().parents[1]
 GLOBAL_STATE = ROOT / "state" / "global_state.json"
 
@@ -111,12 +118,63 @@ def auto_recommend() -> tuple[str, dict]:
     return recommend(ctx), ctx
 
 
+def _intent_menu() -> dict | None:
+    """SLOT 4 GEN 1 · Selector por intención.
+
+    Shows a numbered menu of intent categories. Returns a pre-filled ctx dict
+    if the user picks one, or None to fall through to guided questions.
+    """
+    INTENTS = [
+        ("Implementar una idea del backlog BAGO",       {"has_task": True,  "needs_quality_gate": True}),
+        ("Explorar o investigar sin entregable fijo",    {"is_exploration": True}),
+        ("Modificar el propio pack BAGO",                {"is_bago_change": True}),
+        ("Bootstrap en repositorio nuevo",               {"is_new_repo": True}),
+        ("Formalizar contexto acumulado",                {"has_accumulated": True}),
+        ("Sesión libre / experimental",                  {}),
+        ("Preguntas detalladas (modo guiado)",           None),   # fall-through
+    ]
+
+    print("  Elige tu intención:")
+    for i, (label, _) in enumerate(INTENTS, 1):
+        print(f"    {i}. {label}")
+    print()
+
+    try:
+        raw = input("  Número [1-7] o Enter para guiado: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        return {}
+
+    if not raw:
+        return None  # guided
+
+    try:
+        idx = int(raw) - 1
+    except ValueError:
+        return None  # invalid → guided
+
+    if idx < 0 or idx >= len(INTENTS):
+        return None
+
+    _, ctx = INTENTS[idx]
+    return ctx  # None means guided, dict means pre-filled
+
+
 def interactive_mode() -> str:
     print()
     print("═══ BAGO Workflow Selector ══════════════════════════════")
     print("  Responde las preguntas para recibir una recomendación.")
     print()
 
+    # ── Intent shortcut menu (S4G1) ──────────────────────────────────────────
+    ctx_from_intent = _intent_menu()
+    if ctx_from_intent is not None:
+        # User selected a direct intent — pre-fill and recommend immediately
+        selected_workflow = recommend(ctx_from_intent)
+        _print_result(selected_workflow)
+        return selected_workflow
+    # ctx_from_intent is None → fall through to guided questions
+    print()
     ctx = {}
 
     ctx["is_bago_change"] = ask("¿Estás modificando el propio pack BAGO (herramientas, core, estructura)?")

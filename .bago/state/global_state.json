@@ -8,9 +8,10 @@
   "inventory": {
     "sessions": 0,
     "changes": 0,
-    "evidences": 0
+    "evidences": 0,
+    "session_closes": 3
   },
   "last_validation": {},
   "notes": "Estado inicial — ejecuta 'python3 bago health' para verificar el sistema.",
-  "updated_at": "2026-04-20T00:00:00Z"
+  "updated_at": "2026-04-30T21:08:00.000000+00:00"
 }

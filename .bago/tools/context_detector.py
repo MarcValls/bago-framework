@@ -14,6 +14,13 @@ import json, re, subprocess, sys
 from pathlib import Path
 from datetime import datetime, timezone
 
+# Windows UTF-8 fix: box-drawing / emoji chars fail on cp1252
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 # ─── Configuración ────────────────────────────────────────────────────────────
 BAGO_ROOT   = Path(__file__).resolve().parent.parent
 REPO_ROOT   = BAGO_ROOT.parent
@@ -121,11 +128,20 @@ def _scan_cognitive(max_files=40, extensions=(".md", ".txt", ".py", ".ts", ".js"
         if p.exists() and p.suffix in extensions:
             candidates.append(p)
 
+    def _safe_mtime(p: Path) -> float:
+        try:
+            return p.stat().st_mtime
+        except Exception:
+            return 0.0
+
     # Completar con ficheros recientes si hacen falta
     if len(candidates) < max_files:
         for ext in extensions:
-            for p in sorted(REPO_ROOT.rglob(f"*{ext}"),
-                            key=lambda x: x.stat().st_mtime, reverse=True):
+            try:
+                rglob_results = list(REPO_ROOT.rglob(f"*{ext}"))
+            except Exception:
+                rglob_results = []
+            for p in sorted(rglob_results, key=_safe_mtime, reverse=True):
                 if p not in candidates and ".bago" not in str(p):
                     candidates.append(p)
                     if len(candidates) >= max_files:

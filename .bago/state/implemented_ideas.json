@@ -1,5 +1,120 @@
 {
-  "ideas_completed": [],
-  "last_updated": null,
-  "_note": "Populated by 'bago task --done'. Each entry is a registered improvement with id, title, date and evidence reference."
+  "_comment": "ideas implementadas en el pack BAGO — actualizado automáticamente",
+  "implemented": [
+    {
+      "title": "Resumen unico de estabilidad",
+      "slot": 2,
+      "done_at": "2026-04-28T12:28:16.578456+02:00"
+    },
+    {
+      "title": "Cierre automático de sesión",
+      "slot": null,
+      "done_at": "2026-04-30T17:40:59.619368+02:00"
+    },
+    {
+      "title": "Alerta de task obsoleta",
+      "slot": 2,
+      "done_at": "2026-04-30T19:23:09.732739+02:00"
+    },
+    {
+      "title": "Scoring dinamico por registro",
+      "slot": 3,
+      "done_at": "2026-04-30T19:23:09.732739+02:00"
+    },
+    {
+      "title": "Mejorar ranking de ideas",
+      "slot": 4,
+      "done_at": "2026-04-30T19:23:54.5046+02:00"
+    },
+    {
+      "title": "Entrada rapida del repo",
+      "slot": 5,
+      "done_at": "2026-04-30T19:25:48.331003+02:00"
+    },
+    {
+      "title": "Alinear README con selector",
+      "slot": 6,
+      "done_at": "2026-04-30T19:26:22.25661+02:00"
+    },
+    {
+      "title": "Contador de progreso en banner",
+      "slot": 9,
+      "done_at": "2026-04-30T23:07:00+02:00"
+    },
+    {
+      "title": "Sesiones reales en global_state",
+      "slot": 10,
+      "done_at": "2026-04-30T23:07:00+02:00"
+    },
+    {
+      "title": "Recordatorio de cosecha tras tarea",
+      "slot": 11,
+      "done_at": "2026-04-30T23:07:00+02:00"
+    },
+    {
+      "title": "Reabrir desde continuidad",
+      "slot": 6,
+      "done_at": "2026-04-30T23:07:00+02:00"
+    },
+    {
+      "title": "Reforzar rango del selector",
+      "slot": null,
+      "done_at": "2026-04-30T23:07:00+02:00"
+    },
+    {
+      "title": "Health score real desde historial",
+      "slot": 16,
+      "done_at": "2026-04-30T23:16:00+02:00"
+    },
+    {
+      "title": "Estado del catálogo en stability",
+      "slot": 13,
+      "done_at": "2026-04-30T23:16:00+02:00"
+    },
+    {
+      "title": "Dashboard con progreso de ideas",
+      "slot": 13,
+      "done_at": "2026-04-30T23:16:00+02:00"
+    },
+    {
+      "title": "Resumen automático de sprint",
+      "slot": 14,
+      "done_at": "2026-04-30T23:16:00+02:00"
+    },
+    {
+      "title": "Cosecha con ideas del sprint",
+      "slot": 11,
+      "done_at": "2026-04-30T23:16:00+02:00"
+    },
+    {
+      "title": "Velocidad de sprint",
+      "slot": 17,
+      "done_at": "2026-04-30T21:40:00Z",
+      "notes": "Añade _sprint_velocity() en sprint_summary.py con sentinel # SPRINT_VELOCITY_IMPLEMENTED"
+    },
+    {
+      "title": "Health score en banner",
+      "slot": 18,
+      "done_at": "2026-04-30T21:40:00Z",
+      "notes": "Añade _health_score() + _print_quick_action fix en bago_banner.py con sentinel # HEALTH_IN_BANNER_IMPLEMENTED"
+    },
+    {
+      "title": "Health score en cosecha",
+      "slot": 19,
+      "done_at": "2026-04-30T21:40:00Z",
+      "notes": "Añade _get_health_score() en cosecha.py con sentinel # COSECHA_HEALTH_COMPARE_IMPLEMENTED"
+    },
+    {
+      "title": "Historial de ideas en dashboard",
+      "slot": 13,
+      "done_at": "2026-04-30T21:40:00Z",
+      "notes": "Extiende _ideas_summary() en pack_dashboard.py con recent_ideas (últimas 3)"
+    },
+    {
+      "title": "Exportar historial de ideas",
+      "slot": 20,
+      "done_at": "2026-04-30T21:40:00Z",
+      "notes": "Añade --export + _export_report() en sprint_summary.py"
+    }
+  ]
 }

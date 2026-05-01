@@ -86,6 +86,30 @@ def _context_detector():
     except Exception:
         return "ERR", 0, 0, 0
 
+def _ideas_summary():
+    """(implemented, available, total_db) para el panel de progreso de ideas."""
+    impl_path = STATE / "implemented_ideas.json"
+    db_path = STATE / "bago.db"
+    implemented = 0
+    total_db = 0
+    recent: list[dict] = []
+    try:
+        if impl_path.exists():
+            data = json.loads(impl_path.read_text(encoding="utf-8"))
+            entries = data.get("implemented", [])
+            implemented = len(entries)
+            recent = entries[-3:] if entries else []
+        if db_path.exists():
+            import sqlite3
+            conn = sqlite3.connect(str(db_path))
+            total_db = conn.execute("SELECT COUNT(*) FROM ideas").fetchone()[0]
+            conn.close()
+    except Exception:
+        pass
+    available = max(0, total_db - implemented)
+    return implemented, available, total_db, recent
+
+
 def _escenario_003_stats():
     """Cuenta cosechas W9 completadas en ESCENARIO-003."""
     harvests = []
@@ -104,6 +128,10 @@ def _escenario_003_stats():
     return n, avg_dec, avg_art
 
 def main():
+    impl_n, avail_n, total_n, recent_ideas = _ideas_summary()
+    pct_i = round(100 * impl_n / total_n) if total_n > 0 else 0
+    bar_i = int(10 * impl_n / total_n) if total_n > 0 else 0
+    bar_ideas = "█" * bar_i + "░" * (10 - bar_i)
     full = "--full" in sys.argv
     g = _load_global()
     pack_status = _validate()
@@ -153,6 +181,14 @@ def main():
         print(f"║  Detector W9:  {v_str}  [{bar}] {score}/{threshold}        ║")
         if verdict == "HARVEST":
             print( "║  → python3 .bago/tools/cosecha.py                   ║")
+    print("╠══════════════════════════════════════════════════════╣")
+    ideas_content = f"  Ideas:  {impl_n} impl. / {avail_n} disp. [{bar_ideas}] {pct_i}%"
+    print(f"║{ideas_content:<54}║")
+    for idea in recent_ideas:
+        title = idea.get("title", "—")[:40]
+        date  = (idea.get("done_at") or "")[:10] or "—"
+        row   = f"    · {title}  {date}"
+        print(f"║{row:<54}║")
     print("╠══════════════════════════════════════════════════════╣")
     lc = g.get("last_completed_session_id", "—")
     print(f"║  Última sesión: {lc:<37}║")

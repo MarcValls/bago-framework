@@ -655,7 +655,55 @@ def test_bago_ask():
         _record("bago_ask:self_test", FAIL, f"rc={rc}")
 
 
-def test_sprint_state():
+def test_research_orchestrator():
+    """research_orchestrator.py ejecuta sin errores."""
+    rc, out, _ = _run("research_orchestrator.py", ["--list"])
+    if rc == 0:
+        _record("research:list", PASS, "orchestrator accesible")
+    else:
+        _record("research:list", FAIL, f"rc={rc}")
+    
+    # Test research mode
+    rc2, out2, _ = _run("research_orchestrator.py", ["test_topic"])
+    if rc2 == 0 and "BAGO Research" in out2:
+        _record("research:mode", PASS, "research mode ok")
+    else:
+        _record("research:mode", FAIL, f"rc={rc2}")
+
+
+def test_chronicle_reporter():
+    """chronicle_reporter.py genera reporte sin errores."""
+    rc, out, _ = _run("chronicle_reporter.py", [])
+    if rc == 0 and "BAGO SESSION CHRONICLE" in out:
+        _record("chronicle:report", PASS, "reporte generado")
+    else:
+        _record("chronicle:report", FAIL, f"rc={rc}")
+    
+    # Test summary mode
+    rc2, out2, _ = _run("chronicle_reporter.py", ["--summary"])
+    if rc2 == 0 and ("STATUS" in out2 or "BAGO" in out2):
+        _record("chronicle:summary", PASS, "modo summary ok")
+    else:
+        _record("chronicle:summary", FAIL, f"rc={rc2}")
+
+
+def test_lsp_manager():
+    """lsp_manager.py ejecuta sin errores."""
+    rc, out, _ = _run("lsp_manager.py", ["--status"])
+    if rc == 0 and ("LSP" in out or "status" in out.lower()):
+        _record("lsp:status", PASS, "status ok")
+    else:
+        _record("lsp:status", FAIL, f"rc={rc}")
+    
+    # Test list
+    rc2, out2, _ = _run("lsp_manager.py", ["--list"])
+    if rc2 == 0:
+        _record("lsp:list", PASS, "list ok")
+    else:
+        _record("lsp:list", FAIL, f"rc={rc2}")
+
+
+
     """Existe al menos un sprint open en state/sprints/."""
     import json as _json
     sprints_dir = ROOT / "state" / "sprints"
@@ -1609,6 +1657,9 @@ ALL_TESTS = [
     (104, "sprint_status",           test_sprint_manager_status),
     (105, "ideas_count",             test_emit_ideas_count),
     (106, "sysexit_refactor",        test_sysexit_refactor),
+    (107, "research_orchestrator",   test_research_orchestrator),
+    (108, "chronicle_reporter",      test_chronicle_reporter),
+    (109, "lsp_manager",             test_lsp_manager),
 ]
 
 
