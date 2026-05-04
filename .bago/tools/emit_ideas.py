@@ -192,16 +192,19 @@ def detect_implemented_features() -> dict[str, bool]:
     state = ROOT / ".bago" / "state"
     bago_readme = ROOT / ".bago" / "README.md"
     banner_text = (tools / "bago_banner.py").read_text(encoding="utf-8") if (tools / "bago_banner.py").exists() else ""
+    show_task_text = (tools / "show_task.py").read_text(encoding="utf-8") if (tools / "show_task.py").exists() else ""
     return {
         "handoff_w2":       (tools / "show_task.py").exists(),
+        "session_opener":   (tools / "session_opener.py").exists(),
+        "close_auto":       "_generate_close_artifact" in show_task_text and (tools / "session_close_generator.py").exists(),
         "stability_cmd":    (ROOT / "stability-summary").exists() and (tools / "stability_summary.py").exists(),
+        "banner_shows_task": "_active_task" in banner_text,
         "ideas_wrapper":    (ROOT / "ideas").exists(),
         "gate_in_code":     True,  # siempre presente en emit_ideas.py
         "readme_aligned":   bago_readme.exists() and "bago stability" in bago_readme.read_text(encoding="utf-8"),
         "pending_task":     (state / "pending_w2_task.json").exists(),
-        "session_opener":   (tools / "session_opener.py").exists(),
-        "banner_shows_task": "_active_task" in banner_text,
         "impl_registry":    (state / "implemented_ideas.json").exists(),
+        "scoring_dynamic":  "apply_dynamic_scoring" in (tools / "emit_ideas.py").read_text(encoding="utf-8"),
     }
 
 
@@ -215,6 +218,44 @@ def load_implemented_titles() -> set[str]:
         return {str(e.get("title", "")) for e in data.get("implemented", [])}
     except Exception:
         return set()
+
+
+def apply_dynamic_scoring(ideas: list[dict[str, object]]) -> list[dict[str, object]]:
+    """Ajusta las prioridades según implemented_ideas.json.
+
+    - Ideas cuyo título está en implemented: se eliminan (ya filtradas antes).
+    - Ideas con keywords que coinciden con títulos implementados: penalización -5.
+    - Ideas con keywords que NO coinciden con nada implementado: boost +3.
+    Esto hace que el selector evolucione hacia trabajo genuinamente nuevo.
+    """
+    impl_file = ROOT / ".bago" / "state" / "implemented_ideas.json"
+    if not impl_file.exists():
+        return ideas
+    try:
+        data = json.loads(impl_file.read_text(encoding="utf-8"))
+        impl_entries = data.get("ideas_completed", [])
+    except Exception:
+        return ideas
+
+    if not impl_entries:
+        return ideas  # nada implementado aún — sin ajuste
+
+    impl_keywords: set[str] = set()
+    for entry in impl_entries:
+        title = str(entry.get("title", ""))
+        impl_keywords.update(w.lower() for w in title.split() if len(w) > 4)
+
+    result = []
+    for idea in ideas:
+        title_words = {w.lower() for w in str(idea.get("title", "")).split() if len(w) > 4}
+        overlap = title_words & impl_keywords
+        priority = int(idea["priority"])
+        if overlap:
+            priority = max(1, priority - 5)   # penalización: tema relacionado ya implementado
+        else:
+            priority = min(99, priority + 3)  # boost: trabajo genuinamente nuevo
+        result.append({**idea, "priority": priority})
+    return result
 
 
 def build_idea_sections(items: list[dict[str, object]]) -> dict[str, list[dict[str, object]]]:
@@ -433,7 +474,7 @@ def main() -> int:
 
     ideas: list[dict[str, object]] = []
 
-    # ── Idea 1: Handoff W2 → Opener → Cierre automático ──────────────────────
+    # ── Idea 1: Handoff W2 → Opener → Cierre automático → Cierre registra en CHG ─
     if not feat["handoff_w2"]:
         ideas.append({
             "priority": 90,
@@ -465,7 +506,7 @@ def main() -> int:
             ],
             "w2": "Implementar bago session en el script raíz delegando en session_preflight.py.",
         })
-    else:
+    elif not feat["close_auto"]:
         # Generación 3: cierre automático de sesión desde bago task --done
         ideas.append({
             "priority": 90,
@@ -480,6 +521,22 @@ def main() -> int:
                 "Ventaja: elimina el paso manual de redactar el cierre después de implementar.",
             ],
             "w2": "Extender show_task.py --done para llamar al generador de cierre de sesión.",
+        })
+    else:
+        # Generación 4: cierre actualiza implemented_ideas.json automáticamente
+        ideas.append({
+            "priority": 90,
+            "section": "contextuales",
+            "risk": "low",
+            "metric": "Después de `bago task --done`, la idea aparece en implemented_ideas.json y el selector ya no la repite.",
+            "title": "Cierre registra idea como implementada",
+            "summary": "Al cerrar una sesión con `bago task --done`, registrar automáticamente la idea en implemented_ideas.json para que el selector evolucione y no repita trabajo ya hecho.",
+            "detail": [
+                "Entrada: artefacto de cierre generado por session_close_generator.",
+                "Salida: entrada en .bago/state/implemented_ideas.json con id, título, fecha y referencia al artefacto.",
+                "Ventaja: el selector aprende qué se ha implementado sin intervención manual.",
+            ],
+            "w2": "Añadir en session_close_generator.py escritura a implemented_ideas.json al final del generate().",
         })
 
     # ── Idea 2: Stability → Banner → Stale task alert ─────────────────────────
@@ -531,7 +588,7 @@ def main() -> int:
             "w2": "Añadir lógica de antigüedad en bago_banner.py y stability_summary.py.",
         })
 
-    # ── Idea 3: Gate → Registro → Selector filtra por registro ───────────────
+    # ── Idea 3: Gate → Registro → Scoring dinámico → Ranking contextual ─────────
     stable_reports = all(
         report and report.get("status") == "pass" and report.get("failure_count", 1) == 0
         for report in (smoke, vm, soak)
@@ -568,7 +625,7 @@ def main() -> int:
             ],
             "w2": "Crear implemented_ideas.json y leerlo en emit_ideas para filtrar ideas ya hechas.",
         })
-    elif feat["impl_registry"]:
+    elif feat["impl_registry"] and not feat["scoring_dynamic"]:
         # Generación 3: puntuación dinámica basada en registro
         ideas.append({
             "priority": 84,
@@ -582,7 +639,23 @@ def main() -> int:
                 "Salida: ideas reordenadas priorizando trabajo genuinamente nuevo.",
                 "Ventaja: el selector se vuelve más preciso con el tiempo.",
             ],
-            "w2": "Leer implemented_ideas.json en emit_ideas y aplicar penalización de score a ideas similares ya hechas.",
+            "w2": "Añadir apply_dynamic_scoring() en emit_ideas.py que lee implemented_ideas.json y ajusta prioridades.",
+        })
+    else:
+        # Generación 4: ranking contextual por señales del estado actual
+        ideas.append({
+            "priority": 84,
+            "section": "contextuales",
+            "risk": "low",
+            "metric": "El ranking refleja señales de estado y reduce recomendaciones estáticas en >50% de ejecuciones.",
+            "title": "Ranking contextual por estado",
+            "summary": "Ampliar apply_dynamic_scoring() para incorporar señales del estado BAGO (workflow activo, salud, sprint) y ajustar prioridades en tiempo real.",
+            "detail": [
+                "Entrada: global_state.json + implemented_ideas.json.",
+                "Salida: ranking adaptado al contexto operativo actual.",
+                "Ventaja: ideas siempre alineadas con la fase real del proyecto.",
+            ],
+            "w2": "Extender apply_dynamic_scoring() con boost/penalización por workflow activo y salud del guardian.",
         })
 
     if matrix and matrix.get("status") == "pass":
@@ -633,7 +706,7 @@ def main() -> int:
             "w2": "Si se acepta, convertirlo en una mejora pequeña y segura de continuidad.",
         })
 
-    if repo_lines > 0:
+    if repo_lines > 0 and not feat["ideas_wrapper"]:
         ideas.append({
             "priority": 70,
             "section": "contextuales",
@@ -646,23 +719,57 @@ def main() -> int:
                 "Salida: menos fricción para abrir ideas o W2.",
                 "Ventaja: mejora la usabilidad diaria del repo.",
             ],
-            "w2": "Promover la idea seleccionada a una tarea corta y directa.",
+            "w2": "Crear ./ideas y ./stability-summary wrappers en la raíz del repo.",
+        })
+    elif repo_lines > 0 and feat["ideas_wrapper"]:
+        # wrapper existe — siguiente nivel: conectar README con flujo ideas → W2
+        ideas.append({
+            "priority": 70,
+            "section": "contextuales",
+            "risk": "medium",
+            "metric": "El README.md explica el flujo ideas → --accept → W2 en menos de 5 líneas.",
+            "title": "README enlaza ideas con W2",
+            "summary": "Documentar en README el flujo completo: ./ideas → --accept N → W2, para que cualquier colaborador pueda empezar en segundos.",
+            "detail": [
+                "Entrada: ./ideas wrapper y flujo ./ideas --accept N ya funcionales.",
+                "Salida: sección en README.md que describe el flujo de entrada al trabajo.",
+                "Ventaja: reduce la barrera de entrada para nuevos colaboradores.",
+            ],
+            "w2": "Añadir sección '## Empezar a trabajar' en README.md con el flujo ideas→W2.",
         })
 
-    ideas.append({
-        "priority": 68,
-        "section": "contextuales",
-        "risk": "medium",
-        "metric": "El ranking refleja señales de estado actual y reduce recomendaciones estáticas.",
-        "title": "Mejorar ranking de ideas",
-        "summary": "Ajustar el scoring para reflejar señales del estado actual y evitar prioridades estáticas que oculten trabajo real.",
-        "detail": [
-            "Entrada: estado BAGO, salud de reports y workflow activo.",
-            "Salida: orden de ideas más sensible al contexto operativo.",
-            "Ventaja: reduce sesgos de ranking y evita ciclos de recomendación.",
-        ],
-        "w2": "Implementar un ranking contextual acotado y validarlo con ejemplos reales del estado.",
-    })
+    # ── Idea 5: Mejorar ranking (genera según si scoring_dynamic ya existe) ────
+    if not feat["scoring_dynamic"]:
+        ideas.append({
+            "priority": 68,
+            "section": "contextuales",
+            "risk": "medium",
+            "metric": "El ranking refleja señales de estado actual y reduce recomendaciones estáticas.",
+            "title": "Mejorar ranking de ideas",
+            "summary": "Ajustar el scoring para reflejar señales del estado actual y evitar prioridades estáticas que oculten trabajo real.",
+            "detail": [
+                "Entrada: estado BAGO, salud de reports y workflow activo.",
+                "Salida: orden de ideas más sensible al contexto operativo.",
+                "Ventaja: reduce sesgos de ranking y evita ciclos de recomendación.",
+            ],
+            "w2": "Implementar apply_dynamic_scoring() en emit_ideas.py y validarlo con ejemplos reales.",
+        })
+    else:
+        # scoring_dynamic ya existe — siguiente nivel: ranking por workflow activo
+        ideas.append({
+            "priority": 68,
+            "section": "contextuales",
+            "risk": "medium",
+            "metric": "Ideas de implementación suben cuando W2/W3 es el workflow activo; ideas de exploración suben en W8.",
+            "title": "Ranking por workflow activo",
+            "summary": "Ampliar apply_dynamic_scoring() para dar boost a ideas afines al workflow activo actual (W2→implementación, W8→exploración, W4→debug).",
+            "detail": [
+                "Entrada: workflow activo en global_state.json.",
+                "Salida: ranking sensible a la fase del trabajo en curso.",
+                "Ventaja: las ideas más relevantes para el momento actual aparecen primero.",
+            ],
+            "w2": "Leer current_workflow de global_state y aplicar boost en apply_dynamic_scoring().",
+        })
 
     if baseline_clean_mode:
         ideas = filter_ideas_for_baseline_mode(ideas)
@@ -671,6 +778,9 @@ def main() -> int:
     done_titles = load_implemented_titles()
     if done_titles:
         ideas = [i for i in ideas if str(i.get("title", "")) not in done_titles]
+
+    # Ajustar prioridades según historial de implementaciones
+    ideas = apply_dynamic_scoring(ideas)
 
     sections = build_idea_sections(ideas)
     ideas = order_ideas_by_section(sections)
