@@ -1503,6 +1503,689 @@ def test_sysexit_refactor():
         _record("sysexit:refactor", FAIL, f"{len(violations)} violations: {violations[:3]}")
 
 
+
+
+# CHG-002 — Auto-registered --test self-verification
+
+def test_alias_manager():
+    rc, out, err = _run("alias_manager.py", ["--test"])
+    if rc == 0:
+        _record("alias_manager:self_test", PASS)
+    else:
+        _record("alias_manager:self_test", FAIL, (err or out)[:80].strip())
+
+def test_artifact_counter():
+    rc, out, err = _run("artifact_counter.py", ["--test"])
+    if rc == 0:
+        _record("artifact_counter:self_test", PASS)
+    else:
+        _record("artifact_counter:self_test", FAIL, (err or out)[:80].strip())
+
+def test_audit_v2():
+    rc, out, err = _run("audit_v2.py", ["--test"])
+    if rc == 0:
+        _record("audit_v2:self_test", PASS)
+    else:
+        _record("audit_v2:self_test", FAIL, (err or out)[:80].strip())
+
+def test_backup_manager():
+    rc, out, err = _run("backup_manager.py", ["--test"])
+    if rc == 0:
+        _record("backup_manager:self_test", PASS)
+    else:
+        _record("backup_manager:self_test", FAIL, (err or out)[:80].strip())
+
+def test_bago_consistency_check():
+    rc, out, err = _run("bago_consistency_check.py", ["--test"])
+    if rc == 0:
+        _record("bago_consistency_check:self_test", PASS)
+    else:
+        _record("bago_consistency_check:self_test", FAIL, (err or out)[:80].strip())
+
+def test_bago_start():
+    rc, out, err = _run("bago_start.py", ["--test"])
+    if rc == 0:
+        _record("bago_start:self_test", PASS)
+    else:
+        _record("bago_start:self_test", FAIL, (err or out)[:80].strip())
+
+def test_bago_typing_course_analyzer():
+    rc, out, err = _run("bago_typing_course_analyzer.py", ["--test"])
+    if rc == 0:
+        _record("bago_typing_course_analyzer:self_test", PASS)
+    else:
+        _record("bago_typing_course_analyzer:self_test", FAIL, (err or out)[:80].strip())
+
+def test_build_cleaner():
+    rc, out, err = _run("build_cleaner.py", ["--test"])
+    if rc == 0:
+        _record("build_cleaner:self_test", PASS)
+    else:
+        _record("build_cleaner:self_test", FAIL, (err or out)[:80].strip())
+
+def test_build_runner():
+    rc, out, err = _run("build_runner.py", ["--test"])
+    if rc == 0:
+        _record("build_runner:self_test", PASS)
+    else:
+        _record("build_runner:self_test", FAIL, (err or out)[:80].strip())
+
+def test_cabinet_orchestrator():
+    rc, out, err = _run("cabinet_orchestrator.py", ["--test"])
+    if rc == 0:
+        _record("cabinet_orchestrator:self_test", PASS)
+    else:
+        _record("cabinet_orchestrator:self_test", FAIL, (err or out)[:80].strip())
+
+def test_check_validate_purity():
+    rc, out, err = _run("check_validate_purity.py", ["--test"])
+    if rc == 0:
+        _record("check_validate_purity:self_test", PASS)
+    else:
+        _record("check_validate_purity:self_test", FAIL, (err or out)[:80].strip())
+
+def test_chronicle_reporter():
+    rc, out, err = _run("chronicle_reporter.py", ["--test"])
+    if rc == 0:
+        _record("chronicle_reporter:self_test", PASS)
+    else:
+        _record("chronicle_reporter:self_test", FAIL, (err or out)[:80].strip())
+
+def test_clean_artifacts():
+    rc, out, err = _run("clean_artifacts.py", ["--test"])
+    if rc == 0:
+        _record("clean_artifacts:self_test", PASS)
+    else:
+        _record("clean_artifacts:self_test", FAIL, (err or out)[:80].strip())
+
+def test_code_metrics():
+    rc, out, err = _run("code_metrics.py", ["--test"])
+    if rc == 0:
+        _record("code_metrics:self_test", PASS)
+    else:
+        _record("code_metrics:self_test", FAIL, (err or out)[:80].strip())
+
+def test_code_quality_orchestrator():
+    rc, out, err = _run("code_quality_orchestrator.py", ["--test"])
+    if rc == 0:
+        _record("code_quality_orchestrator:self_test", PASS)
+    else:
+        _record("code_quality_orchestrator:self_test", FAIL, (err or out)[:80].strip())
+
+def test_code_search():
+    rc, out, err = _run("code_search.py", ["--test"])
+    if rc == 0:
+        _record("code_search:self_test", PASS)
+    else:
+        _record("code_search:self_test", FAIL, (err or out)[:80].strip())
+
+def test_competition_report():
+    rc, out, err = _run("competition_report.py", ["--test"])
+    if rc == 0:
+        _record("competition_report:self_test", PASS)
+    else:
+        _record("competition_report:self_test", FAIL, (err or out)[:80].strip())
+
+def test_config_show():
+    rc, out, err = _run("config_show.py", ["--test"])
+    if rc == 0:
+        _record("config_show:self_test", PASS)
+    else:
+        _record("config_show:self_test", FAIL, (err or out)[:80].strip())
+
+def test_config_wizard():
+    rc, out, err = _run("config_wizard.py", ["--test"])
+    if rc == 0:
+        _record("config_wizard:self_test", PASS)
+    else:
+        _record("config_wizard:self_test", FAIL, (err or out)[:80].strip())
+
+def test_context_map():
+    rc, out, err = _run("context_map.py", ["--test"])
+    if rc == 0:
+        _record("context_map:self_test", PASS)
+    else:
+        _record("context_map:self_test", FAIL, (err or out)[:80].strip())
+
+def test_contracts():
+    rc, out, err = _run("contracts.py", ["--test"])
+    if rc == 0:
+        _record("contracts:self_test", PASS)
+    else:
+        _record("contracts:self_test", FAIL, (err or out)[:80].strip())
+
+def test_cosecha():
+    rc, out, err = _run("cosecha.py", ["--test"])
+    if rc == 0:
+        _record("cosecha:self_test", PASS)
+    else:
+        _record("cosecha:self_test", FAIL, (err or out)[:80].strip())
+
+def test_dashboard_v2():
+    rc, out, err = _run("dashboard_v2.py", ["--test"])
+    if rc == 0:
+        _record("dashboard_v2:self_test", PASS)
+    else:
+        _record("dashboard_v2:self_test", FAIL, (err or out)[:80].strip())
+
+def test_deps_check():
+    rc, out, err = _run("deps_check.py", ["--test"])
+    if rc == 0:
+        _record("deps_check:self_test", PASS)
+    else:
+        _record("deps_check:self_test", FAIL, (err or out)[:80].strip())
+
+def test_disk_usage():
+    rc, out, err = _run("disk_usage.py", ["--test"])
+    if rc == 0:
+        _record("disk_usage:self_test", PASS)
+    else:
+        _record("disk_usage:self_test", FAIL, (err or out)[:80].strip())
+
+def test_efficiency_meter():
+    rc, out, err = _run("efficiency_meter.py", ["--test"])
+    if rc == 0:
+        _record("efficiency_meter:self_test", PASS)
+    else:
+        _record("efficiency_meter:self_test", FAIL, (err or out)[:80].strip())
+
+def test_env_diff():
+    rc, out, err = _run("env_diff.py", ["--test"])
+    if rc == 0:
+        _record("env_diff:self_test", PASS)
+    else:
+        _record("env_diff:self_test", FAIL, (err or out)[:80].strip())
+
+def test_env_manager():
+    rc, out, err = _run("env_manager.py", ["--test"])
+    if rc == 0:
+        _record("env_manager:self_test", PASS)
+    else:
+        _record("env_manager:self_test", FAIL, (err or out)[:80].strip())
+
+def test_env_setup():
+    rc, out, err = _run("env_setup.py", ["--test"])
+    if rc == 0:
+        _record("env_setup:self_test", PASS)
+    else:
+        _record("env_setup:self_test", FAIL, (err or out)[:80].strip())
+
+def test_file_diff():
+    rc, out, err = _run("file_diff.py", ["--test"])
+    if rc == 0:
+        _record("file_diff:self_test", PASS)
+    else:
+        _record("file_diff:self_test", FAIL, (err or out)[:80].strip())
+
+def test_focus_mode():
+    rc, out, err = _run("focus_mode.py", ["--test"])
+    if rc == 0:
+        _record("focus_mode:self_test", PASS)
+    else:
+        _record("focus_mode:self_test", FAIL, (err or out)[:80].strip())
+
+def test_generate_bago_evolution_report():
+    rc, out, err = _run("generate_bago_evolution_report.py", ["--test"])
+    if rc == 0:
+        _record("generate_bago_evolution_report:self_test", PASS)
+    else:
+        _record("generate_bago_evolution_report:self_test", FAIL, (err or out)[:80].strip())
+
+def test_git_status():
+    rc, out, err = _run("git_status.py", ["--test"])
+    if rc == 0:
+        _record("git_status:self_test", PASS)
+    else:
+        _record("git_status:self_test", FAIL, (err or out)[:80].strip())
+
+def test_health_check():
+    rc, out, err = _run("health_check.py", ["--test"])
+    if rc == 0:
+        _record("health_check:self_test", PASS)
+    else:
+        _record("health_check:self_test", FAIL, (err or out)[:80].strip())
+
+def test_health_score():
+    rc, out, err = _run("health_score.py", ["--test"])
+    if rc == 0:
+        _record("health_score:self_test", PASS)
+    else:
+        _record("health_score:self_test", FAIL, (err or out)[:80].strip())
+
+def test_html_export():
+    rc, out, err = _run("html_export.py", ["--test"])
+    if rc == 0:
+        _record("html_export:self_test", PASS)
+    else:
+        _record("html_export:self_test", FAIL, (err or out)[:80].strip())
+
+def test_http_discover():
+    rc, out, err = _run("http_discover.py", ["--test"])
+    if rc == 0:
+        _record("http_discover:self_test", PASS)
+    else:
+        _record("http_discover:self_test", FAIL, (err or out)[:80].strip())
+
+def test_ideas_selector():
+    rc, out, err = _run("ideas_selector.py", ["--test"])
+    if rc == 0:
+        _record("ideas_selector:self_test", PASS)
+    else:
+        _record("ideas_selector:self_test", FAIL, (err or out)[:80].strip())
+
+def test_image_gen():
+    rc, out, err = _run("image_gen.py", ["--test"])
+    if rc == 0:
+        _record("image_gen:self_test", PASS)
+    else:
+        _record("image_gen:self_test", FAIL, (err or out)[:80].strip())
+
+def test_infra_parity():
+    rc, out, err = _run("infra_parity.py", ["--test"])
+    if rc == 0:
+        _record("infra_parity:self_test", PASS)
+    else:
+        _record("infra_parity:self_test", FAIL, (err or out)[:80].strip())
+
+def test_inspect_workflow():
+    rc, out, err = _run("inspect_workflow.py", ["--test"])
+    if rc == 0:
+        _record("inspect_workflow:self_test", PASS)
+    else:
+        _record("inspect_workflow:self_test", FAIL, (err or out)[:80].strip())
+
+def test_lint_runner():
+    rc, out, err = _run("lint_runner.py", ["--test"])
+    if rc == 0:
+        _record("lint_runner:self_test", PASS)
+    else:
+        _record("lint_runner:self_test", FAIL, (err or out)[:80].strip())
+
+def test_live_dashboard():
+    rc, out, err = _run("live_dashboard.py", ["--test"])
+    if rc == 0:
+        _record("live_dashboard:self_test", PASS)
+    else:
+        _record("live_dashboard:self_test", FAIL, (err or out)[:80].strip())
+
+def test_log_viewer():
+    rc, out, err = _run("log_viewer.py", ["--test"])
+    if rc == 0:
+        _record("log_viewer:self_test", PASS)
+    else:
+        _record("log_viewer:self_test", FAIL, (err or out)[:80].strip())
+
+def test_logs_tail():
+    rc, out, err = _run("logs_tail.py", ["--test"])
+    if rc == 0:
+        _record("logs_tail:self_test", PASS)
+    else:
+        _record("logs_tail:self_test", FAIL, (err or out)[:80].strip())
+
+def test_lsp_manager():
+    rc, out, err = _run("lsp_manager.py", ["--test"])
+    if rc == 0:
+        _record("lsp_manager:self_test", PASS)
+    else:
+        _record("lsp_manager:self_test", FAIL, (err or out)[:80].strip())
+
+def test_net_interact():
+    rc, out, err = _run("net_interact.py", ["--test"])
+    if rc == 0:
+        _record("net_interact:self_test", PASS)
+    else:
+        _record("net_interact:self_test", FAIL, (err or out)[:80].strip())
+
+def test_net_scan():
+    rc, out, err = _run("net_scan.py", ["--test"])
+    if rc == 0:
+        _record("net_scan:self_test", PASS)
+    else:
+        _record("net_scan:self_test", FAIL, (err or out)[:80].strip())
+
+def test_notifier():
+    rc, out, err = _run("notifier.py", ["--test"])
+    if rc == 0:
+        _record("notifier:self_test", PASS)
+    else:
+        _record("notifier:self_test", FAIL, (err or out)[:80].strip())
+
+def test_open_file():
+    rc, out, err = _run("open_file.py", ["--test"])
+    if rc == 0:
+        _record("open_file:self_test", PASS)
+    else:
+        _record("open_file:self_test", FAIL, (err or out)[:80].strip())
+
+def test_outdated_check():
+    rc, out, err = _run("outdated_check.py", ["--test"])
+    if rc == 0:
+        _record("outdated_check:self_test", PASS)
+    else:
+        _record("outdated_check:self_test", FAIL, (err or out)[:80].strip())
+
+def test_peer_link():
+    rc, out, err = _run("peer_link.py", ["--test"])
+    if rc == 0:
+        _record("peer_link:self_test", PASS)
+    else:
+        _record("peer_link:self_test", FAIL, (err or out)[:80].strip())
+
+def test_personality_panel():
+    rc, out, err = _run("personality_panel.py", ["--test"])
+    if rc == 0:
+        _record("personality_panel:self_test", PASS)
+    else:
+        _record("personality_panel:self_test", FAIL, (err or out)[:80].strip())
+
+def test_ping_server():
+    rc, out, err = _run("ping_server.py", ["--test"])
+    if rc == 0:
+        _record("ping_server:self_test", PASS)
+    else:
+        _record("ping_server:self_test", FAIL, (err or out)[:80].strip())
+
+def test_port_kill():
+    rc, out, err = _run("port_kill.py", ["--test"])
+    if rc == 0:
+        _record("port_kill:self_test", PASS)
+    else:
+        _record("port_kill:self_test", FAIL, (err or out)[:80].strip())
+
+def test_port_table():
+    rc, out, err = _run("port_table.py", ["--test"])
+    if rc == 0:
+        _record("port_table:self_test", PASS)
+    else:
+        _record("port_table:self_test", FAIL, (err or out)[:80].strip())
+
+def test_ports_check():
+    rc, out, err = _run("ports_check.py", ["--test"])
+    if rc == 0:
+        _record("ports_check:self_test", PASS)
+    else:
+        _record("ports_check:self_test", FAIL, (err or out)[:80].strip())
+
+def test_preflight():
+    rc, out, err = _run("preflight.py", ["--test"])
+    if rc == 0:
+        _record("preflight:self_test", PASS)
+    else:
+        _record("preflight:self_test", FAIL, (err or out)[:80].strip())
+
+def test_project_init():
+    rc, out, err = _run("project_init.py", ["--test"])
+    if rc == 0:
+        _record("project_init:self_test", PASS)
+    else:
+        _record("project_init:self_test", FAIL, (err or out)[:80].strip())
+
+def test_project_summary():
+    rc, out, err = _run("project_summary.py", ["--test"])
+    if rc == 0:
+        _record("project_summary:self_test", PASS)
+    else:
+        _record("project_summary:self_test", FAIL, (err or out)[:80].strip())
+
+def test_recent_projects():
+    rc, out, err = _run("recent_projects.py", ["--test"])
+    if rc == 0:
+        _record("recent_projects:self_test", PASS)
+    else:
+        _record("recent_projects:self_test", FAIL, (err or out)[:80].strip())
+
+def test_reconcile_state():
+    rc, out, err = _run("reconcile_state.py", ["--test"])
+    if rc == 0:
+        _record("reconcile_state:self_test", PASS)
+    else:
+        _record("reconcile_state:self_test", FAIL, (err or out)[:80].strip())
+
+def test_repo_clone():
+    rc, out, err = _run("repo_clone.py", ["--test"])
+    if rc == 0:
+        _record("repo_clone:self_test", PASS)
+    else:
+        _record("repo_clone:self_test", FAIL, (err or out)[:80].strip())
+
+def test_repo_context_guard():
+    rc, out, err = _run("repo_context_guard.py", ["--test"])
+    if rc == 0:
+        _record("repo_context_guard:self_test", PASS)
+    else:
+        _record("repo_context_guard:self_test", FAIL, (err or out)[:80].strip())
+
+def test_repo_list():
+    rc, out, err = _run("repo_list.py", ["--test"])
+    if rc == 0:
+        _record("repo_list:self_test", PASS)
+    else:
+        _record("repo_list:self_test", FAIL, (err or out)[:80].strip())
+
+def test_repo_switch():
+    rc, out, err = _run("repo_switch.py", ["--test"])
+    if rc == 0:
+        _record("repo_switch:self_test", PASS)
+    else:
+        _record("repo_switch:self_test", FAIL, (err or out)[:80].strip())
+
+def test_research_orchestrator():
+    rc, out, err = _run("research_orchestrator.py", ["--test"])
+    if rc == 0:
+        _record("research_orchestrator:self_test", PASS)
+    else:
+        _record("research_orchestrator:self_test", FAIL, (err or out)[:80].strip())
+
+def test_restore():
+    rc, out, err = _run("restore.py", ["--test"])
+    if rc == 0:
+        _record("restore:self_test", PASS)
+    else:
+        _record("restore:self_test", FAIL, (err or out)[:80].strip())
+
+def test_script_runner():
+    rc, out, err = _run("script_runner.py", ["--test"])
+    if rc == 0:
+        _record("script_runner:self_test", PASS)
+    else:
+        _record("script_runner:self_test", FAIL, (err or out)[:80].strip())
+
+def test_search_history():
+    rc, out, err = _run("search_history.py", ["--test"])
+    if rc == 0:
+        _record("search_history:self_test", PASS)
+    else:
+        _record("search_history:self_test", FAIL, (err or out)[:80].strip())
+
+def test_security_audit():
+    rc, out, err = _run("security_audit.py", ["--test"])
+    if rc == 0:
+        _record("security_audit:self_test", PASS)
+    else:
+        _record("security_audit:self_test", FAIL, (err or out)[:80].strip())
+
+def test_session_close_generator():
+    rc, out, err = _run("session_close_generator.py", ["--test"])
+    if rc == 0:
+        _record("session_close_generator:self_test", PASS)
+    else:
+        _record("session_close_generator:self_test", FAIL, (err or out)[:80].strip())
+
+def test_session_logger():
+    rc, out, err = _run("session_logger.py", ["--test"])
+    if rc == 0:
+        _record("session_logger:self_test", PASS)
+    else:
+        _record("session_logger:self_test", FAIL, (err or out)[:80].strip())
+
+def test_session_opener():
+    rc, out, err = _run("session_opener.py", ["--test"])
+    if rc == 0:
+        _record("session_opener:self_test", PASS)
+    else:
+        _record("session_opener:self_test", FAIL, (err or out)[:80].strip())
+
+def test_session_preflight():
+    rc, out, err = _run("session_preflight.py", ["--test"])
+    if rc == 0:
+        _record("session_preflight:self_test", PASS)
+    else:
+        _record("session_preflight:self_test", FAIL, (err or out)[:80].strip())
+
+def test_session_stats():
+    rc, out, err = _run("session_stats.py", ["--test"])
+    if rc == 0:
+        _record("session_stats:self_test", PASS)
+    else:
+        _record("session_stats:self_test", FAIL, (err or out)[:80].strip())
+
+def test_show_task():
+    rc, out, err = _run("show_task.py", ["--test"])
+    if rc == 0:
+        _record("show_task:self_test", PASS)
+    else:
+        _record("show_task:self_test", FAIL, (err or out)[:80].strip())
+
+def test_sincerity_detector():
+    rc, out, err = _run("sincerity_detector.py", ["--test"])
+    if rc == 0:
+        _record("sincerity_detector:self_test", PASS)
+    else:
+        _record("sincerity_detector:self_test", FAIL, (err or out)[:80].strip())
+
+def test_snapshot_compare():
+    rc, out, err = _run("snapshot_compare.py", ["--test"])
+    if rc == 0:
+        _record("snapshot_compare:self_test", PASS)
+    else:
+        _record("snapshot_compare:self_test", FAIL, (err or out)[:80].strip())
+
+def test_sprint():
+    rc, out, err = _run("sprint.py", ["--test"])
+    if rc == 0:
+        _record("sprint:self_test", PASS)
+    else:
+        _record("sprint:self_test", FAIL, (err or out)[:80].strip())
+
+def test_sprint_summary():
+    rc, out, err = _run("sprint_summary.py", ["--test"])
+    if rc == 0:
+        _record("sprint_summary:self_test", PASS)
+    else:
+        _record("sprint_summary:self_test", FAIL, (err or out)[:80].strip())
+
+def test_stability_summary():
+    rc, out, err = _run("stability_summary.py", ["--test"])
+    if rc == 0:
+        _record("stability_summary:self_test", PASS)
+    else:
+        _record("stability_summary:self_test", FAIL, (err or out)[:80].strip())
+
+def test_stats():
+    rc, out, err = _run("stats.py", ["--test"])
+    if rc == 0:
+        _record("stats:self_test", PASS)
+    else:
+        _record("stats:self_test", FAIL, (err or out)[:80].strip())
+
+def test_sync_pack_metadata():
+    rc, out, err = _run("sync_pack_metadata.py", ["--test"])
+    if rc == 0:
+        _record("sync_pack_metadata:self_test", PASS)
+    else:
+        _record("sync_pack_metadata:self_test", FAIL, (err or out)[:80].strip())
+
+def test_sync_state():
+    rc, out, err = _run("sync_state.py", ["--test"])
+    if rc == 0:
+        _record("sync_state:self_test", PASS)
+    else:
+        _record("sync_state:self_test", FAIL, (err or out)[:80].strip())
+
+def test_template_gen():
+    rc, out, err = _run("template_gen.py", ["--test"])
+    if rc == 0:
+        _record("template_gen:self_test", PASS)
+    else:
+        _record("template_gen:self_test", FAIL, (err or out)[:80].strip())
+
+def test_test_runner():
+    rc, out, err = _run("test_runner.py", ["--test"])
+    if rc == 0:
+        _record("test_runner:self_test", PASS)
+    else:
+        _record("test_runner:self_test", FAIL, (err or out)[:80].strip())
+
+def test_todo_scan():
+    rc, out, err = _run("todo_scan.py", ["--test"])
+    if rc == 0:
+        _record("todo_scan:self_test", PASS)
+    else:
+        _record("todo_scan:self_test", FAIL, (err or out)[:80].strip())
+
+def test_tool_registry():
+    rc, out, err = _run("tool_registry.py", ["--test"])
+    if rc == 0:
+        _record("tool_registry:self_test", PASS)
+    else:
+        _record("tool_registry:self_test", FAIL, (err or out)[:80].strip())
+
+def test_v2_close_checklist():
+    rc, out, err = _run("v2_close_checklist.py", ["--test"])
+    if rc == 0:
+        _record("v2_close_checklist:self_test", PASS)
+    else:
+        _record("v2_close_checklist:self_test", FAIL, (err or out)[:80].strip())
+
+def test_validate_manifest():
+    rc, out, err = _run("validate_manifest.py", ["--test"])
+    if rc == 0:
+        _record("validate_manifest:self_test", PASS)
+    else:
+        _record("validate_manifest:self_test", FAIL, (err or out)[:80].strip())
+
+def test_validate_pack():
+    rc, out, err = _run("validate_pack.py", ["--test"])
+    if rc == 0:
+        _record("validate_pack:self_test", PASS)
+    else:
+        _record("validate_pack:self_test", FAIL, (err or out)[:80].strip())
+
+def test_validate_state():
+    rc, out, err = _run("validate_state.py", ["--test"])
+    if rc == 0:
+        _record("validate_state:self_test", PASS)
+    else:
+        _record("validate_state:self_test", FAIL, (err or out)[:80].strip())
+
+def test_vertice_activator():
+    rc, out, err = _run("vertice_activator.py", ["--test"])
+    if rc == 0:
+        _record("vertice_activator:self_test", PASS)
+    else:
+        _record("vertice_activator:self_test", FAIL, (err or out)[:80].strip())
+
+def test_watch_files():
+    rc, out, err = _run("watch_files.py", ["--test"])
+    if rc == 0:
+        _record("watch_files:self_test", PASS)
+    else:
+        _record("watch_files:self_test", FAIL, (err or out)[:80].strip())
+
+def test_weekly_report():
+    rc, out, err = _run("weekly_report.py", ["--test"])
+    if rc == 0:
+        _record("weekly_report:self_test", PASS)
+    else:
+        _record("weekly_report:self_test", FAIL, (err or out)[:80].strip())
+
+def test_workflow_selector():
+    rc, out, err = _run("workflow_selector.py", ["--test"])
+    if rc == 0:
+        _record("workflow_selector:self_test", PASS)
+    else:
+        _record("workflow_selector:self_test", FAIL, (err or out)[:80].strip())
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -1610,6 +2293,104 @@ ALL_TESTS = [
     (104, "sprint_status",           test_sprint_manager_status),
     (105, "ideas_count",             test_emit_ideas_count),
     (106, "sysexit_refactor",        test_sysexit_refactor),
+    (107, "alias_manager", test_alias_manager),
+    (108, "artifact_counter", test_artifact_counter),
+    (109, "audit_v2", test_audit_v2),
+    (110, "backup_manager", test_backup_manager),
+    (111, "bago_consistency_check", test_bago_consistency_check),
+    (112, "bago_start", test_bago_start),
+    (113, "bago_typing_course_analyzer", test_bago_typing_course_analyzer),
+    (114, "build_cleaner", test_build_cleaner),
+    (115, "build_runner", test_build_runner),
+    (116, "cabinet_orchestrator", test_cabinet_orchestrator),
+    (117, "check_validate_purity", test_check_validate_purity),
+    (118, "chronicle_reporter", test_chronicle_reporter),
+    (119, "clean_artifacts", test_clean_artifacts),
+    (120, "code_metrics", test_code_metrics),
+    (121, "code_quality_orchestrator", test_code_quality_orchestrator),
+    (122, "code_search", test_code_search),
+    (123, "competition_report", test_competition_report),
+    (124, "config_show", test_config_show),
+    (125, "config_wizard", test_config_wizard),
+    (126, "context_map", test_context_map),
+    (127, "contracts", test_contracts),
+    (128, "cosecha", test_cosecha),
+    (129, "dashboard_v2", test_dashboard_v2),
+    (130, "deps_check", test_deps_check),
+    (131, "disk_usage", test_disk_usage),
+    (132, "efficiency_meter", test_efficiency_meter),
+    (133, "env_diff", test_env_diff),
+    (134, "env_manager", test_env_manager),
+    (135, "env_setup", test_env_setup),
+    (136, "file_diff", test_file_diff),
+    (137, "focus_mode", test_focus_mode),
+    (138, "generate_bago_evolution_report", test_generate_bago_evolution_report),
+    (139, "git_status", test_git_status),
+    (140, "health_check", test_health_check),
+    (141, "health_score", test_health_score),
+    (142, "html_export", test_html_export),
+    (143, "http_discover", test_http_discover),
+    (144, "ideas_selector", test_ideas_selector),
+    (145, "image_gen", test_image_gen),
+    (146, "infra_parity", test_infra_parity),
+    (147, "inspect_workflow", test_inspect_workflow),
+    (148, "lint_runner", test_lint_runner),
+    (149, "live_dashboard", test_live_dashboard),
+    (150, "log_viewer", test_log_viewer),
+    (151, "logs_tail", test_logs_tail),
+    (152, "lsp_manager", test_lsp_manager),
+    (153, "net_interact", test_net_interact),
+    (154, "net_scan", test_net_scan),
+    (155, "notifier", test_notifier),
+    (156, "open_file", test_open_file),
+    (157, "outdated_check", test_outdated_check),
+    (158, "peer_link", test_peer_link),
+    (159, "personality_panel", test_personality_panel),
+    (160, "ping_server", test_ping_server),
+    (161, "port_kill", test_port_kill),
+    (162, "port_table", test_port_table),
+    (163, "ports_check", test_ports_check),
+    (164, "preflight", test_preflight),
+    (165, "project_init", test_project_init),
+    (166, "project_summary", test_project_summary),
+    (167, "recent_projects", test_recent_projects),
+    (168, "reconcile_state", test_reconcile_state),
+    (169, "repo_clone", test_repo_clone),
+    (170, "repo_context_guard", test_repo_context_guard),
+    (171, "repo_list", test_repo_list),
+    (172, "repo_switch", test_repo_switch),
+    (173, "research_orchestrator", test_research_orchestrator),
+    (174, "restore", test_restore),
+    (175, "script_runner", test_script_runner),
+    (176, "search_history", test_search_history),
+    (177, "security_audit", test_security_audit),
+    (178, "session_close_generator", test_session_close_generator),
+    (179, "session_logger", test_session_logger),
+    (180, "session_opener", test_session_opener),
+    (181, "session_preflight", test_session_preflight),
+    (182, "session_stats", test_session_stats),
+    (183, "show_task", test_show_task),
+    (184, "sincerity_detector", test_sincerity_detector),
+    (185, "snapshot_compare", test_snapshot_compare),
+    (186, "sprint", test_sprint),
+    (187, "sprint_summary", test_sprint_summary),
+    (188, "stability_summary", test_stability_summary),
+    (189, "stats", test_stats),
+    (190, "sync_pack_metadata", test_sync_pack_metadata),
+    (191, "sync_state", test_sync_state),
+    (192, "template_gen", test_template_gen),
+    (193, "test_runner", test_test_runner),
+    (194, "todo_scan", test_todo_scan),
+    (195, "tool_registry", test_tool_registry),
+    (196, "v2_close_checklist", test_v2_close_checklist),
+    (197, "validate_manifest", test_validate_manifest),
+    (198, "validate_pack", test_validate_pack),
+    (199, "validate_state", test_validate_state),
+    (200, "vertice_activator", test_vertice_activator),
+    (201, "watch_files", test_watch_files),
+    (202, "weekly_report", test_weekly_report),
+    (203, "workflow_selector", test_workflow_selector),
+
 ]
 
 

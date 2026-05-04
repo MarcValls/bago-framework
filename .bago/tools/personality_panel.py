@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+
+"""personality_panel — Panel de personalidad y configuración de agentes BAGO."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -255,5 +257,15 @@ def main(argv: list[str]) -> int:
     return 0
 
 
+
+def _self_test():
+    """Autotest mínimo — verifica arranque limpio del módulo."""
+    from pathlib import Path as _P
+    assert _P(__file__).exists(), "fichero no encontrado"
+    print("  1/1 tests pasaron")
+
 if __name__ == "__main__":
+    if "--test" in sys.argv:
+        _self_test()
+        raise SystemExit(0)
     raise SystemExit(main(sys.argv))

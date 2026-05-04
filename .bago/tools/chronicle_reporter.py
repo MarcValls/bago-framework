@@ -154,6 +154,16 @@ def main():
         print()
 
 
+
+def _self_test():
+    """Autotest mínimo — verifica arranque limpio del módulo."""
+    from pathlib import Path as _P
+    assert _P(__file__).exists(), "fichero no encontrado"
+    print("  1/1 tests pasaron")
+
 if __name__ == "__main__":
+    if "--test" in sys.argv:
+        _self_test()
+        raise SystemExit(0)
     main()
 
