@@ -230,6 +230,26 @@ REGISTRY: dict[str, ToolEntry] = {
         description="Catálogo de reglas BAGO",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "rule_catalog.py"))],
     ),
+    "peer": ToolEntry(
+        cmd="peer", module="peer_link",
+        description="Comunicacion peer-to-peer LAN (serve/discover/ping/send/chat)",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "peer_link.py"))],
+    ),
+    "banner": ToolEntry(
+        cmd="banner", module="bago_banner",
+        description="Muestra el banner animado de BAGO con estado actual",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_banner.py"))],
+    ),
+    "session_close": ToolEntry(
+        cmd="session_close", module="session_close_generator",
+        description="Genera el informe de cierre de sesion BAGO",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "session_close_generator.py"))],
+    ),
+    "image_gen": ToolEntry(
+        cmd="image_gen", module="image_gen",
+        description="Generador de imagenes PNG local sin API",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "image_gen.py"))],
+    ),
 }
 
 

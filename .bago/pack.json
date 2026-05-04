@@ -62,6 +62,18 @@
     "usage_guide": "docs/operation/GUIA_DE_USO.md",
     "evaluation_template": "docs/PLANTILLA_EVALUACION_BRUTAL_BAGO.md"
   },
+  "knowledge": {
+    "directory": "knowledge/",
+    "index": "knowledge/README.md",
+    "files": {
+      "april_arc": "knowledge/april_2026_arc.md",
+      "image_gen": "knowledge/image_generation_guide.md",
+      "traps": "knowledge/framework_traps.md",
+      "patterns": "knowledge/project_patterns.md",
+      "tools_ref": "knowledge/tools_reference.md"
+    },
+    "last_updated": "2026-05-04"
+  },
   "bootstrap": {
     "installation_readme": "docs/operation/INSTALACION.md",
     "project_bootstrap_prompt": "prompts/00_BOOTSTRAP_PROYECTO.md"
