@@ -1,22 +1,4 @@
 {
-  "inventory": {
-    "sessions": 0,
-    "changes": 0,
-    "evidences": 0,
-    "commits": 4,
-    "last_commit_sha": "7b57893",
-    "last_commit_date": "2026-05-04T20:11:00+02:00",
-    "last_commit_msg": "feat(knowledge): inicializar knowledge base + 40 tools nuevos"
-  },
-  "sprint_status": {
-    "active_workflow": null,
-    "pending_w2_task": "none — CHG-002 completed (guardian 0%→100%)"
-  },
-  "notes": "CHG-002 completado 2026-05-04: --test flag en 103 tools, 97 registros integration_tests, COMMANDS_MAIN en bago script, 9 docstrings. Guardian: 0%→100%, 112/112 tools OK. Pendiente menor: dead_ref intent_router legacy-fix.",
-  "unresolved": {
-    "stashes": 0,
-    "note": "stash@{0} y stash@{1} descartados 2026-05-01 — cambios ya aplicados en commit 7967d86"
-  },
   "sync_status": {
     "local_synced": true,
     "pendrive_synced": true,
@@ -25,5 +7,23 @@
   "supervision": {
     "guia_vertice": ".bago/supervision/GUIA_VERTICE.md",
     "active": false
+  },
+  "sprint_status": {
+    "active_workflow": null,
+    "pending_w2_task": "none — CHG-002 completed (guardian 0%→100%)"
+  },
+  "inventory": {
+    "sessions": 1,
+    "changes": 0,
+    "evidences": 0,
+    "commits": 4,
+    "last_commit_sha": "7b57893",
+    "last_commit_date": "2026-05-04T20:11:00+02:00",
+    "last_commit_msg": "feat(knowledge): inicializar knowledge base + 40 tools nuevos"
+  },
+  "notes": "CHG-002 completado 2026-05-04: --test flag en 103 tools, 97 registros integration_tests, COMMANDS_MAIN en bago script, 9 docstrings. Guardian: 0%→100%, 112/112 tools OK. Pendiente menor: dead_ref intent_router legacy-fix.",
+  "unresolved": {
+    "stashes": 0,
+    "note": "stash@{0} y stash@{1} descartados 2026-05-01 — cambios ya aplicados en commit 7967d86"
   }
 }

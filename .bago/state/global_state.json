@@ -6,7 +6,7 @@
     "pending_w2_task": "none — CHG-002 completed (guardian 0%→100%)"
   },
   "inventory": {
-    "sessions": 0,
+    "sessions": 1,
     "changes": 0,
     "evidences": 0,
     "commits": 4,
@@ -58,7 +58,7 @@
     "sequences_count": 10,
     "bago_universe": ".bago/knowledge/bago_universe.md"
   },
-  "last_updated": "2026-05-05T01:10:00.000Z",
+  "last_updated": "2026-05-04T23:46:30Z",
   "supervision": {
     "guia_vertice": ".bago/supervision/GUIA_VERTICE.md",
     "active": false

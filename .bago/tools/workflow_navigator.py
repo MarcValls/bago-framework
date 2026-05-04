@@ -250,7 +250,7 @@ def _run_tests() -> int:
 if __name__ == "__main__":
     args = sys.argv[1:]
 
-    if not args or "--help" in args or "-h" in args:
+    if "--help" in args or "-h" in args:
         print(__doc__)
         sys.exit(0)
 

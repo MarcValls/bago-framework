@@ -38,6 +38,8 @@ legacy_re = re.compile(r"(?:\b2\.1\.[0-9]+\b|\bV2\.1(?:\.[0-9]+)?\b|\bv2_1\b)", 
 for p in sorted(root.rglob("*")):
     if not p.is_file():
         continue
+    if p.name.startswith("._") or p.name == ".DS_Store":
+        continue  # skip macOS resource forks and metadata
     rel = str(p.relative_to(root)).replace("\\", "/")
     if any(rel.startswith(prefix) for prefix in excluded_prefixes):
         continue
