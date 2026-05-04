@@ -124,20 +124,20 @@ jobs:
         run: python3 bago validate
         continue-on-error: false
 
-      - name: BAGO scan (unified findings)
-        run: python3 bago scan --json > bago-findings.json
+      - name: BAGO audit (unified findings)
+        run: python3 bago audit --json > bago-findings.json
         continue-on-error: true
 
-      - name: BAGO risk matrix
-        run: python3 bago risk --json > bago-risk.json
+      - name: BAGO health score
+        run: python3 bago health --json > bago-health.json
         continue-on-error: true
 
-      - name: BAGO impact report
-        run: python3 bago impact --brief
+      - name: BAGO commit readiness
+        run: python3 bago commit --all
         continue-on-error: true
 
-      - name: BAGO hotspot analysis
-        run: python3 bago hotspot --json > bago-hotspots.json
+      - name: BAGO stale detector
+        run: python3 bago stale --json > bago-stale.json
         continue-on-error: true
 
       - name: Fail on critical findings
@@ -175,8 +175,8 @@ jobs:
           name: bago-reports
           path: |
             bago-findings.json
-            bago-risk.json
-            bago-hotspots.json
+            bago-health.json
+            bago-stale.json
           retention-days: 30
 
   bago-tests:
@@ -287,9 +287,9 @@ bago-scan:
     - pip install flake8 pylint mypy bandit gitpython --quiet
     # Add language-specific linters below as needed (see bago-validate job)
   script:
-    - python3 bago scan --json > bago-findings.json || true
-    - python3 bago risk --json > bago-risk.json || true
-    - python3 bago hotspot --json > bago-hotspots.json || true
+    - python3 bago audit --json > bago-findings.json || true
+    - python3 bago health --json > bago-health.json || true
+    - python3 bago stale --json > bago-stale.json || true
     - |
       python3 -c "
       import json, sys
@@ -318,8 +318,8 @@ bago-scan:
     when: always
     paths:
       - bago-findings.json
-      - bago-risk.json
-      - bago-hotspots.json
+      - bago-health.json
+      - bago-stale.json
     expire_in: 1 week
 
 bago-impact:
@@ -328,7 +328,7 @@ bago-impact:
   before_script:
     - pip install flake8 pylint mypy bandit gitpython --quiet
   script:
-    - python3 bago impact --brief
+    - python3 bago commit --all
     - python3 .bago/tools/integration_tests.py
   dependencies:
     - bago-scan
@@ -393,7 +393,11 @@ exit 0
 
 
 def write_github(output_dir: Path, dry_run: bool) -> str:
-    dest = output_dir / ".github" / "workflows" / "bago.yml"
+    # If output_dir already points inside .github/workflows, write directly there
+    if output_dir.name == "workflows" and output_dir.parent.name == ".github":
+        dest = output_dir / "bago.yml"
+    else:
+        dest = output_dir / ".github" / "workflows" / "bago.yml"
     if dry_run:
         return f"[dry-run] {dest}\n{GITHUB_WORKFLOW[:200]}..."
     dest.parent.mkdir(parents=True, exist_ok=True)

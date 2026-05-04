@@ -250,6 +250,20 @@ REGISTRY: dict[str, ToolEntry] = {
         description="Generador de imagenes PNG local sin API",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "image_gen.py"))],
     ),
+    "code-quality": ToolEntry(
+        cmd="code-quality", module="code_quality_orchestrator",
+        description="Orquestador de calidad de código — ejecuta agentes especializados",
+        preflight=[
+            PreflightCheck("file", str(TOOLS_DIR / "code_quality_orchestrator.py")),
+            PreflightCheck("file", str(BAGO_ROOT / "agents" / "ANALISTA_Contexto.md"),
+                           severity="warning", message="Agente ANALISTA_Contexto no encontrado en .bago/agents/"),
+        ],
+    ),
+    "consistency": ToolEntry(
+        cmd="consistency", module="bago_consistency_check",
+        description="Guard anti-drift: valida CI, preflight, README y badge del framework",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_consistency_check.py"))],
+    ),
 }
 
 

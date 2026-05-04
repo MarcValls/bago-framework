@@ -18,9 +18,25 @@ import json
 from datetime import datetime, timezone
 import shutil
 
+import re
+
 WORKSPACE_ROOT = Path(__file__).resolve().parents[1]  # C:\Marc_max_20gb
 REPOS_DIR = WORKSPACE_ROOT / "repos"
 WORKSPACE_STATE = WORKSPACE_ROOT / ".bago" / "state" / "workspace.json"
+
+_SAFE_NAME_RE = re.compile(r"^[A-Za-z0-9._-]+$")
+
+
+def _validate_repo_name(name: str) -> str:
+    """Valida nombre de repo para prevenir path traversal."""
+    if not name or name in {".", ".."}:
+        raise ValueError(f"Nombre de repo inválido: '{name}'")
+    if not _SAFE_NAME_RE.fullmatch(name):
+        raise ValueError(
+            f"Nombre de repo inválido: '{name}'. "
+            "Solo se permiten letras, números, puntos, guiones y guiones bajos."
+        )
+    return name
 
 
 def ensure_repos_dir():
@@ -151,8 +167,13 @@ def _clone_via_zip(url: str, repo_path: Path) -> bool:
 def clone_repo(url, custom_name=None):
     """Clona repositorio en repos/ con nombre."""
     ensure_repos_dir()
-    
-    repo_name = custom_name or get_repo_name(url)
+
+    raw_name = custom_name or get_repo_name(url)
+    try:
+        repo_name = _validate_repo_name(raw_name)
+    except ValueError as e:
+        print(f"✗ Error: {e}")
+        return None
     repo_path = REPOS_DIR / repo_name
     
     # Verificar que no exista ya
