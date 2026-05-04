@@ -50,10 +50,15 @@ def _load_internal_tools() -> frozenset:
         if spec:
             mod = importlib.util.module_from_spec(spec)
             try:
+                import sys as _sys
+                _sys.modules[spec.name] = mod   # required for @dataclass on Python 3.13+
                 spec.loader.exec_module(mod)
                 return getattr(mod, "INTERNAL_TOOLS", frozenset())
             except Exception:
                 pass
+            finally:
+                import sys as _sys
+                _sys.modules.pop(spec.name, None)
     # Fallback if tool_registry.py is unavailable
     return frozenset({
         "tool_registry", "preflight", "session_logger",

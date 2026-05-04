@@ -1,0 +1,19 @@
+{
+  "bago_knowledge": {
+    "sequences_catalog": ".bago/knowledge/sequences_catalog.md",
+    "sequences_count": 10,
+    "bago_universe": ".bago/knowledge/bago_universe.md"
+  },
+  "knowledge_base": {
+    "initialized": "2026-05-04",
+    "files_count": 5,
+    "last_harvest": "2026-05-04",
+    "covers": [
+      "abril_2026",
+      "image_generation",
+      "framework_traps",
+      "project_patterns",
+      "tools_reference"
+    ]
+  }
+}

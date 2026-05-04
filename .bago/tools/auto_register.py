@@ -13,6 +13,8 @@ Uso:
     python3 auto_register.py tool_name.py --cmd "command-name" --desc "descripción"
     python3 auto_register.py --check tool_name.py     # verifica si ya está registrado
     python3 auto_register.py --check-all              # estado de todos los tools
+    python3 auto_register.py --fix-all                # registra todos los tools sin registro
+    python3 auto_register.py --fix-all --dry-run      # muestra qué registraría --fix-all
     python3 auto_register.py --dry-run tool_name.py   # muestra qué haría
     python3 auto_register.py --test                   # self-tests
 
@@ -40,15 +42,22 @@ def _load_internal_tools_auto() -> set:
         if spec:
             mod = importlib.util.module_from_spec(spec)
             try:
+                import sys as _sys
+                _sys.modules[spec.name] = mod   # required for @dataclass on Python 3.13+
                 spec.loader.exec_module(mod)
                 stems = getattr(mod, "INTERNAL_TOOLS", frozenset())
                 return {s + ".py" for s in stems} | {"__init__.py"}
             except Exception:
                 pass
+            finally:
+                import sys as _sys
+                _sys.modules.pop(spec.name, None)
     return {
         "bago_utils.py", "bago_banner.py", "integration_tests.py",
         "tool_registry.py", "__init__.py", "auto_register.py",
         "legacy_fixer.py", "preflight.py", "session_logger.py",
+        "ci_generator.py", "tool_guardian.py", "contracts.py",
+        "bago_start.py", "bago_on.py", "bago_debug.py",
     }
 
 INTERNAL_TOOLS = _load_internal_tools_auto()
@@ -361,6 +370,55 @@ def cmd_check_all():
     print()
 
 
+def cmd_fix_all(dry_run: bool = False) -> int:
+    """Registra todos los tools no registrados en integration_tests.py y COMMANDS_MAIN.
+
+    Estrategia:
+    - Solo actúa sobre tools que no están en INTERNAL_TOOLS.
+    - Un tool se considera "no registrado" si falta en integration_tests.py
+      O si falta en el routing del script bago (COMMANDS_MAIN).
+    - Nunca sobrescribe registros existentes (idempotente).
+    - Regenera manifest y checksums al final si hubo cambios.
+    """
+    # INTERNAL_TOOLS ya contiene nombres con sufijo .py (via _load_internal_tools_auto)
+    candidates = [
+        p for p in sorted(TOOLS_DIR.glob("*.py"))
+        if p.name not in INTERNAL_TOOLS
+        and not p.stem.startswith("__")
+    ]
+
+    unregistered = [
+        p for p in candidates
+        if not is_in_integration_tests(p.name) or not is_in_bago_script(p.name)
+    ]
+
+    if not unregistered:
+        print(f"\n  ✅  fix-all: todos los tools ya están registrados ({len(candidates)} tools)")
+        return 0
+
+    print(f"\n  fix-all {'(DRY-RUN) ' if dry_run else ''}— {len(unregistered)} tools sin registro completo")
+    print("  " + "─" * 56)
+
+    registered = 0
+    errors = 0
+    for p in unregistered:
+        it = "✅" if is_in_integration_tests(p.name) else "❌"
+        rt = "✅" if is_in_bago_script(p.name) else "❌"
+        print(f"\n  {p.name}  test:{it}  route:{rt}")
+        rc = cmd_register(p.name, dry_run=dry_run)
+        if rc == 0:
+            registered += 1
+        else:
+            errors += 1
+
+    if not dry_run and registered > 0:
+        regen_checksums()
+        print(f"\n  CHECKSUMS + TREE regenerados")
+
+    print(f"\n  fix-all completado: {registered} registrados, {errors} errores")
+    return 0 if errors == 0 else 1
+
+
 def run_tests():
     import tempfile, os
     results = []
@@ -453,6 +511,9 @@ if __name__ == "__main__":
     if "--check-all" in args:
         cmd_check_all()
         raise SystemExit(0)
+
+    if "--fix-all" in args:
+        raise SystemExit(cmd_fix_all(dry_run=dry_run))
 
     if "--check" in args:
         i = args.index("--check")

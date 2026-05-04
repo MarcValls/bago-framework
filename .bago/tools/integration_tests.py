@@ -2186,6 +2186,130 @@ def test_workflow_selector():
     else:
         _record("workflow_selector:self_test", FAIL, (err or out)[:80].strip())
 
+# TOOL_HASH:role_contract_validator:7bf19b39fd0f1a7b
+def test_role_contract_validator():
+    """role_contract_validator.py --test ejecuta assertions reales y emite JSON estructurado.
+
+    TOOL_HASH:7bf19b39fd0f1a7b  # auto-generated; regenerate when tool changes
+    """
+    import hashlib as _h
+    _tool_path = Path(__file__).parent / "role_contract_validator.py"
+    if _tool_path.exists():
+        _current_hash = _h.sha256(_tool_path.read_bytes()).hexdigest()[:16]
+        if _current_hash != "7bf19b39fd0f1a7b":
+            _record("role_contract_validator:tests", FAIL, f"STALE TEST: tool hash {_current_hash} != embedded 7bf19b39fd0f1a7b — regenerar con auto_register.py")
+            return
+    rc, out, err = _run("role_contract_validator.py", ["--test"])
+    if rc != 0:
+        _record("role_contract_validator:tests", FAIL, f"rc={rc} {(err or out)[-80:]}")
+        return
+    # Validate structured JSON output: {"tool": ..., "status": "ok", "checks": [...]}
+    try:
+        data = json.loads(out.strip().splitlines()[-1] if out.strip() else "{}")
+        assert data.get("status") == "ok", f"status={data.get('status')}"
+        checks = data.get("checks", [])
+        assert isinstance(checks, list) and len(checks) > 0, "checks list empty"
+        failed = [c for c in checks if not c.get("passed", False)]
+        if failed:
+            _record("role_contract_validator:tests", FAIL, f"{len(failed)} checks failed: {failed[0].get('name','')}")
+        else:
+            _record("role_contract_validator:tests", PASS, f"{len(checks)} checks OK")
+    except (json.JSONDecodeError, AssertionError, IndexError) as e:
+        _record("role_contract_validator:tests", FAIL, f"bad JSON output: {e} | last line: {out.strip().splitlines()[-1][:60] if out.strip() else '(empty)'}")
+
+# TOOL_HASH:state_manager:f5866dadcf3f70d3
+def test_state_manager():
+    """state_manager.py --test ejecuta assertions reales y emite JSON estructurado.
+
+    TOOL_HASH:f5866dadcf3f70d3  # auto-generated; regenerate when tool changes
+    """
+    import hashlib as _h
+    _tool_path = Path(__file__).parent / "state_manager.py"
+    if _tool_path.exists():
+        _current_hash = _h.sha256(_tool_path.read_bytes()).hexdigest()[:16]
+        if _current_hash != "f5866dadcf3f70d3":
+            _record("state_manager:tests", FAIL, f"STALE TEST: tool hash {_current_hash} != embedded f5866dadcf3f70d3 — regenerar con auto_register.py")
+            return
+    rc, out, err = _run("state_manager.py", ["--test"])
+    if rc != 0:
+        _record("state_manager:tests", FAIL, f"rc={rc} {(err or out)[-80:]}")
+        return
+    # Validate structured JSON output: {"tool": ..., "status": "ok", "checks": [...]}
+    try:
+        data = json.loads(out.strip().splitlines()[-1] if out.strip() else "{}")
+        assert data.get("status") == "ok", f"status={data.get('status')}"
+        checks = data.get("checks", [])
+        assert isinstance(checks, list) and len(checks) > 0, "checks list empty"
+        failed = [c for c in checks if not c.get("passed", False)]
+        if failed:
+            _record("state_manager:tests", FAIL, f"{len(failed)} checks failed: {failed[0].get('name','')}")
+        else:
+            _record("state_manager:tests", PASS, f"{len(checks)} checks OK")
+    except (json.JSONDecodeError, AssertionError, IndexError) as e:
+        _record("state_manager:tests", FAIL, f"bad JSON output: {e} | last line: {out.strip().splitlines()[-1][:60] if out.strip() else '(empty)'}")
+
+# TOOL_HASH:tool_watcher:1108848ecf4956ad
+def test_tool_watcher():
+    """tool_watcher.py --test ejecuta assertions reales y emite JSON estructurado.
+
+    TOOL_HASH:1108848ecf4956ad  # auto-generated; regenerate when tool changes
+    """
+    import hashlib as _h
+    _tool_path = Path(__file__).parent / "tool_watcher.py"
+    if _tool_path.exists():
+        _current_hash = _h.sha256(_tool_path.read_bytes()).hexdigest()[:16]
+        if _current_hash != "1108848ecf4956ad":
+            _record("tool_watcher:tests", FAIL, f"STALE TEST: tool hash {_current_hash} != embedded 1108848ecf4956ad — regenerar con auto_register.py")
+            return
+    rc, out, err = _run("tool_watcher.py", ["--test"])
+    if rc != 0:
+        _record("tool_watcher:tests", FAIL, f"rc={rc} {(err or out)[-80:]}")
+        return
+    # Validate structured JSON output: {"tool": ..., "status": "ok", "checks": [...]}
+    try:
+        data = json.loads(out.strip().splitlines()[-1] if out.strip() else "{}")
+        assert data.get("status") == "ok", f"status={data.get('status')}"
+        checks = data.get("checks", [])
+        assert isinstance(checks, list) and len(checks) > 0, "checks list empty"
+        failed = [c for c in checks if not c.get("passed", False)]
+        if failed:
+            _record("tool_watcher:tests", FAIL, f"{len(failed)} checks failed: {failed[0].get('name','')}")
+        else:
+            _record("tool_watcher:tests", PASS, f"{len(checks)} checks OK")
+    except (json.JSONDecodeError, AssertionError, IndexError) as e:
+        _record("tool_watcher:tests", FAIL, f"bad JSON output: {e} | last line: {out.strip().splitlines()[-1][:60] if out.strip() else '(empty)'}")
+
+# TOOL_HASH:workflow_navigator:05d9e63ebffdfd6e
+def test_workflow_navigator():
+    """workflow_navigator.py --test ejecuta assertions reales y emite JSON estructurado.
+
+    TOOL_HASH:05d9e63ebffdfd6e  # auto-generated; regenerate when tool changes
+    """
+    import hashlib as _h
+    _tool_path = Path(__file__).parent / "workflow_navigator.py"
+    if _tool_path.exists():
+        _current_hash = _h.sha256(_tool_path.read_bytes()).hexdigest()[:16]
+        if _current_hash != "05d9e63ebffdfd6e":
+            _record("workflow_navigator:tests", FAIL, f"STALE TEST: tool hash {_current_hash} != embedded 05d9e63ebffdfd6e — regenerar con auto_register.py")
+            return
+    rc, out, err = _run("workflow_navigator.py", ["--test"])
+    if rc != 0:
+        _record("workflow_navigator:tests", FAIL, f"rc={rc} {(err or out)[-80:]}")
+        return
+    # Validate structured JSON output: {"tool": ..., "status": "ok", "checks": [...]}
+    try:
+        data = json.loads(out.strip().splitlines()[-1] if out.strip() else "{}")
+        assert data.get("status") == "ok", f"status={data.get('status')}"
+        checks = data.get("checks", [])
+        assert isinstance(checks, list) and len(checks) > 0, "checks list empty"
+        failed = [c for c in checks if not c.get("passed", False)]
+        if failed:
+            _record("workflow_navigator:tests", FAIL, f"{len(failed)} checks failed: {failed[0].get('name','')}")
+        else:
+            _record("workflow_navigator:tests", PASS, f"{len(checks)} checks OK")
+    except (json.JSONDecodeError, AssertionError, IndexError) as e:
+        _record("workflow_navigator:tests", FAIL, f"bad JSON output: {e} | last line: {out.strip().splitlines()[-1][:60] if out.strip() else '(empty)'}")
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2391,6 +2515,10 @@ ALL_TESTS = [
     (202, "weekly_report", test_weekly_report),
     (203, "workflow_selector", test_workflow_selector),
 
+    (204, "role_contract_validator", test_role_contract_validator),
+    (205, "state_manager", test_state_manager),
+    (206, "tool_watcher", test_tool_watcher),
+    (207, "workflow_navigator", test_workflow_navigator),
 ]
 
 

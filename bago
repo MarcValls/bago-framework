@@ -189,6 +189,7 @@ COMMANDS_MAIN = {
     "project-summary": ["python3", str(TOOLS / "project_summary.py")],
     "recent-projects": ["python3", str(TOOLS / "recent_projects.py")],
     "reconcile-state": ["python3", str(TOOLS / "reconcile_state.py")],
+    "role-contract-validator": ["python3", str(TOOLS / "role_contract_validator.py")],
     "repo-clone": ["python3", str(TOOLS / "repo_clone.py")],
     "repo-context-guard": ["python3", str(TOOLS / "repo_context_guard.py")],
     "repo-list": ["python3", str(TOOLS / "repo_list.py")],
@@ -211,6 +212,7 @@ COMMANDS_MAIN = {
     "sprint-summary": ["python3", str(TOOLS / "sprint_summary.py")],
     "stability-summary": ["python3", str(TOOLS / "stability_summary.py")],
     "stale-detector": ["python3", str(TOOLS / "stale_detector.py")],
+    "state-manager": ["python3", str(TOOLS / "state_manager.py")],
     "stats": ["python3", str(TOOLS / "stats.py")],
     "sync-pack-metadata": ["python3", str(TOOLS / "sync_pack_metadata.py")],
     "sync-state": ["python3", str(TOOLS / "sync_state.py")],
@@ -220,6 +222,7 @@ COMMANDS_MAIN = {
     "todo-scan": ["python3", str(TOOLS / "todo_scan.py")],
     "tool-registry": ["python3", str(TOOLS / "tool_registry.py")],
     "tool-search": ["python3", str(TOOLS / "tool_search.py")],
+    "tool-watcher": ["python3", str(TOOLS / "tool_watcher.py")],
     "type-check": ["python3", str(TOOLS / "type_check.py")],
     "v2-close-checklist": ["python3", str(TOOLS / "v2_close_checklist.py")],
     "validate-manifest": ["python3", str(TOOLS / "validate_manifest.py")],
@@ -228,6 +231,7 @@ COMMANDS_MAIN = {
     "vertice-activator": ["python3", str(TOOLS / "vertice_activator.py")],
     "watch-files": ["python3", str(TOOLS / "watch_files.py")],
     "weekly-report": ["python3", str(TOOLS / "weekly_report.py")],
+    "workflow-navigator": ["python3", str(TOOLS / "workflow_navigator.py")],
     "workflow-selector": ["python3", str(TOOLS / "workflow_selector.py")],
 }
 
