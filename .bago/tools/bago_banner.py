@@ -10,7 +10,7 @@ Uso:
 """
 
 import json, re, subprocess, sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 # ─── Rutas ────────────────────────────────────────────────────────────────────
@@ -127,10 +127,33 @@ def _detector_verdict():
         return None, 0, 2
 
 def _active_task():
-    """Devuelve (title, status) si hay pending_w2_task.json, o None."""
+    """Devuelve (title, status, stale_days) si hay pending_w2_task.json, o None.
+
+    stale_days: número de días desde que se creó la task (None si desconocido).
+    Si stale_days >= 3, la task se considera obsoleta y merece alerta.
+    """
+    task_file = STATE / "pending_w2_task.json"
     try:
-        data = json.loads((STATE / "pending_w2_task.json").read_text(encoding="utf-8"))
-        return data.get("idea_title", "—"), data.get("status", "pending")
+        data = json.loads(task_file.read_text(encoding="utf-8"))
+        title   = data.get("idea_title", "—")
+        status  = data.get("status", "pending")
+        # Calculate age from file mtime or from data field
+        stale_days: float | None = None
+        created = data.get("created") or data.get("date") or data.get("timestamp")
+        if created:
+            try:
+                dt = datetime.fromisoformat(str(created).rstrip("Z")).replace(tzinfo=timezone.utc)
+                stale_days = (datetime.now(timezone.utc) - dt).total_seconds() / 86400
+            except Exception:
+                pass
+        if stale_days is None:
+            # fallback: file modification time
+            try:
+                mtime = datetime.fromtimestamp(task_file.stat().st_mtime, tz=timezone.utc)
+                stale_days = (datetime.now(timezone.utc) - mtime).total_seconds() / 86400
+            except Exception:
+                pass
+        return title, status, stale_days
     except Exception:
         return None
 
@@ -210,10 +233,16 @@ def print_banner(mini=False):
 
     # ── Task W2 activa ────────────────────────────────────────────────────────
     if active_task is not None:
-        title, tstatus = active_task
-        icon = "✅" if tstatus == "done" else "⏳"
-        task_color = GREEN if tstatus == "done" else YELLOW
-        print(_box(INDENT + DIM("task W2: ") + task_color(f"{icon} {title}")))
+        title, tstatus, stale_days = active_task
+        stale = stale_days is not None and stale_days >= 3 and tstatus != "done"
+        if tstatus == "done":
+            icon = "✅"; task_color = GREEN
+        elif stale:
+            icon = "⚠️ "; task_color = RED
+        else:
+            icon = "⏳"; task_color = YELLOW
+        stale_suffix = RED(f"  [{int(stale_days)}d sin cerrar]") if stale else ""
+        print(_box(INDENT + DIM("task W2: ") + task_color(f"{icon} {title}") + stale_suffix))
 
     if not mini:
         print(SEP)

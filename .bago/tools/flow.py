@@ -367,10 +367,26 @@ def cmd_done(argv: list) -> int:
 
 
 def cmd_status(argv: list) -> int:
-    """flow status — muestra el workflow activo."""
+    """flow status — muestra el workflow activo y alerta de tasks obsoletas."""
     current = _active_workflow()
+
+    # ── Stale task alert ──────────────────────────────────────────────────────
+    task_file = STATE_DIR / "pending_w2_task.json"
+    if task_file.exists():
+        try:
+            task = json.loads(task_file.read_text(encoding="utf-8"))
+            tstatus = task.get("status", "pending")
+            if tstatus != "done":
+                mtime = datetime.fromtimestamp(task_file.stat().st_mtime, tz=timezone.utc)
+                days  = (datetime.now(timezone.utc) - mtime).total_seconds() / 86400
+                if days >= 3:
+                    title = task.get("idea_title", "—")
+                    print(f"\n  ⚠️  TASK OBSOLETA: '{title}' lleva {int(days)}d sin cerrarse.")
+                    print(f"  → Ciérrala con `bago flow done` o elimina pending_w2_task.json")
+        except Exception:
+            pass
+
     if not current:
-        # Show last completed if available
         gs = _load_json(GLOBAL_FILE)
         last = gs.get("sprint_status", {}).get("last_completed_workflow")
         if last:

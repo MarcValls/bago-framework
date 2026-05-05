@@ -274,40 +274,134 @@ def load_implemented_titles() -> set[str]:
         return set()
 
 
-def apply_dynamic_scoring(ideas: list[dict[str, object]]) -> list[dict[str, object]]:
-    """Ajusta las prioridades según implemented_ideas.json.
+def _load_state_signals() -> dict:
+    """Lee señales de contexto del sistema para enriquecer el scoring dinámico.
 
-    - Ideas cuyo título está en implemented: se eliminan (ya filtradas antes).
-    - Ideas con keywords que coinciden con títulos implementados: penalización -5.
-    - Ideas con keywords que NO coinciden con nada implementado: boost +3.
-    Esto hace que el selector evolucione hacia trabajo genuinamente nuevo.
+    Devuelve un dict con:
+    - active_workflow: código del workflow activo (e.g. "W2") o None
+    - guardian_health: último % de salud (0-100), -1 si desconocido
+    - has_errors: True si guardian tiene errores activos
+    - sprint_phase: "implementation" | "exploration" | "debug" | "unknown"
+    """
+    state_dir = ROOT / ".bago" / "state"
+    signals: dict = {
+        "active_workflow": None,
+        "guardian_health": -1,
+        "has_errors": False,
+        "sprint_phase": "unknown",
+    }
+
+    # ── global_state.json ─────────────────────────────────────────────────────
+    gs_file = state_dir / "global_state.json"
+    if gs_file.exists():
+        try:
+            gs = json.loads(gs_file.read_text(encoding="utf-8"))
+            sp = gs.get("sprint_status", {})
+            aw = sp.get("active_workflow")
+            if isinstance(aw, dict):
+                signals["active_workflow"] = aw.get("code")
+            elif isinstance(aw, str) and aw not in (None, "null", "none", ""):
+                signals["active_workflow"] = aw
+        except Exception:
+            pass
+
+    # ── guardian_history.json ─────────────────────────────────────────────────
+    hist_file = state_dir / "guardian_history.json"
+    if hist_file.exists():
+        try:
+            history = json.loads(hist_file.read_text(encoding="utf-8"))
+            if history:
+                last = history[-1]
+                signals["guardian_health"] = last.get("health", -1)
+                signals["has_errors"] = last.get("errors", 0) > 0
+        except Exception:
+            pass
+
+    # ── Sprint phase inference ─────────────────────────────────────────────────
+    wf = signals["active_workflow"] or ""
+    if wf in ("W2", "W3", "W5"):
+        signals["sprint_phase"] = "implementation"
+    elif wf in ("W1", "W8", "W9"):
+        signals["sprint_phase"] = "exploration"
+    elif wf in ("W4", "W6", "W7"):
+        signals["sprint_phase"] = "debug"
+
+    return signals
+
+
+# Workflow affinity map: idea sections/keywords that boost in each phase
+_PHASE_AFFINITY: dict[str, set[str]] = {
+    "implementation": {"implementación", "refactor", "feature", "tool", "script", "módulo", "comando"},
+    "exploration":    {"exploración", "análisis", "diagnóstico", "mapeo", "descubrimiento", "idea", "catálogo"},
+    "debug":          {"debug", "error", "guardian", "health", "validación", "repair", "fix", "diagnóstico"},
+}
+
+
+def apply_dynamic_scoring(ideas: list[dict[str, object]]) -> list[dict[str, object]]:
+    """Ajusta prioridades según implemented_ideas.json y señales del estado BAGO.
+
+    Señales aplicadas:
+    1. Historial implementado: -5 si keywords solapan con trabajo ya hecho, +3 si es nuevo
+    2. Guardian salud baja (<80%): boost +8 a ideas de categoría "health" / "framework"
+    3. Guardian con errores: boost +12 a ideas de categoría "health"
+    4. Workflow activo: boost +6 a ideas afines a la fase (impl/exploration/debug)
+    5. Sin workflow activo: boost +4 a ideas de tipo "exploración" (es buen momento para idear)
     """
     impl_file = ROOT / ".bago" / "state" / "implemented_ideas.json"
-    if not impl_file.exists():
-        return ideas
-    try:
-        data = json.loads(impl_file.read_text(encoding="utf-8"))
-        impl_entries = data.get("ideas_completed", [])
-    except Exception:
-        return ideas
 
-    if not impl_entries:
-        return ideas  # nada implementado aún — sin ajuste
-
+    # ── 1. Historial implementado ──────────────────────────────────────────────
     impl_keywords: set[str] = set()
-    for entry in impl_entries:
-        title = str(entry.get("title", ""))
-        impl_keywords.update(w.lower() for w in title.split() if len(w) > 4)
+    if impl_file.exists():
+        try:
+            data = json.loads(impl_file.read_text(encoding="utf-8"))
+            for entry in data.get("ideas_completed", []):
+                title = str(entry.get("title", ""))
+                impl_keywords.update(w.lower() for w in title.split() if len(w) > 4)
+        except Exception:
+            pass
+
+    # ── 2. Estado del sistema ──────────────────────────────────────────────────
+    signals = _load_state_signals()
+    phase         = signals["sprint_phase"]
+    health        = signals["guardian_health"]
+    has_errors    = signals["has_errors"]
+    active_wf     = signals["active_workflow"]
+    phase_words   = _PHASE_AFFINITY.get(phase, set())
 
     result = []
     for idea in ideas:
-        title_words = {w.lower() for w in str(idea.get("title", "")).split() if len(w) > 4}
-        overlap = title_words & impl_keywords
-        priority = int(idea["priority"])
-        if overlap:
-            priority = max(1, priority - 5)   # penalización: tema relacionado ya implementado
-        else:
-            priority = min(99, priority + 3)  # boost: trabajo genuinamente nuevo
+        priority    = int(idea["priority"])
+        title_lower = str(idea.get("title", "")).lower()
+        summary_low = str(idea.get("summary", "")).lower()
+        section     = str(idea.get("section", "")).lower()
+        combined    = title_lower + " " + summary_low + " " + section
+
+        # Signal 1: implemented overlap
+        title_words = {w.lower() for w in title_lower.split() if len(w) > 4}
+        if impl_keywords:
+            overlap = title_words & impl_keywords
+            if overlap:
+                priority = max(1, priority - 5)
+            else:
+                priority = min(99, priority + 3)
+
+        # Signal 2: guardian health degraded → boost health/framework ideas
+        if health != -1 and health < 80 and section in ("health", "framework"):
+            priority = min(99, priority + 8)
+
+        # Signal 3: guardian has errors → emergency boost for health ideas
+        if has_errors and section in ("health", "framework"):
+            priority = min(99, priority + 12)
+
+        # Signal 4: workflow active → boost ideas affine to current phase
+        if active_wf and phase_words:
+            if any(w in combined for w in phase_words):
+                priority = min(99, priority + 6)
+
+        # Signal 5: no active workflow → boost exploration/catalog ideas
+        if not active_wf and section in ("exploración", "catálogo", "ciclo", "estado"):
+            priority = min(99, priority + 4)
+
         result.append({**idea, "priority": priority})
     return result
 

@@ -132,6 +132,32 @@ python3 bago audit
 python3 bago cosecha
 ```
 
+### Flujo de trabajo ideas → implementación
+
+El ciclo estándar para convertir ideas en trabajo registrado:
+
+```bash
+# 1. Ver ideas priorizadas (el scorer ajusta según contexto del sistema)
+bago ideas
+
+# 2. Aceptar una idea (la guarda en pending_w2_task.json y la registra)
+bago ideas --accept 2        # acepta la idea #2 de la lista
+
+# 3. Abrir el workflow de implementación con título descriptivo
+bago flow start W2 "Mejorar sistema de scoring dinámico"
+
+# 4. Trabajar... (commits, edits, etc.)
+
+# 5. Cerrar el workflow — registra la idea como implementada
+bago flow done
+
+# Verificar estado en cualquier momento
+bago flow status             # ⚠️ alerta si la task lleva >3 días sin cerrarse
+```
+
+> **Nota**: `bago ideas` ajusta prioridades según el workflow activo (`bago flow status`),
+> la salud del guardian (`bago guardian --trend`), y el historial de trabajo ya implementado.
+
 ### Using with an AI agent
 
 Point your AI agent (GitHub Copilot, Claude, etc.) to `.bago/AGENT_START.md` as context. This file bootstraps the agent with the full operational state.
