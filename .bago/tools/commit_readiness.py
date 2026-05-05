@@ -292,7 +292,7 @@ def print_report(result: dict):
 
 
 def run_tests():
-    import tempfile, os
+    import tempfile
     results = []
 
     # Test 1: syntax check detects error

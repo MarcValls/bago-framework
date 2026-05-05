@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -56,6 +57,55 @@ def report_gate(name: str, report: dict | None) -> tuple[str, str]:
     return st, f"{name}: status={overall}, failures={failures}, workers={workers}, duration={duration}s"
 
 
+def check_stale_task() -> tuple[str, str] | None:
+    """Devuelve (status, line) si hay una task pendiente con más de 3 días de antigüedad."""
+    task_file = ROOT / ".bago" / "state" / "pending_w2_task.json"
+    if not task_file.exists():
+        return None
+    try:
+        data = json.loads(task_file.read_text(encoding="utf-8"))
+        if data.get("status") == "done":
+            return None
+        created_at = data.get("created_at") or data.get("accepted_at") or data.get("timestamp", "")
+        if not created_at:
+            return None
+        created_dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+        age_h = (datetime.now(tz=timezone.utc) - created_dt).total_seconds() / 3600
+        title = data.get("idea_title", "—")
+        if age_h > 72:
+            return ("WARN", f"stale_task: '{title}' abierta hace {int(age_h)}h ({int(age_h/24)}d) — ⚠ supera 3 días")
+        return ("GO", f"task_age: '{title}' abierta hace {int(age_h)}h — dentro del límite")
+    except Exception:
+        return None
+
+
+def catalog_status() -> tuple[str, str]:
+    """Salud del catálogo de ideas: disponibles vs implementadas."""
+    import sqlite3 as _sq3
+    db_path = BAGO_ROOT / "state" / "bago.db"
+    impl_path = BAGO_ROOT / "state" / "implemented_ideas.json"
+    MIN_IDEAS = 5
+    try:
+        implemented = 0
+        if impl_path.exists():
+            data = json.loads(impl_path.read_text(encoding="utf-8"))
+            implemented = len(data.get("implemented", []))
+        total_db = 0
+        if db_path.exists():
+            conn = _sq3.connect(str(db_path))
+            total_db = conn.execute("SELECT COUNT(*) FROM ideas").fetchone()[0]
+            conn.close()
+        available = max(0, total_db - implemented)
+        if available == 0:
+            return "KO", f"catálogo: {implemented} impl., 0 disponibles — renovar catálogo"
+        elif available < MIN_IDEAS:
+            return "WARN", f"catálogo: {implemented} impl., {available} disp. (< mínimo {MIN_IDEAS})"
+        else:
+            return "GO", f"catálogo: {implemented} impl., {available} disp. ({total_db} total)"
+    except Exception as e:
+        return "WARN", f"catálogo: no disponible ({e})"
+
+
 # ── main ──────────────────────────────────────────────────────────────────────
 
 def main() -> int:
@@ -83,13 +133,21 @@ def main() -> int:
         st, line = report_gate(name, report)
         gates.append((st, line))
 
-    # 3. Print gates
+    # 3. Stale task check
+    stale = check_stale_task()
+    if stale is not None:
+        gates.append(stale)
+
+    # 4. Catalog status
+    gates.append(catalog_status())
+
+    # 4. Print gates
     print()
     for st, line in gates:
         icon = "✓" if st == "GO" else ("⚠" if st == "WARN" else "✗")
         print(f"  [{st}] {icon} {line}")
 
-    # 4. Overall decision
+    # 5. Overall decision
     has_ko = any(st == "KO" for st, _ in gates)
     has_warn = any(st == "WARN" for st, _ in gates)
 

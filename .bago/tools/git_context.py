@@ -25,8 +25,8 @@ Integracion con bago analyze:
   en el repo activo para que context_map.py lo incluya.
 """
 from __future__ import annotations
-import argparse, json, os, subprocess, sys
-from datetime import datetime, timezone, timedelta
+import argparse, json, os, subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -250,7 +250,7 @@ def inject_context(git_root, ctx):
 def _run_tests():
     print("  Ejecutando tests de git_context.py...")
 
-    import tempfile, os
+    import tempfile
 
     # Crear un mini repo git de prueba
     with tempfile.TemporaryDirectory() as tmpdir:

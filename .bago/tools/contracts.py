@@ -14,7 +14,7 @@ Uso:
     bago contract status            → resumen visual con countdown
     bago contract --test            → tests integrados
 """
-import argparse, json, subprocess, sys, ast, os
+import argparse, json, subprocess
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 
@@ -131,7 +131,6 @@ def check_routing_count(params: dict) -> tuple:
 
     # ── Primary: load from tool_registry (single source of truth) ────────────
     import importlib.util as _ilu
-    registry_path = BAGO_ROOT.parent / "bago"  # repo root sanity
     reg_file = TOOLS_DIR / "tool_registry.py"
     if reg_file.exists():
         spec = _ilu.spec_from_file_location("_contracts_registry", str(reg_file))
@@ -146,7 +145,7 @@ def check_routing_count(params: dict) -> tuple:
                     return False, f"comandos duplicados en tool_registry: {dupes}"
                 ok = len(seen) >= min_count
                 return ok, f"{len(seen)} comandos únicos en tool_registry (requiere ≥{min_count})"
-            except Exception as e:
+            except Exception:
                 pass  # fall through to AST fallback
 
     # ── Fallback: AST-parse bago script ──────────────────────────────────────
@@ -192,7 +191,6 @@ def check_routing_count(params: dict) -> tuple:
 
 def check_file_not_contains(params: dict) -> tuple:
     """Verify no file in a glob contains a forbidden pattern."""
-    import re as _re
     glob_pat = params.get("glob", ".bago/tools/*.py")
     pattern  = params.get("pattern", "utcnow()")
     files    = list(BAGO_ROOT.parent.glob(glob_pat))

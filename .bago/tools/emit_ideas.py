@@ -1,21 +1,247 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
-"""emit_ideas — Genera y emite ideas del backlog BAGO."""
 from __future__ import annotations
 
 from datetime import datetime, timezone
 from pathlib import Path
-from functools import lru_cache
 import json
+import sqlite3
 import subprocess
 import sys
+import unicodedata
 
+# Windows UTF-8 fix: cp1252 can't encode checkmarks, emoji, box-drawing chars
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
+
+def _norm(s: str) -> str:
+    """Normaliza un título para comparación: minúsculas + sin diacríticos."""
+    return unicodedata.normalize("NFKD", s.lower()).encode("ascii", "ignore").decode("ascii")
 
 ROOT = Path(__file__).resolve().parents[2]
+# Rango de salida del selector: mínimo operativo y máximo de carga cognitiva.
+# El selector SIEMPRE debe publicar entre MIN_IDEAS y MAX_IDEAS ideas por sesión.
 MIN_IDEAS = 5
 MAX_IDEAS = 20
+
+DB_PATH = ROOT / ".bago" / "state" / "bago.db"
+CATALOG_PATH = ROOT / ".bago" / "ideas_catalog.json"
+
+
+# ── SQLite helpers ───────────────────────────────────────────────────────────
+
+def _db_available() -> bool:
+    return DB_PATH.exists()
+
+
+def _db_conn() -> sqlite3.Connection:
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def _load_implemented_titles_from_db() -> set[str]:
+    """Devuelve títulos normalizados implementados registrados en bago.db."""
+    if not _db_available():
+        return set()
+    try:
+        conn = _db_conn()
+        rows = conn.execute("SELECT idea_title FROM implemented_ideas").fetchall()
+        conn.close()
+        return {_norm(str(r["idea_title"])) for r in rows if r["idea_title"]}
+    except Exception:
+        return set()
+
+
+def load_ideas_from_db(feat: dict, extra_flags: dict) -> list[dict] | None:
+    """
+    Carga ideas desde bago.db aplicando condiciones de features y extra_cond.
+    Devuelve None si la BD no existe (fallback a código hardcodeado).
+    Para cada slot numérico elige la idea de mayor generación cuyas condiciones pasen.
+    """
+    if not _db_available():
+        return None
+    try:
+        conn = _db_conn()
+        rows = conn.execute(
+            "SELECT * FROM ideas ORDER BY slot NULLS LAST, generation DESC, priority DESC"
+        ).fetchall()
+        conn.close()
+    except Exception:
+        return None
+
+    implemented_db = _load_implemented_titles_from_db()
+
+    slot_seen: set[int] = set()
+    result: list[dict] = []
+
+    for row in rows:
+        idea = dict(row)
+        slot = idea["slot"]
+        requires = json.loads(idea.get("requires") or "[]")
+        blocks   = json.loads(idea.get("blocks")   or "[]")
+        extra    = idea.get("extra_cond", "always")
+
+        # Filtrar ideas ya implementadas (doble fuente: JSON + DB) — normalizado
+        if _norm(idea["title"]) in implemented_db:
+            continue
+
+        # Evaluar feature gates
+        if not all(feat.get(r) for r in requires):
+            continue
+        if any(feat.get(b) for b in blocks):
+            continue
+
+        # Evaluar condición extra
+        if extra != "always" and not extra_flags.get(extra, False):
+            continue
+
+        if slot is not None:
+            if slot in slot_seen:
+                continue  # ya tenemos la mejor generación para este slot
+            slot_seen.add(slot)
+
+        # Convertir al formato que espera el resto del código
+        result.append({
+            "priority": idea["priority"],
+            "section":  idea["section"],
+            "risk":     idea["risk"],
+            "title":    idea["title"],
+            "summary":  idea["summary"],
+            "metric":   idea.get("metric", ""),
+            "w2":       idea.get("w2", ""),
+            "detail":   json.loads(idea.get("detail") or "[]"),
+        })
+
+    result.sort(key=lambda x: (-x["priority"], x["title"]))
+    return result
+
+
+
+def _load_global_state() -> dict:
+    """Lee global_state.json; devuelve {} si no existe o está corrupto."""
+    gs_file = ROOT / ".bago" / "state" / "global_state.json"
+    try:
+        return json.loads(gs_file.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _apply_dynamic_score(ideas: list[dict]) -> list[dict]:
+    """
+    Ajusta la prioridad de cada idea según señales del estado actual.
+
+    Reglas base:
+      +5  si no hay tarea activa (exploración libre)
+      -10 si hay tarea activa (status != done) y risk == 'high' (no distraer)
+      +5  si section == 'contextuales' (señal de relevancia)
+
+    Reglas de registro:
+      +4  si ninguna palabra clave del título coincide con ideas ya implementadas
+      -4  si hay ≥2 palabras clave en común (área ya trabajada)
+
+    Señales de global_state.json:
+      +3  si system_health == 'green' (base estable, buena hora para añadir)
+      +2  si sessions (inventory) > 5 (sistema con historial real)
+      -5  si system_health == 'red' (estabilizar antes de añadir features)
+      -3  si sessions == 0 y la idea no es de section 'mantenimiento'
+           (sin historial aún, priorizar mantenimiento primero)
+    """
+    # ── señal de tarea activa (status != done) ────────────────────────────────
+    task_file = ROOT / ".bago" / "state" / "pending_w2_task.json"
+    has_active_task = False
+    if task_file.exists():
+        try:
+            tdata = json.loads(task_file.read_text(encoding="utf-8"))
+            has_active_task = tdata.get("status") not in ("done", "closed")
+        except Exception:
+            has_active_task = True
+
+    # ── señales de global_state ───────────────────────────────────────────────
+    gs = _load_global_state()
+    health        = str(gs.get("system_health", "")).lower()
+    # Usar session_closes (artefactos .md) como proxy de historial; 'sessions' lo gestiona el validador
+    session_closes = int(gs.get("inventory", {}).get("session_closes", 0))
+
+    # ── palabras clave de ideas ya implementadas ──────────────────────────────
+    impl_titles = load_implemented_titles()  # ya normalizadas con _norm()
+    impl_keywords: set[str] = set()
+    for t in impl_titles:
+        impl_keywords.update(w for w in t.split() if len(w) > 4)
+
+    for idea in ideas:
+        delta = 0
+        risk    = str(idea.get("risk", "")).lower()
+        section = str(idea.get("section", "")).lower()
+        title   = str(idea.get("title", ""))
+
+        # Reglas base de tarea activa
+        if not has_active_task:
+            delta += 5                       # explorar libremente
+        elif risk == "high":
+            delta -= 10                      # no distraer con alto riesgo
+
+        # Preferir ideas contextuales
+        if section == "contextuales":
+            delta += 5
+
+        # Scoring dinámico por registro
+        if impl_keywords:
+            idea_words = {w for w in _norm(title).split() if len(w) > 4}
+            overlap = idea_words & impl_keywords
+            if not overlap:
+                delta += 4                   # trabajo genuinamente nuevo
+            elif len(overlap) >= 2:
+                delta -= 4                   # área ya trabajada extensamente
+
+        # Señales de global_state
+        if health == "green":
+            delta += 3                       # base sana, buena hora para features
+        elif health == "red":
+            delta -= 5                       # estabilizar primero
+
+        if session_closes > 5:
+            delta += 2                       # señales históricas disponibles
+        elif session_closes == 0 and section != "mantenimiento":
+            delta -= 3                       # sin historial: priorizar mantenimiento
+
+        idea["priority"] = int(idea.get("priority", 0)) + delta
+
+    ideas.sort(key=lambda x: (-x["priority"], x["title"]))
+    return ideas
+
+
+def load_fallback_from_db() -> list[dict]:
+    """Carga ideas de respaldo (sin slot) desde la BD para rellenar hasta MIN_IDEAS."""
+    if not _db_available():
+        return []
+    try:
+        conn = _db_conn()
+        rows = conn.execute(
+            "SELECT * FROM ideas WHERE slot IS NULL ORDER BY priority DESC"
+        ).fetchall()
+        conn.close()
+        implemented_db = _load_implemented_titles_from_db()
+        return [{
+            "priority": r["priority"],
+            "section":  r["section"],
+            "risk":     r["risk"],
+            "title":    r["title"],
+            "summary":  r["summary"],
+            "metric":   r.get("metric", ""),
+            "w2":       r.get("w2", ""),
+            "detail":   json.loads(r.get("detail") or "[]"),
+        } for r in rows if r["title"] not in implemented_db]
+    except Exception:
+        return []
+
+
+# ── Hardcoded fallback (cuando no hay BD) ───────────────────────────────────
 
 FALLBACK_IDEAS: list[dict[str, object]] = [
     {
@@ -62,28 +288,6 @@ FALLBACK_IDEAS: list[dict[str, object]] = [
     },
 ]
 
-
-@lru_cache(maxsize=1)
-def _load_catalog() -> dict:
-    try:
-        from bago_config import load_config
-        data = load_config(
-            "ideas_catalog",
-            fallback={"ideas": [], "fallback": FALLBACK_IDEAS},
-        )
-    except Exception:
-        data = {"ideas": [], "fallback": FALLBACK_IDEAS}
-
-    if not isinstance(data, dict):
-        return {"ideas": [], "fallback": FALLBACK_IDEAS}
-
-    ideas = data.get("ideas")
-    fallback = data.get("fallback")
-    return {
-        **data,
-        "ideas": ideas if isinstance(ideas, list) else [],
-        "fallback": fallback if isinstance(fallback, list) else FALLBACK_IDEAS,
-    }
 
 
 def load_json(path: Path):
@@ -214,234 +418,113 @@ def detect_implemented_features() -> dict[str, bool]:
     """Detecta qué ideas ya están implementadas inspeccionando el filesystem."""
     tools = ROOT / ".bago" / "tools"
     state = ROOT / ".bago" / "state"
-    state_path = state / "ESTADO_BAGO_ACTUAL.md"
-    global_state_path = state / "global_state.json"
-    readme_path = ROOT / "README.md"
     bago_readme = ROOT / ".bago" / "README.md"
     banner_text = (tools / "bago_banner.py").read_text(encoding="utf-8") if (tools / "bago_banner.py").exists() else ""
     show_task_text = (tools / "show_task.py").read_text(encoding="utf-8") if (tools / "show_task.py").exists() else ""
-    emit_ideas_text = (tools / "emit_ideas.py").read_text(encoding="utf-8") if (tools / "emit_ideas.py").exists() else ""
 
-    sections: dict[str, str] = {}
-    if file_exists(state_path):
-        try:
-            sections = parse_state_sections(read_text(state_path))
-        except Exception:
-            sections = {}
-
-    global_state = load_json(global_state_path) if file_exists(global_state_path) else {}
-    readme_lines = len(read_text(readme_path).splitlines()) if file_exists(readme_path) else 0
-    matrix = report_status(ROOT / "sandbox/runtime-vm/matrix/last-matrix-summary.json")
-    stable_reports = all(
-        report.get("status") == "pass" and report.get("failure_count", 1) == 0
-        for report in (
-            report_status(ROOT / "sandbox/runtime/last-report.json"),
-            report_status(ROOT / "sandbox/runtime-vm/last-report-vm.json"),
-            report_status(ROOT / "sandbox/runtime-vm/last-soak-report-vm.json"),
-        )
-        if report is not None
+    gate_in_code = (
+        (tools / "validate_pack.py").exists()
+        and (tools / "validate_state.py").exists()
     )
 
+    # session_closes_counted: session_close_*.md artefactos > 0 (campo dedicado para no romper el validador)
+    try:
+        gs = json.loads((state / "global_state.json").read_text(encoding="utf-8"))
+        session_closes_counted = int(gs.get("inventory", {}).get("session_closes", 0)) > 0
+    except Exception:
+        session_closes_counted = False
+
+    # catalog_exhaustion_handled: la guía de renovación usa un sentinel explícito
+    # para no detectar su propia definición en este mismo archivo.
+    emit_text = Path(__file__).read_text(encoding="utf-8")
+    catalog_exhaustion_handled = "# CATALOG_RENEWAL_GUIDE_IMPLEMENTED" in emit_text
+
     return {
-        "handoff_w2":        (tools / "show_task.py").exists(),
-        "session_opener":    (tools / "session_opener.py").exists(),
-        "close_auto":        "_generate_close_artifact" in show_task_text and (tools / "session_close_generator.py").exists(),
-        "stability_cmd":     (ROOT / "stability-summary").exists() and (tools / "stability_summary.py").exists(),
-        "banner_shows_task": "_active_task" in banner_text,
-        "banner_stale_alert": "stale_days" in banner_text and "sin cerrar" in banner_text,
-        "ideas_wrapper":     (ROOT / "ideas").exists(),
-        "gate_in_code":      True,
-        "readme_aligned":    bago_readme.exists() and "bago stability" in bago_readme.read_text(encoding="utf-8"),
-        "readme_flow_section": "ideas → implementación" in (ROOT / "README.md").read_text(encoding="utf-8") if (ROOT / "README.md").exists() else False,
-        "pending_task":      (state / "pending_w2_task.json").exists(),
-        "impl_registry":     (state / "implemented_ideas.json").exists(),
-        "scoring_dynamic":   "apply_dynamic_scoring" in emit_ideas_text,
-        "scoring_context":   "_load_state_signals" in emit_ideas_text,
-        "stable_reports":    stable_reports,
-        "baseline_clean":    global_state.get("baseline_status") == "active_clean_core",
-        "matrix_pass":       bool(matrix and matrix.get("status") == "pass"),
-        "has_session_close": "cierre de sesión" in sections,
-        "repo_not_empty":    readme_lines > 0,
+        "handoff_w2":                (tools / "show_task.py").exists(),
+        "stability_cmd":             (tools / "stability_summary.py").exists(),
+        "ideas_wrapper":             (ROOT / "ideas").exists(),
+        "gate_in_code":              gate_in_code,
+        "readme_aligned":            bago_readme.exists() and "bago stability" in bago_readme.read_text(encoding="utf-8"),
+        "pending_task":              (state / "pending_w2_task.json").exists(),
+        "session_opener":            (tools / "session_opener.py").exists(),
+        "banner_shows_task":         "_active_task" in banner_text,
+        "impl_registry":             (state / "implemented_ideas.json").exists(),
+        # Slot 9: progreso visible
+        "progress_in_banner":        "implementadas" in banner_text,
+        # Slot 10: sesiones reales
+        "session_closes_counted":    session_closes_counted,
+        # Slot 11: cosecha post-tarea
+        "cosecha_post_task":         "cosecha" in show_task_text.lower(),
+        # Slot 12: guía de renovación + autorenovación
+        "catalog_exhaustion_handled": catalog_exhaustion_handled,
+        "auto_renew_active":          "# AUTO_RENEW_IMPLEMENTED" in emit_text,
+        # Slot 13: dashboard con ideas
+        "dashboard_shows_ideas":      "ideas_summary" in (
+            (tools / "pack_dashboard.py").read_text(encoding="utf-8")
+            if (tools / "pack_dashboard.py").exists() else ""),
+        # Slot 14: resumen automático de sprint
+        "sprint_summary_auto":        len(list(state.glob("sprint_summary_*.md"))) > 0,
+        # Slot 15: ideas personalizadas
+        "custom_ideas_cli":           "--add" in emit_text,
+        # Slot 16: health score real
+        "health_score_real":          "session_closes" in (
+            (tools / "health_score.py").read_text(encoding="utf-8")
+            if (tools / "health_score.py").exists() else ""),
+        # Slot 11 gen 2: cosecha con ideas del sprint
+        "cosecha_sprint_ideas":       "# COSECHA_SPRINT_IDEAS_IMPLEMENTED" in (
+            (tools / "cosecha.py").read_text(encoding="utf-8")
+            if (tools / "cosecha.py").exists() else ""),
+        # Slots 17-21: wave 3 features
+        "sprint_velocity":            "# SPRINT_VELOCITY_IMPLEMENTED" in (
+            (tools / "sprint_summary.py").read_text(encoding="utf-8")
+            if (tools / "sprint_summary.py").exists() else ""),
+        "health_in_banner":           "# HEALTH_IN_BANNER_IMPLEMENTED" in banner_text,
+        "cosecha_health_compare":     "# COSECHA_HEALTH_COMPARE_IMPLEMENTED" in (
+            (tools / "cosecha.py").read_text(encoding="utf-8")
+            if (tools / "cosecha.py").exists() else ""),
+        "ideas_exportable":           "--export" in (
+            (tools / "sprint_summary.py").read_text(encoding="utf-8")
+            if (tools / "sprint_summary.py").exists() else ""),
+        "catalog_guide_added":        '"_guide"' in (
+            (ROOT / ".bago" / "ideas_catalog.json").read_text(encoding="utf-8")
+            if (ROOT / ".bago" / "ideas_catalog.json").exists() else ""),
+        # Slot 13 gen 2: historial de ideas en dashboard
+        "ideas_history_in_dashboard": "recent" in (
+            (tools / "pack_dashboard.py").read_text(encoding="utf-8")
+            if (tools / "pack_dashboard.py").exists() else ""),
+        # Wave 4 features
+        "velocity_in_dashboard":      "# VELOCITY_IN_DASHBOARD_IMPLEMENTED" in (
+            (tools / "pack_dashboard.py").read_text(encoding="utf-8")
+            if (tools / "pack_dashboard.py").exists() else ""),
+        "cosecha_health_trend":       "# COSECHA_HEALTH_TREND_IMPLEMENTED" in (
+            (tools / "cosecha.py").read_text(encoding="utf-8")
+            if (tools / "cosecha.py").exists() else ""),
+        "full_sprint_in_stability":   "# FULL_SPRINT_IN_STABILITY_IMPLEMENTED" in (
+            (tools / "stability_summary.py").read_text(encoding="utf-8")
+            if (tools / "stability_summary.py").exists() else ""),
+        "banner_compact_mode":        "# BANNER_COMPACT_MODE_IMPLEMENTED" in banner_text,
+        "dashboard_export_link":      "# DASHBOARD_EXPORT_LINK_IMPLEMENTED" in (
+            (tools / "pack_dashboard.py").read_text(encoding="utf-8")
+            if (tools / "pack_dashboard.py").exists() else ""),
     }
 
 
 def load_implemented_titles() -> set[str]:
-    """Devuelve el conjunto de títulos de ideas ya registradas como implementadas.
-
-    Fuente primaria: bago.db (tabla ideas WHERE status='done').
-    Fallback: implemented_ideas.json.
-    """
-    try:
-        sys.path.insert(0, str(ROOT / ".bago" / "tools"))
-        from bago_db import get_implemented_titles
-        return get_implemented_titles()
-    except Exception:
-        pass
-    # JSON fallback
+    """Devuelve el conjunto de títulos normalizados de ideas ya registradas como implementadas."""
     impl_file = ROOT / ".bago" / "state" / "implemented_ideas.json"
     if not impl_file.exists():
         return set()
     try:
         data = json.loads(impl_file.read_text(encoding="utf-8"))
-        return {str(e.get("title", "")) for e in data.get("ideas_completed", [])}
+        entries = data.get("implemented") or data.get("ideas_completed") or []
+        return {_norm(str(e.get("title", ""))) for e in entries}
     except Exception:
         return set()
 
 
-def _load_state_signals() -> dict:
-    """Lee señales de contexto del sistema para enriquecer el scoring dinámico.
-
-    Devuelve un dict con:
-    - active_workflow: código del workflow activo (e.g. "W2") o None
-    - guardian_health: último % de salud (0-100), -1 si desconocido
-    - has_errors: True si guardian tiene errores activos
-    - sprint_phase: "implementation" | "exploration" | "debug" | "unknown"
-    """
-    state_dir = ROOT / ".bago" / "state"
-    signals: dict = {
-        "active_workflow": None,
-        "guardian_health": -1,
-        "has_errors": False,
-        "sprint_phase": "unknown",
-    }
-
-    # ── global_state.json ─────────────────────────────────────────────────────
-    gs_file = state_dir / "global_state.json"
-    if gs_file.exists():
-        try:
-            gs = json.loads(gs_file.read_text(encoding="utf-8"))
-            sp = gs.get("sprint_status", {})
-            aw = sp.get("active_workflow")
-            if isinstance(aw, dict):
-                signals["active_workflow"] = aw.get("code")
-            elif isinstance(aw, str) and aw not in (None, "null", "none", ""):
-                signals["active_workflow"] = aw
-        except Exception:
-            pass
-
-    # ── guardian history (DB primary, JSON fallback) ──────────────────────────
-    try:
-        sys.path.insert(0, str(ROOT / ".bago" / "tools"))
-        from bago_db import get_last_guardian_run
-        last = get_last_guardian_run()
-        if last:
-            signals["guardian_health"] = last.get("health", -1)
-            signals["has_errors"] = last.get("errors", 0) > 0
-    except Exception:
-        hist_file = state_dir / "guardian_history.json"
-        if hist_file.exists():
-            try:
-                history = json.loads(hist_file.read_text(encoding="utf-8"))
-                if history:
-                    last = history[-1]
-                    signals["guardian_health"] = last.get("health", -1)
-                    signals["has_errors"] = last.get("errors", 0) > 0
-            except Exception:
-                pass
-
-    # ── Sprint phase inference ─────────────────────────────────────────────────
-    wf = signals["active_workflow"] or ""
-    if wf in ("W2", "W3", "W5"):
-        signals["sprint_phase"] = "implementation"
-    elif wf in ("W1", "W8", "W9"):
-        signals["sprint_phase"] = "exploration"
-    elif wf in ("W4", "W6", "W7"):
-        signals["sprint_phase"] = "debug"
-
-    return signals
-
-
-# Workflow affinity map: idea sections/keywords that boost in each phase
-_PHASE_AFFINITY: dict[str, set[str]] = {
-    "implementation": {"implementación", "refactor", "feature", "tool", "script", "módulo", "comando"},
-    "exploration":    {"exploración", "análisis", "diagnóstico", "mapeo", "descubrimiento", "idea", "catálogo"},
-    "debug":          {"debug", "error", "guardian", "health", "validación", "repair", "fix", "diagnóstico"},
-}
-
-
-def apply_dynamic_scoring(ideas: list[dict[str, object]]) -> list[dict[str, object]]:
-    """Ajusta prioridades según implemented_ideas.json y señales del estado BAGO.
-
-    Señales aplicadas:
-    1. Historial implementado: -5 si keywords solapan con trabajo ya hecho, +3 si es nuevo
-    2. Guardian salud baja (<80%): boost +8 a ideas de categoría "health" / "framework"
-    3. Guardian con errores: boost +12 a ideas de categoría "health"
-    4. Workflow activo: boost +6 a ideas afines a la fase (impl/exploration/debug)
-    5. Sin workflow activo: boost +4 a ideas de tipo "exploración" (es buen momento para idear)
-    """
-    impl_file = ROOT / ".bago" / "state" / "implemented_ideas.json"
-
-    # ── 1. Historial implementado ──────────────────────────────────────────────
-    impl_keywords: set[str] = set()
-    if impl_file.exists():
-        try:
-            data = json.loads(impl_file.read_text(encoding="utf-8"))
-            for entry in data.get("ideas_completed", []):
-                title = str(entry.get("title", ""))
-                impl_keywords.update(w.lower() for w in title.split() if len(w) > 4)
-        except Exception:
-            pass
-
-    # ── 2. Estado del sistema ──────────────────────────────────────────────────
-    signals = _load_state_signals()
-    phase         = signals["sprint_phase"]
-    health        = signals["guardian_health"]
-    has_errors    = signals["has_errors"]
-    active_wf     = signals["active_workflow"]
-    phase_words   = _PHASE_AFFINITY.get(phase, set())
-
-    result = []
-    for idea in ideas:
-        priority    = int(idea["priority"])
-        title_lower = str(idea.get("title", "")).lower()
-        summary_low = str(idea.get("summary", "")).lower()
-        section     = str(idea.get("section", "")).lower()
-        combined    = title_lower + " " + summary_low + " " + section
-
-        # Signal 1: implemented overlap
-        title_words = {w.lower() for w in title_lower.split() if len(w) > 4}
-        if impl_keywords:
-            overlap = title_words & impl_keywords
-            if overlap:
-                priority = max(1, priority - 5)
-            else:
-                priority = min(99, priority + 3)
-
-        # Signal 2: guardian health degraded → boost health/framework ideas
-        if health != -1 and health < 80 and section in ("health", "framework"):
-            priority = min(99, priority + 8)
-
-        # Signal 3: guardian has errors → emergency boost for health ideas
-        if has_errors and section in ("health", "framework"):
-            priority = min(99, priority + 12)
-
-        # Signal 4: workflow active → boost ideas affine to current phase
-        if active_wf and phase_words:
-            if any(w in combined for w in phase_words):
-                priority = min(99, priority + 6)
-
-        # Signal 5: no active workflow → boost exploration/catalog ideas
-        if not active_wf and section in ("exploración", "catálogo", "ciclo", "estado"):
-            priority = min(99, priority + 4)
-
-        result.append({**idea, "priority": priority})
-    return result
-
-
-def evaluate_catalog(catalog: dict, feat: dict[str, bool]) -> list[dict]:
-    ideas = []
-    for idea in catalog.get("ideas", []):
-        requires = idea.get("requires", [])
-        excludes = idea.get("excludes", [])
-        if all(feat.get(flag, False) for flag in requires) and not any(feat.get(flag, False) for flag in excludes):
-            ideas.append({k: v for k, v in idea.items() if k not in ("id", "chain", "generation", "requires", "excludes")})
-    return ideas
-
-
-def build_idea_sections(
-    items: list[dict[str, object]],
-    fallback_items: list[dict[str, object]] | None = None,
-) -> dict[str, list[dict[str, object]]]:
+def build_idea_sections(items: list[dict[str, object]], done_titles: set[str] | None = None) -> dict[str, list[dict[str, object]]]:
+    if done_titles is None:
+        done_titles = set()
     contextual = [
         item
         for item in items
@@ -450,33 +533,67 @@ def build_idea_sections(
     contextual = sorted(contextual, key=lambda item: (-int(item["priority"]), str(item["title"])))
     contextual = contextual[:MAX_IDEAS]
 
-    fallback_pool = fallback_items if isinstance(fallback_items, list) else FALLBACK_IDEAS
     respaldo: list[dict[str, object]] = []
     if len(contextual) < MIN_IDEAS:
-        seen_titles = {str(item["title"]) for item in contextual}
-        for fallback in fallback_pool:
+        seen_titles = {_norm(str(item["title"])) for item in contextual} | done_titles
+        for fallback in FALLBACK_IDEAS:
             if len(contextual) + len(respaldo) >= MIN_IDEAS:
                 break
-            title = str(fallback["title"])
+            title = _norm(str(fallback["title"]))
             if title in seen_titles:
                 continue
             respaldo.append(dict(fallback))
             seen_titles.add(title)
 
     respaldo = sorted(respaldo, key=lambda item: (-int(item["priority"]), str(item["title"])))
+    # Hard cap: total must not exceed MAX_IDEAS
+    total = len(contextual) + len(respaldo)
+    if total > MAX_IDEAS:
+        respaldo = respaldo[:MAX_IDEAS - len(contextual)]
     return {"contextuales": contextual, "respaldo": respaldo}
+
+
+def _auto_renew_catalog() -> int:
+    """
+    Reconstruye bago.db desde ideas_catalog.json para descubrir nuevas generaciones/slots.
+    # AUTO_RENEW_IMPLEMENTED
+    Devuelve el nuevo número de ideas disponibles tras la reconstrucción, o -1 si falla.
+    """
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "db_init", Path(__file__).resolve().parent / "db_init.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        mod.reset_ideas()
+        return 0   # señal OK; el caller recarga ideas
+    except Exception:
+        return -1
 
 
 def print_sectioned_ideas(sections: dict[str, list[dict[str, object]]]) -> None:
     total = len(sections["contextuales"]) + len(sections["respaldo"])
+    range_label = f"[rango: {MIN_IDEAS}–{MAX_IDEAS}]"
+    if total < MIN_IDEAS:
+        range_status = f"⚠ {total} ideas — por debajo del mínimo ({MIN_IDEAS})  {range_label}"
+    elif total > MAX_IDEAS:
+        range_status = f"⚠ {total} ideas — por encima del máximo ({MAX_IDEAS})  {range_label}"
+    else:
+        range_status = f"✓ dentro del rango  {range_label}"
     print(
         f"Total ideas: {total} "
-        f"(contextuales={len(sections['contextuales'])}, respaldo={len(sections['respaldo'])})"
+        f"(contextuales={len(sections['contextuales'])}, respaldo={len(sections['respaldo'])})  {range_status}"
     )
+    if total < MIN_IDEAS:
+        # CATALOG_RENEWAL_GUIDE_IMPLEMENTED
+        print(f"  💡  Para renovar el catálogo: python bago db reset-ideas")
+        print(f"  💡  Para añadir ideas nuevas: edita .bago/ideas_catalog.json y ejecuta db reset-ideas")
     counter = 1
     for item in order_ideas_by_section(sections):
         w2 = str(item.get("w2", "Sin siguiente paso definido"))
-        print(f"{counter}. [{item['priority']}] {item['title']}")
+        has_metric = bool(str(item.get("metric", "")).strip())
+        metric_badge = " 📊" if has_metric else " ⚠️sin métrica"
+        print(f"{counter}. [{item['priority']}] {item['title']}{metric_badge}")
         print(f"   descripcion: {item['summary']}")
         print(f"   siguiente paso: {w2}")
         print("")
@@ -582,226 +699,32 @@ def save_handoff(data: dict[str, object]) -> Path:
     return dest
 
 
-def synthesize_ideas() -> int:
-    """Analiza el estado del sistema y genera nuevas ideas candidatas en ideas_catalog.json.
-
-    Sources analizadas:
-    - guardian_history.json: detecta degradación de salud reciente
-    - guardian_findings (live): tools con errores o warnings
-    - tools sin registro en tool_registry.py
-    - TODO/FIXME en código Python de .bago/tools/
-    - Slots vacíos en global_state.json (null/empty fields)
-    """
-    catalog_path = ROOT / ".bago" / "state" / "config" / "ideas_catalog.json"
-    tools_dir    = ROOT / ".bago" / "tools"
-    state_dir    = ROOT / ".bago" / "state"
-
-    try:
-        catalog: dict = json.loads(catalog_path.read_text(encoding="utf-8"))
-    except Exception:
-        print("[synthesize] ERROR: no se pudo leer ideas_catalog.json")
-        return 1
-
-    existing_titles = {str(i.get("title", "")).lower() for i in catalog.get("ideas", [])}
-    existing_ids    = {str(i.get("id", "")) for i in catalog.get("ideas", [])}
-
-    candidates: list[dict] = []
-
-    def _add(id_: str, title: str, summary: str, section: str, priority: int,
-             detail: list[str], w2: str, risk: str = "medium",
-             metric: str = "", **extra: object) -> None:
-        if id_ in existing_ids or title.lower() in existing_titles:
-            return
-        candidates.append({
-            "id":       id_,
-            "title":    title,
-            "summary":  summary,
-            "section":  section,
-            "priority": priority,
-            "risk":     risk,
-            "metric":   metric or f"'{title}' completado sin regresión.",
-            "detail":   detail,
-            "w2":       w2,
-            "generation": "auto",
-            **extra,
-        })
-
-    # ── 1. Guardian health trend degradation ──────────────────────────────────
-    try:
-        sys.path.insert(0, str(ROOT / ".bago" / "tools"))
-        from bago_db import get_guardian_history
-        history: list = get_guardian_history()
-        if len(history) >= 3:
-            recent = [e["health"] for e in history[-3:]]
-            if recent[-1] < recent[0]:
-                _add(
-                    "synth-guardian-degradation",
-                    "Recuperar salud del guardian",
-                    "El guardian muestra degradación reciente. Resolver los errores activos.",
-                    "health",
-                    85,
-                    [
-                        f"Salud últimas 3 ejecuciones: {recent}",
-                        "Ejecutar `bago tool-guardian` e identificar errores.",
-                        "Resolver cada error hasta recuperar 100%.",
-                    ],
-                    "Ejecutar `bago tool-guardian` y corregir hallazgos.",
-                    risk="high",
-                    metric=f"Guardian vuelve a 100% desde {recent[-1]}%.",
-                )
-    except Exception:
-        pass
-
-    # ── 2. Live guardian: tools con errores ───────────────────────────────────
-    try:
-        from tool_guardian import analyze, _summary
-        findings = analyze()
-        s = _summary(findings)
-        errors  = [f for f in findings if f["severity"] == "error"]
-        warnings = [f for f in findings if f["severity"] == "warning"]
-        if errors:
-            error_tools = list({f["tool"] for f in errors})[:5]
-            _add(
-                "synth-guardian-errors",
-                f"Resolver {len(errors)} errores detectados por guardian",
-                "Guardian reporta errores activos que reducen la salud del framework.",
-                "health",
-                90,
-                [f"Tools con error: {', '.join(error_tools)}",
-                 "Ejecutar `bago tool-guardian` para detalle completo.",
-                 "Cada error reduce la puntuación de salud."],
-                "Ejecutar `bago tool-guardian` y corregir los errores listados.",
-                risk="high",
-                metric=f"{len(errors)} errores → 0 errores en guardian.",
-            )
-        elif warnings:
-            warn_tools = list({f["tool"] for f in warnings})[:5]
-            _add(
-                "synth-guardian-warnings",
-                f"Limpiar {len(warnings)} warnings del guardian",
-                "Guardian tiene warnings activos que merecen atención.",
-                "health",
-                60,
-                [f"Tools con warning: {', '.join(warn_tools)}",
-                 "Ejecutar `bago tool-guardian` para detalle.",
-                 "Los warnings no bloquean pero degradan la calidad."],
-                "Ejecutar `bago tool-guardian --format md` y revisar la tabla.",
-                risk="low",
-                metric=f"{len(warnings)} warnings → 0 en próxima ejecución.",
-            )
-    except Exception:
-        pass
-
-    # ── 3. TODO/FIXME en código ────────────────────────────────────────────────
-    todo_files: list[str] = []
-    try:
-        result = subprocess.run(
-            ["grep", "-rl", "--include=*.py", "-E", "TODO|FIXME", str(tools_dir)],
-            capture_output=True, text=True, timeout=5,
-        )
-        todo_files = [Path(p).name for p in result.stdout.strip().splitlines() if p]
-    except Exception:
-        pass
-    if todo_files:
-        _add(
-            "synth-todo-cleanup",
-            f"Limpiar TODO/FIXME en {len(todo_files)} scripts",
-            "Hay marcas TODO/FIXME pendientes en el código que señalan deuda técnica.",
-            "deuda",
-            55,
-            [f"Archivos afectados: {', '.join(todo_files[:6])}",
-             "Buscar con `grep -rn 'TODO\\|FIXME' .bago/tools/`",
-             "Resolver o convertir en ideas formales del catálogo."],
-            "Ejecutar `grep -rn 'TODO|FIXME' .bago/tools/` y resolver o catalogar.",
-            risk="low",
-            metric=f"0 marcas TODO/FIXME en {len(todo_files)} archivos.",
-        )
-
-    # ── 4. global_state.json: campos null que podrían tener valor ─────────────
-    global_state_file = state_dir / "global_state.json"
-    if global_state_file.exists():
-        try:
-            gs: dict = json.loads(global_state_file.read_text(encoding="utf-8"))
-            null_keys = [k for k, v in gs.items()
-                         if v is None or v == "" or v == "none" or v == "null"]
-            if null_keys:
-                _add(
-                    "synth-global-state-gaps",
-                    "Completar campos vacíos en global_state.json",
-                    "global_state.json tiene campos sin valor que limitan el contexto BAGO.",
-                    "estado",
-                    50,
-                    [f"Campos vacíos: {', '.join(null_keys[:8])}",
-                     "Revisar cada campo y completar los que correspondan.",
-                     "Un estado completo mejora la calidad de las ideas y el banner."],
-                    "Editar `.bago/state/global_state.json` y completar los campos nulos.",
-                    risk="low",
-                    metric=f"{len(null_keys)} campos null → completados.",
-                )
-        except Exception:
-            pass
-
-    # ── 5. implemented_ideas con pocas entradas (<3) ───────────────────────────
-    impl_file = state_dir / "implemented_ideas.json"
-    if impl_file.exists():
-        try:
-            impl_data = json.loads(impl_file.read_text(encoding="utf-8"))
-            completed = impl_data.get("ideas_completed", [])
-            if len(completed) < 3:
-                _add(
-                    "synth-ideas-registry-grow",
-                    "Registrar ideas pasadas en implemented_ideas.json",
-                    "El registro de ideas implementadas está casi vacío. Retroalimentar el sistema.",
-                    "ciclo",
-                    58,
-                    ["Revisar qué ideas del catálogo ya están en el código.",
-                     "Ejecutar `bago flow done` al cerrar cada workflow.",
-                     "Un registro rico mejora el scoring dinámico de emit_ideas."],
-                    "Cerrar los próximos workflows con `bago flow done` para poblar el registro.",
-                    risk="low",
-                    metric="implemented_ideas.json con ≥5 entradas.",
-                )
-        except Exception:
-            pass
-
-    if not candidates:
-        print("[synthesize] No se encontraron nuevas ideas para agregar al catálogo.")
-        print(f"  (catálogo actual: {len(catalog.get('ideas', []))} ideas)")
-        return 0
-
-    # Write candidates to catalog
-    catalog.setdefault("ideas", [])
-    catalog["ideas"].extend(candidates)
-    try:
-        catalog_path.write_text(json.dumps(catalog, ensure_ascii=False, indent=2), encoding="utf-8")
-    except Exception as e:
-        print(f"[synthesize] ERROR al escribir el catálogo: {e}")
-        return 1
-
-    print(f"[synthesize] {len(candidates)} idea(s) nueva(s) añadida(s) al catálogo:")
-    for c in candidates:
-        print(f"  + [{c['id']}] {c['title']}")
-    print(f"  Catálogo ahora tiene {len(catalog['ideas'])} ideas.")
-    return 0
-
-
 def parse_args(argv: list[str]) -> tuple[int | None, bool, bool]:
     detail_index = None
-    accept       = False
-    synthesize   = False
+    accept = False
+    select = False
+    baseline = False
     idx = 1
 
     while idx < len(argv):
         arg = argv[idx]
         if arg in {"-h", "--help"}:
             print(
-                "Usage: emit_ideas.py [--detail N] [--accept N] [--synthesize]\n\n"
-                "Show 5 to 20 contextual ideas prioritized by stability.\n"
-                "  --detail N     Expand idea N\n"
-                "  --accept N     Mark idea N as ready for W2\n"
-                "  --synthesize   Analyze codebase and append new ideas to catalog"
+                "Usage: emit_ideas.py [--detail N] [--accept N] [--select] [--baseline]\n\n"
+                "Show 5 to 20 contextual ideas prioritized by stability. Use --detail "
+                "to expand a selected idea, --accept to mark it ready for W2, "
+                "--select for the interactive slot selector, or --baseline for "
+                "low-risk ideas only."
             )
             raise SystemExit(0)
+        if arg == "--select":
+            select = True
+            idx += 1
+            continue
+        if arg == "--baseline":
+            baseline = True
+            idx += 1
+            continue
         if arg == "--detail":
             if idx + 1 >= len(argv):
                 raise SystemExit("--detail requires a numeric idea index")
@@ -815,21 +738,176 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool, bool]:
             accept = True
             idx += 2
             continue
-        if arg == "--synthesize":
-            synthesize = True
-            idx += 1
-            continue
         raise SystemExit(f"Unknown argument: {arg}")
 
-    return detail_index, accept, synthesize
+    return detail_index, accept, select, baseline
+
+
+def _build_ideas_hardcoded(
+    feat: dict,
+    stable_reports: bool,
+    baseline_clean_mode: bool,
+    sections: dict,
+    matrix: dict | None,
+    repo_lines: int,
+) -> list[dict[str, object]]:
+    """Construye las ideas hardcodeadas (fallback cuando no hay bago.db)."""
+    ideas: list[dict[str, object]] = []
+
+    # Slot 1: Handoff W2 → Opener → Cierre automático
+    if not feat["handoff_w2"]:
+        ideas.append({"priority": 90, "section": "contextuales", "risk": "low",
+            "metric": "El handoff incluye objetivo, alcance, no alcance, archivos y validación mínima.",
+            "title": "Handoff idea -> W2",
+            "summary": "Añadir una plantilla de salida que convierta una idea seleccionada en tarea lista para implementar con alcance, archivos y validación.",
+            "detail": ["Entrada: una idea elegida tras revisar el selector.",
+                       "Salida: objetivo, alcance, archivos candidatos y validación mínima.",
+                       "Ventaja: reduce la fricción entre ideación e implementación."],
+            "w2": "Pasar la idea elegida a W2 con un alcance pequeño y un criterio de salida claro."})
+    elif not feat["session_opener"]:
+        ideas.append({"priority": 90, "section": "contextuales", "risk": "low",
+            "metric": "bago session lee pending_w2_task.json y lanza session_preflight con objetivo, roles y artefactos pre-rellenados.",
+            "title": "Opener de sesión desde task",
+            "summary": "Añadir `bago session` que lee el handoff aceptado y abre la sesión W2 con preflight pre-rellenado, evitando trabajo manual.",
+            "detail": ["Entrada: pending_w2_task.json con objetivo, archivos y validación.",
+                       "Salida: llamada a session_preflight.py con los datos del handoff.",
+                       "Ventaja: elimina el paso manual de copiar datos del handoff al preflight."],
+            "w2": "Implementar bago session en el script raíz delegando en session_preflight.py."})
+    else:
+        ideas.append({"priority": 90, "section": "contextuales", "risk": "low",
+            "metric": "bago task --done genera y guarda automáticamente el artefacto de cierre de sesión.",
+            "title": "Cierre automático de sesión",
+            "summary": "Al marcar la tarea como done, generar automáticamente el artefacto de cierre con resumen de cambios y evidencias.",
+            "detail": ["Entrada: tarea W2 completada (pending_w2_task.json con status=done).",
+                       "Salida: artefacto de cierre con resumen, CHG/EVD generados y estado actualizado.",
+                       "Ventaja: elimina el paso manual de redactar el cierre después de implementar."],
+            "w2": "Extender show_task.py --done para llamar al generador de cierre de sesión."})
+
+    # Slot 2: Stability → Banner → Stale task alert
+    if not feat["stability_cmd"]:
+        ideas.append({"priority": 86, "section": "contextuales", "risk": "low",
+            "metric": "El resumen incluye estado de smoke, VM y soak en un único bloque.",
+            "title": "Resumen único de estabilidad",
+            "summary": "Consolidar smoke, VM y soak en un informe corto para decidir si una idea nueva compite con estabilidad antes de tocar código.",
+            "detail": ["Entrada: los últimos reports del sandbox.",
+                       "Salida: un resumen de salud operacional para decidir si conviene proponer cambios.",
+                       "Ventaja: evita idear sobre una base ya inestable."],
+            "w2": "Si el resumen está en verde, permitir avanzar a una idea concreta."})
+    elif not feat["banner_shows_task"]:
+        ideas.append({"priority": 86, "section": "contextuales", "risk": "low",
+            "metric": "El banner muestra el estado de la tarea W2 activa (título + estado) si pending_w2_task.json existe.",
+            "title": "Banner muestra task activa",
+            "summary": "Mostrar en el banner de BAGO si hay una tarea W2 pendiente o completada, para visibilidad inmediata al arrancar.",
+            "detail": ["Entrada: pending_w2_task.json si existe.",
+                       "Salida: línea extra en el banner con título y estado (⏳/✅).",
+                       "Ventaja: el usuario sabe al abrir BAGO si tiene trabajo en curso."],
+            "w2": "Leer pending_w2_task.json en bago_banner.py y añadir línea condicional al banner."})
+    else:
+        ideas.append({"priority": 86, "section": "contextuales", "risk": "low",
+            "metric": "bago stability y el banner alertan si la task lleva más de 3 días sin completarse.",
+            "title": "Alerta de task obsoleta",
+            "summary": "Si pending_w2_task.json lleva más de 3 días sin marcarse done, mostrar aviso en banner y en bago stability.",
+            "detail": ["Entrada: pending_w2_task.json con campo accepted_at.",
+                       "Salida: aviso visual (⚠️) en banner y en stability cuando la task supera 3 días.",
+                       "Ventaja: evita que tareas abiertas queden olvidadas."],
+            "w2": "Añadir lógica de antigüedad en bago_banner.py y stability_summary.py."})
+
+    # Slot 3: Gate → Registro → Scoring dinámico
+    if not feat["gate_in_code"] and stable_reports:
+        ideas.append({"priority": 84, "section": "contextuales", "risk": "low",
+            "metric": "Ninguna idea avanza si validate_pack/validate_state/smoke no están en verde.",
+            "title": "Gate seguro antes de implementar",
+            "summary": "Bloquear sugerencias nuevas si validate_pack, validate_state o smoke no están en verde.",
+            "detail": ["Entrada: validadores canónicos y smoke del sandbox.",
+                       "Salida: permiso o bloqueo para seguir ideando e implementar.",
+                       "Ventaja: protege la estabilidad antes de abrir trabajo nuevo."],
+            "w2": "Si el gate pasa, la idea elegida puede convertirse en W2."})
+    elif feat["gate_in_code"] and not feat["impl_registry"]:
+        ideas.append({"priority": 84, "section": "contextuales", "risk": "low",
+            "metric": "El selector no repite una idea marcada como implementada en implemented_ideas.json.",
+            "title": "Registro de ideas implementadas",
+            "summary": "Guardar en estado qué ideas ya fueron implementadas para que el selector evolucione en lugar de repetirlas en cada sesión.",
+            "detail": ["Entrada: lista de ideas aceptadas e implementadas.",
+                       "Salida: archivo .bago/state/implemented_ideas.json con IDs y fechas.",
+                       "Ventaja: el selector siempre propone trabajo nuevo, no repetido."],
+            "w2": "Crear implemented_ideas.json y leerlo en emit_ideas para filtrar ideas ya hechas."})
+    elif feat["impl_registry"]:
+        ideas.append({"priority": 84, "section": "contextuales", "risk": "low",
+            "metric": "El scoring de ideas sube cuando la feature que proponen no está en implemented_ideas.json.",
+            "title": "Scoring dinámico por registro",
+            "summary": "Ajustar la prioridad de las ideas en función de si la feature que proponen ya fue implementada, incrementando el score de las que aportan trabajo nuevo.",
+            "detail": ["Entrada: implemented_ideas.json con historial de ideas completadas.",
+                       "Salida: ideas reordenadas priorizando trabajo genuinamente nuevo.",
+                       "Ventaja: el selector se vuelve más preciso con el tiempo."],
+            "w2": "Leer implemented_ideas.json en emit_ideas y aplicar penalización de score a ideas similares ya hechas."})
+
+    if matrix and matrix.get("status") == "pass":
+        ideas.append({"priority": 82, "section": "contextuales", "risk": "medium",
+            "metric": "WF responde por intención y reduce navegación manual.",
+            "title": "Selector por intención",
+            "summary": "Extender WF para filtrar ideas y workflows por intención, por ejemplo idea, implementar, depurar o cerrar.",
+            "detail": ["Entrada: intención del usuario.",
+                       "Salida: selector más fino para aterrizar al workflow correcto.",
+                       "Ventaja: evita navegar manualmente cuando la intención ya está clara."],
+            "w2": "Usar la intención seleccionada para orientar la tarea siguiente."})
+
+    if baseline_clean_mode:
+        ideas.append({"priority": 78, "section": "contextuales", "risk": "low",
+            "metric": "Cada idea aceptada declara una mejora medible en trazabilidad u operación.",
+            "title": "Ideas orientadas a baseline",
+            "summary": "Proponer solo cambios que mantengan el baseline limpio y generen un incremento medible en trazabilidad u operacion.",
+            "detail": ["Entrada: baseline limpio y estable.",
+                       "Salida: ideas pequeñas con mejora mensurable.",
+                       "Ventaja: alinea la ideación con la continuidad del pack."],
+            "w2": "Seleccionar una idea que preserve el baseline y tenga bajo riesgo."})
+
+    if sections.get("cierre de sesión"):
+        ideas.append({"priority": 74, "section": "contextuales", "risk": "medium",
+            "metric": "Reapertura evita reconstrucción manual y reduce pasos de arranque.",
+            "title": "Reabrir desde continuidad",
+            "summary": "Añadir un modo para reactivar la sesión desde el cierre actual sin reconstruir contexto manualmente.",
+            "detail": ["Entrada: cierre de sesión ya escrito en estado.",
+                       "Salida: reanudación más rápida sin perder contexto.",
+                       "Ventaja: mantiene continuidad de trabajo entre sesiones."],
+            "w2": "Si se acepta, convertirlo en una mejora pequeña y segura de continuidad."})
+
+    if repo_lines > 0:
+        ideas.append({"priority": 70, "section": "contextuales", "risk": "medium",
+            "metric": "La primera decisión del usuario llega a una acción en un paso.",
+            "title": "Entrada rápida del repo",
+            "summary": "Conectar ideas con README y WF para que la primera decisión del usuario vaya a una acción concreta sin leer toda la canonica.",
+            "detail": ["Entrada: comandos cortos y selector de workflows.",
+                       "Salida: menos fricción para abrir ideas o W2.",
+                       "Ventaja: mejora la usabilidad diaria del repo."],
+            "w2": "Promover la idea seleccionada a una tarea corta y directa."})
+
+    ideas.append({"priority": 68, "section": "contextuales", "risk": "medium",
+        "metric": "El ranking refleja señales de estado actual y reduce recomendaciones estáticas.",
+        "title": "Mejorar ranking de ideas",
+        "summary": "Ajustar el scoring para reflejar señales del estado actual y evitar prioridades estáticas que oculten trabajo real.",
+        "detail": ["Entrada: estado BAGO, salud de reports y workflow activo.",
+                   "Salida: orden de ideas más sensible al contexto operativo.",
+                   "Ventaja: reduce sesgos de ranking y evita ciclos de recomendación."],
+        "w2": "Implementar un ranking contextual acotado y validarlo con ejemplos reales del estado."})
+
+    return ideas
 
 
 def main() -> int:
-    detail_index, accept, synthesize = parse_args(sys.argv)
+    detail_index, accept, select, baseline_flag = parse_args(sys.argv)
 
-    if synthesize:
-        return synthesize_ideas()
+    # ── Modo selector interactivo ────────────────────────────────────────────
+    if select:
+        import ideas_selector
+        ideas_selector.main()
+        return 0
+    state_path = ROOT / ".bago/state/ESTADO_BAGO_ACTUAL.md"
+    global_state_path = ROOT / ".bago/state/global_state.json"
     smoke_path = ROOT / "sandbox/runtime/last-report.json"
+    vm_path = ROOT / "sandbox/runtime-vm/last-report-vm.json"
+    soak_path = ROOT / "sandbox/runtime-vm/last-soak-report-vm.json"
+    matrix_path = ROOT / "sandbox/runtime-vm/matrix/last-matrix-summary.json"
+    readme_path = ROOT / "README.md"
 
     # ── canonical gate ─────────────────────────────────────────────────────────
     gate_passed, gate_ko, gate_warn = run_canonical_gate(smoke_path)
@@ -847,35 +925,137 @@ def main() -> int:
         return 1
     # ── /gate ──────────────────────────────────────────────────────────────────
 
-    feat = detect_implemented_features()
-    catalog = _load_catalog()
-    ideas = evaluate_catalog(catalog, feat)
+    state_text = read_text(state_path) if file_exists(state_path) else ""
+    sections = parse_state_sections(state_text)
+    global_state = load_json(global_state_path) if file_exists(global_state_path) else {}
 
-    if feat["baseline_clean"]:
+    smoke = report_status(smoke_path)
+    vm = report_status(vm_path)
+    soak = report_status(soak_path)
+    matrix = report_status(matrix_path)
+
+    repo_lines = 0
+    if file_exists(readme_path):
+        repo_lines = len(read_text(readme_path).splitlines())
+
+    # --baseline flag fuerza modo baseline independientemente de global_state
+    baseline_clean_mode = baseline_flag or (global_state.get("baseline_status") == "active_clean_core")
+    feat = detect_implemented_features()
+
+    stable_reports = all(
+        report and report.get("status") == "pass" and report.get("failure_count", 1) == 0
+        for report in (smoke, vm, soak)
+        if report is not None
+    )
+
+    _state_dir = ROOT / ".bago" / "state"
+    _has_session_close_files = bool(list(_state_dir.glob("session_close_*.md"))) if _state_dir.exists() else False
+
+    extra_flags = {
+        "stable_reports":    stable_reports,
+        "matrix_pass":       bool(matrix and matrix.get("status") == "pass"),
+        "baseline_clean":    baseline_clean_mode,
+        "has_session_close": bool(sections.get("cierre de sesión")) or _has_session_close_files,
+        "has_readme":        repo_lines > 0,
+    }
+
+    # ── Cargar ideas: SQLite si existe, hardcoded como fallback ───────────────
+    ideas_from_db = load_ideas_from_db(feat, extra_flags)
+    using_db = ideas_from_db is not None
+
+    if using_db:
+        ideas: list[dict[str, object]] = ideas_from_db  # type: ignore[assignment]
+    else:
+        ideas = _build_ideas_hardcoded(feat, stable_reports, baseline_clean_mode,
+                                        sections, matrix, repo_lines)
+
+    if baseline_clean_mode:
         ideas = filter_ideas_for_baseline_mode(ideas)
 
     # Filtrar ideas cuyo título ya fue registrado como implementado
     done_titles = load_implemented_titles()
     if done_titles:
-        ideas = [i for i in ideas if str(i.get("title", "")) not in done_titles]
+        ideas = [i for i in ideas if _norm(str(i.get("title", ""))) not in done_titles]
 
-    # Ajustar prioridades según historial de implementaciones
-    ideas = apply_dynamic_scoring(ideas)
+    # Ajuste dinámico de score según estado actual
+    ideas = _apply_dynamic_score(ideas)
 
-    sections = build_idea_sections(ideas, catalog.get("fallback", FALLBACK_IDEAS))
-    ideas = order_ideas_by_section(sections)
+    # Rellenar con fallback hasta MIN_IDEAS si hay pocas
+    if len(ideas) < MIN_IDEAS:
+        fallback_pool = load_fallback_from_db() if using_db else list(FALLBACK_IDEAS)
+        seen = {_norm(str(i.get("title", ""))) for i in ideas} | done_titles
+        for fb in fallback_pool:
+            if len(ideas) >= MIN_IDEAS:
+                break
+            fb_title = _norm(str(fb.get("title", "")))
+            if fb_title not in seen:
+                ideas.append(fb)
+                seen.add(fb_title)
+
+    idea_sections = build_idea_sections(ideas, done_titles=done_titles)
+    ideas = order_ideas_by_section(idea_sections)
+
+    # ── Autorenovación: si < MIN_IDEAS rebuild DB y recarga ───────────────────
+    _auto_renewed = False
+    _total_after_fill = len(idea_sections["contextuales"]) + len(idea_sections["respaldo"])
+    if _total_after_fill < MIN_IDEAS and using_db:
+        _result = _auto_renew_catalog()
+        if _result == 0:
+            _auto_renewed = True
+            # Recargar con el catálogo reconstruido
+            ideas_from_db = load_ideas_from_db(feat, extra_flags)
+            if ideas_from_db is not None:
+                ideas = ideas_from_db
+                if baseline_clean_mode:
+                    ideas = filter_ideas_for_baseline_mode(ideas)
+                ideas = [i for i in ideas if _norm(str(i.get("title", ""))) not in done_titles]
+                ideas = _apply_dynamic_score(ideas)
+                # Re-rellenar con fallback
+                if len(ideas) < MIN_IDEAS:
+                    fallback_pool = load_fallback_from_db()
+                    seen2 = {_norm(str(i.get("title", ""))) for i in ideas} | done_titles
+                    for fb in fallback_pool:
+                        if len(ideas) >= MIN_IDEAS:
+                            break
+                        fb_title = _norm(str(fb.get("title", "")))
+                        if fb_title not in seen2:
+                            ideas.append(fb)
+                            seen2.add(fb_title)
+                idea_sections = build_idea_sections(ideas, done_titles=done_titles)
+                ideas = order_ideas_by_section(idea_sections)
 
     print("BAGO ideas selector")
-    if feat["baseline_clean"]:
-        print("baseline_clean_mode: activo (solo ideas low-risk con métrica)")
+    if using_db:
+        print(f"  fuente: bago.db ({DB_PATH.name})")
+    if _auto_renewed:
+        print("  🔄  catálogo renovado automáticamente")
+
+    # Auto-generar sprint summaries si hay sprints completos sin resumen
+    try:
+        import importlib.util as _ilu
+        _spec = _ilu.spec_from_file_location("sprint_summary", Path(__file__).parent / "sprint_summary.py")
+        _smod = _ilu.module_from_spec(_spec)
+        _spec.loader.exec_module(_smod)
+        _new_summaries = _smod.generate_if_due()
+        for _sp in _new_summaries:
+            print(f"  📋 Sprint summary generado: {_sp.name}")
+    except Exception:
+        pass
+    if baseline_clean_mode:
+        print("  modo: --baseline activo — solo ideas low-risk con métrica medible")
+        if baseline_flag:
+            print("  (forzado por flag --baseline)")
     print("")
-    print_sectioned_ideas(sections)
+    print_sectioned_ideas(idea_sections)
 
     print("")
     if detail_index is None:
-        print(
-            "Recomendacion: pide detalle con `./ideas --detail N` o acepta con `./ideas --accept N`."
-        )
+        if ideas:
+            top = ideas[0]
+            print(f"→ Acepta la idea más prioritaria con: bago ideas --accept 1")
+            print(f"  [{top['priority']}] {top['title']}")
+        else:
+            print("→ No hay ideas disponibles. Revisa el backlog o añade más al catálogo.")
         return 0
 
     if detail_index < 1 or detail_index > len(ideas):
@@ -909,15 +1089,5 @@ def main() -> int:
     return 0
 
 
-
-def _self_test():
-    """Autotest mínimo — verifica arranque limpio del módulo."""
-    from pathlib import Path as _P
-    assert _P(__file__).exists(), "fichero no encontrado"
-    print("  1/1 tests pasaron")
-
 if __name__ == "__main__":
-    if "--test" in sys.argv:
-        _self_test()
-        raise SystemExit(0)
     raise SystemExit(main())

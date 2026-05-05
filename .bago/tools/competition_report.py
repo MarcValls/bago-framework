@@ -7,7 +7,6 @@ Con --baseline también muestra el histórico general de sesiones W7.
 """
 import json
 import argparse
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent

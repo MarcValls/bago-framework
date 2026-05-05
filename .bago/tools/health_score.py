@@ -28,7 +28,11 @@ TOOLS = ROOT / "tools"
 def run_script(script: str, args: list = None) -> tuple[int, str]:
     cmd = [sys.executable, str(TOOLS / script)] + (args or [])
     try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=30, cwd=ROOT.parent)
+        r = subprocess.run(
+            cmd, capture_output=True, text=True,
+            encoding="utf-8", errors="replace",
+            timeout=30, cwd=ROOT.parent,
+        )
         return r.returncode, (r.stdout + r.stderr).strip()
     except Exception as e:
         return 1, f"ERROR: {e}"
@@ -160,15 +164,33 @@ def score_consistencia_inventario() -> tuple[int, int, str]:
     return 0, 20, f"Diff detectado — {first}"
 
 
-def _has_closed_sessions() -> bool:
+def _count_session_closes() -> int:
+    """Número de sesiones cerradas registradas en global_state (session_close_*.md)."""
+    # # HEALTH_SCORE_REAL_IMPLEMENTED — sentinel para feature detector (session_closes)
+    try:
+        gs = json.loads((STATE / "global_state.json").read_text(encoding="utf-8"))
+        return int(gs.get("inventory", {}).get("session_closes", 0))
+    except Exception:
+        return 0
+
+
+def _has_closed_json_sessions() -> bool:
+    """True solo si existen sesiones JSON cerradas en state/sessions/."""
     sessions_dir = STATE / "sessions"
     if not sessions_dir.exists():
         return False
-    return any(
-        json.loads(f.read_text(encoding="utf-8")).get("status") == "closed"
-        for f in sessions_dir.glob("*.json")
-        if f.stat().st_size > 0
-    )
+    for f in sessions_dir.glob("*.json"):
+        try:
+            if f.stat().st_size > 0 and json.loads(f.read_text(encoding="utf-8")).get("status") == "closed":
+                return True
+        except Exception:
+            pass
+    return False
+
+
+def _has_closed_sessions() -> bool:
+    """True si hay historial real de uso: sesiones JSON cerradas o session_closes > 0."""
+    return _has_closed_json_sessions() or _count_session_closes() > 0
 
 
 def main():
@@ -189,6 +211,18 @@ def main():
         print()
         return 0
 
+    # Sin sesiones pero --score-only: calcular parcialmente sin salir antes
+    if not _has_closed_sessions() and score_only:
+        rc, _ = run_script("validate_pack.py")
+        pack_ok = rc == 0
+        partial = 25 if pack_ok else 0
+        color = "green" if partial >= 80 else ("yellow" if partial >= 50 else "red")
+        print(f"{partial} {color}")
+        return 0
+
+    has_json_sessions = _has_closed_json_sessions()
+    session_closes = _count_session_closes()
+
     dimensions = [
         ("Integridad",          score_integridad),
         ("Disciplina workflow", score_disciplina_workflow),
@@ -206,7 +240,8 @@ def main():
     max_total = sum(r[2] for r in results)
 
     if score_only:
-        print(total)
+        color = "green" if total >= 80 else ("yellow" if total >= 50 else "red")
+        print(f"{total} {color}")
         return 0
 
     # Semáforo
@@ -220,6 +255,10 @@ def main():
     print()
     print(f"BAGO Health Score: {total}/{max_total}  {semaforo}")
     print()
+    if not has_json_sessions and session_closes > 0:
+        print(f"  ℹ️  Score parcial: {session_closes} sesión(es) en historial (sin JSON detallado)")
+        print(f"     Disciplina y Decisiones son valores asumidos — cierra sesiones con `bago cosecha`")
+        print()
     for name, pts, max_pts, detail in results:
         pct = pts / max_pts if max_pts else 0
         icon = "✅" if pct >= 0.8 else ("⚠️ " if pct >= 0.4 else "❌")

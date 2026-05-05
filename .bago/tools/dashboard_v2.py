@@ -134,7 +134,7 @@ def _get_reconcile_status() -> str:
     rc, out = _run("reconcile_state.py")
     if rc == 0:
         return "✅ OK"
-    return f"⚠️  Diff detectado"
+    return "⚠️  Diff detectado"
 
 
 def main():
@@ -143,7 +143,6 @@ def main():
     gs = _load_global()
     version = gs.get("bago_version", gs.get("pack_version", "?"))
     health = gs.get("system_health", "?")
-    inv = gs.get("inventory", {})
     last_ses = gs.get("last_completed_session_id", "—")
     last_wf = gs.get("last_completed_workflow", "—")
     active_sc = gs.get("active_scenarios", [])

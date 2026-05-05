@@ -29,6 +29,7 @@ GLOBAL_STATE = STATE / "global_state.json"
 CLEAN    = "CLEAN"
 WATCH    = "WATCH"
 ACTIVATE = "ACTIVATE"
+WARN     = "WARN"
 
 
 def load_global() -> dict:

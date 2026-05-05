@@ -13,6 +13,13 @@ import json, re, subprocess, sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Windows UTF-8 fix for box-drawing / emoji characters
+for _s in (sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 # ─── Rutas ────────────────────────────────────────────────────────────────────
 BAGO_ROOT = Path(__file__).resolve().parent.parent
 STATE     = BAGO_ROOT / "state"
@@ -165,17 +172,112 @@ def _last_session():
     except Exception:
         return "", ""
 
+def _progress_counter() -> tuple[int, int]:
+    """Devuelve (implementadas, total_catalogo) leyendo implemented_ideas.json y bago.db."""
+    impl_file = STATE / "implemented_ideas.json"
+    db_path   = STATE / "bago.db"
+    n_impl = 0
+    n_total = 0
+    try:
+        if impl_file.exists():
+            data = json.loads(impl_file.read_text(encoding="utf-8"))
+            entries = data.get("implemented") or data.get("ideas_completed") or []
+            n_impl = len(entries)
+    except Exception:
+        pass
+    try:
+        if db_path.exists():
+            import sqlite3
+            conn = sqlite3.connect(db_path)
+            n_total = conn.execute("SELECT COUNT(*) FROM ideas").fetchone()[0]
+            conn.close()
+    except Exception:
+        pass
+    return n_impl, n_total
+
+
+def _sync_session_count() -> int:
+    """
+    Cuenta session_close_*.md y sincroniza global_state.inventory.session_closes.
+    El campo 'sessions' (state/sessions/*.json) lo gestiona validate_state.py.
+    Devuelve el número de cierres de sesión registrados.
+    """
+    gs_path = STATE / "global_state.json"
+    try:
+        count = len(list(STATE.glob("session_close_*.md")))
+        if gs_path.exists():
+            gs = json.loads(gs_path.read_text(encoding="utf-8"))
+            current = int(gs.get("inventory", {}).get("session_closes", 0))
+            if current != count:
+                if "inventory" not in gs:
+                    gs["inventory"] = {}
+                gs["inventory"]["session_closes"] = count
+                from datetime import timezone
+                gs["updated_at"] = datetime.now(timezone.utc).isoformat()
+                gs_path.write_text(json.dumps(gs, ensure_ascii=False, indent=2), encoding="utf-8")
+        return count
+    except Exception:
+        return 0
+
+
+def _health_score() -> tuple[str, int]:
+    """Devuelve (icono_semáforo, puntuación) ejecutando health_score.py --score-only.
+    # HEALTH_IN_BANNER_IMPLEMENTED
+    """
+    try:
+        import subprocess as _sp
+        r = _sp.run(
+            [sys.executable, str(TOOLS / "health_score.py"), "--score-only"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            cwd=str(BAGO_ROOT.parent)
+        )
+        out = r.stdout.strip()
+        # Formato esperado: "80 green"
+        parts = out.split()
+        score = int(parts[0]) if parts and parts[0].isdigit() else 0
+        color = parts[1] if len(parts) > 1 else "unknown"
+        icon  = {"green": "🟢", "yellow": "🟡", "red": "🔴"}.get(color, "⚪")
+        return icon, score
+    except Exception:
+        return "⚪", 0
+
+
+def _print_quick_action(active_task) -> None:
+    """
+    Muestra la acción concreta más útil ahora mismo (idea de entrada rápida).
+
+    Lógica:
+    - Si hay tarea activa (status != done): invita a continuar con `bago task`
+    - Si no hay tarea o está completada: invita a seleccionar ideas con `bago ideas`
+    """
+    label = CYAN("⚡ siguiente paso:")
+    if active_task is not None:
+        _, tstatus = active_task
+        if tstatus != "done":
+            hint = (GREEN("bago task") + DIM("  →  revisa los detalles de la tarea activa") +
+                    "  |  " + YELLOW("bago task --done") + DIM("  →  ciérrala al terminar"))
+            print(_box(INDENT + label + "  " + hint))
+            return
+    # Sin tarea activa
+    hint = (GREEN("bago ideas") + DIM("  →  ver ideas priorizadas  (acepta con ") +
+            CYAN("bago ideas --accept N") + DIM(")"))
+    print(_box(INDENT + label + "  " + hint))
+
+
 # ─── Render ───────────────────────────────────────────────────────────────────
 
 def print_banner(mini=False):
     version        = _pack_version()
     pack_ok, reason = _validate()
-    ses, chg, evd  = _inventory()
+    ses            = _sync_session_count()   # sincroniza y lee el conteo real
+    _, chg, evd    = _inventory()
     mode           = _working_mode()
     scenarios      = _active_scenarios()
     last_sid, last_wf = _last_session()
     verdict, score, max_score = _detector_verdict()
     active_task    = _active_task()
+    n_impl, n_total = _progress_counter()
+    health_icon, health_pts = _health_score()
     now_str = datetime.now().strftime("%Y-%m-%d  %H:%M")
 
     print()
@@ -209,8 +311,19 @@ def print_banner(mini=False):
     inv_str = (DIM("ses=") + BOLD(str(ses)) + "  " +
                DIM("chg=") + BOLD(str(chg)) + "  " +
                DIM("evd=") + BOLD(str(evd)) + "  " +
+               health_icon + " " + BOLD(str(health_pts)) + DIM("pts") + "  " +
                DIM(now_str))
     print(_box(INDENT + inv_str))
+
+    # ── Progreso de ideas implementadas ───────────────────────────────────────
+    if n_total > 0:
+        pct = int(n_impl * 100 / n_total)
+        bar_len = 20
+        filled  = int(bar_len * n_impl / n_total)
+        bar = "█" * filled + "░" * (bar_len - filled)
+        prog_str = (DIM("ideas: ") + GREEN(str(n_impl)) + DIM(" implementadas") +
+                    "  " + DIM(f"[{bar}]") + DIM(f" {pct}%"))
+        print(_box(INDENT + prog_str))
 
     # ── Escenarios ────────────────────────────────────────────────────────────
     if scenarios:
@@ -244,7 +357,25 @@ def print_banner(mini=False):
         stale_suffix = RED(f"  [{int(stale_days)}d sin cerrar]") if stale else ""
         print(_box(INDENT + DIM("task W2: ") + task_color(f"{icon} {title}") + stale_suffix))
 
+        # SLOT 2 GEN 3 · Alerta de task obsoleta — aviso si > 72 h (3 días) sin actualizar
+        if tstatus != "done":
+            try:
+                task_data = json.loads((STATE / "pending_w2_task.json").read_text(encoding="utf-8"))
+                created_at = task_data.get("created_at") or task_data.get("accepted_at") or task_data.get("timestamp", "")
+                if created_at:
+                    from datetime import timezone
+                    created_dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+                    age_h = (datetime.now(tz=timezone.utc) - created_dt).total_seconds() / 3600
+                    if age_h > 72:
+                        stale_msg = RED(f"  ⚠  task obsoleta ({int(age_h)}h / {int(age_h/24)}d) — considera cerrarla o actualizarla")
+                        print(_box(INDENT + stale_msg))
+            except Exception:
+                pass
+
     if not mini:
+        print(SEP)
+        # ── Entrada rápida: acción sugerida ───────────────────────────────────
+        _print_quick_action(active_task)
         print(SEP)
         # ── Comandos ─────────────────────────────────────────────────────────
         cmds = [

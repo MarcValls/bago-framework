@@ -18,13 +18,23 @@ Uso:
 from __future__ import annotations
 
 import json
+import os
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
+os.environ.setdefault("PYTHONIOENCODING", "utf-8")
+os.environ.setdefault("PYTHONUTF8", "1")
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 TOOLS_DIR = Path(__file__).parent
 BAGO_ROOT = TOOLS_DIR.parent        # .bago/
 REPO_ROOT = BAGO_ROOT.parent        # repo raíz
+PYTHON = sys.executable or "python3"
 
 
 # ── Declarative pre-flight check ─────────────────────────────────────────────
@@ -315,6 +325,55 @@ REGISTRY: dict[str, ToolEntry] = {
         description="Diagnóstico completo del entorno BAGO: Python, Git, Ollama, modelo LLM, espacio",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_doctor.py"))],
     ),
+    "research": ToolEntry(
+        cmd="research", module="research_orchestrator",
+        description="Modo Research integrando GitHub Copilot CLI /research — investigación temática estructurada",
+        preflight=[
+            PreflightCheck("file", str(TOOLS_DIR / "research_orchestrator.py")),
+            PreflightCheck("file", str(BAGO_ROOT / "state")),
+        ],
+    ),
+    "chronicle": ToolEntry(
+        cmd="chronicle", module="chronicle_reporter",
+        description="Sesión Chronicle integrando Copilot CLI /chronicle — historial de sesiones y recomendaciones",
+        preflight=[
+            PreflightCheck("file", str(TOOLS_DIR / "chronicle_reporter.py")),
+            PreflightCheck("file", str(BAGO_ROOT / "state")),
+        ],
+    ),
+    "lsp": ToolEntry(
+        cmd="lsp", module="lsp_manager",
+        description="Orquestación de Language Servers — registra y gestiona servidores LSP para inteligencia de código",
+        preflight=[
+            PreflightCheck("file", str(TOOLS_DIR / "lsp_manager.py")),
+            PreflightCheck("file", str(BAGO_ROOT / "state")),
+        ],
+    ),
+    "repo-clone": ToolEntry(
+        cmd="repo-clone", module="repo_clone",
+        description="Clona repositorios GitHub en workspace con auto-BAGO setup",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "repo_clone.py"))],
+    ),
+    "repo-list": ToolEntry(
+        cmd="repo-list", module="repo_list",
+        description="Lista repositorios clonados en workspace con estado",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "repo_list.py"))],
+    ),
+    "repo-switch": ToolEntry(
+        cmd="repo-switch", module="repo_switch",
+        description="Cambia contexto activo entre repositorios del workspace",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "repo_switch.py"))],
+    ),
+    "select": ToolEntry(
+        cmd="select", module="ideas_selector",
+        description="Selector interactivo de ideas por slot con plan de implementación",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "ideas_selector.py"))],
+    ),
+    "start": ToolEntry(
+        cmd="start", module="bago_start",
+        description="Entrada rápida al repo: health + top ideas + aceptar tarea activa",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_start.py"))],
+    ),
 }
 
 
@@ -418,15 +477,15 @@ def _self_tests() -> None:
     _check("T3:no-duplicate-modules", not dupes,
            "no duplicate modules" if not dupes else f"duplicates: {dupes}")
 
-    # T4: get_commands() returns python3 + .py format
+    # T4: get_commands() returns current Python + .py format
     cmds = get_commands()
     fmt_ok = all(
         isinstance(v, list) and len(v) == 2
-        and v[0] == "python3" and v[1].endswith(".py")
+        and v[0] == PYTHON and v[1].endswith(".py")
         for v in cmds.values()
     )
     _check("T4:get-commands-format", fmt_ok,
-           f"{len(cmds)} commands with python3+.py format")
+           f"{len(cmds)} commands with current-python+.py format")
 
     # T5: INTERNAL_TOOLS are all strings and non-empty
     _check("T5:internal-tools-valid",

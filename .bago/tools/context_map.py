@@ -231,7 +231,7 @@ def main(argv: list[str]) -> int:
     else:
         print(render_tree(nodes, search_root))
         if args.save:
-            print(f"  💾 Guardado en .bago/state/context_map.json")
+            print("  💾 Guardado en .bago/state/context_map.json")
 
     return 0
 

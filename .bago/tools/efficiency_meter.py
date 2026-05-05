@@ -17,7 +17,6 @@ import sys
 import zipfile
 from functools import lru_cache
 from pathlib import Path
-from datetime import datetime
 
 # ── Rutas ─────────────────────────────────────────────────────────────────────
 
@@ -268,7 +267,6 @@ def print_efficiency(versions: list[dict]) -> None:
     }
 
     live = next((v for v in versions if v["slug"] == "live"), None)
-    state = json.loads(STATE_FILE.read_text()) if STATE_FILE.exists() else {}
 
     print()
     print(f"  {B}╔══════════════════════════════════════════════════════════════╗{R}")

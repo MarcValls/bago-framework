@@ -10,7 +10,6 @@ from datetime import datetime, timezone
 import argparse
 import hashlib
 import json
-import os
 import subprocess
 import sys
 

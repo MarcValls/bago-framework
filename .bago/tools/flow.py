@@ -18,8 +18,6 @@ Uso:
 """
 
 import argparse
-import json
-import sys
 import re
 import pathlib
 from datetime import datetime, timezone
@@ -109,7 +107,7 @@ def _render_flowchart(wf_code: str, wf_file: Path) -> str:
                 phases.append((m.group(1).strip()[:50], []))
 
     if not phases:
-        lines.append(f"  (sin estructura de fases detectada)")
+        lines.append("  (sin estructura de fases detectada)")
         lines.append("")
         return "\n".join(lines)
 

@@ -232,6 +232,64 @@
       "type": "reporting",
       "reads_only": true,
       "description": "Catálogo de reglas BAGO"
+    },
+    "research": {
+      "script": "tools/research_orchestrator.py",
+      "type": "interactive",
+      "description": "Modo Research integrando GitHub Copilot CLI /research — investigación temática estructurada"
+    },
+    "chronicle": {
+      "script": "tools/chronicle_reporter.py",
+      "type": "reporting",
+      "reads_only": true,
+      "description": "Sesión Chronicle integrando Copilot CLI /chronicle — historial de sesiones y recomendaciones"
+    },
+    "lsp": {
+      "script": "tools/lsp_manager.py",
+      "type": "diagnostic",
+      "reads_only": true,
+      "description": "Orquestación de Language Servers — registra y gestiona servidores LSP para inteligencia de código"
+    },
+    "db": {
+      "script": "tools/db_init.py",
+      "type": "interactive",
+      "description": "Gestión de la BD SQLite BAGO (init, status, ideas, reset-ideas)"
+    },
+    "select": {
+      "script": "tools/ideas_selector.py",
+      "type": "interactive",
+      "description": "Selector interactivo de ideas por slot con plan de implementación"
+    },
+    "sprint": {
+      "script": "tools/sprint_summary.py",
+      "type": "reporting",
+      "description": "Resumen automático de sprint (batch de N ideas implementadas)"
+    },
+    "net": {
+      "script": "tools/net_scan.py",
+      "type": "diagnostic",
+      "reads_only": true,
+      "description": "Estado de red y cables: detecta adaptadores, velocidad de enlace y dispositivos vecinos"
+    },
+    "net-interact": {
+      "script": "tools/net_interact.py",
+      "type": "diagnostic",
+      "description": "Interacción con red Ethernet interna (10.0.0.x): PC Suite de telefonía, llamadas, SMS, terminales Orange"
+    },
+    "lenovo-monitor": {
+      "script": "tools/lenovo_monitor.ps1",
+      "type": "network",
+      "description": "Monitor ARP+TCP para detectar PC Lenovo en Ethernet directo (169.254.31.155/16). Escucha en :4444 y hace autoconexión WinRM cuando detecta al Lenovo."
+    },
+    "lenovo-connect": {
+      "script": "tools/bago_autoconnect.ps1",
+      "type": "network",
+      "description": "Conexión WinRM/SMB/NetBIOS al PC Lenovo. Requiere LenovoIP como parámetro. Detecta hostname, servicios y abre sesión remota."
+    },
+    "lenovo-http": {
+      "script": "tools/http_discover.py",
+      "type": "network",
+      "description": "Servidor HTTP en :8080 para detección de IP del Lenovo. Cuando el Lenovo accede a http://169.254.31.155:8080, se registra su IP automáticamente."
     }
   },
   "canonical_files": [
