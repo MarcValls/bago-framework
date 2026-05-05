@@ -76,18 +76,23 @@
       "title": "Reabrir desde continuidad",
       "slot": null,
       "done_at": "2026-05-05T09:40:10.792729+00:00"
+    },
+    {
+      "title": "Entrada rápida del repo",
+      "slot": null,
+      "done_at": "2026-05-05T09:42:58.581552+00:00"
     }
   ],
-  "updated_at": "2026-05-05T09:40:10.792729+00:00",
+  "updated_at": "2026-05-05T09:42:58.581552+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "Reabrir desde continuidad",
-      "date": "2026-05-05T09:40:10.819927+00:00",
-      "session_close": "SESSION_CLOSE_20260505_094010.md",
+      "title": "Entrada rápida del repo",
+      "date": "2026-05-05T09:42:58.603839+00:00",
+      "session_close": "SESSION_CLOSE_20260505_094258.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "Añadir un modo para reactivar la sesión desde el cierre actual sin reconstruir contexto manualmente."
+      "objetivo": "Conectar ideas con README y WF para que la primera decisión del usuario vaya a una acción concreta sin leer toda la canonica."
     }
   ],
-  "last_updated": "2026-05-05T09:40:10.819955+00:00"
+  "last_updated": "2026-05-05T09:42:58.603859+00:00"
 }

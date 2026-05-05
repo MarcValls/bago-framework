@@ -583,6 +583,8 @@ def detect_implemented_features() -> dict[str, bool]:
         "reopen_from_continuity":     "# REOPEN_FROM_CONTINUITY_IMPLEMENTED" in (
             (tools / "bago_reopen.py").read_text(encoding="utf-8")
             if (tools / "bago_reopen.py").exists() else ""),
+        # Entrada rápida del repo: bago next shortcut in ideas footer
+        "quick_repo_entry":           "# QUICK_REPO_ENTRY_IMPLEMENTED" in Path(__file__).read_text(encoding="utf-8"),
     }
 
 
@@ -1131,6 +1133,8 @@ def main() -> int:
             top = ideas[0]
             print(f"→ Acepta la idea más prioritaria con: bago ideas --accept 1")
             print(f"  [{top['priority']}] {top['title']}")
+            # QUICK_REPO_ENTRY_IMPLEMENTED — acceso directo de un paso a W2
+            print(f"  ↳ Acceso rápido: bago next  (acepta y abre W2 en un solo comando)")
         else:
             print("→ No hay ideas disponibles. Revisa el backlog o añade más al catálogo.")
         return 0

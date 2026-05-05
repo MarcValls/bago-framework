@@ -1,9 +1,9 @@
 {
   "idea_index": 1,
-  "idea_title": "Reabrir desde continuidad",
-  "priority": 90,
+  "idea_title": "Entrada rápida del repo",
+  "priority": 86,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-  "objetivo": "Añadir un modo para reactivar la sesión desde el cierre actual sin reconstruir contexto manualmente.",
+  "objetivo": "Conectar ideas con README y WF para que la primera decisión del usuario vaya a una acción concreta sin leer toda la canonica.",
   "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
@@ -11,16 +11,16 @@
   ],
   "validacion_minima": [
     "La salida debe explicar el cambio, los archivos y la verificación mínima.",
-    "Métrica objetivo: Reapertura evita reconstrucción manual y reduce pasos de arranque."
+    "Métrica objetivo: La primera decisión del usuario llega a una acción en un paso."
   ],
-  "siguiente_paso": "Si se acepta, convertirlo en una mejora pequeña y segura de continuidad.",
-  "metric": "Reapertura evita reconstrucción manual y reduce pasos de arranque.",
+  "siguiente_paso": "Promover la idea seleccionada a una tarea corta y directa.",
+  "metric": "La primera decisión del usuario llega a una acción en un paso.",
   "contexto": [
-    "Entrada: cierre de sesión ya escrito en estado.",
-    "Salida: reanudación más rápida sin perder contexto.",
-    "Ventaja: mantiene continuidad de trabajo entre sesiones."
+    "Entrada: comandos cortos y selector de workflows.",
+    "Salida: menos fricción para abrir ideas o W2.",
+    "Ventaja: mejora la usabilidad diaria del repo."
   ],
   "status": "done",
-  "accepted_at": "2026-05-05T09:37:51.230651+00:00",
-  "done_at": "2026-05-05T09:40:10.789814+00:00"
+  "accepted_at": "2026-05-05T09:40:53.344649+00:00",
+  "done_at": "2026-05-05T09:42:58.573785+00:00"
 }
