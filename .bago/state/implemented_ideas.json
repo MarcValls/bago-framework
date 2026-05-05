@@ -46,18 +46,23 @@
       "title": "Velocidad de sprint en dashboard",
       "slot": null,
       "done_at": "2026-05-05T09:24:17.224751+00:00"
+    },
+    {
+      "title": "Tendencia de health entre cosechas",
+      "slot": null,
+      "done_at": "2026-05-05T09:26:37.667952+00:00"
     }
   ],
-  "updated_at": "2026-05-05T09:24:17.224751+00:00",
+  "updated_at": "2026-05-05T09:26:37.667952+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "Velocidad de sprint en dashboard",
-      "date": "2026-05-05T09:24:17.252922+00:00",
-      "session_close": "SESSION_CLOSE_20260505_092417.md",
+      "title": "Tendencia de health entre cosechas",
+      "date": "2026-05-05T09:26:37.697265+00:00",
+      "session_close": "SESSION_CLOSE_20260505_092637.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "Añadir una fila de velocidad media (ideas/día) al dashboard, calculada desde los sprint summaries."
+      "objetivo": "Comparar el health score de la cosecha actual con la anterior para mostrar tendencia (↑/↓/=)."
     }
   ],
-  "last_updated": "2026-05-05T09:24:17.252940+00:00"
+  "last_updated": "2026-05-05T09:26:37.697287+00:00"
 }

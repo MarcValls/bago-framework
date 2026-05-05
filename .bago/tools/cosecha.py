@@ -118,6 +118,28 @@ def _get_health_score() -> tuple[str, int]:
         return "⚪", 0
 
 
+def _prev_harvest_health() -> int | None:
+    """Lee la última sesión harvest cerrada y devuelve su health score, o None.
+    # COSECHA_HEALTH_TREND_IMPLEMENTED
+    """
+    sessions_dir = BAGO_ROOT / "state" / "sessions"
+    candidates: list[tuple[str, int]] = []
+    for f in sessions_dir.glob("SES-HARVEST-*.json"):
+        try:
+            data = json.loads(f.read_text(encoding="utf-8"))
+            if data.get("status") != "closed":
+                continue
+            score = data.get("health_at_harvest", {}).get("score")
+            if score is not None:
+                candidates.append((data.get("updated_at", ""), int(score)))
+        except Exception:
+            pass
+    if not candidates:
+        return None
+    candidates.sort(reverse=True)
+    return candidates[0][1]
+
+
 def _detect_modified_files():
     """Intenta detectar ficheros recientes usando context_detector si existe."""
     detector = BAGO_ROOT / "tools" / "context_detector.py"
@@ -138,6 +160,15 @@ def _detect_modified_files():
 def run():
     now = datetime.now(timezone.utc).isoformat()
     health_icon, health_pts = _get_health_score()
+    prev_health = _prev_harvest_health()
+    if prev_health is None:
+        health_trend = ""
+    elif health_pts > prev_health:
+        health_trend = f" ↑ (era {prev_health})"
+    elif health_pts < prev_health:
+        health_trend = f" ↓ (era {prev_health})"
+    else:
+        health_trend = f" = (sin cambio)"
 
     print()
     print("╔══════════════════════════════════════════════════╗")
@@ -186,7 +217,7 @@ def run():
             date  = (idea.get("done_at") or "")[:10] or "—"
             print(f"     · {title}  ({date})")
     print()
-    print(f"  {health_icon} Health score al cosechar: {health_pts} pts")
+    print(f"  {health_icon} Health score al cosechar: {health_pts} pts{health_trend}")
     print()
 
     # ── Confirmación ──────────────────────────────────────────────────────────
@@ -196,7 +227,8 @@ def run():
     print(f"  │  Decisión: {decision[:45]:<45} │")
     print(f"  │  Descarte: {discard[:45]:<45} │")
     print(f"  │  Próximo:  {next_step[:45]:<45} │")
-    print(f"  │  Health:   {health_icon} {health_pts} pts{'':<39} │")
+    health_summary = f"{health_icon} {health_pts} pts{health_trend}"
+    print(f"  │  Health:   {health_summary:<49} │")
     print("  └──────────────────────────────────────────────┘")
     print()
 
