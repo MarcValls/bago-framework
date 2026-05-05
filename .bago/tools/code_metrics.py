@@ -3,7 +3,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from collections import defaultdict
+from functools import lru_cache
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -17,6 +19,32 @@ SOURCE_EXTS = {
     ".py", ".json", ".css", ".scss", ".html", ".vue",
     ".md", ".yaml", ".yml", ".toml", ".sh", ".mts"
 }
+
+
+@lru_cache(maxsize=1)
+def _load_scan_config() -> dict[str, object]:
+    try:
+        from bago_config import load_config
+        data = load_config("scan_config", fallback=None)
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _get_metrics_exclude_dirs() -> set[str]:
+    config = _load_scan_config()
+    exclude_dirs = config.get("metrics_exclude_dirs", config.get("exclude_dirs"))
+    return set(exclude_dirs) if isinstance(exclude_dirs, list) else EXCLUDE_DIRS
+
+
+def _get_metrics_exclude_exts() -> set[str]:
+    exclude_exts = _load_scan_config().get("metrics_exclude_exts")
+    return set(exclude_exts) if isinstance(exclude_exts, list) else EXCLUDE_EXTS
+
+
+def _get_metrics_source_exts() -> set[str]:
+    source_exts = _load_scan_config().get("metrics_source_exts")
+    return set(source_exts) if isinstance(source_exts, list) else SOURCE_EXTS
 
 
 def _get_project_root() -> Path:
@@ -38,18 +66,21 @@ PROJECT_ROOT = _get_project_root()
 def _count_dir(path: Path, only_ext: str | None = None) -> dict:
     """Return {ext: {files, lines}} for a directory."""
     counts: dict[str, dict] = defaultdict(lambda: {"files": 0, "lines": 0})
+    exclude_dirs = _get_metrics_exclude_dirs()
+    exclude_exts = _get_metrics_exclude_exts()
+    source_exts = _get_metrics_source_exts()
     for f in path.rglob("*"):
         if f.is_dir():
             continue
         # Skip excluded dirs
-        if any(p in EXCLUDE_DIRS for p in f.parts):
+        if any(p in exclude_dirs for p in f.parts):
             continue
         ext = f.suffix.lower()
-        if ext in EXCLUDE_EXTS:
+        if ext in exclude_exts:
             continue
         if only_ext and ext != only_ext:
             continue
-        if ext not in SOURCE_EXTS and not only_ext:
+        if ext not in source_exts and not only_ext:
             continue
         try:
             lines = sum(1 for _ in f.open(encoding="utf-8", errors="replace"))

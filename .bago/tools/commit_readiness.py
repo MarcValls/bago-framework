@@ -27,8 +27,10 @@ Códigos: CR-E001 (sintaxis), CR-E002 (secreto), CR-E003 (conflicto merge),
 """
 import sys
 import ast
+import json
 import re
 import subprocess
+from functools import lru_cache
 from pathlib import Path
 
 BAGO_ROOT = Path(__file__).parent.parent
@@ -45,6 +47,32 @@ MERGE_CONFLICT_RE = re.compile(r'^(<{7}|={7}|>{7})\s', re.MULTILINE)
 DEBUG_PRINT_RE = re.compile(r'^\s*print\s*\(', re.MULTILINE)
 TODO_ADDED_RE = re.compile(r'^\+.*\b(TODO|FIXME|HACK|XXX)\b', re.MULTILINE)
 MAX_FILE_SIZE = 500 * 1024  # 500KB
+
+
+@lru_cache(maxsize=1)
+def _load_validation_config() -> dict[str, object]:
+    try:
+        from bago_config import load_config
+        data = load_config("validation_patterns", fallback=None)
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _get_secret_patterns() -> list[tuple[str, str, str]]:
+    patterns = _load_validation_config().get("secret_patterns")
+    if not isinstance(patterns, list):
+        return SECRET_PATTERNS
+    converted: list[tuple[str, str, str]] = []
+    for item in patterns:
+        if isinstance(item, list) and len(item) == 3:
+            converted.append((str(item[0]), str(item[1]), str(item[2])))
+    return converted or SECRET_PATTERNS
+
+
+def _get_max_file_size() -> int:
+    value = _load_validation_config().get("max_file_size_bytes")
+    return value if isinstance(value, int) and value > 0 else MAX_FILE_SIZE
 
 
 def get_staged_files() -> list:
@@ -100,7 +128,7 @@ def check_secrets(filepath: Path) -> list:
     try:
         src = filepath.read_text(encoding="utf-8", errors="replace")
         src_lines = src.splitlines()
-        for pattern, code, label in SECRET_PATTERNS:
+        for pattern, code, label in _get_secret_patterns():
             for m in re.finditer(pattern, src):
                 line_no = src[:m.start()].count("\n") + 1
                 # Honour # nosec inline suppression (bandit-compatible)
@@ -162,10 +190,11 @@ def check_file_size(filepath: Path) -> list:
     findings = []
     try:
         size = filepath.stat().st_size
-        if size > MAX_FILE_SIZE:
+        max_file_size = _get_max_file_size()
+        if size > max_file_size:
             findings.append({
                 "code": "CR-W003", "file": str(filepath.name),
-                "line": 0, "msg": f"archivo grande: {size // 1024}KB (max 500KB)",
+                "line": 0, "msg": f"archivo grande: {size // 1024}KB (max {max_file_size // 1024}KB)",
             })
     except Exception:
         pass

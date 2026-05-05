@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 for _s in (sys.stdout, sys.stderr):
@@ -62,8 +63,38 @@ LABEL_COLOR = {
 RESET = "\033[0m"
 
 
+@lru_cache(maxsize=1)
+def _load_scan_config() -> dict[str, object]:
+    try:
+        from bago_config import load_config
+        data = load_config("scan_config", fallback=None)
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _get_todo_patterns() -> dict[str, str]:
+    patterns = _load_scan_config().get("todo_patterns")
+    return patterns if isinstance(patterns, dict) else PATTERNS
+
+
+def _get_exclude_dirs() -> set[str]:
+    exclude_dirs = _load_scan_config().get("exclude_dirs")
+    return set(exclude_dirs) if isinstance(exclude_dirs, list) else EXCLUDE_DIRS
+
+
+def _get_include_exts() -> set[str]:
+    include_exts = _load_scan_config().get("include_exts")
+    return set(include_exts) if isinstance(include_exts, list) else INCLUDE_EXTS
+
+
+def _get_label_colors() -> dict[str, str]:
+    label_colors = _load_scan_config().get("label_colors")
+    return label_colors if isinstance(label_colors, dict) else LABEL_COLOR
+
+
 def _col_label(label: str) -> str:
-    return f"{LABEL_COLOR.get(label, '')}{label}{RESET}"
+    return f"{_get_label_colors().get(label, '')}{label}{RESET}"
 
 
 def _load_project() -> Path | None:
@@ -80,7 +111,7 @@ def _load_project() -> Path | None:
 
 def _should_exclude(path: Path, root: Path) -> bool:
     parts = set(path.relative_to(root).parts)
-    return bool(parts & EXCLUDE_DIRS)
+    return bool(parts & _get_exclude_dirs())
 
 
 def _scan_file(path: Path, patterns: dict) -> list[dict]:
@@ -135,10 +166,12 @@ def main() -> int:
         idx = args.index("--ext")
         if idx + 1 < len(args):
             ext_flag = args[idx + 1]
-    extensions = {f".{e.lstrip('.')}" for e in ext_flag.split(",")} if ext_flag else INCLUDE_EXTS
+    patterns = _get_todo_patterns()
+    extensions = {f".{e.lstrip('.')}" for e in ext_flag.split(",")} if ext_flag else _get_include_exts()
 
     # Pattern filter
-    active_patterns = {"FIXME": PATTERNS["FIXME"], "XXX": PATTERNS["XXX"]} if only_fixme else PATTERNS
+    active_patterns = {"FIXME": patterns["FIXME"], "XXX": patterns["XXX"]} if only_fixme else patterns
+    pattern_order = [label for label in patterns if label in active_patterns]
 
     project = _load_project()
     scan_root = project if project else ROOT
@@ -168,7 +201,7 @@ def main() -> int:
     if do_count:
         print(f"  {'TIPO':<12} {'CUENTA':>6}")
         print(f"  {'────':<12} {'──────':>6}")
-        for label in PATTERNS:
+        for label in pattern_order:
             n = counts.get(label, 0)
             if n:
                 print(f"  {_col_label(label):<12} {n:>6}")
@@ -176,7 +209,7 @@ def main() -> int:
         return 0
 
     # Full listing (grouped by type)
-    for label in PATTERNS:
+    for label in pattern_order:
         items = [r for r in results if r["type"] == label]
         if not items:
             continue
@@ -193,7 +226,7 @@ def main() -> int:
         print()
 
     print(f"  Total: {BOLD(str(len(results)))}  ·  ", end="")
-    parts = [f"{_col_label(l)}: {counts[l]}" for l in PATTERNS if counts.get(l)]
+    parts = [f"{_col_label(l)}: {counts[l]}" for l in pattern_order if counts.get(l)]
     print("  ".join(parts))
     print()
 

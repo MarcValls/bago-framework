@@ -36,6 +36,7 @@ import json
 import re
 import sys
 from dataclasses import dataclass, asdict
+from functools import lru_cache
 from pathlib import Path
 from typing import Iterable
 
@@ -115,6 +116,33 @@ EXEMPT_PATTERNS = [
     r"/docs/migration/",  # documentación de migración (excl. legacy ya cubierto)
 ]
 
+
+@lru_cache(maxsize=1)
+def _load_lexicon() -> dict[str, object]:
+    try:
+        from bago_config import load_config
+        data = load_config("sincerity_lexicon", fallback=None)
+    except Exception:
+        data = None
+
+    payload = data if isinstance(data, dict) else {}
+
+    def _list_value(key: str, fallback: list[str]) -> list[str]:
+        value = payload.get(key)
+        return value if isinstance(value, list) else fallback
+
+    return {
+        "exclude_dirs": set(_list_value("exclude_dirs", sorted(DEFAULT_EXCLUDE_DIRS))),
+        "flattery_terms": _list_value("flattery_terms", FLATTERY_TERMS),
+        "unsubstantiated_absolutes": _list_value("unsubstantiated_absolutes", UNSUBSTANTIATED_ABSOLUTES),
+        "success_washing": _list_value("success_washing", SUCCESS_WASHING),
+        "future_promises": _list_value("future_promises", FUTURE_PROMISES),
+        "done_context_headers": _list_value("done_context_headers", DONE_CONTEXT_HEADERS),
+        "strong_claims": _list_value("strong_claims", STRONG_CLAIMS),
+        "evidence_hints": _list_value("evidence_hints", EVIDENCE_HINTS),
+        "exempt_patterns": _list_value("exempt_patterns", EXEMPT_PATTERNS),
+    }
+
 # ── Modelo de hallazgo ────────────────────────────────────────────────────────
 
 @dataclass
@@ -134,7 +162,8 @@ class Finding:
 
 def is_exempt(path: Path) -> bool:
     sp = str(path).replace("\\", "/")
-    return any(re.search(p, sp) for p in EXEMPT_PATTERNS)
+    patterns = _load_lexicon()["exempt_patterns"]
+    return any(re.search(p, sp) for p in patterns)
 
 
 def iter_markdown_files(base: Path, excludes: set[str]) -> Iterable[Path]:
@@ -167,11 +196,12 @@ def line_text(text: str, line_no: int) -> str:
 
 def scan_flattery(path: Path, text: str) -> list[Finding]:
     out: list[Finding] = []
-    for m in find_all(FLATTERY_TERMS, text):
+    lexicon = _load_lexicon()
+    for m in find_all(lexicon["flattery_terms"], text):
         ln = line_of(text, m.start())
         lt = line_text(text, ln)
         # Permitir si la línea trae un link/evidencia que lo sostiene.
-        if any(re.search(e, lt, re.IGNORECASE) for e in EVIDENCE_HINTS):
+        if any(re.search(e, lt, re.IGNORECASE) for e in lexicon["evidence_hints"]):
             continue
         out.append(Finding(
             file=str(path.relative_to(ROOT)),
@@ -184,10 +214,11 @@ def scan_flattery(path: Path, text: str) -> list[Finding]:
 
 def scan_unsubstantiated(path: Path, text: str) -> list[Finding]:
     out: list[Finding] = []
-    for m in find_all(UNSUBSTANTIATED_ABSOLUTES, text):
+    lexicon = _load_lexicon()
+    for m in find_all(lexicon["unsubstantiated_absolutes"], text):
         ln = line_of(text, m.start())
         lt = line_text(text, ln)
-        if any(re.search(e, lt, re.IGNORECASE) for e in EVIDENCE_HINTS):
+        if any(re.search(e, lt, re.IGNORECASE) for e in lexicon["evidence_hints"]):
             continue
         out.append(Finding(
             file=str(path.relative_to(ROOT)),
@@ -200,10 +231,11 @@ def scan_unsubstantiated(path: Path, text: str) -> list[Finding]:
 
 def scan_success_washing(path: Path, text: str) -> list[Finding]:
     out: list[Finding] = []
-    for m in find_all(SUCCESS_WASHING, text):
+    lexicon = _load_lexicon()
+    for m in find_all(lexicon["success_washing"], text):
         ln = line_of(text, m.start())
         lt = line_text(text, ln)
-        if any(re.search(e, lt, re.IGNORECASE) for e in EVIDENCE_HINTS):
+        if any(re.search(e, lt, re.IGNORECASE) for e in lexicon["evidence_hints"]):
             continue
         out.append(Finding(
             file=str(path.relative_to(ROOT)),
@@ -217,6 +249,7 @@ def scan_success_washing(path: Path, text: str) -> list[Finding]:
 def scan_future_as_done(path: Path, text: str) -> list[Finding]:
     """Promesa futura dentro de una sección cuyo header marca 'done'."""
     out: list[Finding] = []
+    lexicon = _load_lexicon()
     lines = text.splitlines()
     current_header = ""
     header_is_done = False
@@ -225,12 +258,12 @@ def scan_future_as_done(path: Path, text: str) -> list[Finding]:
         h = re.match(r"^\s{0,3}#{1,6}\s+(.+)$", raw)
         if h:
             current_header = h.group(1).strip()
-            header_is_done = any(re.search(p, current_header, re.IGNORECASE) for p in DONE_CONTEXT_HEADERS)
+            header_is_done = any(re.search(p, current_header, re.IGNORECASE) for p in lexicon["done_context_headers"])
             header_line = i
             continue
         if not header_is_done or not current_header:
             continue
-        for pat in FUTURE_PROMISES:
+        for pat in lexicon["future_promises"]:
             if re.search(pat, raw, re.IGNORECASE):
                 out.append(Finding(
                     file=str(path.relative_to(ROOT)),
@@ -244,12 +277,13 @@ def scan_future_as_done(path: Path, text: str) -> list[Finding]:
 
 def scan_evidence_missing(path: Path, text: str) -> list[Finding]:
     out: list[Finding] = []
-    for m in find_all(STRONG_CLAIMS, text, flags=0):  # case-sensitive a propósito
+    lexicon = _load_lexicon()
+    for m in find_all(lexicon["strong_claims"], text, flags=0):  # case-sensitive a propósito
         ln = line_of(text, m.start())
         lt = line_text(text, ln)
         # Mirar línea actual + siguiente 2 líneas para evidencia.
         window = "\n".join(text.splitlines()[ln - 1: ln + 2])
-        if any(re.search(e, window, re.IGNORECASE) for e in EVIDENCE_HINTS):
+        if any(re.search(e, window, re.IGNORECASE) for e in lexicon["evidence_hints"]):
             continue
         out.append(Finding(
             file=str(path.relative_to(ROOT)),
@@ -329,7 +363,7 @@ def main(argv: list[str] | None = None) -> int:
     if base.is_file() and base.suffix == ".md":
         files = [base]
     else:
-        files = list(iter_markdown_files(base, DEFAULT_EXCLUDE_DIRS))
+        files = list(iter_markdown_files(base, _load_lexicon()["exclude_dirs"]))
 
     all_findings: list[Finding] = []
     for f in files:

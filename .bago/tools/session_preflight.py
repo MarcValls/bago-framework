@@ -20,6 +20,7 @@ Salida:
 
 import argparse
 import sys
+from functools import lru_cache
 
 ROLE_MAP = {
     "system_change":       ("role_architect", "role_validator"),
@@ -41,13 +42,45 @@ VERBS_ES = [
 ]
 
 
+@lru_cache(maxsize=1)
+def _load_preflight_rules() -> dict[str, object]:
+    try:
+        from bago_config import load_config
+        data = load_config("preflight_rules", fallback=None)
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _get_role_map() -> dict[str, tuple[str, ...]]:
+    role_map = _load_preflight_rules().get("role_map")
+    if not isinstance(role_map, dict):
+        return ROLE_MAP
+    converted: dict[str, tuple[str, ...]] = {}
+    for key, value in role_map.items():
+        if isinstance(value, list):
+            converted[str(key)] = tuple(str(item) for item in value)
+    return converted or ROLE_MAP
+
+
+def _get_protocol_artifacts() -> set[str]:
+    artifacts = _load_preflight_rules().get("protocol_artifacts")
+    return set(artifacts) if isinstance(artifacts, list) else PROTOCOL_ARTIFACTS
+
+
+def _get_verbs_es() -> list[str]:
+    verbs = _load_preflight_rules().get("verbs_es")
+    return [str(verb) for verb in verbs] if isinstance(verbs, list) else VERBS_ES
+
+
 def check_objetivo(objetivo: str) -> tuple[bool, str]:
     if not objetivo or len(objetivo.strip()) < 15:
         return False, "El objetivo es demasiado corto. Mínimo 15 caracteres con Verbo+Objeto+Done."
     low = objetivo.lower()
-    has_verb = any(v in low for v in VERBS_ES)
+    verbs_es = _get_verbs_es()
+    has_verb = any(v in low for v in verbs_es)
     if not has_verb:
-        return False, f"El objetivo no contiene un verbo de acción reconocido. Usa uno de: {', '.join(VERBS_ES[:8])}..."
+        return False, f"El objetivo no contiene un verbo de acción reconocido. Usa uno de: {', '.join(verbs_es[:8])}..."
     has_para = "para que" in low or "para " in low or " que " in low
     if not has_para:
         return False, "El objetivo no incluye criterio de done. Añade 'para que [resultado verificable]'."
@@ -64,7 +97,7 @@ def check_roles(roles_raw: str) -> tuple[bool, str]:
 
 
 def is_protocol_artifact(path: str) -> bool:
-    for prefix in PROTOCOL_ARTIFACTS:
+    for prefix in _get_protocol_artifacts():
         if path.startswith(prefix):
             return True
     return False
@@ -123,7 +156,7 @@ def main():
     print()
     if all_ok:
         print("  ✅ GO — Sesión lista para abrir.")
-        suggested = ROLE_MAP.get(args.task_type, None)
+        suggested = _get_role_map().get(args.task_type, None)
         if suggested:
             print(f"     Roles sugeridos para '{args.task_type}': {suggested[0]} + {suggested[1]}")
     else:

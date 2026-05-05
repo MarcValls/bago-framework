@@ -12,7 +12,7 @@ Flujo:
 4. Genera reporte integrado
 
 Uso:
-  python bago_typing_course_analyzer.py C:\Marc_max_20gb\typing-course
+  python bago_typing_course_analyzer.py C:/Marc_max_20gb/typing-course
 """
 
 import json

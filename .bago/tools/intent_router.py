@@ -22,6 +22,7 @@ Códigos: INT-I001 (intención clara), INT-I002 (intención parcial),
 import sys
 import re
 import subprocess
+from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
@@ -186,6 +187,18 @@ INTENTS = [
 ]
 
 
+@lru_cache(maxsize=1)
+def _load_intents() -> list:
+    try:
+        from bago_config import load_config
+        data = load_config("intents_catalog", fallback=None)
+        if data and isinstance(data.get("intents"), list):
+            return data["intents"]
+    except Exception:
+        pass
+    return INTENTS
+
+
 def tokenize(text: str) -> list:
     return re.findall(r'\w+', text.lower())
 
@@ -210,7 +223,7 @@ def score_intent(query: str, intent: dict) -> int:
 def identify_intents(query: str, top_n: int = 3) -> list:
     """Retorna lista de (score, intent) ordenada por score."""
     scored = []
-    for intent in INTENTS:
+    for intent in _load_intents():
         s = score_intent(query, intent)
         if s > 0:
             scored.append((s, intent))
@@ -285,9 +298,10 @@ def cmd_route(query: str, dry_run: bool = False, yes: bool = False, verbose: boo
 
 
 def cmd_list_intents():
-    print(f"\n  BAGO — Intenciones reconocidas ({len(INTENTS)})")
+    intents = _load_intents()
+    print(f"\n  BAGO — Intenciones reconocidas ({len(intents)})")
     print("  " + "─" * 56)
-    for intent in INTENTS:
+    for intent in intents:
         tools_str = " + ".join(intent["tools"])
         destructive = " ⚠️ " if intent.get("destructive") else "    "
         print(f"  {destructive}{intent['name']:30s}  [{tools_str}]")
@@ -299,6 +313,7 @@ def cmd_list_intents():
 
 def run_tests():
     results = []
+    loaded_intents = _load_intents()
 
     # Test 1: identify_intents — secretos → security
     intents = identify_intents("mi código tiene passwords hardcodeados")
@@ -324,15 +339,15 @@ def run_tests():
     results.append(("intent_router:no_match", ok4, f"count={len(intents)}"))
 
     # Test 5: score_intent returns int
-    s = score_intent("secretos y passwords", INTENTS[0])
+    s = score_intent("secretos y passwords", loaded_intents[0])
     ok5 = isinstance(s, int) and s > 0
     results.append(("intent_router:score_positive", ok5, f"score={s}"))
 
     # Test 6: all intents have required fields
     required = {"id", "name", "triggers", "tools", "description"}
-    ok6 = all(required.issubset(intent.keys()) for intent in INTENTS)
+    ok6 = all(required.issubset(intent.keys()) for intent in loaded_intents)
     results.append(("intent_router:intents_schema_valid", ok6,
-                     f"intents={len(INTENTS)}"))
+                     f"intents={len(loaded_intents)}"))
 
     passed = sum(1 for _, ok, _ in results if ok)
     failed = sum(1 for _, ok, _ in results if not ok)

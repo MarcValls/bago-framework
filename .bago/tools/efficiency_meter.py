@@ -15,6 +15,7 @@ import re
 import subprocess
 import sys
 import zipfile
+from functools import lru_cache
 from pathlib import Path
 from datetime import datetime
 
@@ -50,6 +51,19 @@ WEIGHTS = {
     "docs":      0.20,
     "workflows": 0.15,
 }
+
+
+@lru_cache(maxsize=1)
+def _load_weights() -> dict[str, float]:
+    try:
+        from bago_config import load_config
+        data = load_config("efficiency_weights", fallback=None)
+        weights = data.get("weights") if isinstance(data, dict) else None
+        if isinstance(weights, dict):
+            return {str(k): float(v) for k, v in weights.items()}
+    except Exception:
+        pass
+    return WEIGHTS
 
 # ── Recolección de métricas ────────────────────────────────────────────────────
 
@@ -218,7 +232,7 @@ def _delta(current, previous, key) -> str:
 def _efficiency_index(metrics: dict, maxima: dict) -> float:
     """Calcula el índice de eficiencia compuesto (0–100)."""
     score = 0.0
-    for key, weight in WEIGHTS.items():
+    for key, weight in _load_weights().items():
         val = metrics.get(key) or metrics.get("commands_count") if key == "commands" else metrics.get(key)
         if key == "commands":
             val = metrics.get("commands_count") or metrics.get("commands")
@@ -247,9 +261,10 @@ def print_efficiency(versions: list[dict]) -> None:
             return len(c) if isinstance(c, list) else (c or 0)
         return v.get(key) or 0
 
+    weights = _load_weights()
     maxima = {
         key: max(_get(v, key) for v in versions)
-        for key in WEIGHTS
+        for key in weights
     }
 
     live = next((v for v in versions if v["slug"] == "live"), None)
@@ -377,7 +392,7 @@ def print_efficiency(versions: list[dict]) -> None:
 
 def print_json(versions: list[dict]) -> None:
     maxima = {}
-    for key in WEIGHTS:
+    for key in _load_weights():
         vals = []
         for v in versions:
             c = v.get("commands_count") or v.get("commands")

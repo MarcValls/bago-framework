@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 for _s in (sys.stdout, sys.stderr):
@@ -33,6 +34,31 @@ STATE = ROOT / ".bago" / "state"
 
 EXCLUDE_DIRS = {"node_modules", "dist", "build", ".next", ".git", ".bago", "out", "coverage", ".turbo", "__pycache__"}
 DEFAULT_EXTS = {".ts", ".tsx", ".js", ".jsx", ".py", ".json", ".md", ".yaml", ".yml", ".sql", ".css", ".scss"}
+
+
+@lru_cache(maxsize=1)
+def _load_scan_config() -> dict[str, object]:
+    try:
+        from bago_config import load_config
+        data = load_config("scan_config", fallback=None)
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def _get_exclude_dirs() -> set[str]:
+    config = _load_scan_config()
+    exclude_dirs = config.get("search_exclude_dirs", config.get("exclude_dirs"))
+    return set(exclude_dirs) if isinstance(exclude_dirs, list) else EXCLUDE_DIRS
+
+
+def _get_search_exts() -> set[str]:
+    config = _load_scan_config()
+    search_exts = config.get("search_exts")
+    if isinstance(search_exts, list):
+        return set(search_exts)
+    include_exts = config.get("include_exts")
+    return set(include_exts) if isinstance(include_exts, list) else DEFAULT_EXTS
 
 
 def GREEN(s: str)  -> str: return f"\033[32m{s}\033[0m"
@@ -59,7 +85,7 @@ def _load_project() -> Path | None:
 def _should_exclude(path: Path, root: Path) -> bool:
     try:
         parts = set(path.relative_to(root).parts)
-        return bool(parts & EXCLUDE_DIRS)
+        return bool(parts & _get_exclude_dirs())
     except ValueError:
         return False
 
@@ -107,7 +133,7 @@ def main() -> int:
         idx = args.index("--ext")
         if idx + 1 < len(args):
             ext_str = args[idx + 1]
-    extensions = {f".{e.lstrip('.')}" for e in ext_str.split(",")} if ext_str else DEFAULT_EXTS
+    extensions = {f".{e.lstrip('.')}" for e in ext_str.split(",")} if ext_str else _get_search_exts()
 
     flags = re.IGNORECASE if ig_case else 0
     try:

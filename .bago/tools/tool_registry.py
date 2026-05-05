@@ -72,6 +72,7 @@ INTERNAL_TOOLS: frozenset[str] = frozenset({
     "bago_lint_cli",
     "bago_search",
     "legacy_fixer",
+    "bago_config",
 })
 
 
