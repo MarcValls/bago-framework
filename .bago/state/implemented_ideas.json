@@ -61,18 +61,23 @@
       "title": "Modo compacto del banner",
       "slot": null,
       "done_at": "2026-05-05T09:29:45.697850+00:00"
+    },
+    {
+      "title": "Resumen de sprint en stability",
+      "slot": null,
+      "done_at": "2026-05-05T09:32:30.092316+00:00"
     }
   ],
-  "updated_at": "2026-05-05T09:29:45.697850+00:00",
+  "updated_at": "2026-05-05T09:32:30.092316+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "Modo compacto del banner",
-      "date": "2026-05-05T09:29:45.737468+00:00",
-      "session_close": "SESSION_CLOSE_20260505_092945.md",
+      "title": "Resumen de sprint en stability",
+      "date": "2026-05-05T09:32:30.119957+00:00",
+      "session_close": "SESSION_CLOSE_20260505_093230.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "Hacer que 'bago --mini' muestre solo la línea de estado con health + ideas en formato compacto."
+      "objetivo": "Añadir un bloque de sprint al informe de stability: ideas completadas, velocidad y health score actuales."
     }
   ],
-  "last_updated": "2026-05-05T09:29:45.737496+00:00"
+  "last_updated": "2026-05-05T09:32:30.119985+00:00"
 }

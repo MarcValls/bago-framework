@@ -1,9 +1,9 @@
 {
   "idea_index": 1,
-  "idea_title": "Modo compacto del banner",
-  "priority": 84,
+  "idea_title": "Resumen de sprint en stability",
+  "priority": 80,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-  "objetivo": "Hacer que 'bago --mini' muestre solo la línea de estado con health + ideas en formato compacto.",
+  "objetivo": "Añadir un bloque de sprint al informe de stability: ideas completadas, velocidad y health score actuales.",
   "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
@@ -11,16 +11,16 @@
   ],
   "validacion_minima": [
     "La salida debe explicar el cambio, los archivos y la verificación mínima.",
-    "Métrica objetivo: El modo '--mini' del banner muestra health + ideas en una sola línea compacta."
+    "Métrica objetivo: stability_summary muestra el sprint actual (ideas completadas, velocidad y health) en un único bloque."
   ],
-  "siguiente_paso": "Modificar print_banner(mini=True) en bago_banner.py para emitir una línea compacta con health + ideas. Agregar sentinel # BANNER_COMPACT_MODE_IMPLEMENTED.",
-  "metric": "El modo '--mini' del banner muestra health + ideas en una sola línea compacta.",
+  "siguiente_paso": "Añadir _sprint_block() en stability_summary.py con sentinel # FULL_SPRINT_IN_STABILITY_IMPLEMENTED.",
+  "metric": "stability_summary muestra el sprint actual (ideas completadas, velocidad y health) en un único bloque.",
   "contexto": [
-    "Entrada: health score + n_impl/n_total.",
-    "Salida: 'BAGO v2.5 | 🟢 80 | 22/35 ideas | 2026-04-30'.",
-    "Ventaja: vista rápida sin salida de pantalla completa."
+    "Entrada: implemented_ideas.json + health_score.py --score-only + sprint_summary stats.",
+    "Salida: sección 'Sprint actual' en stability_summary con 3 métricas.",
+    "Ventaja: la vista de estabilidad queda completa con el contexto de desarrollo."
   ],
   "status": "done",
-  "accepted_at": "2026-05-05T09:29:02.408766+00:00",
-  "done_at": "2026-05-05T09:29:45.689767+00:00"
+  "accepted_at": "2026-05-05T09:31:53.057052+00:00",
+  "done_at": "2026-05-05T09:32:30.089687+00:00"
 }

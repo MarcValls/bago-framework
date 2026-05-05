@@ -80,6 +80,30 @@ def check_stale_task() -> tuple[str, str] | None:
         return None
 
 
+def _sprint_block() -> tuple[str, str]:
+    """Muestra el último sprint en stability: número, ideas, velocidad.
+    # FULL_SPRINT_IN_STABILITY_IMPLEMENTED
+    """
+    import re
+    state_dir = BAGO_ROOT / "state"
+    summaries = sorted(state_dir.glob("sprint_summary_*.md"), reverse=True)
+    if not summaries:
+        return "SKIP", "sprint: sin datos de sprint"
+    try:
+        text = summaries[0].read_text(encoding="utf-8")
+        num_m   = re.search(r"#\s+Sprint BAGO #(\d+)", text)
+        ideas_m = re.search(r"-\s+Ideas en este sprint:\s+(\d+)", text)
+        vel_m   = re.search(r"-\s+Velocidad:\s+([\d.]+)\s+ideas/día", text)
+        total_m = re.search(r"-\s+Total acumulado:\s+([\d/]+)", text)
+        num    = num_m.group(1)   if num_m   else "?"
+        ideas  = ideas_m.group(1) if ideas_m else "?"
+        vel    = vel_m.group(1)   if vel_m   else "?"
+        total  = total_m.group(1) if total_m else "?"
+        return "GO", f"sprint #{num}: {ideas} ideas  vel={vel}/día  total={total}"
+    except Exception as e:
+        return "WARN", f"sprint: error al leer ({e})"
+
+
 def catalog_status() -> tuple[str, str]:
     """Salud del catálogo de ideas: disponibles vs implementadas."""
     import sqlite3 as _sq3
@@ -142,7 +166,10 @@ def main() -> int:
     # 4. Catalog status
     gates.append(catalog_status())
 
-    # 4. Print gates
+    # 5. Sprint block
+    gates.append(_sprint_block())
+
+    # 6. Print gates
     print()
     for st, line in gates:
         icon = "✓" if st == "GO" else ("⚠" if st == "WARN" else ("-" if st == "SKIP" else "✗"))
