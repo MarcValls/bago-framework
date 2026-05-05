@@ -67,6 +67,22 @@ def _avg_production(last_n=5):
         return 0.0
     return round(sum(u for _, u in subset) / len(subset), 1)
 
+def _sprint_velocity_avg() -> tuple[float, int]:
+    """Lee sprint_summary_*.md y devuelve (velocidad_media, n_sprints).
+    # VELOCITY_IN_DASHBOARD_IMPLEMENTED
+    """
+    import re
+    velocities: list[float] = []
+    for f in sorted((STATE).glob("sprint_summary_*.md")):
+        text = f.read_text(encoding="utf-8")
+        m = re.search(r"Velocidad:\s+([\d.]+)\s+ideas/día", text)
+        if m:
+            velocities.append(float(m.group(1)))
+    if not velocities:
+        return 0.0, 0
+    return round(sum(velocities) / len(velocities), 1), len(velocities)
+
+
 def _context_detector():
     """Ejecuta context_detector y devuelve (verdict, score, threshold, n_signals)."""
     detector = TOOLS / "context_detector.py"
@@ -140,6 +156,7 @@ def main():
     avg = _avg_production()
     verdict, score, threshold, n_signals = _context_detector()
     e003_n, e003_dec, e003_art = _escenario_003_stats()
+    vel_avg, vel_n = _sprint_velocity_avg()
 
     on_avg  = round(on_u  / on_n,  1) if on_n  else 0
     off_avg = round(off_u / off_n, 1) if off_n else 0
@@ -176,6 +193,9 @@ def main():
     print("╠══════════════════════════════════════════════════════╣")
     e3_tag = "🔬 ACTIVO" if e003_active else "CERRADO  "
     print(f"║  ESCENARIO-003  {e3_tag}  cosechas={e003_n}  dec/harvest={e003_dec}  ║")
+    print("╠══════════════════════════════════════════════════════╣")
+    vel_str = f"{vel_avg} ideas/día  (media de {vel_n} sprints)" if vel_n else "sin datos"
+    print(f"║  Velocidad sprint:  {vel_str:<34}║")
     print("╠══════════════════════════════════════════════════════╣")
     if verdict:
         print(f"║  Detector W9:  {v_str}  [{bar}] {score}/{threshold}        ║")

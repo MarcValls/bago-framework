@@ -122,6 +122,24 @@ def load_ideas_from_db(feat: dict, extra_flags: dict) -> list[dict] | None:
     return result
 
 
+def _load_catalog() -> dict:
+    """Carga ideas_catalog.json. Devuelve dict vacío si no existe o está corrupto."""
+    try:
+        return json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def evaluate_catalog(catalog: dict, feat: dict) -> list[dict]:
+    """Evalúa ideas desde bago.db con las feature flags dadas.
+    El parámetro catalog se acepta por compatibilidad; las ideas vienen de la DB."""
+    return load_ideas_from_db(feat, {}) or []
+
+
+def apply_dynamic_scoring(ideas: list[dict]) -> list[dict]:
+    """Alias público de _apply_dynamic_score para uso desde bago_next y otros módulos."""
+    return _apply_dynamic_score(ideas)
+
 
 def _load_global_state() -> dict:
     """Lee global_state.json; devuelve {} si no existe o está corrupto."""

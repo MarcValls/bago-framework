@@ -74,7 +74,7 @@ def _get_top_idea() -> dict | None:
         ideas = [i for i in ideas if str(i.get("title", "")) not in done_titles]
 
     ideas   = apply_dynamic_scoring(ideas)
-    sections = build_idea_sections(ideas, catalog.get("fallback", FALLBACK_IDEAS))
+    sections = build_idea_sections(ideas, done_titles)
     ideas   = order_ideas_by_section(sections)
 
     return ideas[0] if ideas else None

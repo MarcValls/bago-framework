@@ -41,18 +41,23 @@
       "title": "Guía de catálogo de ideas",
       "slot": null,
       "done_at": "2026-05-05T09:20:12.509576+00:00"
+    },
+    {
+      "title": "Velocidad de sprint en dashboard",
+      "slot": null,
+      "done_at": "2026-05-05T09:24:17.224751+00:00"
     }
   ],
-  "updated_at": "2026-05-05T09:20:12.509576+00:00",
+  "updated_at": "2026-05-05T09:24:17.224751+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "Guía de catálogo de ideas",
-      "date": "2026-05-05T09:20:12.544147+00:00",
-      "session_close": "SESSION_CLOSE_20260505_092012.md",
+      "title": "Velocidad de sprint en dashboard",
+      "date": "2026-05-05T09:24:17.252922+00:00",
+      "session_close": "SESSION_CLOSE_20260505_092417.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "Añadir sección _guide en ideas_catalog.json con instrucciones para añadir ideas nuevas sin tocar código."
+      "objetivo": "Añadir una fila de velocidad media (ideas/día) al dashboard, calculada desde los sprint summaries."
     }
   ],
-  "last_updated": "2026-05-05T09:20:12.544174+00:00"
+  "last_updated": "2026-05-05T09:24:17.252940+00:00"
 }

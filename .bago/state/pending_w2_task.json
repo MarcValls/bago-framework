@@ -1,9 +1,9 @@
 {
   "idea_index": 1,
-  "idea_title": "Guía de catálogo de ideas",
-  "priority": 84,
+  "idea_title": "Velocidad de sprint en dashboard",
+  "priority": 96,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-  "objetivo": "Añadir sección _guide en ideas_catalog.json con instrucciones para añadir ideas nuevas sin tocar código.",
+  "objetivo": "Añadir una fila de velocidad media (ideas/día) al dashboard, calculada desde los sprint summaries.",
   "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
@@ -11,12 +11,16 @@
   ],
   "validacion_minima": [
     "La salida debe explicar el cambio, los archivos y la verificación mínima.",
-    "Métrica objetivo: ideas_catalog.json tiene clave _guide con instrucciones claras."
+    "Métrica objetivo: El dashboard muestra la velocidad media de los últimos sprints completados."
   ],
-  "siguiente_paso": "Añadir clave _guide a ideas_catalog.json explicando el formato de slots y generations.",
-  "metric": "ideas_catalog.json tiene clave _guide con instrucciones claras.",
-  "contexto": [],
+  "siguiente_paso": "Añadir _sprint_velocity_avg() en pack_dashboard.py que lea sprint_summary_*.md y calcule media con sentinel # VELOCITY_IN_DASHBOARD_IMPLEMENTED.",
+  "metric": "El dashboard muestra la velocidad media de los últimos sprints completados.",
+  "contexto": [
+    "Entrada: sprint_summary_*.md en state/.",
+    "Salida: fila '  Velocidad:  X.X ideas/día (media N sprints)' en el dashboard.",
+    "Ventaja: métrica de ritmo visible sin ejecutar comandos adicionales."
+  ],
   "status": "done",
-  "accepted_at": "2026-05-05T09:18:44.967211+00:00",
-  "done_at": "2026-05-05T09:20:12.501867+00:00"
+  "accepted_at": "2026-05-05T09:23:11.161144+00:00",
+  "done_at": "2026-05-05T09:24:17.221407+00:00"
 }
