@@ -198,10 +198,11 @@
       "chain": "stability",
       "generation": 3,
       "requires": [
-        "stability_cmd",
         "banner_shows_task"
       ],
-      "excludes": []
+      "excludes": [
+        "banner_stale_alert"
+      ]
     },
     {
       "priority": 84,
@@ -294,7 +295,9 @@
         "impl_registry",
         "scoring_dynamic"
       ],
-      "excludes": []
+      "excludes": [
+        "scoring_context"
+      ]
     },
     {
       "priority": 82,
@@ -399,10 +402,11 @@
       "chain": "entrada_rapida",
       "generation": 2,
       "requires": [
-        "repo_not_empty",
-        "ideas_wrapper"
+        "repo_not_empty"
       ],
-      "excludes": []
+      "excludes": [
+        "readme_flow_section"
+      ]
     },
     {
       "priority": 68,
@@ -444,7 +448,9 @@
       "requires": [
         "scoring_dynamic"
       ],
-      "excludes": []
+      "excludes": [
+        "scoring_context"
+      ]
     },
     {
       "id": "synth-todo-cleanup",

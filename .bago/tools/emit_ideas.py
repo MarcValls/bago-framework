@@ -243,22 +243,25 @@ def detect_implemented_features() -> dict[str, bool]:
     )
 
     return {
-        "handoff_w2":       (tools / "show_task.py").exists(),
-        "session_opener":   (tools / "session_opener.py").exists(),
-        "close_auto":       "_generate_close_artifact" in show_task_text and (tools / "session_close_generator.py").exists(),
-        "stability_cmd":    (ROOT / "stability-summary").exists() and (tools / "stability_summary.py").exists(),
+        "handoff_w2":        (tools / "show_task.py").exists(),
+        "session_opener":    (tools / "session_opener.py").exists(),
+        "close_auto":        "_generate_close_artifact" in show_task_text and (tools / "session_close_generator.py").exists(),
+        "stability_cmd":     (ROOT / "stability-summary").exists() and (tools / "stability_summary.py").exists(),
         "banner_shows_task": "_active_task" in banner_text,
-        "ideas_wrapper":    (ROOT / "ideas").exists(),
-        "gate_in_code":     True,  # siempre presente en emit_ideas.py
-        "readme_aligned":   bago_readme.exists() and "bago stability" in bago_readme.read_text(encoding="utf-8"),
-        "pending_task":     (state / "pending_w2_task.json").exists(),
-        "impl_registry":    (state / "implemented_ideas.json").exists(),
-        "scoring_dynamic":  "apply_dynamic_scoring" in emit_ideas_text,
-        "stable_reports":   stable_reports,
-        "baseline_clean":   global_state.get("baseline_status") == "active_clean_core",
-        "matrix_pass":      bool(matrix and matrix.get("status") == "pass"),
+        "banner_stale_alert": "stale_days" in banner_text and "sin cerrar" in banner_text,
+        "ideas_wrapper":     (ROOT / "ideas").exists(),
+        "gate_in_code":      True,
+        "readme_aligned":    bago_readme.exists() and "bago stability" in bago_readme.read_text(encoding="utf-8"),
+        "readme_flow_section": "ideas → implementación" in (ROOT / "README.md").read_text(encoding="utf-8") if (ROOT / "README.md").exists() else False,
+        "pending_task":      (state / "pending_w2_task.json").exists(),
+        "impl_registry":     (state / "implemented_ideas.json").exists(),
+        "scoring_dynamic":   "apply_dynamic_scoring" in emit_ideas_text,
+        "scoring_context":   "_load_state_signals" in emit_ideas_text,
+        "stable_reports":    stable_reports,
+        "baseline_clean":    global_state.get("baseline_status") == "active_clean_core",
+        "matrix_pass":       bool(matrix and matrix.get("status") == "pass"),
         "has_session_close": "cierre de sesión" in sections,
-        "repo_not_empty":   readme_lines > 0,
+        "repo_not_empty":    readme_lines > 0,
     }
 
 
