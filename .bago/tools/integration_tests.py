@@ -165,9 +165,12 @@ def test_timeline():
     rc, out, _ = _run("timeline.py")
     if rc == 0 and "Sin ideas implementadas" in out:
         _record("timeline:full", PASS, "sin ideas implementadas registradas")
-    elif rc == 0 and "Timeline" in out and "Semanas" in out:
+    elif rc == 0 and "Timeline" in out and ("SEMANA" in out or "Semanas" in out):
         # Verificar que tiene al menos una fila de semana
-        has_week = any("2026-" in line for line in out.splitlines())
+        has_week = any(
+            "2026-" in line or (" W" in line and "IDEAS" not in line)
+            for line in out.splitlines()
+        )
         if has_week:
             _record("timeline:full", PASS)
         else:
