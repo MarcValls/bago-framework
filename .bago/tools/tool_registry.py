@@ -305,6 +305,16 @@ REGISTRY: dict[str, ToolEntry] = {
         description="Auto-lanzamiento al insertar el pendrive (macOS/Linux/Windows/Android/iPad)",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_install.py"))],
     ),
+    "llm": ToolEntry(
+        cmd="llm", module="bago_llm",
+        description="Motor LLM local offline: modelos GGUF en pendrive via Ollama (macOS/Linux/Windows)",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_llm.py"))],
+    ),
+    "doctor": ToolEntry(
+        cmd="doctor", module="bago_doctor",
+        description="Diagnóstico completo del entorno BAGO: Python, Git, Ollama, modelo LLM, espacio",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_doctor.py"))],
+    ),
 }
 
 

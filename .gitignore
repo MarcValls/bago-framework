@@ -3,10 +3,30 @@ __pycache__/
 *.py[cod]
 *.pyo
 
-# macOS
+# macOS — metadatos del sistema (pendrive)
 .DS_Store
 .DS_Store?
 ._*
+.Spotlight-V100/
+.fseventsd/
+.Trashes/
+.VolumeIcon.icns
+
+# Windows — metadatos del sistema (pendrive)
+System\ Volume\ Information/
+$RECYCLE.BIN/
+autorun.inf
+Thumbs.db
+desktop.ini
+
+# BAGO — binarios Ollama (demasiado grandes para git, se regeneran con bago doctor --fix)
+.bago/bin/
+
+# BAGO — modelos LLM (pesos descargados, no se versionan)
+.bago/.models/
+
+# BAGO — runtime
+.bago/state/llm_server.pid
 
 # BAGO — session data (private)
 .bago/state/sessions/

@@ -1,5 +1,0 @@
-[autorun]
-label=BAGO
-icon=bago.ico
-open=BAGO.bat
-action=Iniciar BAGO Framework
