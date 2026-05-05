@@ -40,6 +40,7 @@ Repite el ciclo. No implementes sin consultar `bago ideas` primero.
 - No modifiques archivos fuera del scope del flujo activo en `global_state.json`
 - Cada commit debe tener mensaje descriptivo en español
 - Incluye siempre el trailer: `Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>`
+- **Documentación automática:** si tocas un comando, flujo o comportamiento documentado en README o BOOTSTRAP.md, actualiza esa documentación en el mismo commit. No es una idea separada — es parte de cada cambio.
 
 ---
 
