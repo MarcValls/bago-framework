@@ -45,7 +45,10 @@ for p in sorted(root.rglob("*")):
         continue
     if p.suffix.lower() not in {".md", ".json", ".txt", ".py"}:
         continue
-    text = p.read_text(encoding="utf-8")
+    try:
+        text = p.read_text(encoding="utf-8")
+    except (UnicodeDecodeError, ValueError):
+        continue  # skip non-UTF-8 files (e.g., UTF-16 captures)
     if legacy_re.search(text):
         print("KO")
         print(f"legacy 2.1 reference found outside migration/legacy: {rel}")
