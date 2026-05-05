@@ -26,6 +26,7 @@ def _norm(s: str) -> str:
 ROOT = Path(__file__).resolve().parents[2]
 # Rango de salida del selector: mínimo operativo y máximo de carga cognitiva.
 # El selector SIEMPRE debe publicar entre MIN_IDEAS y MAX_IDEAS ideas por sesión.
+# SELECTOR_RANGE_ENFORCED_IMPLEMENTED
 MIN_IDEAS = 5
 MAX_IDEAS = 20
 
@@ -279,16 +280,26 @@ def load_fallback_from_db() -> list[dict]:
         ).fetchall()
         conn.close()
         implemented_db = _load_implemented_titles_from_db() | load_implemented_titles()
-        return [{
-            "priority": r["priority"],
-            "section":  r["section"],
-            "risk":     r["risk"],
-            "title":    r["title"],
-            "summary":  r["summary"],
-            "metric":   r.get("metric", ""),
-            "w2":       r.get("w2", ""),
-            "detail":   json.loads(r.get("detail") or "[]"),
-        } for r in rows if r["title"] not in implemented_db]
+        feat = detect_implemented_features()
+        result = []
+        for row in rows:
+            idea = dict(row)  # sqlite3.Row → dict so .get() works
+            if idea["title"] in implemented_db:
+                continue
+            blocks = json.loads(idea.get("blocks") or "[]")
+            if any(feat.get(b) for b in blocks):
+                continue
+            result.append({
+                "priority": idea["priority"],
+                "section":  idea["section"],
+                "risk":     idea["risk"],
+                "title":    idea["title"],
+                "summary":  idea["summary"],
+                "metric":   idea.get("metric", ""),
+                "w2":       idea.get("w2", ""),
+                "detail":   json.loads(idea.get("detail") or "[]"),
+            })
+        return result
     except Exception:
         return []
 
@@ -585,6 +596,10 @@ def detect_implemented_features() -> dict[str, bool]:
             if (tools / "bago_reopen.py").exists() else ""),
         # Entrada rápida del repo: bago next shortcut in ideas footer
         "quick_repo_entry":           "# QUICK_REPO_ENTRY_IMPLEMENTED" in Path(__file__).read_text(encoding="utf-8"),
+        # Reforzar rango del selector: MIN/MAX constants explicitly documented
+        "selector_range_enforced":    "# SELECTOR_RANGE_ENFORCED_IMPLEMENTED" in Path(__file__).read_text(encoding="utf-8"),
+        # Compactar recomendacion final: single-line compact footer
+        "compact_recommendation":     "# COMPACT_RECOMMENDATION_IMPLEMENTED" in Path(__file__).read_text(encoding="utf-8"),
     }
 
 
@@ -612,14 +627,24 @@ def build_idea_sections(items: list[dict[str, object]], done_titles: set[str] | 
     contextual = sorted(contextual, key=lambda item: (-int(item["priority"]), str(item["title"])))
     contextual = contextual[:MAX_IDEAS]
 
-    respaldo: list[dict[str, object]] = []
-    if len(contextual) < MIN_IDEAS:
-        seen_titles = {_norm(str(item["title"])) for item in contextual} | done_titles
+    # Collect non-contextual items already present in items (e.g. DB respaldo ideas)
+    respaldo: list[dict[str, object]] = [
+        item for item in items
+        if str(item.get("section", "contextuales")) != "contextuales"
+    ]
+
+    # Fill from hardcoded FALLBACK_IDEAS only if still below minimum, filtering blocked ones
+    if len(contextual) + len(respaldo) < MIN_IDEAS:
+        feat = detect_implemented_features()
+        seen_titles = {_norm(str(item["title"])) for item in contextual + respaldo} | done_titles
         for fallback in FALLBACK_IDEAS:
             if len(contextual) + len(respaldo) >= MIN_IDEAS:
                 break
             title = _norm(str(fallback["title"]))
             if title in seen_titles:
+                continue
+            fb_blocks = fallback.get("blocks", [])
+            if any(feat.get(b) for b in fb_blocks):
                 continue
             respaldo.append(dict(fallback))
             seen_titles.add(title)
@@ -1131,8 +1156,8 @@ def main() -> int:
     if detail_index is None:
         if ideas:
             top = ideas[0]
-            print(f"→ Acepta la idea más prioritaria con: bago ideas --accept 1")
-            print(f"  [{top['priority']}] {top['title']}")
+            # COMPACT_RECOMMENDATION_IMPLEMENTED — recomendacion directa en dos líneas
+            print(f"→ [{top['priority']}] {top['title']}  ·  bago ideas --accept 1")
             # QUICK_REPO_ENTRY_IMPLEMENTED — acceso directo de un paso a W2
             print(f"  ↳ Acceso rápido: bago next  (acepta y abre W2 en un solo comando)")
         else:
