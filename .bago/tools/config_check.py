@@ -37,6 +37,7 @@ SCHEMAS: dict[str, list[str]] = {
     "preflight_rules.json":     ["version", "role_map"],
     "tool_catalog.json":        ["version", "tools"],
     "workflow_guidance.json":   ["version", "workflows"],
+    "contracts_config.json":    ["version", "checkers"],
 }
 
 # Config → script that consumes it (for orphan detection)
@@ -50,6 +51,7 @@ CONSUMERS: dict[str, str] = {
     "preflight_rules.json":     "session_preflight.py",
     "tool_catalog.json":        "tool_search.py",
     "workflow_guidance.json":   "inspect_workflow.py",
+    "contracts_config.json":    "contracts.py",
 }
 
 

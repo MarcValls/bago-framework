@@ -22,17 +22,42 @@ BAGO_ROOT      = Path(__file__).parent.parent
 CONTRACTS_DIR  = BAGO_ROOT / "state" / "contracts"
 CONTRACTS_DIR.mkdir(parents=True, exist_ok=True)
 TOOLS_DIR      = Path(__file__).parent
+CONFIG_FILE    = BAGO_ROOT / "state" / "config" / "contracts_config.json"
 
 BOLD="\033[1m"; DIM="\033[2m"; RESET="\033[0m"
 RED="\033[31m"; GREEN="\033[32m"; YELLOW="\033[33m"; CYAN="\033[36m"
 MAGENTA="\033[35m"
 
 
+# ─── Checker metadata (loaded from contracts_config.json) ─────────────────────
+
+def _load_checker_metadata() -> dict[str, dict]:
+    """Load checker metadata from contracts_config.json.
+
+    Returns a dict keyed by checker type with their description and param schemas.
+    Falls back to an empty dict — missing config never breaks contract evaluation.
+    """
+    try:
+        data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+        return {c["type"]: c for c in data.get("checkers", [])}
+    except Exception:
+        return {}
+
+
+CHECKER_METADATA: dict[str, dict] = _load_checker_metadata()
+
+
+def get_checker_default(checker_type: str, param: str):
+    """Return the default value for a param from checker metadata, or None."""
+    meta = CHECKER_METADATA.get(checker_type, {})
+    return meta.get("params", {}).get(param, {}).get("default")
+
+
 # ─── Condition checkers ───────────────────────────────────────────────────────
 
 def check_test_count(params: dict) -> tuple:
     """Run bago test and verify passing count >= min."""
-    min_pass = params.get("min", 1)
+    min_pass = params.get("min", get_checker_default("test_count", "min") or 1)
     try:
         r = subprocess.run(
             ["python3", str(TOOLS_DIR / "integration_tests.py")],
@@ -59,7 +84,7 @@ def check_file_exists(params: dict) -> tuple:
 
 def check_health_score(params: dict) -> tuple:
     """Run bago health and verify score >= min."""
-    min_score = params.get("min", 90)
+    min_score = params.get("min", get_checker_default("health_score", "min") or 90)
     try:
         r = subprocess.run(
             ["python3", "bago", "health"],
@@ -91,7 +116,7 @@ def check_validate_go(params: dict) -> tuple:
 
 def check_tools_count(params: dict) -> tuple:
     """Verify number of .py tools >= min."""
-    min_count = params.get("min", 80)
+    min_count = params.get("min", get_checker_default("tools_count", "min") or 80)
     count     = len(list(TOOLS_DIR.glob("*.py")))
     return count >= min_count, f"{count} tools (requiere ≥{min_count})"
 
@@ -102,7 +127,7 @@ def check_routing_count(params: dict) -> tuple:
     Prefers importing from tool_registry.py (single source of truth).
     Falls back to AST-parsing the bago script if tool_registry is unavailable.
     """
-    min_count = params.get("min", 10)
+    min_count = params.get("min", get_checker_default("routing_count", "min") or 10)
 
     # ── Primary: load from tool_registry (single source of truth) ────────────
     import importlib.util as _ilu
@@ -217,7 +242,7 @@ def check_sprint_open(params: dict) -> tuple:
 
 def check_chg_count(params: dict) -> tuple:
     """Verify number of CHG files >= min."""
-    min_count = params.get("min", 77)
+    min_count = params.get("min", get_checker_default("chg_count", "min") or 77)
     changes_dir = BAGO_ROOT / "state" / "changes"
     count = len(list(changes_dir.glob("*.json")))
     return count >= min_count, f"{count} CHG registrados (requiere ≥{min_count})"
@@ -255,7 +280,10 @@ def evaluate_contract(contract: dict) -> dict:
     for cond in contract.get("conditions", []):
         checker = CHECKERS.get(cond["type"])
         if checker is None:
-            results.append({**cond, "passed": False, "detail": f"checker '{cond['type']}' no encontrado"})
+            known = list(CHECKER_METADATA.keys()) or list(CHECKERS.keys())
+            hint  = f" Tipos disponibles: {known}" if known else ""
+            results.append({**cond, "passed": False,
+                             "detail": f"checker '{cond['type']}' no encontrado.{hint}"})
             continue
         try:
             passed, detail = checker(cond.get("params", {}))
@@ -474,10 +502,32 @@ def run_tests():
     if errors: raise SystemExit(1)
 
 
+def cmd_checkers():
+    """List available checker types loaded from contracts_config.json."""
+    if not CHECKER_METADATA:
+        print("  (contracts_config.json no cargado — usando solo CHECKERS de Python)")
+        for t in sorted(CHECKERS.keys()):
+            print(f"    {CYAN}{t}{RESET}")
+        return
+    print(f"\n  {BOLD}Checker types disponibles ({len(CHECKER_METADATA)}){RESET}")
+    print(f"  {DIM}Fuente: {CONFIG_FILE}{RESET}\n")
+    for t, meta in sorted(CHECKER_METADATA.items()):
+        params = meta.get("params", {})
+        param_str = ", ".join(
+            f"{k}={v.get('default','?')}" for k, v in params.items()
+        ) if params else "—"
+        in_py = "✅" if t in CHECKERS else "⚠️ "
+        print(f"  {in_py} {CYAN}{t}{RESET}")
+        print(f"     {meta.get('description', '')}")
+        if params:
+            print(f"     {DIM}params: {param_str}{RESET}")
+    print()
+
+
 def main():
     p = argparse.ArgumentParser(prog="bago contract")
     p.add_argument("subcmd", nargs="?", default="status",
-                   choices=["list","check","status"])
+                   choices=["list","check","status","checkers"])
     p.add_argument("contract_id", nargs="?", default=None)
     p.add_argument("--verbose", "-v", action="store_true")
     p.add_argument("--test", action="store_true")
@@ -490,6 +540,8 @@ def main():
         cmd_list()
     elif args.subcmd == "check":
         cmd_check(args.contract_id, args.verbose)
+    elif args.subcmd == "checkers":
+        cmd_checkers()
     else:
         cmd_status()
 
