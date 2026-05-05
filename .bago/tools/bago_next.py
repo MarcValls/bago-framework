@@ -113,7 +113,30 @@ def _start_flow(idea: dict) -> bool:
         return False
 
 
-# ─── Main ─────────────────────────────────────────────────────────────────────
+def _run_code_quality() -> None:
+    """Ejecuta bago code-quality como paso de preparación del ciclo W2.
+    # AGENT_DELEGATION_LOOP_IMPLEMENTED
+    """
+    import subprocess
+    bago_bin = BAGO_ROOT.parent / "bago"
+    target = str(BAGO_ROOT / "tools")
+    print(f"  {DIM('── Análisis previo de calidad ───────────────')}")
+    result = subprocess.run(
+        [sys.executable, str(bago_bin), "code-quality", target],
+        capture_output=True, text=True
+    )
+    # Prefer the final "Análisis completado" total line, fallback to first "hallazgo" line
+    lines = [l for l in (result.stdout + result.stderr).splitlines() if l.strip()]
+    summary = next(
+        (l.strip() for l in reversed(lines) if "Total:" in l),
+        next((l.strip() for l in lines if "hallazgo" in l), lines[-1] if lines else "sin salida")
+    )
+    status = GREEN("✓") if result.returncode == 0 else BOLD("⚠")
+    print(f"  {status} code-quality: {summary}")
+    print()
+
+
+
 
 def main() -> int:
     auto = "--auto" in sys.argv
@@ -157,7 +180,8 @@ def main() -> int:
     if not _start_flow(idea):
         return 1
 
-    print()
+    _run_code_quality()
+
     print(f"  {GREEN('✅')} {BOLD('Tarea iniciada:')} {idea.get('title', '—')}")
     print(f"  {DIM('Flujo W2 activo.')}")
     print()

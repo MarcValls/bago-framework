@@ -600,6 +600,10 @@ def detect_implemented_features() -> dict[str, bool]:
         "selector_range_enforced":    "# SELECTOR_RANGE_ENFORCED_IMPLEMENTED" in Path(__file__).read_text(encoding="utf-8"),
         # Compactar recomendacion final: single-line compact footer
         "compact_recommendation":     "# COMPACT_RECOMMENDATION_IMPLEMENTED" in Path(__file__).read_text(encoding="utf-8"),
+        # Delegar análisis a agentes en ciclo W2: code-quality in bago_next.py
+        "agent_delegation_loop":      "# AGENT_DELEGATION_LOOP_IMPLEMENTED" in (
+            (tools / "bago_next.py").read_text(encoding="utf-8")
+            if (tools / "bago_next.py").exists() else ""),
     }
 
 

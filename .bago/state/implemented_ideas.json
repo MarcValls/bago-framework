@@ -92,6 +92,11 @@
       "session_close": "SESSION_CLOSE_20260505_094258.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
       "objetivo": "Conectar ideas con README y WF para que la primera decisión del usuario vaya a una acción concreta sin leer toda la canonica."
+    },
+    {
+      "title": "Delegar análisis a agentes en ciclo W2",
+      "session": "autopilot",
+      "date": "2026-05-05T09:57:12.021623+00:00"
     }
   ],
   "last_updated": "2026-05-05T09:42:58.603859+00:00"

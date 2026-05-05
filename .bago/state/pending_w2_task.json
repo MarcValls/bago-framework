@@ -1,9 +1,9 @@
 {
   "idea_index": 1,
-  "idea_title": "Entrada rápida del repo",
-  "priority": 86,
+  "idea_title": "Verificar cabinet al cerrar tarea",
+  "priority": 79,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-  "objetivo": "Conectar ideas con README y WF para que la primera decisión del usuario vaya a una acción concreta sin leer toda la canonica.",
+  "objetivo": "bago task --done muestra resumen del cabinet antes de cerrar.",
   "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
@@ -11,16 +11,13 @@
   ],
   "validacion_minima": [
     "La salida debe explicar el cambio, los archivos y la verificación mínima.",
-    "Métrica objetivo: La primera decisión del usuario llega a una acción en un paso."
+    "Métrica objetivo: bago task --done muestra resultado del cabinet al cerrar."
   ],
-  "siguiente_paso": "Promover la idea seleccionada a una tarea corta y directa.",
-  "metric": "La primera decisión del usuario llega a una acción en un paso.",
+  "siguiente_paso": "Añadir bago cabinet como paso de verificación en show_task.py --done.",
+  "metric": "bago task --done muestra resultado del cabinet al cerrar.",
   "contexto": [
-    "Entrada: comandos cortos y selector de workflows.",
-    "Salida: menos fricción para abrir ideas o W2.",
-    "Ventaja: mejora la usabilidad diaria del repo."
+    "Llamar a cabinet_orchestrator en el flujo de cierre."
   ],
-  "status": "done",
-  "accepted_at": "2026-05-05T09:40:53.344649+00:00",
-  "done_at": "2026-05-05T09:42:58.573785+00:00"
+  "status": "pending",
+  "accepted_at": "2026-05-05T09:56:55.569820+00:00"
 }
