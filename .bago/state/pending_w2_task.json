@@ -15,12 +15,8 @@
   ],
   "siguiente_paso": "Extender show_task.py --done para llamar al generador de cierre de sesión.",
   "metric": "bago task --done genera y guarda automáticamente el artefacto de cierre de sesión.",
-  "contexto": [
-    "Entrada: tarea W2 completada (pending_w2_task.json con status=done).",
-    "Salida: artefacto de cierre con resumen, CHG/EVD generados y estado actualizado.",
-    "Ventaja: elimina el paso manual de redactar el cierre después de implementar."
-  ],
+  "contexto": [],
   "status": "done",
-  "accepted_at": "2026-04-28T10:32:56.056866+00:00",
-  "done_at": "2026-04-30T15:40:59.618364+00:00"
+  "accepted_at": "2026-05-05T08:54:26.646026+00:00",
+  "done_at": "2026-05-05T08:55:54.898655+00:00"
 }

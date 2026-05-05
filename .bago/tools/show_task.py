@@ -17,11 +17,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT            = Path(__file__).resolve().parents[2]
-TASK_FILE       = ROOT / ".bago" / "state" / "pending_w2_task.json"
+ROOT             = Path(__file__).resolve().parents[2]
+TASK_FILE        = ROOT / ".bago" / "state" / "pending_w2_task.json"
 IMPLEMENTED_FILE = ROOT / ".bago" / "state" / "implemented_ideas.json"
-DB_PATH         = ROOT / ".bago" / "state" / "bago.db"
-CLOSE_DIR       = ROOT / ".bago" / "state"
+DB_PATH          = ROOT / ".bago" / "state" / "bago.db"
 
 
 def _load() -> dict | None:
@@ -114,87 +113,16 @@ def _register_implemented(task: dict) -> None:
         pass
 
 
-def _load_implemented_summary() -> str:
-    """Devuelve un resumen en Markdown de las ideas ya implementadas."""
-    try:
-        if IMPLEMENTED_FILE.exists():
-            data = json.loads(IMPLEMENTED_FILE.read_text(encoding="utf-8"))
-            entries = data.get("implemented") or []
-            if entries:
-                lines = [f"- {e.get('title', '—')} ({e.get('done_at', '')[:10]})" for e in entries]
-                return "\n".join(lines)
-    except Exception:
-        pass
-    return "- (sin registro de ideas previas)"
-
-
-def _get_git_recent_changes() -> str:
-    """Devuelve los archivos cambiados recientemente según git."""
-    try:
-        import subprocess
-        result = subprocess.run(
-            ["git", "diff", "--name-only", "HEAD~3", "HEAD"],
-            capture_output=True, text=True, cwd=str(ROOT), timeout=5
-        )
-        if result.returncode == 0 and result.stdout.strip():
-            files = result.stdout.strip().splitlines()[:10]
-            return "\n".join(f"- `{f}`" for f in files)
-    except Exception:
-        pass
-    return "- (git no disponible)"
-
 
 def _generate_session_close(task: dict) -> Path | None:
-    """Genera el artefacto de cierre de sesión en .bago/state/."""
+    """Delega al generador dedicado session_close_generator.generate()."""
     try:
-        now      = datetime.now(timezone.utc)
-        ts       = now.strftime("%Y%m%d_%H%M%S")
-        title    = task.get("title") or task.get("idea_title", "tarea")
-        objetivo = task.get("objetivo", "—")
-        alcance  = task.get("alcance",  "—")
-        metric   = task.get("validacion") or task.get("metric", "—")
-        archivos = task.get("archivos") or task.get("archivos_candidatos", [])
-        slot     = task.get("slot")
-        gen      = task.get("generation")
-        accepted_at = task.get("accepted_at", "—")
-        done_at     = task.get("done_at", now.isoformat())
-
-        slot_label = f"SLOT {slot} GEN {gen}" if slot else "sin-slot"
-        archivos_md = "\n".join(f"- `{f}`" for f in archivos) if archivos else "- (no especificados)"
-        impl_summary = _load_implemented_summary()
-        git_changes = _get_git_recent_changes()
-
-        md = f"""# Cierre de sesión — {title}
-
-**Fecha inicio** : {accepted_at[:19].replace('T', ' ')} UTC
-**Fecha cierre** : {done_at[:19].replace('T', ' ')} UTC
-**Idea**         : {slot_label}
-**Estado**       : ✅ COMPLETADA
-
-## Objetivo
-{objetivo}
-
-## Alcance implementado
-{alcance}
-
-## Archivos candidatos
-{archivos_md}
-
-## Cambios recientes en git
-{git_changes}
-
-## Métrica de aceptación
-{metric}
-
-## Historial de ideas implementadas en esta sesión
-{impl_summary}
-
-## Notas
-Artefacto generado automáticamente por `bago task --done`.
-"""
-        out_path = CLOSE_DIR / f"session_close_{ts}.md"
-        out_path.write_text(md, encoding="utf-8")
-        return out_path
+        import importlib.util
+        gen_path = Path(__file__).parent / "session_close_generator.py"
+        spec = importlib.util.spec_from_file_location("session_close_generator", gen_path)
+        mod  = importlib.util.module_from_spec(spec)      # type: ignore[arg-type]
+        spec.loader.exec_module(mod)                       # type: ignore[union-attr]
+        return mod.generate(task=task)
     except Exception:
         return None
 
@@ -204,7 +132,8 @@ def _reopen_from_continuity() -> int:
     Muestra el artefacto de la última sesión cerrada para retomar el contexto.
     Ayuda a reactivar la sesión sin reconstruir contexto manualmente.
     """
-    close_files = sorted(CLOSE_DIR.glob("session_close_*.md"), reverse=True)
+    sessions_dir = ROOT / ".bago" / "state" / "sessions"
+    close_files  = sorted(sessions_dir.glob("SESSION_CLOSE_*.md"), reverse=True)
     if not close_files:
         print()
         print("  ℹ  No hay artefactos de cierre previos.")
@@ -218,7 +147,6 @@ def _reopen_from_continuity() -> int:
     print(f"  │  🔄  Continuidad desde: {last.name[:46]}  │")
     print("  └──────────────────────────────────────────────────────────┘")
     print()
-    # Mostrar contenido del artefacto
     try:
         content = last.read_text(encoding="utf-8")
         for line in content.splitlines():
@@ -227,7 +155,7 @@ def _reopen_from_continuity() -> int:
         print(f"  ⚠  No se pudo leer el artefacto: {e}")
     print()
     if len(close_files) > 1:
-        print(f"  📂  {len(close_files)} artefactos disponibles en .bago/state/")
+        print(f"  📂  {len(close_files)} artefactos disponibles en .bago/state/sessions/")
     print("  💡  Acepta una nueva idea con: bago ideas --accept N")
     print()
     return 0

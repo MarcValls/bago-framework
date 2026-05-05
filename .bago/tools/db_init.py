@@ -83,8 +83,8 @@ CREATE TABLE IF NOT EXISTS implemented_ideas (
     id          TEXT PRIMARY KEY,
     idea_id     TEXT,
     idea_title  TEXT,
-    session_id  TEXT    REFERENCES sessions(id),
-    implemented_at TEXT DEFAULT (datetime('now'))
+    session_id  TEXT,
+    implemented_at TEXT
 );
 """
 

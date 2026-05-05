@@ -1,5 +1,5 @@
 {
-  "ideas_completed": [
+  "implemented": [
     {
       "id": null,
       "title": "—",
@@ -7,8 +7,23 @@
       "session_close": "SESSION_CLOSE_20260505_002535.md",
       "workflow": "—",
       "objetivo": "—"
+    },
+    {
+      "title": "Cierre automático de sesión",
+      "slot": null,
+      "done_at": "2026-05-05T08:55:54.908797+00:00"
     }
   ],
-  "last_updated": "2026-05-05T00:25:35.723168+00:00",
-  "_note": "Populated by 'bago task --done'. Each entry is a registered improvement with id, title, date and evidence reference."
+  "updated_at": "2026-05-05T08:55:54.908797+00:00",
+  "ideas_completed": [
+    {
+      "id": null,
+      "title": "Cierre automático de sesión",
+      "date": "2026-05-05T08:55:54.950838+00:00",
+      "session_close": "SESSION_CLOSE_20260505_085554.md",
+      "workflow": "W2_IMPLEMENTACION_CONTROLADA",
+      "objetivo": "Al marcar la tarea como done, generar automáticamente el artefacto de cierre con resumen de cambios y evidencias."
+    }
+  ],
+  "last_updated": "2026-05-05T08:55:54.950863+00:00"
 }

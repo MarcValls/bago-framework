@@ -75,7 +75,7 @@ def load_ideas_from_db(feat: dict, extra_flags: dict) -> list[dict] | None:
     except Exception:
         return None
 
-    implemented_db = _load_implemented_titles_from_db()
+    implemented_db = _load_implemented_titles_from_db() | load_implemented_titles()
 
     slot_seen: set[int] = set()
     result: list[dict] = []
@@ -226,7 +226,7 @@ def load_fallback_from_db() -> list[dict]:
             "SELECT * FROM ideas WHERE slot IS NULL ORDER BY priority DESC"
         ).fetchall()
         conn.close()
-        implemented_db = _load_implemented_titles_from_db()
+        implemented_db = _load_implemented_titles_from_db() | load_implemented_titles()
         return [{
             "priority": r["priority"],
             "section":  r["section"],
