@@ -24,7 +24,7 @@
     "last_commit_sha": "96b8d56",
     "last_commit_date": "2026-05-05T09:47:43+02:00",
     "last_commit_msg": "fix(validate_pack): saltar archivos no-UTF-8 (captures UTF-16 de pktmon)",
-    "session_closes": 5
+    "session_closes": 3
   },
   "last_validation": {
     "date": "2026-05-05T08:20:28Z",
@@ -66,7 +66,7 @@
     ]
   },
   "notes": "2026-05-05: reparación total del core: bago status funciona, integration_tests no referencia funciones/tools ausentes, COMMANDS operativos salen de tool_registry, sincerity queda estricto en 0/0 y stability distingue sandbox opcional como SKIP.",
-  "updated_at": "2026-05-05T08:20:28Z",
+  "updated_at": "2026-05-05T09:29:33.812420+00:00",
   "bago_knowledge": {
     "sequences_catalog": ".bago/knowledge/sequences_catalog.md",
     "sequences_count": 10,

@@ -56,18 +56,23 @@
       "title": "Estado del catálogo en stability",
       "slot": null,
       "done_at": "2026-05-05T09:28:17.835693+00:00"
+    },
+    {
+      "title": "Modo compacto del banner",
+      "slot": null,
+      "done_at": "2026-05-05T09:29:45.697850+00:00"
     }
   ],
-  "updated_at": "2026-05-05T09:28:17.835693+00:00",
+  "updated_at": "2026-05-05T09:29:45.697850+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "Estado del catálogo en stability",
-      "date": "2026-05-05T09:28:17.860695+00:00",
-      "session_close": "SESSION_CLOSE_20260505_092817.md",
+      "title": "Modo compacto del banner",
+      "date": "2026-05-05T09:29:45.737468+00:00",
+      "session_close": "SESSION_CLOSE_20260505_092945.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "Añadir un bloque de salud del catálogo de ideas al informe de stability, mostrando cuántas ideas quedan disponibles."
+      "objetivo": "Hacer que 'bago --mini' muestre solo la línea de estado con health + ideas en formato compacto."
     }
   ],
-  "last_updated": "2026-05-05T09:28:17.860730+00:00"
+  "last_updated": "2026-05-05T09:29:45.737496+00:00"
 }

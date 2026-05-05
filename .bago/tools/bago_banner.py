@@ -267,6 +267,7 @@ def _print_quick_action(active_task) -> None:
 # ─── Render ───────────────────────────────────────────────────────────────────
 
 def print_banner(mini=False):
+    # # BANNER_COMPACT_MODE_IMPLEMENTED
     version        = _pack_version()
     pack_ok, reason = _validate()
     ses            = _sync_session_count()   # sincroniza y lee el conteo real
@@ -279,6 +280,20 @@ def print_banner(mini=False):
     n_impl, n_total = _progress_counter()
     health_icon, health_pts = _health_score()
     now_str = datetime.now().strftime("%Y-%m-%d  %H:%M")
+
+    if mini:
+        status_icon = "✅" if pack_ok else "❌"
+        task_str = ""
+        if active_task is not None:
+            title, tstatus, stale_days = active_task
+            stale = stale_days is not None and stale_days >= 3 and tstatus != "done"
+            t_icon = "✅" if tstatus == "done" else ("⚠️" if stale else "⏳")
+            task_str = f"  {t_icon} {title[:40]}"
+        ideas_str = f"ideas: {n_impl}/{n_total}" if n_total > 0 else "ideas: —"
+        print()
+        print(f"  {BOLD('BAGO')} {DIM(f'v{version}')}  {status_icon}  {health_icon} {BOLD(str(health_pts))}{DIM('pts')}  {DIM(ideas_str)}{task_str}")
+        print()
+        return
 
     print()
     print(TOP)

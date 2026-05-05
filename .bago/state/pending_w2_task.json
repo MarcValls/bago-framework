@@ -1,9 +1,9 @@
 {
   "idea_index": 1,
-  "idea_title": "Estado del catálogo en stability",
-  "priority": 86,
+  "idea_title": "Modo compacto del banner",
+  "priority": 84,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-  "objetivo": "Añadir un bloque de salud del catálogo de ideas al informe de stability, mostrando cuántas ideas quedan disponibles.",
+  "objetivo": "Hacer que 'bago --mini' muestre solo la línea de estado con health + ideas en formato compacto.",
   "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
@@ -11,16 +11,16 @@
   ],
   "validacion_minima": [
     "La salida debe explicar el cambio, los archivos y la verificación mínima.",
-    "Métrica objetivo: bago stability incluye estado del catálogo: ideas disponibles y porcentaje implementado."
+    "Métrica objetivo: El modo '--mini' del banner muestra health + ideas en una sola línea compacta."
   ],
-  "siguiente_paso": "Añadir función catalog_status() en stability_summary.py que lea DB e implemented_ideas.json.",
-  "metric": "bago stability incluye estado del catálogo: ideas disponibles y porcentaje implementado.",
+  "siguiente_paso": "Modificar print_banner(mini=True) en bago_banner.py para emitir una línea compacta con health + ideas. Agregar sentinel # BANNER_COMPACT_MODE_IMPLEMENTED.",
+  "metric": "El modo '--mini' del banner muestra health + ideas en una sola línea compacta.",
   "contexto": [
-    "Entrada: bago.db con ideas disponibles + implemented_ideas.json.",
-    "Salida: sección 'catálogo' en stability con N ideas disponibles / M implementadas.",
-    "Ventaja: incluye la salud del pipeline de ideas dentro del informe de estabilidad."
+    "Entrada: health score + n_impl/n_total.",
+    "Salida: 'BAGO v2.5 | 🟢 80 | 22/35 ideas | 2026-04-30'.",
+    "Ventaja: vista rápida sin salida de pantalla completa."
   ],
   "status": "done",
-  "accepted_at": "2026-05-05T09:27:27.804650+00:00",
-  "done_at": "2026-05-05T09:28:17.832173+00:00"
+  "accepted_at": "2026-05-05T09:29:02.408766+00:00",
+  "done_at": "2026-05-05T09:29:45.689767+00:00"
 }
