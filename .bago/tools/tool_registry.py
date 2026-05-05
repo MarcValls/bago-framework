@@ -300,6 +300,11 @@ REGISTRY: dict[str, ToolEntry] = {
         description="Estado actual: flujo activo, tarea pendiente y salud del sistema",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "flow.py"))],
     ),
+    "install": ToolEntry(
+        cmd="install", module="bago_install",
+        description="Auto-lanzamiento al insertar el pendrive (macOS/Linux/Windows/Android/iPad)",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_install.py"))],
+    ),
 }
 
 
