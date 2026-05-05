@@ -1,6 +1,5 @@
-; autorun.inf — Windows: icono y etiqueta del pendrive BAGO
-; AutoPlay está desactivado en Windows 7+ pero esto da nombre e icono al volumen.
 [autorun]
-label=BAGO Framework
+label=BAGO
+icon=bago.ico
 open=BAGO.bat
 action=Iniciar BAGO Framework
