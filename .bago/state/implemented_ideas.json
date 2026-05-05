@@ -66,18 +66,23 @@
       "title": "Resumen de sprint en stability",
       "slot": null,
       "done_at": "2026-05-05T09:32:30.092316+00:00"
+    },
+    {
+      "title": "Enlace a informe de ideas en dashboard",
+      "slot": null,
+      "done_at": "2026-05-05T09:34:12.347127+00:00"
     }
   ],
-  "updated_at": "2026-05-05T09:32:30.092316+00:00",
+  "updated_at": "2026-05-05T09:34:12.347127+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "Resumen de sprint en stability",
-      "date": "2026-05-05T09:32:30.119957+00:00",
-      "session_close": "SESSION_CLOSE_20260505_093230.md",
+      "title": "Enlace a informe de ideas en dashboard",
+      "date": "2026-05-05T09:34:12.375975+00:00",
+      "session_close": "SESSION_CLOSE_20260505_093412.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "Añadir un bloque de sprint al informe de stability: ideas completadas, velocidad y health score actuales."
+      "objetivo": "Añadir al dashboard una fila que indique si existe state/ideas_report.md y cuándo fue generado."
     }
   ],
-  "last_updated": "2026-05-05T09:32:30.119985+00:00"
+  "last_updated": "2026-05-05T09:34:12.375999+00:00"
 }

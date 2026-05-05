@@ -83,6 +83,23 @@ def _sprint_velocity_avg() -> tuple[float, int]:
     return round(sum(velocities) / len(velocities), 1), len(velocities)
 
 
+def _ideas_report_link() -> tuple[bool, str]:
+    """Devuelve (existe, fecha_generado) del ideas_report.md.
+    # DASHBOARD_EXPORT_LINK_IMPLEMENTED
+    """
+    import re
+    report = STATE / "ideas_report.md"
+    if not report.exists():
+        return False, ""
+    try:
+        text = report.read_text(encoding="utf-8")
+        m = re.search(r"Generado:\s+(\S+)", text)
+        date = m.group(1)[:10] if m else "?"
+        return True, date
+    except Exception:
+        return True, "?"
+
+
 def _context_detector():
     """Ejecuta context_detector y devuelve (verdict, score, threshold, n_signals)."""
     detector = TOOLS / "context_detector.py"
@@ -157,6 +174,7 @@ def main():
     verdict, score, threshold, n_signals = _context_detector()
     e003_n, e003_dec, e003_art = _escenario_003_stats()
     vel_avg, vel_n = _sprint_velocity_avg()
+    report_exists, report_date = _ideas_report_link()
 
     on_avg  = round(on_u  / on_n,  1) if on_n  else 0
     off_avg = round(off_u / off_n, 1) if off_n else 0
@@ -209,6 +227,9 @@ def main():
         date  = (idea.get("done_at") or "")[:10] or "—"
         row   = f"    · {title}  {date}"
         print(f"║{row:<54}║")
+    if report_exists:
+        report_row = f"  Informe ideas:  state/ideas_report.md  ({report_date})"
+        print(f"║{report_row:<54}║")
     print("╠══════════════════════════════════════════════════════╣")
     lc = g.get("last_completed_session_id", "—")
     print(f"║  Última sesión: {lc:<37}║")
