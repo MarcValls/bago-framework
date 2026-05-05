@@ -161,6 +161,30 @@ def _reopen_from_continuity() -> int:
     return 0
 
 
+def _run_cabinet_check() -> None:
+    """Ejecuta bago cabinet como verificación de salud al cerrar tarea."""
+    import subprocess
+    bago_bin = ROOT / "bago"
+    print("  ── Verificación de salud (cabinet) ─────────────────────────")
+    result = subprocess.run(
+        [sys.executable, str(bago_bin), "cabinet"],
+        capture_output=True, text=True
+    )
+    lines = [l for l in (result.stdout + result.stderr).splitlines() if l.strip()]
+    errors   = sum(1 for l in lines if "ERROR" in l and l.strip().startswith("ERROR"))
+    warns    = sum(1 for l in lines if "WARN"  in l and l.strip().startswith("WARN"))
+    # Prefer the summary "ERROR = N" line
+    err_line = next((l.strip() for l in lines if "ERROR =" in l), None)
+    if err_line:
+        status = "✓" if result.returncode == 0 else "⚠"
+        print(f"  {status} cabinet: {err_line}")
+    else:
+        status = "✓" if result.returncode == 0 else "⚠"
+        print(f"  {status} cabinet: {'OK' if result.returncode == 0 else 'revisa la salida'}")
+    print()
+
+
+
 def main() -> int:
     args = sys.argv[1:]
     clear  = "--clear"  in args
@@ -196,6 +220,8 @@ def main() -> int:
         if close_path:
             print(f"  📄 Artefacto de cierre: {close_path.relative_to(ROOT)}")
         _display(task)
+        # ── Verificación de cabinet antes de continuar ── # CABINET_ON_CLOSE_IMPLEMENTED
+        _run_cabinet_check()
         # ── Recordatorio de cosecha ──────────────────────────────────────────
         print("  ┌──────────────────────────────────────────────────────────┐")
         print("  │  🌾  Siguiente paso recomendado:                          │")

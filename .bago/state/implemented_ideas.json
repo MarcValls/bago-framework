@@ -81,23 +81,28 @@
       "title": "Entrada rápida del repo",
       "slot": null,
       "done_at": "2026-05-05T09:42:58.581552+00:00"
+    },
+    {
+      "title": "Verificar cabinet al cerrar tarea",
+      "slot": null,
+      "done_at": "2026-05-05T09:58:49.605874+00:00"
     }
   ],
-  "updated_at": "2026-05-05T09:42:58.581552+00:00",
+  "updated_at": "2026-05-05T09:58:49.605874+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "Entrada rápida del repo",
-      "date": "2026-05-05T09:42:58.603839+00:00",
-      "session_close": "SESSION_CLOSE_20260505_094258.md",
+      "title": "Verificar cabinet al cerrar tarea",
+      "date": "2026-05-05T09:58:49.634750+00:00",
+      "session_close": "SESSION_CLOSE_20260505_095849.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "Conectar ideas con README y WF para que la primera decisión del usuario vaya a una acción concreta sin leer toda la canonica."
+      "objetivo": "bago task --done muestra resumen del cabinet antes de cerrar."
     },
     {
-      "title": "Delegar análisis a agentes en ciclo W2",
+      "title": "Verificar cabinet al cerrar tarea",
       "session": "autopilot",
-      "date": "2026-05-05T09:57:12.021623+00:00"
+      "date": "2026-05-05T09:58:57.077077+00:00"
     }
   ],
-  "last_updated": "2026-05-05T09:42:58.603859+00:00"
+  "last_updated": "2026-05-05T09:58:49.634775+00:00"
 }

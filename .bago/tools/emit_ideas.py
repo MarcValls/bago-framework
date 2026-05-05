@@ -604,6 +604,10 @@ def detect_implemented_features() -> dict[str, bool]:
         "agent_delegation_loop":      "# AGENT_DELEGATION_LOOP_IMPLEMENTED" in (
             (tools / "bago_next.py").read_text(encoding="utf-8")
             if (tools / "bago_next.py").exists() else ""),
+        # Verificar cabinet al cerrar tarea: cabinet check in show_task.py --done
+        "cabinet_on_close":           "# CABINET_ON_CLOSE_IMPLEMENTED" in (
+            (tools / "show_task.py").read_text(encoding="utf-8")
+            if (tools / "show_task.py").exists() else ""),
     }
 
 

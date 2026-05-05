@@ -18,6 +18,7 @@
   "contexto": [
     "Llamar a cabinet_orchestrator en el flujo de cierre."
   ],
-  "status": "pending",
-  "accepted_at": "2026-05-05T09:56:55.569820+00:00"
+  "status": "done",
+  "accepted_at": "2026-05-05T09:56:55.569820+00:00",
+  "done_at": "2026-05-05T09:58:49.599472+00:00"
 }
