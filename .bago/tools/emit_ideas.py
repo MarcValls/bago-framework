@@ -579,6 +579,10 @@ def detect_implemented_features() -> dict[str, bool]:
         "readme_flow_section":        "W2" in (
             (ROOT / ".bago" / "README.md").read_text(encoding="utf-8")
             if (ROOT / ".bago" / "README.md").exists() else ""),
+        # Reabrir desde continuidad: bago reopen command
+        "reopen_from_continuity":     "# REOPEN_FROM_CONTINUITY_IMPLEMENTED" in (
+            (tools / "bago_reopen.py").read_text(encoding="utf-8")
+            if (tools / "bago_reopen.py").exists() else ""),
     }
 
 

@@ -256,6 +256,11 @@ REGISTRY: dict[str, ToolEntry] = {
         description="Genera el informe de cierre de sesion BAGO",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "session_close_generator.py"))],
     ),
+    "reopen": ToolEntry(
+        cmd="reopen", module="bago_reopen",
+        description="Reanuda sesión desde el último cierre sin reconstruir contexto manualmente",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_reopen.py"))],
+    ),
     "image_gen": ToolEntry(
         cmd="image_gen", module="image_gen",
         description="Generador de imagenes PNG local sin API",
