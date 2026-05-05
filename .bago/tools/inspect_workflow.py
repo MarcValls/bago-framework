@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import argparse
+import json
 import re
 import sys
 
@@ -15,7 +16,17 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKFLOWS_DIR = ROOT / ".bago/workflows"
 
 
-WORKFLOW_GUIDANCE = {
+def _load_workflow_guidance() -> dict:
+    """Load WORKFLOW_GUIDANCE from workflow_guidance.json; fall back to hardcoded dict on error."""
+    try:
+        cfg_path = ROOT / ".bago" / "state" / "config" / "workflow_guidance.json"
+        data = json.loads(cfg_path.read_text(encoding="utf-8"))
+        return data.get("workflows", _WORKFLOW_GUIDANCE_FALLBACK)
+    except Exception:
+        return _WORKFLOW_GUIDANCE_FALLBACK
+
+
+_WORKFLOW_GUIDANCE_FALLBACK = {
     "W1": {
         "purpose": "Arrancar desde un repo desconocido y dejar un contexto util.",
         "context": [
@@ -136,6 +147,8 @@ WORKFLOW_GUIDANCE = {
     },
 }
 
+WORKFLOW_GUIDANCE = _load_workflow_guidance()
+
 
 def read_workflow(workflow_name: str) -> Path:
     path = next(WORKFLOWS_DIR.glob(f"{workflow_name}_*.md"), None)
@@ -192,10 +205,14 @@ def main(argv: list[str]) -> int:
 
 
 def _self_test():
-    """Autotest mínimo — verifica arranque limpio del módulo."""
+    """Autotest — verifica arranque limpio y carga del catálogo."""
     from pathlib import Path as _P
     assert _P(__file__).exists(), "fichero no encontrado"
-    print("  1/1 tests pasaron")
+    assert isinstance(WORKFLOW_GUIDANCE, dict), "WORKFLOW_GUIDANCE no es dict"
+    assert len(WORKFLOW_GUIDANCE) >= 6, f"esperados >=6 workflows, got {len(WORKFLOW_GUIDANCE)}"
+    for wid in ("W1", "W2", "W3", "W4", "W5", "W6"):
+        assert wid in WORKFLOW_GUIDANCE, f"{wid} no encontrado en WORKFLOW_GUIDANCE"
+    print(f"  3/3 tests pasaron ({len(WORKFLOW_GUIDANCE)} workflows cargados)")
 
 if __name__ == "__main__":
     if "--test" in sys.argv:

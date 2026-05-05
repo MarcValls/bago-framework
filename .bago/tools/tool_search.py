@@ -23,7 +23,23 @@ BAGO_ROOT = Path(__file__).parent.parent
 TOOLS_DIR = Path(__file__).parent
 
 
-TOOL_REGISTRY = [
+def _load_tool_catalog() -> list:
+    """Load TOOL_REGISTRY from tool_catalog.json; fall back to hardcoded list on any error."""
+    try:
+        cfg_path = BAGO_ROOT / "state" / "config" / "tool_catalog.json"
+        data = json.loads(cfg_path.read_text(encoding="utf-8"))
+        return [
+            (
+                t["name"], t["command"], t["category"],
+                t["description"], t["codes"], t["keywords"],
+            )
+            for t in data.get("tools", [])
+        ]
+    except Exception:
+        return _TOOL_REGISTRY_FALLBACK
+
+
+_TOOL_REGISTRY_FALLBACK = [
     # (name, command, category, description, codes, keywords)
     ("lint_report",      "lint",           "quality",   "linting Python: E501 líneas largas, F401 imports no usados, funciones complejas", ["LINT-E", "LINT-W"], ["lint", "pep8", "estilo", "imports", "unused", "linea larga"]),
     ("complexity",       "complexity",     "quality",   "complejidad ciclomática y cognitiva de funciones Python", ["CMPLX-E", "CMPLX-W"], ["complejidad", "complexity", "ciclomatica", "cognitiva", "funciones largas"]),
@@ -54,6 +70,8 @@ TOOL_REGISTRY = [
     ("pre_commit_gen",   "pre-commit",     "workflow",  "genera .pre-commit-config.yaml con hooks BAGO optimizados", ["PCG-I"], ["pre commit", "hooks", "git hooks", "pre-commit.yaml"]),
     ("metrics_export",   "metrics-export", "analytics", "exporta métricas a JSON/CSV para dashboards externos", ["EXP-I"], ["exportar", "json", "csv", "dashboard", "metricas"]),
 ]
+
+TOOL_REGISTRY = _load_tool_catalog()
 
 
 def tokenize(text: str) -> list:
@@ -193,6 +211,10 @@ def run_tests():
     cats = set(t[2] for t in TOOL_REGISTRY)
     ok6 = len(cats) >= 5
     results.append(("tool_search:category_coverage", ok6, f"cats={len(cats)}"))
+
+    # Test 7: catalog loaded from JSON (not empty fallback)
+    ok7 = len(TOOL_REGISTRY) >= 10
+    results.append(("tool_search:catalog_loaded", ok7, f"entries={len(TOOL_REGISTRY)}"))
 
     passed = sum(1 for _, ok, _ in results if ok)
     failed = sum(1 for _, ok, _ in results if not ok)
