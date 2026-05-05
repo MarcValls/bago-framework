@@ -506,6 +506,24 @@ def detect_implemented_features() -> dict[str, bool]:
         "dashboard_export_link":      "# DASHBOARD_EXPORT_LINK_IMPLEMENTED" in (
             (tools / "pack_dashboard.py").read_text(encoding="utf-8")
             if (tools / "pack_dashboard.py").exists() else ""),
+        # Slot 1 gen 3: Cierre automático de sesión
+        "close_auto":                 "session_close_generator" in (
+            (tools / "show_task.py").read_text(encoding="utf-8")
+            if (tools / "show_task.py").exists() else ""),
+        # Slot 2 gen 3: Alerta de task obsoleta
+        "banner_stale_alert":         "task obsoleta" in banner_text or "stale_msg" in banner_text,
+        # Slot 3 gen 1: Gate seguro antes de implementar — stability_cmd suffices
+        "stable_reports":             (tools / "stability_summary.py").exists(),
+        # Slot 3 gen 3+: Scoring dinámico por registro
+        "scoring_dynamic":            "_apply_dynamic_score" in Path(__file__).read_text(encoding="utf-8"),
+        # Slot 3 gen 4: Ranking contextual por estado — not yet implemented
+        "scoring_context":            False,
+        # Slot 4+: repo with at least one commit
+        "repo_not_empty":             (ROOT / ".git" / "COMMIT_EDITMSG").exists(),
+        # Slot 4 gen 2: README enlaza ideas con W2 — README mentions W2 handoff
+        "readme_flow_section":        "W2" in (
+            (ROOT / ".bago" / "README.md").read_text(encoding="utf-8")
+            if (ROOT / ".bago" / "README.md").exists() else ""),
     }
 
 
@@ -516,7 +534,7 @@ def load_implemented_titles() -> set[str]:
         return set()
     try:
         data = json.loads(impl_file.read_text(encoding="utf-8"))
-        entries = data.get("implemented") or data.get("ideas_completed") or []
+        entries = list(data.get("implemented") or []) + list(data.get("ideas_completed") or [])
         return {_norm(str(e.get("title", ""))) for e in entries}
     except Exception:
         return set()

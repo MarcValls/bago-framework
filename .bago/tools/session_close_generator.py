@@ -44,7 +44,7 @@ def _count_dir(path: Path, pattern: str = "*.json") -> int:
 
 
 def _register_idea_done(task: dict, session_close_file: str) -> None:
-    """Append the completed task/idea to implemented_ideas.json."""
+    """Append the completed task/idea to implemented_ideas.json and bago.db."""
     data: dict = _load_json(IDEAS_FILE) or {}
     if not isinstance(data, dict):
         data = {}
@@ -77,6 +77,24 @@ def _register_idea_done(task: dict, session_close_file: str) -> None:
 
     try:
         IDEAS_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass  # Never break close flow over this
+
+    # Sync to bago.db implemented_ideas table
+    try:
+        import hashlib
+        import sqlite3
+        db_path = STATE_DIR / "bago.db"
+        if db_path.exists() and idea_title != "—":
+            idea_db_id = hashlib.sha256(idea_title.encode()).hexdigest()[:16]
+            conn = sqlite3.connect(str(db_path))
+            conn.execute(
+                "INSERT OR IGNORE INTO implemented_ideas (id, idea_title, session_id, implemented_at)"
+                " VALUES (?,?,?,?)",
+                (idea_db_id, idea_title, "session_close", datetime.now(timezone.utc).isoformat()),
+            )
+            conn.commit()
+            conn.close()
     except Exception:
         pass  # Never break close flow over this
 
@@ -204,10 +222,12 @@ def _self_test():
         }
         out = _P(tmp) / "close.md"
 
-        # Temporarily patch IDEAS_FILE
-        global IDEAS_FILE
+        # Temporarily patch IDEAS_FILE and STATE_DIR so DB sync uses temp dir
+        global IDEAS_FILE, STATE_DIR
         _orig = IDEAS_FILE
+        _orig_state = STATE_DIR
         IDEAS_FILE = tmp_ideas
+        STATE_DIR  = _P(tmp)
         try:
             # Test 1: generate() produces a file
             result = generate(task=task, out_path=out)
@@ -226,6 +246,7 @@ def _self_test():
             assert len(data2.get("ideas_completed", [])) == 1, "duplicado registrado"
         finally:
             IDEAS_FILE = _orig
+            STATE_DIR  = _orig_state
 
     print("  3/3 tests pasaron")
 

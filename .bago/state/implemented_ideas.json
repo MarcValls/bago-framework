@@ -1,29 +1,48 @@
 {
   "implemented": [
     {
-      "id": null,
-      "title": "—",
-      "date": "2026-05-05T00:25:35.723141+00:00",
-      "session_close": "SESSION_CLOSE_20260505_002535.md",
-      "workflow": "—",
-      "objetivo": "—"
-    },
-    {
       "title": "Cierre automático de sesión",
       "slot": null,
       "done_at": "2026-05-05T08:55:54.908797+00:00"
+    },
+    {
+      "title": "Scoring dinámico por registro",
+      "slot": null,
+      "done_at": "2026-05-05T09:05:02.034943+00:00"
+    },
+    {
+      "title": "Mejorar ranking de ideas",
+      "slot": null,
+      "done_at": "2026-05-05T09:05:02.034943+00:00"
+    },
+    {
+      "title": "Alinear README con selector",
+      "slot": null,
+      "done_at": "2026-05-05T09:05:35.185190+00:00",
+      "note": "auto-doc: handled by documentation agent"
+    },
+    {
+      "title": "Alerta de task obsoleta",
+      "slot": 1,
+      "done_at": "2026-05-05T09:07:44.491059+00:00",
+      "note": "implemented in bago_banner.py:360-373 and stability_summary.py:61-78"
+    },
+    {
+      "title": "Cierre registra idea como implementada",
+      "slot": null,
+      "done_at": "2026-05-05T09:12:12.703616+00:00"
     }
   ],
-  "updated_at": "2026-05-05T08:55:54.908797+00:00",
+  "updated_at": "2026-05-05T09:12:12.703616+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "Cierre automático de sesión",
-      "date": "2026-05-05T08:55:54.950838+00:00",
-      "session_close": "SESSION_CLOSE_20260505_085554.md",
+      "title": "Cierre registra idea como implementada",
+      "date": "2026-05-05T09:12:12.744977+00:00",
+      "session_close": "SESSION_CLOSE_20260505_091212.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "Al marcar la tarea como done, generar automáticamente el artefacto de cierre con resumen de cambios y evidencias."
+      "objetivo": "Al cerrar una sesión con `bago task --done`, registrar automáticamente la idea en implemented_ideas.json para que el selector evolucione y no repita trabajo ya hecho."
     }
   ],
-  "last_updated": "2026-05-05T08:55:54.950863+00:00"
+  "last_updated": "2026-05-05T09:12:12.745004+00:00"
 }
