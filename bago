@@ -591,9 +591,9 @@ def main():
 
     if not args:
         if sys.stdin.isatty():
-            # Menú interactivo con flechas
+            # Shell interactivo persistente (como gh copilot)
             result = subprocess.run(
-                ["python3", str(TOOLS / "bago_menu.py")],
+                ["python3", str(TOOLS / "bago_shell.py")],
                 cwd=str(BAGO_ROOT.parent)
             )
             sys.exit(result.returncode)
