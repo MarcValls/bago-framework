@@ -130,6 +130,29 @@ COMMANDS = [
 ]
 
 
+def _show_reopen_hint(state: dict) -> None:
+    """Muestra un hint de bago reopen si hay sesión previa y no hay flujo activo."""
+    if state.get("workflow"):
+        return  # flujo activo — no hace falta sugerir reopen
+    sessions_dir = STATE / "sessions"
+    if not sessions_dir.exists():
+        return
+    close_files = sorted(sessions_dir.glob("SESSION_CLOSE_*.md"), reverse=True)
+    if not close_files:
+        return
+    latest = close_files[0]
+    name = latest.stem  # SESSION_CLOSE_YYYYMMDD_HHMMSS
+    ts   = name.replace("SESSION_CLOSE_", "").replace("_", " ")
+    _sep()
+    _line(BOLD("🔁  Sesión previa detectada"))
+    _blank()
+    _line(f"  {DIM('Último cierre:')} {CYAN(ts)}")
+    _line(f"  {GREEN('bago reopen')}  {DIM('→ retoma el contexto de la sesión anterior')}")
+    _blank()
+
+
+
+
 def _show_full() -> None:
     state  = _read_state()
     cmd, why = _next_step(state)
@@ -180,6 +203,10 @@ def _show_full() -> None:
     _line(f"  {'Tarea actual:':<20}{task_str}")
     _line(f"  {'Ideas disponibles:':<20}{ideas_str}")
     _blank()
+
+    # ── Hint de reanudación si hay sesión previa y no hay flujo activo ── # REOPEN_IN_HELLO_IMPLEMENTED
+    _show_reopen_hint(state)
+
     _sep()
     _line(BOLD("🚀  Próximo paso sugerido"))
     _blank()

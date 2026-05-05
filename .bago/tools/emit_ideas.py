@@ -608,6 +608,10 @@ def detect_implemented_features() -> dict[str, bool]:
         "cabinet_on_close":           "# CABINET_ON_CLOSE_IMPLEMENTED" in (
             (tools / "show_task.py").read_text(encoding="utf-8")
             if (tools / "show_task.py").exists() else ""),
+        # bago hello sugiere reopen si hay sesión previa
+        "reopen_in_hello":            "# REOPEN_IN_HELLO_IMPLEMENTED" in (
+            (tools / "bago_hello.py").read_text(encoding="utf-8")
+            if (tools / "bago_hello.py").exists() else ""),
     }
 
 

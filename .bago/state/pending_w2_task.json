@@ -1,9 +1,9 @@
 {
   "idea_index": 1,
-  "idea_title": "Verificar cabinet al cerrar tarea",
-  "priority": 79,
+  "idea_title": "bago hello sugiere reopen si hay sesión previa",
+  "priority": 72,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-  "objetivo": "bago task --done muestra resumen del cabinet antes de cerrar.",
+  "objetivo": "bago hello detecta SESSION_CLOSE reciente y sugiere bago reopen.",
   "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
@@ -11,14 +11,14 @@
   ],
   "validacion_minima": [
     "La salida debe explicar el cambio, los archivos y la verificación mínima.",
-    "Métrica objetivo: bago task --done muestra resultado del cabinet al cerrar."
+    "Métrica objetivo: bago hello muestra sugerencia de reopen cuando hay cierre reciente."
   ],
-  "siguiente_paso": "Añadir bago cabinet como paso de verificación en show_task.py --done.",
-  "metric": "bago task --done muestra resultado del cabinet al cerrar.",
+  "siguiente_paso": "Conectar bago hello con bago reopen para reanudación.",
+  "metric": "bago hello muestra sugerencia de reopen cuando hay cierre reciente.",
   "contexto": [
-    "Llamar a cabinet_orchestrator en el flujo de cierre."
+    "Añadir detección de SESSION_CLOSE en bago_hello.py."
   ],
   "status": "done",
-  "accepted_at": "2026-05-05T09:56:55.569820+00:00",
-  "done_at": "2026-05-05T09:58:49.599472+00:00"
+  "accepted_at": "2026-05-05T09:59:37.378717+00:00",
+  "done_at": "2026-05-05T10:00:48.961042+00:00"
 }

@@ -86,23 +86,23 @@
       "title": "Verificar cabinet al cerrar tarea",
       "slot": null,
       "done_at": "2026-05-05T09:58:49.605874+00:00"
+    },
+    {
+      "title": "bago hello sugiere reopen si hay sesión previa",
+      "slot": null,
+      "done_at": "2026-05-05T10:00:48.963886+00:00"
     }
   ],
-  "updated_at": "2026-05-05T09:58:49.605874+00:00",
+  "updated_at": "2026-05-05T10:00:48.963886+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "Verificar cabinet al cerrar tarea",
-      "date": "2026-05-05T09:58:49.634750+00:00",
-      "session_close": "SESSION_CLOSE_20260505_095849.md",
+      "title": "bago hello sugiere reopen si hay sesión previa",
+      "date": "2026-05-05T10:00:48.991155+00:00",
+      "session_close": "SESSION_CLOSE_20260505_100048.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "bago task --done muestra resumen del cabinet antes de cerrar."
-    },
-    {
-      "title": "Verificar cabinet al cerrar tarea",
-      "session": "autopilot",
-      "date": "2026-05-05T09:58:57.077077+00:00"
+      "objetivo": "bago hello detecta SESSION_CLOSE reciente y sugiere bago reopen."
     }
   ],
-  "last_updated": "2026-05-05T09:58:49.634775+00:00"
+  "last_updated": "2026-05-05T10:00:48.991177+00:00"
 }
