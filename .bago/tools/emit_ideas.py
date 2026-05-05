@@ -266,7 +266,18 @@ def detect_implemented_features() -> dict[str, bool]:
 
 
 def load_implemented_titles() -> set[str]:
-    """Devuelve el conjunto de títulos de ideas ya registradas como implementadas."""
+    """Devuelve el conjunto de títulos de ideas ya registradas como implementadas.
+
+    Fuente primaria: bago.db (tabla ideas WHERE status='done').
+    Fallback: implemented_ideas.json.
+    """
+    try:
+        sys.path.insert(0, str(ROOT / ".bago" / "tools"))
+        from bago_db import get_implemented_titles
+        return get_implemented_titles()
+    except Exception:
+        pass
+    # JSON fallback
     impl_file = ROOT / ".bago" / "state" / "implemented_ideas.json"
     if not impl_file.exists():
         return set()
@@ -308,17 +319,25 @@ def _load_state_signals() -> dict:
         except Exception:
             pass
 
-    # ── guardian_history.json ─────────────────────────────────────────────────
-    hist_file = state_dir / "guardian_history.json"
-    if hist_file.exists():
-        try:
-            history = json.loads(hist_file.read_text(encoding="utf-8"))
-            if history:
-                last = history[-1]
-                signals["guardian_health"] = last.get("health", -1)
-                signals["has_errors"] = last.get("errors", 0) > 0
-        except Exception:
-            pass
+    # ── guardian history (DB primary, JSON fallback) ──────────────────────────
+    try:
+        sys.path.insert(0, str(ROOT / ".bago" / "tools"))
+        from bago_db import get_last_guardian_run
+        last = get_last_guardian_run()
+        if last:
+            signals["guardian_health"] = last.get("health", -1)
+            signals["has_errors"] = last.get("errors", 0) > 0
+    except Exception:
+        hist_file = state_dir / "guardian_history.json"
+        if hist_file.exists():
+            try:
+                history = json.loads(hist_file.read_text(encoding="utf-8"))
+                if history:
+                    last = history[-1]
+                    signals["guardian_health"] = last.get("health", -1)
+                    signals["has_errors"] = last.get("errors", 0) > 0
+            except Exception:
+                pass
 
     # ── Sprint phase inference ─────────────────────────────────────────────────
     wf = signals["active_workflow"] or ""

@@ -233,6 +233,7 @@ COMMANDS_MAIN = {
     "watch-files": ["python3", str(TOOLS / "watch_files.py")],
     "weekly-report": ["python3", str(TOOLS / "weekly_report.py")],
     "why": ["python3", str(TOOLS / "why.py")],
+    "db": ["python3", str(TOOLS / "bago_db.py")],
     "workflow-navigator": ["python3", str(TOOLS / "workflow_navigator.py")],
     "workflow-selector": ["python3", str(TOOLS / "workflow_selector.py")],
 }

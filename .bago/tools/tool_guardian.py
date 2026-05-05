@@ -282,16 +282,24 @@ def generate_markdown(findings: list[dict]) -> str:
 # ─── Trend / history ──────────────────────────────────────────────────────────
 
 def _record_run(s: dict) -> None:
-    """Append current summary to guardian_history.json (max MAX_HISTORY entries)."""
+    """Append current summary to bago.db (and guardian_history.json as backup)."""
     import datetime as _dt
-    entry = {
-        "date":     _dt.datetime.now(_dt.timezone.utc).isoformat(),
-        "health":   s["health_pct"],
-        "ok":       s["fully_ok"],
-        "total":    s["total_tools"],
-        "errors":   s["total_errors"],
-        "warnings": s["total_warnings"],
-    }
+    date     = _dt.datetime.now(_dt.timezone.utc).isoformat()
+    health   = s["health_pct"]
+    ok       = s["fully_ok"]
+    total    = s["total_tools"]
+    errors   = s["total_errors"]
+    warnings = s["total_warnings"]
+    try:
+        sys.path.insert(0, str(BAGO_ROOT / "tools"))
+        from bago_db import record_guardian_run
+        record_guardian_run(date, health, ok, total, errors, warnings)
+        return
+    except Exception:
+        pass  # Fallback to JSON if DB not available
+    # JSON fallback
+    entry = {"date": date, "health": health, "ok": ok,
+             "total": total, "errors": errors, "warnings": warnings}
     try:
         history: list = []
         if HISTORY_FILE.exists():
@@ -299,7 +307,7 @@ def _record_run(s: dict) -> None:
         if not isinstance(history, list):
             history = []
         history.append(entry)
-        history = history[-MAX_HISTORY:]  # keep last N
+        history = history[-MAX_HISTORY:]
         HISTORY_FILE.write_text(json.dumps(history, ensure_ascii=False, indent=2), encoding="utf-8")
     except Exception:
         pass  # Never break guardian over this
@@ -320,19 +328,24 @@ def _sparkline(values: list[int]) -> str:
 
 
 def cmd_trend() -> None:
-    """Show guardian health trend from history file."""
-    if not HISTORY_FILE.exists():
-        print("  (sin historial — ejecuta bago tool-guardian para registrar el primer punto)")
-        return
-
+    """Show guardian health trend from bago.db (or guardian_history.json fallback)."""
+    history: list = []
     try:
-        history: list = json.loads(HISTORY_FILE.read_text(encoding="utf-8"))
+        sys.path.insert(0, str(BAGO_ROOT / "tools"))
+        from bago_db import get_guardian_history
+        history = get_guardian_history()
     except Exception:
-        print("  [error] no se pudo leer guardian_history.json")
-        return
+        pass
+
+    if not history and HISTORY_FILE.exists():
+        try:
+            history = json.loads(HISTORY_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            print("  [error] no se pudo leer el historial del guardian")
+            return
 
     if not history:
-        print("  (historial vacío)")
+        print("  (sin historial — ejecuta bago tool-guardian para registrar el primer punto)")
         return
 
     values = [e.get("health", 0) for e in history]

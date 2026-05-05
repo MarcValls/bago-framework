@@ -275,6 +275,11 @@ REGISTRY: dict[str, ToolEntry] = {
         description="Explica qué hace un comando BAGO, cuándo usarlo y sus relaciones",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "why.py"))],
     ),
+    "db": ToolEntry(
+        cmd="db", module="bago_db",
+        description="Gestiona bago.db: estado de ideas, historial guardian, init/status/reset",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_db.py"))],
+    ),
 }
 
 
