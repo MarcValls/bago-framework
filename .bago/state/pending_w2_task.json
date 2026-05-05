@@ -1,9 +1,9 @@
 {
   "idea_index": 1,
-  "idea_title": "bago ideas --export: exportar lista a markdown",
-  "priority": 80,
+  "idea_title": "Sugerir commit tras implementar idea",
+  "priority": 81,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-  "objetivo": "bago ideas --export genera ideas_snapshot.md con las ideas actuales.",
+  "objetivo": "bago done sugiere git add -A && git commit cuando la tarea se cierra limpia.",
   "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
@@ -11,16 +11,14 @@
   ],
   "validacion_minima": [
     "La salida debe explicar el cambio, los archivos y la verificación mínima.",
-    "Métrica objetivo: Facilita compartir el estado del catálogo sin acceso al DB."
+    "Métrica objetivo: bago done sugiere git add -A && git commit cuando la tarea se cierra limpia."
   ],
-  "siguiente_paso": "Añadir flag --export en emit_ideas.py que escribe un .md en .bago/state/.",
-  "metric": "Facilita compartir el estado del catálogo sin acceso al DB.",
+  "siguiente_paso": "Añadir sugerencia de commit en bago done",
+  "metric": "bago done sugiere git add -A && git commit cuando la tarea se cierra limpia.",
   "contexto": [
-    "Entrada: lista de ideas filtradas.",
-    "Salida: .bago/state/ideas_snapshot.md con fecha y lista.",
-    "Ventaja: snapshot portátil del catálogo sin SQLite."
+    "Añadir comprobación de git status en show_task.py --done."
   ],
   "status": "done",
-  "accepted_at": "2026-05-05T10:15:48.278932+00:00",
-  "done_at": "2026-05-05T10:17:13.150542+00:00"
+  "accepted_at": "2026-05-05T10:17:49.176690+00:00",
+  "done_at": "2026-05-05T10:18:41.249569+00:00"
 }

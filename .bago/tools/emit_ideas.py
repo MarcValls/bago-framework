@@ -627,6 +627,9 @@ def detect_implemented_features() -> dict[str, bool]:
             if (tools / "bago_diff.py").exists() else ""),
         "ideas_export":               "# IDEAS_EXPORT_IMPLEMENTED" in (
             Path(__file__).read_text(encoding="utf-8")),
+        "auto_commit_hint":           "# AUTO_COMMIT_HINT_IMPLEMENTED" in (
+            (tools / "show_task.py").read_text(encoding="utf-8")
+            if (tools / "show_task.py").exists() else ""),
     }
 
 

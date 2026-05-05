@@ -111,18 +111,23 @@
       "title": "bago ideas --export: exportar lista a markdown",
       "slot": null,
       "done_at": "2026-05-05T10:17:13.158754+00:00"
+    },
+    {
+      "title": "Sugerir commit tras implementar idea",
+      "slot": null,
+      "done_at": "2026-05-05T10:18:41.335657+00:00"
     }
   ],
-  "updated_at": "2026-05-05T10:17:13.158754+00:00",
+  "updated_at": "2026-05-05T10:18:41.335657+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "bago ideas --export: exportar lista a markdown",
-      "date": "2026-05-05T10:17:13.183611+00:00",
-      "session_close": "SESSION_CLOSE_20260505_101713.md",
+      "title": "Sugerir commit tras implementar idea",
+      "date": "2026-05-05T10:18:41.371146+00:00",
+      "session_close": "SESSION_CLOSE_20260505_101841.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "bago ideas --export genera ideas_snapshot.md con las ideas actuales."
+      "objetivo": "bago done sugiere git add -A && git commit cuando la tarea se cierra limpia."
     }
   ],
-  "last_updated": "2026-05-05T10:17:13.183636+00:00"
+  "last_updated": "2026-05-05T10:18:41.371175+00:00"
 }

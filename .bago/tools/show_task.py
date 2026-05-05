@@ -185,6 +185,23 @@ def _run_cabinet_check() -> None:
 
 
 
+def _suggest_commit_if_dirty() -> None:
+    """Si hay cambios sin commitear, sugiere git add -A && git commit. # AUTO_COMMIT_HINT_IMPLEMENTED"""
+    import subprocess
+    try:
+        repo_root = ROOT.parent
+        result = subprocess.run(
+            ["git", "-C", str(repo_root), "status", "--porcelain"],
+            capture_output=True, text=True, timeout=5
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            print("  💡  Hay cambios sin commitear:")
+            print(f"      git add -A && git commit")
+            print()
+    except Exception:
+        pass
+
+
 def main() -> int:
     args = sys.argv[1:]
     clear  = "--clear"  in args
@@ -222,6 +239,7 @@ def main() -> int:
         _display(task)
         # ── Verificación de cabinet antes de continuar ── # CABINET_ON_CLOSE_IMPLEMENTED
         _run_cabinet_check()
+        _suggest_commit_if_dirty()
         # ── Recordatorio de cosecha ──────────────────────────────────────────
         print("  ┌──────────────────────────────────────────────────────────┐")
         print("  │  🌾  Siguiente paso recomendado:                          │")
