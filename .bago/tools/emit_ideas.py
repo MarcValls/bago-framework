@@ -1167,8 +1167,8 @@ def main() -> int:
             print(f"  (sin ideas disponibles para --intent {intent_filter!r})")
             return 0
 
-    # Rellenar con fallback hasta MIN_IDEAS si hay pocas
-    if len(ideas) < MIN_IDEAS:
+    # Rellenar con fallback hasta MIN_IDEAS si hay pocas (no aplica con --intent)
+    if not intent_filter and len(ideas) < MIN_IDEAS:
         fallback_pool = load_fallback_from_db() if using_db else list(FALLBACK_IDEAS)
         seen = {_norm(str(i.get("title", ""))) for i in ideas} | done_titles
         for fb in fallback_pool:

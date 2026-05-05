@@ -112,6 +112,9 @@ def _build_commands() -> dict:
         "find-tool": ["python3", str(TOOLS / "tool_search.py")],
         "ask":       ["python3", str(TOOLS / "intent_router.py")],
         "rules":     ["python3", str(TOOLS / "rule_catalog.py")],
+        "next":      ["python3", str(TOOLS / "bago_next.py")],
+        "hello":     ["python3", str(TOOLS / "bago_hello.py")],
+        "diff":      ["python3", str(TOOLS / "bago_diff.py")],
     }
 
 

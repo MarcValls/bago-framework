@@ -189,9 +189,8 @@ def _suggest_commit_if_dirty() -> None:
     """Si hay cambios sin commitear, sugiere git add -A && git commit. # AUTO_COMMIT_HINT_IMPLEMENTED"""
     import subprocess
     try:
-        repo_root = ROOT.parent
         result = subprocess.run(
-            ["git", "-C", str(repo_root), "status", "--porcelain"],
+            ["git", "-C", str(ROOT), "status", "--porcelain"],
             capture_output=True, text=True, timeout=5
         )
         if result.returncode == 0 and result.stdout.strip():
