@@ -25,6 +25,7 @@ SESSIONS_DIR  = STATE_DIR / "sessions"
 CHANGES_DIR   = STATE_DIR / "changes"
 EVIDENCES_DIR = STATE_DIR / "evidences"
 TASK_FILE     = STATE_DIR / "pending_w2_task.json"
+IDEAS_FILE    = STATE_DIR / "implemented_ideas.json"
 
 
 def _load_json(path: Path) -> dict | list | None:
@@ -40,6 +41,44 @@ def _count_dir(path: Path, pattern: str = "*.json") -> int:
     if not path.exists():
         return 0
     return len(list(path.glob(pattern)))
+
+
+def _register_idea_done(task: dict, session_close_file: str) -> None:
+    """Append the completed task/idea to implemented_ideas.json."""
+    data: dict = _load_json(IDEAS_FILE) or {}
+    if not isinstance(data, dict):
+        data = {}
+    completed: list = data.get("ideas_completed", [])
+    if not isinstance(completed, list):
+        completed = []
+
+    idea_id    = task.get("idea_id") or task.get("id") or ""
+    idea_title = task.get("idea_title") or task.get("title") or "—"
+
+    # Avoid duplicate registrations
+    existing_ids   = {e.get("id") for e in completed if e.get("id")}
+    existing_titles = {e.get("title") for e in completed if e.get("title")}
+    if idea_id and idea_id in existing_ids:
+        return
+    if idea_title != "—" and idea_title in existing_titles and not idea_id:
+        return
+
+    entry = {
+        "id":            idea_id or None,
+        "title":         idea_title,
+        "date":          datetime.now(timezone.utc).isoformat(),
+        "session_close": session_close_file,
+        "workflow":      task.get("workflow", "—"),
+        "objetivo":      task.get("objetivo", "—"),
+    }
+    completed.append(entry)
+    data["ideas_completed"] = completed
+    data["last_updated"]    = datetime.now(timezone.utc).isoformat()
+
+    try:
+        IDEAS_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass  # Never break close flow over this
 
 
 def generate(task: dict | None = None, out_path: Path | None = None) -> Path:
@@ -116,6 +155,7 @@ _Generado automáticamente por `session_close_generator.py`_
         out_path = SESSIONS_DIR / f"SESSION_CLOSE_{ts}.md"
 
     out_path.write_text(content, encoding="utf-8")
+    _register_idea_done(task, out_path.name)
     return out_path
 
 
@@ -144,10 +184,51 @@ def main() -> int:
 
 
 def _self_test():
-    """Autotest mínimo — verifica arranque limpio del módulo."""
+    """Autotest — verifica generate() y registro de idea en implemented_ideas.json."""
+    import tempfile
     from pathlib import Path as _P
+
     assert _P(__file__).exists(), "fichero no encontrado"
-    print("  1/1 tests pasaron")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_ideas = _P(tmp) / "implemented_ideas.json"
+
+        task = {
+            "idea_id": "test-idea-001",
+            "idea_title": "Test idea",
+            "idea_index": 1,
+            "objetivo": "Verificar cierre",
+            "alcance": "Solo test",
+            "workflow": "W2",
+            "metric": "artefacto generado",
+        }
+        out = _P(tmp) / "close.md"
+
+        # Temporarily patch IDEAS_FILE
+        global IDEAS_FILE
+        _orig = IDEAS_FILE
+        IDEAS_FILE = tmp_ideas
+        try:
+            # Test 1: generate() produces a file
+            result = generate(task=task, out_path=out)
+            assert result.exists(), "artefacto no generado"
+
+            # Test 2: implemented_ideas.json updated
+            assert tmp_ideas.exists(), "implemented_ideas.json no creado"
+            data = json.loads(tmp_ideas.read_text())
+            completed = data.get("ideas_completed", [])
+            assert len(completed) == 1, f"esperado 1 entrada, got {len(completed)}"
+            assert completed[0]["id"] == "test-idea-001", "id incorrecto"
+
+            # Test 3: duplicate registration is skipped
+            generate(task=task, out_path=_P(tmp) / "close2.md")
+            data2 = json.loads(tmp_ideas.read_text())
+            assert len(data2.get("ideas_completed", [])) == 1, "duplicado registrado"
+        finally:
+            IDEAS_FILE = _orig
+
+    print("  3/3 tests pasaron")
+
 
 if __name__ == "__main__":
     if "--test" in sys.argv:

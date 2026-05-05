@@ -2310,6 +2310,15 @@ def test_workflow_navigator():
     except (json.JSONDecodeError, AssertionError, IndexError) as e:
         _record("workflow_navigator:tests", FAIL, f"bad JSON output: {e} | last line: {out.strip().splitlines()[-1][:60] if out.strip() else '(empty)'}")
 
+
+def test_why():
+    """why.py --test ejecuta 5/5 self-tests."""
+    rc, out, _ = _run("why.py", ["--test"])
+    if rc == 0 and "pasaron" in out:
+        _record("why:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("why:tests", FAIL, f"rc={rc} {out[-80:]}")
+
 ALL_TESTS = [
     (1,  "sprint_manager",  test_sprint_manager),
     (2,  "search",          test_search),
@@ -2519,6 +2528,7 @@ ALL_TESTS = [
     (205, "state_manager", test_state_manager),
     (206, "tool_watcher", test_tool_watcher),
     (207, "workflow_navigator", test_workflow_navigator),
+    (208, "why",               test_why),
 ]
 
 

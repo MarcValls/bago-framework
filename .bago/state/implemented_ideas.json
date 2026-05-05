@@ -1,5 +1,14 @@
 {
-  "ideas_completed": [],
-  "last_updated": null,
+  "ideas_completed": [
+    {
+      "id": null,
+      "title": "—",
+      "date": "2026-05-05T00:25:35.723141+00:00",
+      "session_close": "SESSION_CLOSE_20260505_002535.md",
+      "workflow": "—",
+      "objetivo": "—"
+    }
+  ],
+  "last_updated": "2026-05-05T00:25:35.723168+00:00",
   "_note": "Populated by 'bago task --done'. Each entry is a registered improvement with id, title, date and evidence reference."
 }

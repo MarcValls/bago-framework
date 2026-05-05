@@ -134,6 +134,7 @@ COMMANDS_MAIN = {
     "code-search": ["python3", str(TOOLS / "code_search.py")],
     "commit-readiness": ["python3", str(TOOLS / "commit_readiness.py")],
     "competition-report": ["python3", str(TOOLS / "competition_report.py")],
+    "config-check": ["python3", str(TOOLS / "config_check.py")],
     "config-show": ["python3", str(TOOLS / "config_show.py")],
     "config-wizard": ["python3", str(TOOLS / "config_wizard.py")],
     "context-detector": ["python3", str(TOOLS / "context_detector.py")],
@@ -231,6 +232,7 @@ COMMANDS_MAIN = {
     "vertice-activator": ["python3", str(TOOLS / "vertice_activator.py")],
     "watch-files": ["python3", str(TOOLS / "watch_files.py")],
     "weekly-report": ["python3", str(TOOLS / "weekly_report.py")],
+    "why": ["python3", str(TOOLS / "why.py")],
     "workflow-navigator": ["python3", str(TOOLS / "workflow_navigator.py")],
     "workflow-selector": ["python3", str(TOOLS / "workflow_selector.py")],
 }

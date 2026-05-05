@@ -39,6 +39,8 @@ REPO_ROOT   = BAGO_ROOT.parent                    # repo raíz
 TOOLS_DIR   = BAGO_ROOT / "tools"
 INTEG_FILE  = TOOLS_DIR / "integration_tests.py"
 BAGO_SCRIPT = REPO_ROOT / "bago"
+HISTORY_FILE = BAGO_ROOT / "state" / "guardian_history.json"
+MAX_HISTORY  = 30
 
 # Tools del framework — loaded from tool_registry (single source of truth)
 def _load_internal_tools() -> frozenset:
@@ -277,6 +279,80 @@ def generate_markdown(findings: list[dict]) -> str:
     return "\n".join(lines)
 
 
+# ─── Trend / history ──────────────────────────────────────────────────────────
+
+def _record_run(s: dict) -> None:
+    """Append current summary to guardian_history.json (max MAX_HISTORY entries)."""
+    import datetime as _dt
+    entry = {
+        "date":     _dt.datetime.now(_dt.timezone.utc).isoformat(),
+        "health":   s["health_pct"],
+        "ok":       s["fully_ok"],
+        "total":    s["total_tools"],
+        "errors":   s["total_errors"],
+        "warnings": s["total_warnings"],
+    }
+    try:
+        history: list = []
+        if HISTORY_FILE.exists():
+            history = json.loads(HISTORY_FILE.read_text(encoding="utf-8"))
+        if not isinstance(history, list):
+            history = []
+        history.append(entry)
+        history = history[-MAX_HISTORY:]  # keep last N
+        HISTORY_FILE.write_text(json.dumps(history, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass  # Never break guardian over this
+
+
+def _sparkline(values: list[int]) -> str:
+    """Build an ASCII sparkline from a list of 0-100 integer values."""
+    if not values:
+        return ""
+    blocks = " ▁▂▃▄▅▆▇█"
+    lo, hi = min(values), max(values)
+    span = max(1, hi - lo)
+    chars = []
+    for v in values:
+        idx = round((v - lo) / span * (len(blocks) - 1))
+        chars.append(blocks[idx])
+    return "".join(chars)
+
+
+def cmd_trend() -> None:
+    """Show guardian health trend from history file."""
+    if not HISTORY_FILE.exists():
+        print("  (sin historial — ejecuta bago tool-guardian para registrar el primer punto)")
+        return
+
+    try:
+        history: list = json.loads(HISTORY_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        print("  [error] no se pudo leer guardian_history.json")
+        return
+
+    if not history:
+        print("  (historial vacío)")
+        return
+
+    values = [e.get("health", 0) for e in history]
+    spark  = _sparkline(values)
+    lo, hi = min(values), max(values)
+    last   = history[-1]
+    delta  = values[-1] - values[0] if len(values) > 1 else 0
+    trend_arrow = "↗" if delta > 0 else ("↘" if delta < 0 else "→")
+
+    color = _GRN if last["health"] >= 80 else (_YEL if last["health"] >= 50 else _RED)
+    print(f"\n  {_BOLD}Guardian Trend ({len(history)} ejecuciones){_RST}")
+    print(f"  {color}{spark}{_RST}")
+    print(f"  Rango: {lo}%–{hi}%  Actual: {color}{last['health']}%{_RST}  {trend_arrow} ({delta:+d}%)")
+    print(f"  Última: {last.get('date','?')[:19].replace('T',' ')} — {last['ok']}/{last['total']} tools OK")
+    if len(values) >= 3:
+        avg = round(sum(values) / len(values))
+        print(f"  Media:  {avg}%")
+    print()
+
+
 def main(argv: list[str]) -> int:
     fmt      = "text"
     out_file = None
@@ -288,10 +364,15 @@ def main(argv: list[str]) -> int:
             fmt = argv[i + 1]; i += 2
         elif a == "--out" and i + 1 < len(argv):
             out_file = argv[i + 1]; i += 2
+        elif a == "--trend":
+            cmd_trend()
+            return 0
         else:
             i += 1
 
     findings = analyze()
+    s = _summary(findings)
+    _record_run(s)
 
     if fmt == "json":
         content = json.dumps(findings, indent=2)

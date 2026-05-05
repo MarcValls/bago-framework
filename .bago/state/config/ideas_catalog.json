@@ -445,6 +445,38 @@
         "scoring_dynamic"
       ],
       "excludes": []
+    },
+    {
+      "id": "synth-todo-cleanup",
+      "title": "Limpiar TODO/FIXME en 9 scripts",
+      "summary": "Hay marcas TODO/FIXME pendientes en el código que señalan deuda técnica.",
+      "section": "deuda",
+      "priority": 55,
+      "risk": "low",
+      "metric": "0 marcas TODO/FIXME en 9 archivos.",
+      "detail": [
+        "Archivos afectados: bago_typing_course_analyzer.py, commit_readiness.py, contracts.py, emit_ideas.py, health_report.py, integration_tests.py",
+        "Buscar con `grep -rn 'TODO\\|FIXME' .bago/tools/`",
+        "Resolver o convertir en ideas formales del catálogo."
+      ],
+      "w2": "Ejecutar `grep -rn 'TODO|FIXME' .bago/tools/` y resolver o catalogar.",
+      "generation": "auto"
+    },
+    {
+      "id": "synth-ideas-registry-grow",
+      "title": "Registrar ideas pasadas en implemented_ideas.json",
+      "summary": "El registro de ideas implementadas está casi vacío. Retroalimentar el sistema.",
+      "section": "ciclo",
+      "priority": 58,
+      "risk": "low",
+      "metric": "implemented_ideas.json con ≥5 entradas.",
+      "detail": [
+        "Revisar qué ideas del catálogo ya están en el código.",
+        "Ejecutar `bago flow done` al cerrar cada workflow.",
+        "Un registro rico mejora el scoring dinámico de emit_ideas."
+      ],
+      "w2": "Cerrar los próximos workflows con `bago flow done` para poblar el registro.",
+      "generation": "auto"
     }
   ]
 }

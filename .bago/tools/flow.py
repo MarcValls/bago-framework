@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 bago flow — visualiza el pipeline de un workflow como flowchart ASCII.
+              Gestiona el estado activo del workflow (start/done/status).
 
 Carga los archivos W*.md del pack y extrae la estructura de fases/pasos
 para renderizarlos como diagramas de flujo en la terminal.
@@ -10,6 +11,9 @@ Uso:
     bago flow W2                → mostrar flowchart de W2
     bago flow all               → mostrar todos los workflows
     bago flow --list            → listar sin renderizar
+    bago flow start W2 <titulo> → iniciar workflow activo (escribe en global_state)
+    bago flow done              → cerrar workflow activo + generar cierre
+    bago flow status            → mostrar workflow activo actual
     bago flow --test            → tests integrados
 """
 
@@ -17,9 +21,14 @@ import argparse
 import json
 import sys
 import re
+import pathlib
+from datetime import datetime, timezone
 from pathlib import Path
 
-BAGO_ROOT = Path(__file__).parent.parent
+BAGO_ROOT   = Path(__file__).parent.parent
+STATE_DIR   = BAGO_ROOT / "state"
+GLOBAL_FILE = STATE_DIR / "global_state.json"
+SPRINT_FILE = STATE_DIR / "sprint.json"
 
 
 WORKFLOW_COLORS = {
@@ -239,22 +248,184 @@ def run_tests():
 
 import pathlib
 
-def main():
-    parser = argparse.ArgumentParser(prog="bago flow", add_help=False)
-    parser.add_argument("workflow", nargs="?", default=None, help="W0..W9 o 'all'")
-    parser.add_argument("--list", action="store_true")
-    parser.add_argument("--test", action="store_true")
-    parser.add_argument("--help", action="store_true")
-    args = parser.parse_args()
+# ─── Workflow state machine ───────────────────────────────────────────────────
 
-    if args.test:
+def _load_json(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _save_json(path: Path, data: dict) -> None:
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _active_workflow() -> dict | None:
+    gs = _load_json(GLOBAL_FILE)
+    sp = gs.get("sprint_status", {})
+    wf = sp.get("active_workflow")
+    if not wf or wf in (None, "null", "none"):
+        return None
+    if isinstance(wf, dict):
+        return wf
+    return None
+
+
+def cmd_start(argv: list) -> int:
+    """flow start W2 [título...]"""
+    if not argv:
+        print("  Uso: bago flow start <W2> [título de la tarea]")
+        return 1
+
+    wf_code = argv[0].upper()
+    title   = " ".join(argv[1:]) if len(argv) > 1 else f"Trabajo en {wf_code}"
+    started = datetime.now(timezone.utc).isoformat()
+
+    # Check if already active
+    current = _active_workflow()
+    if current:
+        print(f"  ⚠️  Ya hay un workflow activo: {current.get('code')} — {current.get('title')}")
+        print(f"  Cierra primero con: bago flow done")
+        return 1
+
+    wf_entry = {"code": wf_code, "title": title, "started": started}
+
+    # Update global_state.json
+    gs = _load_json(GLOBAL_FILE)
+    if "sprint_status" not in gs:
+        gs["sprint_status"] = {}
+    gs["sprint_status"]["active_workflow"] = wf_entry
+    _save_json(GLOBAL_FILE, gs)
+
+    # Update sprint.json
+    sp = _load_json(SPRINT_FILE)
+    if "sprint_status" not in sp:
+        sp["sprint_status"] = {}
+    sp["sprint_status"]["active_workflow"] = wf_entry
+    _save_json(SPRINT_FILE, sp)
+
+    print(f"\n  ▶  Workflow iniciado: {wf_code}")
+    print(f"  Título: {title}")
+    print(f"  Inicio: {started[:19].replace('T', ' ')}")
+    print(f"\n  Cierra con: bago flow done\n")
+    return 0
+
+
+def cmd_done(argv: list) -> int:
+    """flow done — cierra el workflow activo."""
+    current = _active_workflow()
+    if not current:
+        print("  No hay workflow activo. Inicia uno con: bago flow start <W2>")
+        return 1
+
+    wf_code = current.get("code", "?")
+    title   = current.get("title", "—")
+    started = current.get("started", "?")
+    ended   = datetime.now(timezone.utc).isoformat()
+
+    # Calculate duration
+    try:
+        s = datetime.fromisoformat(started)
+        e = datetime.fromisoformat(ended)
+        mins = int((e - s).total_seconds() / 60)
+        duration = f"{mins // 60}h{mins % 60:02d}m" if mins >= 60 else f"{mins}m"
+    except Exception:
+        duration = "?"
+
+    # Clear active_workflow from both files
+    for path in (GLOBAL_FILE, SPRINT_FILE):
+        data = _load_json(path)
+        sp = data.get("sprint_status", {})
+        sp["active_workflow"] = None
+        sp["last_completed_workflow"] = {
+            "code": wf_code, "title": title,
+            "started": started, "ended": ended, "duration": duration,
+        }
+        data["sprint_status"] = sp
+        _save_json(path, data)
+
+    print(f"\n  ■  Workflow cerrado: {wf_code}")
+    print(f"  Título:   {title}")
+    print(f"  Duración: {duration}")
+    print(f"  Fin:      {ended[:19].replace('T', ' ')}")
+
+    # Optionally trigger session close
+    close_tool = Path(__file__).parent / "session_close_generator.py"
+    if close_tool.exists():
+        import subprocess
+        result = subprocess.run(
+            [sys.executable, str(close_tool)],
+            capture_output=True, text=True
+        )
+        if result.stdout.strip():
+            print(f"\n  {result.stdout.strip()}")
+    print()
+    return 0
+
+
+def cmd_status(argv: list) -> int:
+    """flow status — muestra el workflow activo."""
+    current = _active_workflow()
+    if not current:
+        # Show last completed if available
+        gs = _load_json(GLOBAL_FILE)
+        last = gs.get("sprint_status", {}).get("last_completed_workflow")
+        if last:
+            print(f"\n  (sin workflow activo)")
+            print(f"  Último: {last.get('code')} — {last.get('title')} [{last.get('duration')}]")
+        else:
+            print(f"  No hay workflow activo. Inicia con: bago flow start <W2> <título>")
+        print()
+        return 0
+
+    wf_code = current.get("code", "?")
+    title   = current.get("title", "—")
+    started = current.get("started", "?")
+    try:
+        s = datetime.fromisoformat(started)
+        now = datetime.now(timezone.utc)
+        mins = int((now - s).total_seconds() / 60)
+        elapsed = f"{mins // 60}h{mins % 60:02d}m" if mins >= 60 else f"{mins}m"
+    except Exception:
+        elapsed = "?"
+
+    color = WORKFLOW_COLORS.get(wf_code, "")
+    print(f"\n  {color}▶  {wf_code} — {title}{RESET}")
+    print(f"  Iniciado: {started[:19].replace('T', ' ')}  (hace {elapsed})")
+    print()
+    return 0
+
+
+def main():
+    argv = sys.argv[1:]
+
+    if not argv or argv == ["--list"]:
+        cmd_list(None)
+        return
+
+    if argv[0] == "--test":
         run_tests()
-    elif args.list or args.workflow is None:
-        cmd_list(args)
-    elif args.help:
-        parser.print_help()
-    else:
-        cmd_flow(args.workflow)
+        return
+
+    if argv[0] in ("--help", "-h"):
+        print(__doc__)
+        return
+
+    # State-machine subcommands
+    if argv[0] == "start":
+        raise SystemExit(cmd_start(argv[1:]))
+
+    if argv[0] == "done":
+        raise SystemExit(cmd_done(argv[1:]))
+
+    if argv[0] == "status":
+        raise SystemExit(cmd_status(argv[1:]))
+
+    # Flowchart visualization (legacy / default)
+    cmd_flow(argv[0])
 
 
 if __name__ == "__main__":

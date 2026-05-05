@@ -213,7 +213,7 @@ REGISTRY: dict[str, ToolEntry] = {
     ),
     "flow": ToolEntry(
         cmd="flow", module="flow",
-        description="Lista workflows BAGO disponibles",
+        description="Flowchart ASCII de workflows + gestión de estado activo (start/done/status)",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "flow.py"))],
     ),
     "find-tool": ToolEntry(
@@ -264,6 +264,16 @@ REGISTRY: dict[str, ToolEntry] = {
         cmd="consistency", module="bago_consistency_check",
         description="Guard anti-drift: valida CI, preflight, README y badge del framework",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_consistency_check.py"))],
+    ),
+    "config-check": ToolEntry(
+        cmd="config-check", module="config_check",
+        description="Valida integridad de configs JSON en state/config/ y cruza con registry",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "config_check.py"))],
+    ),
+    "why": ToolEntry(
+        cmd="why", module="why",
+        description="Explica qué hace un comando BAGO, cuándo usarlo y sus relaciones",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "why.py"))],
     ),
 }
 

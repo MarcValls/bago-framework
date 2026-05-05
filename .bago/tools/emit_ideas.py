@@ -466,18 +466,224 @@ def save_handoff(data: dict[str, object]) -> Path:
     return dest
 
 
-def parse_args(argv: list[str]) -> tuple[int | None, bool]:
+def synthesize_ideas() -> int:
+    """Analiza el estado del sistema y genera nuevas ideas candidatas en ideas_catalog.json.
+
+    Sources analizadas:
+    - guardian_history.json: detecta degradación de salud reciente
+    - guardian_findings (live): tools con errores o warnings
+    - tools sin registro en tool_registry.py
+    - TODO/FIXME en código Python de .bago/tools/
+    - Slots vacíos en global_state.json (null/empty fields)
+    """
+    catalog_path = ROOT / ".bago" / "state" / "config" / "ideas_catalog.json"
+    tools_dir    = ROOT / ".bago" / "tools"
+    state_dir    = ROOT / ".bago" / "state"
+
+    try:
+        catalog: dict = json.loads(catalog_path.read_text(encoding="utf-8"))
+    except Exception:
+        print("[synthesize] ERROR: no se pudo leer ideas_catalog.json")
+        return 1
+
+    existing_titles = {str(i.get("title", "")).lower() for i in catalog.get("ideas", [])}
+    existing_ids    = {str(i.get("id", "")) for i in catalog.get("ideas", [])}
+
+    candidates: list[dict] = []
+
+    def _add(id_: str, title: str, summary: str, section: str, priority: int,
+             detail: list[str], w2: str, risk: str = "medium",
+             metric: str = "", **extra: object) -> None:
+        if id_ in existing_ids or title.lower() in existing_titles:
+            return
+        candidates.append({
+            "id":       id_,
+            "title":    title,
+            "summary":  summary,
+            "section":  section,
+            "priority": priority,
+            "risk":     risk,
+            "metric":   metric or f"'{title}' completado sin regresión.",
+            "detail":   detail,
+            "w2":       w2,
+            "generation": "auto",
+            **extra,
+        })
+
+    # ── 1. Guardian health trend degradation ──────────────────────────────────
+    history_file = state_dir / "guardian_history.json"
+    if history_file.exists():
+        try:
+            history: list = json.loads(history_file.read_text(encoding="utf-8"))
+            if len(history) >= 3:
+                recent = [e["health"] for e in history[-3:]]
+                if recent[-1] < recent[0]:
+                    _add(
+                        "synth-guardian-degradation",
+                        "Recuperar salud del guardian",
+                        "El guardian muestra degradación reciente. Resolver los errores activos.",
+                        "health",
+                        85,
+                        [
+                            f"Salud últimas 3 ejecuciones: {recent}",
+                            "Ejecutar `bago tool-guardian` e identificar errores.",
+                            "Resolver cada error hasta recuperar 100%.",
+                        ],
+                        "Ejecutar `bago tool-guardian` y corregir hallazgos.",
+                        risk="high",
+                        metric=f"Guardian vuelve a 100% desde {recent[-1]}%.",
+                    )
+        except Exception:
+            pass
+
+    # ── 2. Live guardian: tools con errores ───────────────────────────────────
+    try:
+        from tool_guardian import analyze, _summary
+        findings = analyze()
+        s = _summary(findings)
+        errors  = [f for f in findings if f["severity"] == "error"]
+        warnings = [f for f in findings if f["severity"] == "warning"]
+        if errors:
+            error_tools = list({f["tool"] for f in errors})[:5]
+            _add(
+                "synth-guardian-errors",
+                f"Resolver {len(errors)} errores detectados por guardian",
+                "Guardian reporta errores activos que reducen la salud del framework.",
+                "health",
+                90,
+                [f"Tools con error: {', '.join(error_tools)}",
+                 "Ejecutar `bago tool-guardian` para detalle completo.",
+                 "Cada error reduce la puntuación de salud."],
+                "Ejecutar `bago tool-guardian` y corregir los errores listados.",
+                risk="high",
+                metric=f"{len(errors)} errores → 0 errores en guardian.",
+            )
+        elif warnings:
+            warn_tools = list({f["tool"] for f in warnings})[:5]
+            _add(
+                "synth-guardian-warnings",
+                f"Limpiar {len(warnings)} warnings del guardian",
+                "Guardian tiene warnings activos que merecen atención.",
+                "health",
+                60,
+                [f"Tools con warning: {', '.join(warn_tools)}",
+                 "Ejecutar `bago tool-guardian` para detalle.",
+                 "Los warnings no bloquean pero degradan la calidad."],
+                "Ejecutar `bago tool-guardian --format md` y revisar la tabla.",
+                risk="low",
+                metric=f"{len(warnings)} warnings → 0 en próxima ejecución.",
+            )
+    except Exception:
+        pass
+
+    # ── 3. TODO/FIXME en código ────────────────────────────────────────────────
+    todo_files: list[str] = []
+    try:
+        result = subprocess.run(
+            ["grep", "-rl", "--include=*.py", "-E", "TODO|FIXME", str(tools_dir)],
+            capture_output=True, text=True, timeout=5,
+        )
+        todo_files = [Path(p).name for p in result.stdout.strip().splitlines() if p]
+    except Exception:
+        pass
+    if todo_files:
+        _add(
+            "synth-todo-cleanup",
+            f"Limpiar TODO/FIXME en {len(todo_files)} scripts",
+            "Hay marcas TODO/FIXME pendientes en el código que señalan deuda técnica.",
+            "deuda",
+            55,
+            [f"Archivos afectados: {', '.join(todo_files[:6])}",
+             "Buscar con `grep -rn 'TODO\\|FIXME' .bago/tools/`",
+             "Resolver o convertir en ideas formales del catálogo."],
+            "Ejecutar `grep -rn 'TODO|FIXME' .bago/tools/` y resolver o catalogar.",
+            risk="low",
+            metric=f"0 marcas TODO/FIXME en {len(todo_files)} archivos.",
+        )
+
+    # ── 4. global_state.json: campos null que podrían tener valor ─────────────
+    global_state_file = state_dir / "global_state.json"
+    if global_state_file.exists():
+        try:
+            gs: dict = json.loads(global_state_file.read_text(encoding="utf-8"))
+            null_keys = [k for k, v in gs.items()
+                         if v is None or v == "" or v == "none" or v == "null"]
+            if null_keys:
+                _add(
+                    "synth-global-state-gaps",
+                    "Completar campos vacíos en global_state.json",
+                    "global_state.json tiene campos sin valor que limitan el contexto BAGO.",
+                    "estado",
+                    50,
+                    [f"Campos vacíos: {', '.join(null_keys[:8])}",
+                     "Revisar cada campo y completar los que correspondan.",
+                     "Un estado completo mejora la calidad de las ideas y el banner."],
+                    "Editar `.bago/state/global_state.json` y completar los campos nulos.",
+                    risk="low",
+                    metric=f"{len(null_keys)} campos null → completados.",
+                )
+        except Exception:
+            pass
+
+    # ── 5. implemented_ideas con pocas entradas (<3) ───────────────────────────
+    impl_file = state_dir / "implemented_ideas.json"
+    if impl_file.exists():
+        try:
+            impl_data = json.loads(impl_file.read_text(encoding="utf-8"))
+            completed = impl_data.get("ideas_completed", [])
+            if len(completed) < 3:
+                _add(
+                    "synth-ideas-registry-grow",
+                    "Registrar ideas pasadas en implemented_ideas.json",
+                    "El registro de ideas implementadas está casi vacío. Retroalimentar el sistema.",
+                    "ciclo",
+                    58,
+                    ["Revisar qué ideas del catálogo ya están en el código.",
+                     "Ejecutar `bago flow done` al cerrar cada workflow.",
+                     "Un registro rico mejora el scoring dinámico de emit_ideas."],
+                    "Cerrar los próximos workflows con `bago flow done` para poblar el registro.",
+                    risk="low",
+                    metric="implemented_ideas.json con ≥5 entradas.",
+                )
+        except Exception:
+            pass
+
+    if not candidates:
+        print("[synthesize] No se encontraron nuevas ideas para agregar al catálogo.")
+        print(f"  (catálogo actual: {len(catalog.get('ideas', []))} ideas)")
+        return 0
+
+    # Write candidates to catalog
+    catalog.setdefault("ideas", [])
+    catalog["ideas"].extend(candidates)
+    try:
+        catalog_path.write_text(json.dumps(catalog, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception as e:
+        print(f"[synthesize] ERROR al escribir el catálogo: {e}")
+        return 1
+
+    print(f"[synthesize] {len(candidates)} idea(s) nueva(s) añadida(s) al catálogo:")
+    for c in candidates:
+        print(f"  + [{c['id']}] {c['title']}")
+    print(f"  Catálogo ahora tiene {len(catalog['ideas'])} ideas.")
+    return 0
+
+
+def parse_args(argv: list[str]) -> tuple[int | None, bool, bool]:
     detail_index = None
-    accept = False
+    accept       = False
+    synthesize   = False
     idx = 1
 
     while idx < len(argv):
         arg = argv[idx]
         if arg in {"-h", "--help"}:
             print(
-                "Usage: emit_ideas.py [--detail N] [--accept N]\n\n"
-                "Show 5 to 20 contextual ideas prioritized by stability. Use --detail "
-                "to expand a selected idea and --accept to mark it ready for W2."
+                "Usage: emit_ideas.py [--detail N] [--accept N] [--synthesize]\n\n"
+                "Show 5 to 20 contextual ideas prioritized by stability.\n"
+                "  --detail N     Expand idea N\n"
+                "  --accept N     Mark idea N as ready for W2\n"
+                "  --synthesize   Analyze codebase and append new ideas to catalog"
             )
             raise SystemExit(0)
         if arg == "--detail":
@@ -493,13 +699,20 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool]:
             accept = True
             idx += 2
             continue
+        if arg == "--synthesize":
+            synthesize = True
+            idx += 1
+            continue
         raise SystemExit(f"Unknown argument: {arg}")
 
-    return detail_index, accept
+    return detail_index, accept, synthesize
 
 
 def main() -> int:
-    detail_index, accept = parse_args(sys.argv)
+    detail_index, accept, synthesize = parse_args(sys.argv)
+
+    if synthesize:
+        return synthesize_ideas()
     smoke_path = ROOT / "sandbox/runtime/last-report.json"
 
     # ── canonical gate ─────────────────────────────────────────────────────────

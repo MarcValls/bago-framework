@@ -169,7 +169,7 @@ INTENTS = [
             "auto", "automático", "automatico", "self", "heal",
             "integrar tool", "registrar tool", "añadir test",
         ],
-        "tools": ["tool-guardian", "legacy-fix"],
+        "tools": ["tool-guardian", "auto-register"],
         "description": "Detecta y auto-repara problemas del framework",
         "destructive": True,
     },
