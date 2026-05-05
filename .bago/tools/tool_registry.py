@@ -280,6 +280,11 @@ REGISTRY: dict[str, ToolEntry] = {
         description="Gestiona bago.db: estado de ideas, historial guardian, init/status/reset",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_db.py"))],
     ),
+    "hello": ToolEntry(
+        cmd="hello", module="bago_hello",
+        description="Guía de inicio para nuevos usuarios y recordatorio de comandos esenciales",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_hello.py"))],
+    ),
 }
 
 

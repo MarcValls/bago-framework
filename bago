@@ -234,6 +234,7 @@ COMMANDS_MAIN = {
     "weekly-report": ["python3", str(TOOLS / "weekly_report.py")],
     "why": ["python3", str(TOOLS / "why.py")],
     "db": ["python3", str(TOOLS / "bago_db.py")],
+    "hello": ["python3", str(TOOLS / "bago_hello.py")],
     "workflow-navigator": ["python3", str(TOOLS / "workflow_navigator.py")],
     "workflow-selector": ["python3", str(TOOLS / "workflow_selector.py")],
 }
