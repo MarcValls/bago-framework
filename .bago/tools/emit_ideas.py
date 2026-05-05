@@ -551,6 +551,9 @@ def detect_implemented_features() -> dict[str, bool]:
         "cosecha_health_trend":       "# COSECHA_HEALTH_TREND_IMPLEMENTED" in (
             (tools / "cosecha.py").read_text(encoding="utf-8")
             if (tools / "cosecha.py").exists() else ""),
+        "catalog_in_stability":       "catalog_status" in (
+            (tools / "stability_summary.py").read_text(encoding="utf-8")
+            if (tools / "stability_summary.py").exists() else ""),
         "full_sprint_in_stability":   "# FULL_SPRINT_IN_STABILITY_IMPLEMENTED" in (
             (tools / "stability_summary.py").read_text(encoding="utf-8")
             if (tools / "stability_summary.py").exists() else ""),

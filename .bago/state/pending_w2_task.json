@@ -1,9 +1,9 @@
 {
   "idea_index": 1,
-  "idea_title": "Tendencia de health entre cosechas",
-  "priority": 92,
+  "idea_title": "Estado del catálogo en stability",
+  "priority": 86,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-  "objetivo": "Comparar el health score de la cosecha actual con la anterior para mostrar tendencia (↑/↓/=).",
+  "objetivo": "Añadir un bloque de salud del catálogo de ideas al informe de stability, mostrando cuántas ideas quedan disponibles.",
   "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
@@ -11,16 +11,16 @@
   ],
   "validacion_minima": [
     "La salida debe explicar el cambio, los archivos y la verificación mínima.",
-    "Métrica objetivo: La cosecha detecta si el health score subió/bajó respecto a la cosecha anterior."
+    "Métrica objetivo: bago stability incluye estado del catálogo: ideas disponibles y porcentaje implementado."
   ],
-  "siguiente_paso": "Añadir _prev_harvest_health() en cosecha.py que lea la última sesión harvest y compare con el score actual. Agregar sentinel # COSECHA_HEALTH_TREND_IMPLEMENTED.",
-  "metric": "La cosecha detecta si el health score subió/bajó respecto a la cosecha anterior.",
+  "siguiente_paso": "Añadir función catalog_status() en stability_summary.py que lea DB e implemented_ideas.json.",
+  "metric": "bago stability incluye estado del catálogo: ideas disponibles y porcentaje implementado.",
   "contexto": [
-    "Entrada: campo 'health_at_harvest' de las últimas dos sesiones harvest.",
-    "Salida: indicador de tendencia '↑ +5 pts' o '↓ -10 pts' en el resumen de cosecha.",
-    "Ventaja: feedback inmediato sobre si el sistema mejoró entre sesiones."
+    "Entrada: bago.db con ideas disponibles + implemented_ideas.json.",
+    "Salida: sección 'catálogo' en stability con N ideas disponibles / M implementadas.",
+    "Ventaja: incluye la salud del pipeline de ideas dentro del informe de estabilidad."
   ],
   "status": "done",
-  "accepted_at": "2026-05-05T09:25:12.104898+00:00",
-  "done_at": "2026-05-05T09:26:37.659079+00:00"
+  "accepted_at": "2026-05-05T09:27:27.804650+00:00",
+  "done_at": "2026-05-05T09:28:17.832173+00:00"
 }
