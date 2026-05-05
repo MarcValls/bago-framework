@@ -707,6 +707,15 @@ def test_lsp_manager():
         _record("lsp:list", FAIL, f"rc={rc2}")
 
 
+def test_pre_push_guard():
+    """pre_push_guard.py --test pasa self-test ligero."""
+    rc, out, _ = _run("pre_push_guard.py", ["--test"])
+    if rc == 0 and "tests pasaron" in out:
+        _record("pre_push_guard:tests", PASS, out.strip().split("\n")[-1] or "ok")
+    else:
+        _record("pre_push_guard:tests", FAIL, f"rc={rc} {out[-80:]}")
+
+
 def test_datetime_clean():
     """Verifica que los archivos corregidos no tienen datetime.now() sin tz."""
     import re as _re
@@ -1625,6 +1634,7 @@ ALL_TESTS = [
     (32, "research_orchestrator", test_research_orchestrator),
     (33, "chronicle_reporter", test_chronicle_reporter),
     (34, "lsp_manager", test_lsp_manager),
+    (35, "pre_push_guard", test_pre_push_guard),
 ]
 
 

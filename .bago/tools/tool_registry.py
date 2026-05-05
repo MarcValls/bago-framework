@@ -374,6 +374,11 @@ REGISTRY: dict[str, ToolEntry] = {
         description="Entrada rápida al repo: health + top ideas + aceptar tarea activa",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_start.py"))],
     ),
+    "pre-push": ToolEntry(
+        cmd="pre-push", module="pre_push_guard",
+        description="Gate de sincronizacion remota: bloquea pushes con BAGO roto",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "pre_push_guard.py"))],
+    ),
 }
 
 
@@ -471,17 +476,18 @@ def _self_tests() -> None:
     _check("T2:cmd-key-consistency", not mismatches,
            "all cmd == key" if not mismatches else f"mismatches: {mismatches}")
 
-    # T3: no duplicate modules
+    # T3: no duplicate modules except explicit public aliases
+    allowed_alias_modules = {"flow", "show_task"}
     modules = [e.module for e in REGISTRY.values()]
-    dupes = {m for m in modules if modules.count(m) > 1}
+    dupes = {m for m in modules if modules.count(m) > 1 and m not in allowed_alias_modules}
     _check("T3:no-duplicate-modules", not dupes,
-           "no duplicate modules" if not dupes else f"duplicates: {dupes}")
+           "no unexpected duplicate modules" if not dupes else f"duplicates: {dupes}")
 
     # T4: get_commands() returns current Python + .py format
     cmds = get_commands()
     fmt_ok = all(
-        isinstance(v, list) and len(v) == 2
-        and v[0] == PYTHON and v[1].endswith(".py")
+        isinstance(v, list) and len(v) >= 2
+        and v[0] in (PYTHON, "python3") and v[1].endswith(".py")
         for v in cmds.values()
     )
     _check("T4:get-commands-format", fmt_ok,

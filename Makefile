@@ -14,7 +14,7 @@ PACK_NAME  := BAGO_$(VERSION)_$(TIMESTAMP)
 SHELL_RC   := $(shell [ -f ~/.zshrc ] && echo ~/.zshrc || echo ~/.bashrc)
 BAGO_PATH  := $(shell pwd)/bago
 
-.PHONY: help banner validate pack deploy install uninstall clean
+.PHONY: help banner validate pre-push install-hooks pack deploy install uninstall clean
 
 # ─── Ayuda ────────────────────────────────────────────────────────────────────
 help:
@@ -23,6 +23,8 @@ help:
 	@echo "  ─────────────────────────────"
 	@echo "  make banner     → muestra el cartel BAGO ACTIVO"
 	@echo "  make validate   → valida manifest + state + pack"
+	@echo "  make pre-push   → ejecuta gate antes de publicar a remoto"
+	@echo "  make install-hooks → activa hooks versionados .githooks"
 	@echo "  make pack       → crea zip con timestamp en dist/"
 	@echo "  make deploy     → crea zip limpio sin historial (para nuevos proyectos)"
 	@echo "  make install    → instala alias 'bago' en $(SHELL_RC)"
@@ -37,6 +39,13 @@ banner:
 # ─── Validación ───────────────────────────────────────────────────────────────
 validate:
 	@python3 $(TOOLS)/validate_pack.py
+
+pre-push:
+	@python3 bago pre-push --remote
+
+install-hooks:
+	@git config core.hooksPath .githooks
+	@echo "  ✅ hooks Git activados: .githooks"
 
 # ─── Pack: regenera TREE+CHECKSUMS y crea zip ─────────────────────────────────
 pack:
