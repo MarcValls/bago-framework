@@ -106,18 +106,23 @@
       "title": "bago diff: mostrar cambios entre sesiones",
       "slot": null,
       "done_at": "2026-05-05T10:15:08.666820+00:00"
+    },
+    {
+      "title": "bago ideas --export: exportar lista a markdown",
+      "slot": null,
+      "done_at": "2026-05-05T10:17:13.158754+00:00"
     }
   ],
-  "updated_at": "2026-05-05T10:15:08.666820+00:00",
+  "updated_at": "2026-05-05T10:17:13.158754+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "bago diff: mostrar cambios entre sesiones",
-      "date": "2026-05-05T10:15:08.700121+00:00",
-      "session_close": "SESSION_CLOSE_20260505_101508.md",
+      "title": "bago ideas --export: exportar lista a markdown",
+      "date": "2026-05-05T10:17:13.183611+00:00",
+      "session_close": "SESSION_CLOSE_20260505_101713.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "bago diff muestra qué ficheros cambiaron entre la sesión anterior y la actual."
+      "objetivo": "bago ideas --export genera ideas_snapshot.md con las ideas actuales."
     }
   ],
-  "last_updated": "2026-05-05T10:15:08.700146+00:00"
+  "last_updated": "2026-05-05T10:17:13.183636+00:00"
 }

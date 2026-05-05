@@ -1,9 +1,9 @@
 {
   "idea_index": 1,
-  "idea_title": "bago diff: mostrar cambios entre sesiones",
-  "priority": 87,
+  "idea_title": "bago ideas --export: exportar lista a markdown",
+  "priority": 80,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-  "objetivo": "bago diff muestra qué ficheros cambiaron entre la sesión anterior y la actual.",
+  "objetivo": "bago ideas --export genera ideas_snapshot.md con las ideas actuales.",
   "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
@@ -11,16 +11,16 @@
   ],
   "validacion_minima": [
     "La salida debe explicar el cambio, los archivos y la verificación mínima.",
-    "Métrica objetivo: Reduce el tiempo de orientación al reanudar trabajo."
+    "Métrica objetivo: Facilita compartir el estado del catálogo sin acceso al DB."
   ],
-  "siguiente_paso": "Añadir subcomando diff en bago.py que compara git log de dos puntos de sesión.",
-  "metric": "Reduce el tiempo de orientación al reanudar trabajo.",
+  "siguiente_paso": "Añadir flag --export en emit_ideas.py que escribe un .md en .bago/state/.",
+  "metric": "Facilita compartir el estado del catálogo sin acceso al DB.",
   "contexto": [
-    "Entrada: SESSION_CLOSE_*.md timestamps + git log --name-only.",
-    "Salida: lista de ficheros modificados agrupados por sesión.",
-    "Ventaja: orientación instantánea al retomar trabajo."
+    "Entrada: lista de ideas filtradas.",
+    "Salida: .bago/state/ideas_snapshot.md con fecha y lista.",
+    "Ventaja: snapshot portátil del catálogo sin SQLite."
   ],
   "status": "done",
-  "accepted_at": "2026-05-05T10:13:40.317406+00:00",
-  "done_at": "2026-05-05T10:15:08.663266+00:00"
+  "accepted_at": "2026-05-05T10:15:48.278932+00:00",
+  "done_at": "2026-05-05T10:17:13.150542+00:00"
 }

@@ -625,6 +625,8 @@ def detect_implemented_features() -> dict[str, bool]:
         "bago_diff_sessions":         "# BAGO_DIFF_SESSIONS_IMPLEMENTED" in (
             (tools / "bago_diff.py").read_text(encoding="utf-8")
             if (tools / "bago_diff.py").exists() else ""),
+        "ideas_export":               "# IDEAS_EXPORT_IMPLEMENTED" in (
+            Path(__file__).read_text(encoding="utf-8")),
     }
 
 
@@ -836,24 +838,27 @@ _INTENT_TO_SECTION: dict[str, str] = {
 }
 
 
-def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, bool, str | None]:
+def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, bool, str | None, bool]:
     detail_index = None
     accept = False
     select = False
     baseline = False
     intent: str | None = None
+    export = False
     idx = 1
 
     while idx < len(argv):
         arg = argv[idx]
         if arg in {"-h", "--help"}:
             print(
-                "Usage: emit_ideas.py [--detail N] [--accept N] [--select] [--baseline] [--intent TYPE]\n\n"
+                "Usage: emit_ideas.py [--detail N] [--accept N] [--select] [--baseline] "
+                "[--intent TYPE] [--export]\n\n"
                 "Show 5 to 20 contextual ideas prioritized by stability. Use --detail "
                 "to expand a selected idea, --accept to mark it ready for W2, "
                 "--select for the interactive slot selector, --baseline for "
-                "low-risk ideas only, or --intent to filter by type "
-                "(implementar, depurar, cerrar, respaldo)."
+                "low-risk ideas only, --intent to filter by type "
+                "(implementar, depurar, cerrar, respaldo), or --export to write "
+                "ideas_snapshot.md to .bago/state/."
             )
             raise SystemExit(0)
         if arg == "--select":
@@ -870,6 +875,10 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, bool, str | Non
             intent = argv[idx + 1]
             idx += 2
             continue
+        if arg == "--export":
+            export = True
+            idx += 1
+            continue
         if arg == "--detail":
             if idx + 1 >= len(argv):
                 raise SystemExit("--detail requires a numeric idea index")
@@ -885,7 +894,7 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, bool, str | Non
             continue
         raise SystemExit(f"Unknown argument: {arg}")
 
-    return detail_index, accept, select, baseline, intent
+    return detail_index, accept, select, baseline, intent, export
 
 
 def _build_ideas_hardcoded(
@@ -1038,8 +1047,30 @@ def _build_ideas_hardcoded(
     return ideas
 
 
+def _export_ideas_snapshot(ideas: list[dict]) -> Path:
+    """Escribe ideas_snapshot.md en .bago/state/ y devuelve la ruta."""
+    # # IDEAS_EXPORT_IMPLEMENTED
+    from datetime import datetime, timezone
+    out = ROOT / ".bago" / "state" / "ideas_snapshot.md"
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    lines = [f"# BAGO Ideas — snapshot {now}\n"]
+    for i, idea in enumerate(ideas, 1):
+        title   = idea.get("title", "—")
+        summary = idea.get("summary", "")
+        w2      = idea.get("w2", "")
+        prio    = idea.get("priority", "?")
+        lines.append(f"## {i}. [{prio}] {title}\n")
+        if summary:
+            lines.append(f"{summary}\n")
+        if w2:
+            lines.append(f"**Siguiente paso:** {w2}\n")
+        lines.append("")
+    out.write_text("\n".join(lines), encoding="utf-8")
+    return out
+
+
 def main() -> int:
-    detail_index, accept, select, baseline_flag, intent_filter = parse_args(sys.argv)  # INTENT_FILTER_IMPLEMENTED
+    detail_index, accept, select, baseline_flag, intent_filter, export_flag = parse_args(sys.argv)  # INTENT_FILTER_IMPLEMENTED
 
     # ── Modo selector interactivo ────────────────────────────────────────────
     if select:
@@ -1200,6 +1231,10 @@ def main() -> int:
             print("  (forzado por flag --baseline)")
     print("")
     print_sectioned_ideas(idea_sections)
+
+    if export_flag:
+        snap = _export_ideas_snapshot(ideas)
+        print(f"\n  📄 Exportado: {snap}")
 
     print("")
     if detail_index is None:
