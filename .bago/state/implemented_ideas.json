@@ -91,18 +91,23 @@
       "title": "bago hello sugiere reopen si hay sesión previa",
       "slot": null,
       "done_at": "2026-05-05T10:00:48.963886+00:00"
+    },
+    {
+      "title": "Filtrar ideas por intención al seleccionar",
+      "slot": null,
+      "done_at": "2026-05-05T10:11:32.396693+00:00"
     }
   ],
-  "updated_at": "2026-05-05T10:00:48.963886+00:00",
+  "updated_at": "2026-05-05T10:11:32.396693+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "bago hello sugiere reopen si hay sesión previa",
-      "date": "2026-05-05T10:00:48.991155+00:00",
-      "session_close": "SESSION_CLOSE_20260505_100048.md",
+      "title": "Filtrar ideas por intención al seleccionar",
+      "date": "2026-05-05T10:11:32.424575+00:00",
+      "session_close": "SESSION_CLOSE_20260505_101132.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "bago hello detecta SESSION_CLOSE reciente y sugiere bago reopen."
+      "objetivo": "Añadir flag --intent a bago ideas para filtrar por tipo: implementar, depurar, cerrar."
     }
   ],
-  "last_updated": "2026-05-05T10:00:48.991177+00:00"
+  "last_updated": "2026-05-05T10:11:32.424598+00:00"
 }

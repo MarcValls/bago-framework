@@ -70,7 +70,7 @@ def load_ideas_from_db(feat: dict, extra_flags: dict) -> list[dict] | None:
     try:
         conn = _db_conn()
         rows = conn.execute(
-            "SELECT * FROM ideas ORDER BY slot NULLS LAST, generation DESC, priority DESC"
+            "SELECT * FROM ideas WHERE status = 'available' ORDER BY slot NULLS LAST, generation DESC, priority DESC"
         ).fetchall()
         conn.close()
     except Exception:
@@ -276,7 +276,7 @@ def load_fallback_from_db() -> list[dict]:
     try:
         conn = _db_conn()
         rows = conn.execute(
-            "SELECT * FROM ideas WHERE slot IS NULL ORDER BY priority DESC"
+            "SELECT * FROM ideas WHERE slot IS NULL AND status = 'available' ORDER BY priority DESC"
         ).fetchall()
         conn.close()
         implemented_db = _load_implemented_titles_from_db() | load_implemented_titles()
@@ -617,6 +617,8 @@ def detect_implemented_features() -> dict[str, bool]:
         "reopen_in_hello":            "# REOPEN_IN_HELLO_IMPLEMENTED" in (
             (tools / "bago_hello.py").read_text(encoding="utf-8")
             if (tools / "bago_hello.py").exists() else ""),
+        "intent_filter_ideas":        "# INTENT_FILTER_IMPLEMENTED" in (
+            Path(__file__).read_text(encoding="utf-8")),
     }
 
 
@@ -820,22 +822,32 @@ def save_handoff(data: dict[str, object]) -> Path:
     return dest
 
 
-def parse_args(argv: list[str]) -> tuple[int | None, bool, bool]:
+_INTENT_TO_SECTION: dict[str, str] = {
+    "implementar": "contextuales",
+    "depurar":     "deuda",
+    "cerrar":      "ciclo",
+    "respaldo":    "respaldo",
+}
+
+
+def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, bool, str | None]:
     detail_index = None
     accept = False
     select = False
     baseline = False
+    intent: str | None = None
     idx = 1
 
     while idx < len(argv):
         arg = argv[idx]
         if arg in {"-h", "--help"}:
             print(
-                "Usage: emit_ideas.py [--detail N] [--accept N] [--select] [--baseline]\n\n"
+                "Usage: emit_ideas.py [--detail N] [--accept N] [--select] [--baseline] [--intent TYPE]\n\n"
                 "Show 5 to 20 contextual ideas prioritized by stability. Use --detail "
                 "to expand a selected idea, --accept to mark it ready for W2, "
-                "--select for the interactive slot selector, or --baseline for "
-                "low-risk ideas only."
+                "--select for the interactive slot selector, --baseline for "
+                "low-risk ideas only, or --intent to filter by type "
+                "(implementar, depurar, cerrar, respaldo)."
             )
             raise SystemExit(0)
         if arg == "--select":
@@ -845,6 +857,12 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool, bool]:
         if arg == "--baseline":
             baseline = True
             idx += 1
+            continue
+        if arg == "--intent":
+            if idx + 1 >= len(argv):
+                raise SystemExit("--intent requires a type: implementar, depurar, cerrar, respaldo")
+            intent = argv[idx + 1]
+            idx += 2
             continue
         if arg == "--detail":
             if idx + 1 >= len(argv):
@@ -861,7 +879,7 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool, bool]:
             continue
         raise SystemExit(f"Unknown argument: {arg}")
 
-    return detail_index, accept, select, baseline
+    return detail_index, accept, select, baseline, intent
 
 
 def _build_ideas_hardcoded(
@@ -1015,7 +1033,7 @@ def _build_ideas_hardcoded(
 
 
 def main() -> int:
-    detail_index, accept, select, baseline_flag = parse_args(sys.argv)
+    detail_index, accept, select, baseline_flag, intent_filter = parse_args(sys.argv)  # INTENT_FILTER_IMPLEMENTED
 
     # ── Modo selector interactivo ────────────────────────────────────────────
     if select:
@@ -1100,6 +1118,14 @@ def main() -> int:
 
     # Ajuste dinámico de score según estado actual
     ideas = _apply_dynamic_score(ideas)
+
+    # ── Filtro por intención (--intent) ──────────────────────────────────────
+    if intent_filter:
+        target_section = _INTENT_TO_SECTION.get(intent_filter, intent_filter)
+        ideas = [i for i in ideas if str(i.get("section", "")) == target_section]
+        if not ideas:
+            print(f"  (sin ideas disponibles para --intent {intent_filter!r})")
+            return 0
 
     # Rellenar con fallback hasta MIN_IDEAS si hay pocas
     if len(ideas) < MIN_IDEAS:
