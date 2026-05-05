@@ -627,30 +627,30 @@ def synthesize_ideas() -> int:
         })
 
     # ── 1. Guardian health trend degradation ──────────────────────────────────
-    history_file = state_dir / "guardian_history.json"
-    if history_file.exists():
-        try:
-            history: list = json.loads(history_file.read_text(encoding="utf-8"))
-            if len(history) >= 3:
-                recent = [e["health"] for e in history[-3:]]
-                if recent[-1] < recent[0]:
-                    _add(
-                        "synth-guardian-degradation",
-                        "Recuperar salud del guardian",
-                        "El guardian muestra degradación reciente. Resolver los errores activos.",
-                        "health",
-                        85,
-                        [
-                            f"Salud últimas 3 ejecuciones: {recent}",
-                            "Ejecutar `bago tool-guardian` e identificar errores.",
-                            "Resolver cada error hasta recuperar 100%.",
-                        ],
-                        "Ejecutar `bago tool-guardian` y corregir hallazgos.",
-                        risk="high",
-                        metric=f"Guardian vuelve a 100% desde {recent[-1]}%.",
-                    )
-        except Exception:
-            pass
+    try:
+        sys.path.insert(0, str(ROOT / ".bago" / "tools"))
+        from bago_db import get_guardian_history
+        history: list = get_guardian_history()
+        if len(history) >= 3:
+            recent = [e["health"] for e in history[-3:]]
+            if recent[-1] < recent[0]:
+                _add(
+                    "synth-guardian-degradation",
+                    "Recuperar salud del guardian",
+                    "El guardian muestra degradación reciente. Resolver los errores activos.",
+                    "health",
+                    85,
+                    [
+                        f"Salud últimas 3 ejecuciones: {recent}",
+                        "Ejecutar `bago tool-guardian` e identificar errores.",
+                        "Resolver cada error hasta recuperar 100%.",
+                    ],
+                    "Ejecutar `bago tool-guardian` y corregir hallazgos.",
+                    risk="high",
+                    metric=f"Guardian vuelve a 100% desde {recent[-1]}%.",
+                )
+    except Exception:
+        pass
 
     # ── 2. Live guardian: tools con errores ───────────────────────────────────
     try:

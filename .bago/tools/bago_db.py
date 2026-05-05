@@ -266,8 +266,6 @@ def record_guardian_run(date: str, health: float, ok: int, total: int,
                    )""",
                 (MAX_GUARDIAN_RUNS,)
             )
-        # Sync JSON after commit
-        _export_guardian_history(conn)
     finally:
         conn.close()
 
@@ -275,7 +273,7 @@ def record_guardian_run(date: str, health: float, ok: int, total: int,
 def get_guardian_history(n: int = MAX_GUARDIAN_RUNS) -> list[dict]:
     """Devuelve los últimos n runs del guardian, ordenados de más antiguo a más reciente."""
     if not DB_PATH.exists():
-        return _load_guardian_json()
+        return []
     conn = _connect()
     rows = conn.execute(
         "SELECT date,health,ok,total,errors,warnings FROM guardian_runs ORDER BY id DESC LIMIT ?",
@@ -289,31 +287,6 @@ def get_last_guardian_run() -> dict | None:
     """Devuelve el último run del guardian o None."""
     runs = get_guardian_history(1)
     return runs[0] if runs else None
-
-
-def _load_guardian_json() -> list[dict]:
-    """Fallback: lee guardian_history.json si la DB no existe."""
-    hist_path = STATE / "guardian_history.json"
-    if not hist_path.exists():
-        return []
-    try:
-        return json.loads(hist_path.read_text(encoding="utf-8"))
-    except Exception:
-        return []
-
-
-def _export_guardian_history(conn: sqlite3.Connection) -> None:
-    """Exporta guardian_runs a guardian_history.json (backup legible)."""
-    rows = conn.execute(
-        "SELECT date,health,ok,total,errors,warnings FROM guardian_runs ORDER BY id"
-    ).fetchall()
-    data = [dict(r) for r in rows]
-    try:
-        (STATE / "guardian_history.json").write_text(
-            json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
-    except Exception:
-        pass
 
 
 # ── Implemented ideas ─────────────────────────────────────────────────────────
@@ -421,10 +394,9 @@ def export_all() -> None:
         print("bago.db no existe — ejecuta: bago db init")
         return
     conn = _connect()
-    _export_guardian_history(conn)
     _export_implemented_ideas(conn)
     conn.close()
-    print("✅ Exportado: guardian_history.json + implemented_ideas.json")
+    print("✅ Exportado: implemented_ideas.json")
 
 
 def db_status() -> None:

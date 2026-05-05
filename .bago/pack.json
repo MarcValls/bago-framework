@@ -26,9 +26,7 @@
     "role": "core/04_CONTRATOS_DE_ROL.md",
     "workflow": "core/canon/CONTRATOS/contrato_workflow.md",
     "change": "core/07_PROTOCOLO_DE_CAMBIO.md",
-    "evidence": "core/canon/CONTRATOS/contrato_evidencia.md",
-    "role_schema": "state/schema/role.schema.json",
-    "workflow_schema": "state/schema/workflow.schema.json"
+    "evidence": "core/canon/CONTRATOS/contrato_evidencia.md"
   },
   "workflows": {
     "analysis": "core/workflows/workflow_analisis.md",
