@@ -157,8 +157,8 @@ except Exception as e:
     print(f"✅ OK (skipped: {e})")  # ← TRAMPA: excepción → verde
 ```
 
-**Impacto:** Errores reales aparecen como warnings o se ignoran silenciosamente.
-El CI nunca falla aunque el tool esté completamente roto.
+**Impacto:** Errores reales pueden aparecer como warnings o quedar ignorados.
+El CI puede quedar verde aunque el tool esté roto.
 
 **Remediación:**
 ```python

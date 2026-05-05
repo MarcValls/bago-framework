@@ -187,15 +187,15 @@ type .bago\GUIDE_HOW_TO_USE.md
 - [x] Orchestrador de AGENTS (paralelo)
 - [x] Factory de ROLES (role_factory.py)
 - [x] Plantilla universal de ROLES
-- [x] 6 ROLES registrados
+- [x] 6 ROLES registrados (`.bago/roles/manifest.json`)
 - [x] Documentación AGENTS
-- [x] Documentación ROLES
+- [x] Documentación ROLES (`.bago/roles/README.md`)
 - [x] Documentación comparativa
 - [x] Proyecto demo (typing-course)
 - [x] Demo PowerShell ejecutable
 - [x] Demo ejecutada exitosamente
-- [x] Guía de uso
-- [x] Resumen ejecutivo
+- [x] Guía de uso (`.bago/GUIDE_HOW_TO_USE.md`)
+- [x] Resumen ejecutivo (`.bago/SUMMARY_FACTORIES.md`)
 
 ---
 

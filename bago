@@ -117,8 +117,9 @@ def _build_commands() -> dict:
 
 COMMANDS = _build_commands()
 
-# CHG-002: static routing registry — read by tool_guardian W001 check
-COMMANDS_MAIN = {
+# CHG-002 legacy snapshot kept only for historical compatibility.
+# Operational routing is COMMANDS, loaded from tool_registry.get_commands().
+_LEGACY_COMMANDS_MAIN = {
     "alias-manager": ["python3", str(TOOLS / "alias_manager.py")],
     "artifact-counter": ["python3", str(TOOLS / "artifact_counter.py")],
     "audit-v2": ["python3", str(TOOLS / "audit_v2.py")],

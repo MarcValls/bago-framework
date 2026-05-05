@@ -536,7 +536,7 @@ Características Verificadas:
 │  ✅ 4 agentes monitoreados activamente  │
 │  ✅ Métricas del sistema en tiempo real │
 │  ✅ Historial completo visible          │
-│  ✅ UI completamente responsive         │
+│  ✅ UI responsive en la demo documentada │
 │  ✅ Refresh manual disponible           │
 │  ✅ Gestos de tablet soportados        │
 │                                          │

@@ -337,4 +337,4 @@ PS C:\Marc_max_20gb\.bago> .\bago.ps1 analyze ..\typing-course\src
 ---
 
 **Demo ejecutada:** 2026-04-28 05:19:25 UTC+2  
-**Status:** LISTO PARA PRODUCCIÓN ✓
+**Status:** verificado para demo local (`.bago/DEMO_RESULTS.md`)

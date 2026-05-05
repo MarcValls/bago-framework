@@ -39,6 +39,8 @@ desktop.ini
 # BAGO — volatile runtime files (generated on demand, not canonical)
 # Generated on `bago setup` / sync-cmds; excluded from CHECKSUMS in sync_pack_metadata.py.
 .bago/state/repo_context.json
+.bago/snapshots/
+.bago/state/research/
 
 
 # Editor

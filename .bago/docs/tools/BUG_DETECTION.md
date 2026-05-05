@@ -259,7 +259,7 @@ bago duplication-checker --threshold 70
 
 ### Falsos Positivos
 - Algunos "bugs" pueden ser intencionales (ej: bare except en REPL)
-- La detección de inyección es pattern-based, no garantizada
+- La detección de inyección es pattern-based; requiere revisión manual para falsos positivos
 - Funciones similares pueden ser patrones legítimos
 
 **Mitigation:** Usa `--ignore` para suprimir falsos positivos en tu contexto.

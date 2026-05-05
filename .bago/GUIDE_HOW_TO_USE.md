@@ -59,7 +59,7 @@ powershell -ExecutionPolicy Bypass -File C:\Marc_max_20gb\.bago\bago_interactive
    ↓
 4. Re-ejecutas BAGO
    ↓
-5. ¡Código listo para producción!
+5. Código con veredicto revisable para el alcance analizado
 ```
 
 ---
@@ -356,7 +356,7 @@ powershell -ExecutionPolicy Bypass `
 
 4. → Implementa recomendaciones
 5. → Re-ejecuta BAGO
-6. → ¡Código listo para producción!
+6. → Código con veredicto revisable para el alcance analizado
 
 ---
 

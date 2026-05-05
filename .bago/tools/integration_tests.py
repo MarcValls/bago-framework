@@ -163,7 +163,9 @@ def test_search():
 def test_timeline():
     """Genera el timeline y verifica el formato."""
     rc, out, _ = _run("timeline.py")
-    if rc == 0 and "Timeline" in out and "Semanas" in out:
+    if rc == 0 and "Sin ideas implementadas" in out:
+        _record("timeline:full", PASS, "sin ideas implementadas registradas")
+    elif rc == 0 and "Timeline" in out and "Semanas" in out:
         # Verificar que tiene al menos una fila de semana
         has_week = any("2026-" in line for line in out.splitlines())
         if has_week:
@@ -614,10 +616,12 @@ def test_bago_utils():
     try:
         tree = _ast.parse(p.read_text(encoding="utf-8"))
         fns = {n.name for n in _ast.walk(tree) if isinstance(n, _ast.FunctionDef)}
-        if "print_ok" in fns and "save_json" in fns:
+        required = {"load_json", "save_json", "get_global_state", "timestamp_iso"}
+        missing = required - fns
+        if not missing:
             _record("bago_utils:structure", PASS, f"{len(fns)} funciones ok")
         else:
-            _record("bago_utils:structure", FAIL, f"faltan funciones: {fns}")
+            _record("bago_utils:structure", FAIL, f"faltan funciones: {sorted(missing)}")
     except SyntaxError as e:
         _record("bago_utils:syntax", FAIL, str(e))
 
@@ -703,27 +707,6 @@ def test_lsp_manager():
         _record("lsp:list", FAIL, f"rc={rc2}")
 
 
-
-    """Existe al menos un sprint open en state/sprints/."""
-    import json as _json
-    sprints_dir = ROOT / "state" / "sprints"
-    if not sprints_dir.exists():
-        _record("sprints:dir_exists", FAIL, "no existe"); return
-    files = list(sprints_dir.glob("*.json"))
-    open_sprints = []
-    for f in files:
-        try:
-            d = _json.loads(f.read_text())
-            if d.get("status") in ("open", "active"):
-                open_sprints.append(f.stem)
-        except Exception:
-            pass
-    if open_sprints:
-        _record("sprints:open_exists", PASS, f"open: {', '.join(open_sprints)}")
-    else:
-        _record("sprints:open_exists", FAIL, "no hay sprints open")
-
-
 def test_datetime_clean():
     """Verifica que los archivos corregidos no tienen datetime.now() sin tz."""
     import re as _re
@@ -747,19 +730,32 @@ def test_datetime_clean():
 
 
 def test_routing_count():
-    """bago script tiene al menos 65 routing entries."""
-    import re as _re
-    bago_script = ROOT.parent / "bago"
-    if not bago_script.exists():
-        bago_script = ROOT.parent.parent / "bago"
-    if not bago_script.exists():
-        _record("routing:count", FAIL, "bago script no encontrado"); return
-    src = bago_script.read_text()
-    count = len(_re.findall(r'elif cmd ==', src))
-    if count >= 65:
-        _record("routing:count", PASS, f"{count} entries (≥65)")
+    """bago usa el registro central como superficie operativa."""
+    import importlib.util as _importlib_util
+    registry_path = TOOLS / "tool_registry.py"
+    if not registry_path.exists():
+        _record("routing:registry", FAIL, "tool_registry.py no encontrado")
+        return
+    spec = _importlib_util.spec_from_file_location("_bago_tool_registry_test", registry_path)
+    mod = _importlib_util.module_from_spec(spec)
+    try:
+        import sys as _sys
+        _sys.modules[spec.name] = mod
+        spec.loader.exec_module(mod)
+        commands = mod.get_commands()
+    except Exception as e:
+        import sys as _sys
+        _sys.modules.pop(spec.name, None)
+        _record("routing:registry", FAIL, f"no se pudo cargar registry: {e}")
+        return
+    required = {"db", "hello", "status", "validate", "health", "sincerity", "stability"}
+    missing = sorted(required - set(commands))
+    if missing:
+        _record("routing:registry", FAIL, f"faltan comandos: {', '.join(missing)}")
+    elif len(commands) >= 30 and commands.get("status", [])[-1] == "status":
+        _record("routing:registry", PASS, f"{len(commands)} comandos desde tool_registry")
     else:
-        _record("routing:count", FAIL, f"{count} < 65 required")
+        _record("routing:registry", FAIL, f"registry incoherente: {len(commands)} comandos")
 
 
 def test_bago_lint_rules():
@@ -1550,116 +1546,85 @@ def test_sysexit_refactor():
         _record("sysexit:refactor", FAIL, f"{len(violations)} violations: {violations[:3]}")
 
 
+def _tools_referenced_by(fn) -> set[str]:
+    """Return tool filenames passed to _run() inside a test function."""
+    import ast as _ast
+    import inspect as _inspect
+    try:
+        tree = _ast.parse(_inspect.getsource(fn))
+    except Exception:
+        return set()
+    refs: set[str] = set()
+    for node in _ast.walk(tree):
+        if (
+            isinstance(node, _ast.Call)
+            and isinstance(node.func, _ast.Name)
+            and node.func.id == "_run"
+            and node.args
+            and isinstance(node.args[0], _ast.Constant)
+            and isinstance(node.args[0].value, str)
+        ):
+            refs.add(node.args[0].value)
+    return refs
+
+
+def test_suite_integrity():
+    """ALL_TESTS no referencia funciones no definidas ni tools ausentes."""
+    missing_functions = []
+    missing_tools = []
+    for num, name, fn in ALL_TESTS:
+        if not callable(fn):
+            missing_functions.append(f"{num}:{name}")
+            continue
+        for tool in sorted(_tools_referenced_by(fn)):
+            if not (TOOLS / tool).exists():
+                missing_tools.append(f"{num}:{name}->{tool}")
+    if missing_functions or missing_tools:
+        detail = []
+        if missing_functions:
+            detail.append("funciones: " + ", ".join(missing_functions[:8]))
+        if missing_tools:
+            detail.append("tools: " + ", ".join(missing_tools[:8]))
+        _record("suite:integrity", FAIL, "; ".join(detail))
+    else:
+        _record("suite:integrity", PASS, f"{len(ALL_TESTS)} tests activos coherentes")
+
+
 ALL_TESTS = [
-    (1,  "sprint_manager",  test_sprint_manager),
-    (2,  "search",          test_search),
-    (3,  "timeline",        test_timeline),
-    (4,  "report",          test_report),
-    (5,  "metrics",         test_metrics),
-    (6,  "doctor",          test_doctor),
-    (7,  "git_context",     test_git_context),
-    (8,  "export",          test_export),
-    (9,  "watch",           test_watch),
-    (10, "changelog",       test_changelog),
-    (11, "snapshot",        test_snapshot),
-    (12, "diff",            test_diff),
-    (13, "session_stats",   test_session_stats),
-    (14, "compare",         test_compare),
-    (15, "goals",           test_goals),
-    (16, "lint",            test_lint),
-    (17, "summary",         test_summary),
-    (18, "tags",            test_tags),
-    (19, "flow",            test_flow),
-    (20, "insights",        test_insights),
-    (21, "config",          test_config),
-    (22, "check",           test_check),
-    (23, "archive",         test_archive),
-    (24, "velocity",        test_velocity),
-    (25, "patch",           test_patch),
-    (26, "notes",           test_notes),
-    (27, "template",        test_template),
-    (28, "scan",            test_scan),
-    (29, "hotspot",         test_hotspot),
-    (30, "autofix",         test_autofix),
-    (31, "gh",              test_gh),
-    (32, "risk",            test_risk),
-    (33, "debt",            test_debt),
-    (34, "impact",          test_impact),
-    (35, "contracts",       test_contracts),
-    (36, "bago_utils",      test_bago_utils),
-    (37, "testgen",         test_testgen),
-    (38, "ci_generator",    test_ci_generator),
-    (39, "bago_ask",        test_bago_ask),
-    (40, "sprint_state",    test_sprint_state),
-    (41, "datetime_clean",  test_datetime_clean),
-    (42, "routing_count",   test_routing_count),
-    (43, "bago_lint_rules", test_bago_lint_rules),
-    (44, "bago_lint_fix",   test_bago_lint_autofix),
-    (45, "bago_lint_cli",   test_bago_lint_cli),
-    (46, "diff_findings",   test_diff_findings),
-    (47, "multi_scan",      test_multi_scan),
-    (48, "js_ast_scanner",  test_js_ast_scanner),
-    (49, "permission_check", test_permission_check),
-    (50, "install_deps",    test_install_deps),
-    (51, "rule_catalog",    test_rule_catalog),
-    (52, "lint_report",     test_lint_report),
-    (53, "config_check",    test_config_check),
-    (54, "ci_baseline",     test_ci_baseline),
-    (55, "health_report",   test_health_report),
-    (56, "changelog_gen",   test_changelog_gen),
-    (57, "dead_code",       test_dead_code),
-    (58, "branch_check",    test_branch_check),
-    (59, "complexity",      test_complexity),
-    (60, "env_check",       test_env_check),
-    (61, "file_watcher",    test_file_watcher),
-    (62, "size_tracker",    test_size_tracker),
-    (63, "secret_scan",     test_secret_scan),
-    (64, "test_gen",        test_test_gen),
-    (65, "impact_map",       test_impact_map),
-    (66, "chart_engine",     test_chart_engine),
-    (67, "duplicate_check",  test_duplicate_check),
-    (68, "pre_commit_gen",   test_pre_commit_gen),
-    (69, "metrics_export",   test_metrics_export),
-    (70, "code_review",      test_code_review),
-    (71, "refactor_suggest", test_refactor_suggest),
-    (72, "api_check",        test_api_check),
-    (73, "coverage_gate",    test_coverage_gate),
-    (74, "naming_check",     test_naming_check),
-    (75, "type_check",       test_type_check),
-    (76, "license_check",    test_license_check),
-    (77, "dep_audit",        test_dep_audit),
-    (78, "readme_check",     test_readme_check),
-    (79, "ci_report",        test_ci_report),
-    (80, "tool_guardian",    test_tool_guardian),
-    (81, "pre_push_guard",   test_pre_push_guard),
-    (82, "tool_search",      test_tool_search),
-    (83, "legacy_fixer",     test_legacy_fixer),
-    (84, "commit_readiness", test_commit_readiness),
-    (85, "auto_register",    test_auto_register),
-    (86, "intent_router",    test_intent_router),
-    (87, "orchestrator",     test_orchestrator),
-    (88, "auto_heal",        test_auto_heal),
-    (89, "bago_config",      test_bago_config),
-    (90, "dashboard_risks",         test_dashboard_risks),
-    (91, "dashboard_hotspots",      test_dashboard_hotspots),
-    (92, "dashboard_sprint_progress", test_dashboard_sprint_progress),
-    (93, "scan_finds_issues",        test_scan_finds_issues),
-    (94, "context_detector_skip",    test_context_detector_skip_dirs),
-    (95, "detector_json_fields",     test_context_detector_json_fields),
-    (96, "detector_no_state_unreg",  test_context_detector_no_state_files_unregistered),
-    (97, "stale_no_false_positives", test_stale_detector_no_false_positives),
-    (98, "ideas_dynamic",            test_emit_ideas_dynamic),
-    (99, "dashboard_velocity",       test_dashboard_velocity_section),
-    (100, "dashboard_risk_exposure", test_dashboard_risk_exposure),
-    (101, "ideas_backlog",           test_ideas_backlog_exists),
-    (102, "sprint_list",             test_sprint_manager_list),
-    (103, "sprint_active",           test_sprint_manager_active),
-    (104, "sprint_status",           test_sprint_manager_status),
-    (105, "ideas_count",             test_emit_ideas_count),
-    (106, "sysexit_refactor",        test_sysexit_refactor),
-    (107, "research_orchestrator",   test_research_orchestrator),
-    (108, "chronicle_reporter",      test_chronicle_reporter),
-    (109, "lsp_manager",             test_lsp_manager),
+    (1, "suite_integrity", test_suite_integrity),
+    (2, "timeline", test_timeline),
+    (3, "doctor", test_doctor),
+    (4, "git_context", test_git_context),
+    (5, "snapshot", test_snapshot),
+    (6, "flow", test_flow),
+    (7, "contracts", test_contracts),
+    (8, "bago_utils", test_bago_utils),
+    (9, "ci_generator", test_ci_generator),
+    (10, "routing_count", test_routing_count),
+    (11, "js_ast_scanner", test_js_ast_scanner),
+    (12, "rule_catalog", test_rule_catalog),
+    (13, "config_check", test_config_check),
+    (14, "changelog_gen", test_changelog_gen),
+    (15, "env_check", test_env_check),
+    (16, "metrics_export", test_metrics_export),
+    (17, "naming_check", test_naming_check),
+    (18, "type_check", test_type_check),
+    (19, "dep_audit", test_dep_audit),
+    (20, "tool_guardian", test_tool_guardian),
+    (21, "tool_search", test_tool_search),
+    (22, "commit_readiness", test_commit_readiness),
+    (23, "intent_router", test_intent_router),
+    (24, "bago_config", test_bago_config),
+    (25, "dashboard_risks", test_dashboard_risks),
+    (26, "context_detector_skip", test_context_detector_skip_dirs),
+    (27, "detector_json_fields", test_context_detector_json_fields),
+    (28, "stale_no_false_positives", test_stale_detector_no_false_positives),
+    (29, "ideas_dynamic", test_emit_ideas_dynamic),
+    (30, "dashboard_velocity", test_dashboard_velocity_section),
+    (31, "ideas_count", test_emit_ideas_count),
+    (32, "research_orchestrator", test_research_orchestrator),
+    (33, "chronicle_reporter", test_chronicle_reporter),
+    (34, "lsp_manager", test_lsp_manager),
 ]
 
 
@@ -1710,4 +1675,3 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

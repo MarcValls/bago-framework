@@ -286,7 +286,7 @@ C:\Marc_max_20gb\.bago\
 
 ## ✨ HIGHLIGHTS
 
-- **Listo para Producción:** Toda la stack está completa
+- **Estado de despliegue:** stack documentada para prueba local
 - **Documentado:** Guías visuales y paso-a-paso
 - **Seguro:** USB encryption via ADB
 - **Escalable:** Fácil agregar más agentes
@@ -298,7 +298,7 @@ C:\Marc_max_20gb\.bago\
 
 ## 🎉 CONCLUSIÓN
 
-**BAGO Agent Monitor está completamente operativo y listo para monitorizar agentes desde una tablet.**
+**BAGO Agent Monitor quedó documentado para prueba local desde tablet; validar la ejecución real antes de usarlo como operación diaria.**
 
 ### En PC:
 ```powershell

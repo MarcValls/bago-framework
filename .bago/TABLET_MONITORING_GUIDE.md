@@ -148,7 +148,7 @@ Chrome/Firefox en Tablet
    O: 127.0.0.1:8080
 
 Resultado:
-✓ Dashboard completamente funcional
+✓ Dashboard funcional en la prueba local documentada
 ✓ Actualizaciones en tiempo real
 ✓ Interfaz táctil responsive
 ```

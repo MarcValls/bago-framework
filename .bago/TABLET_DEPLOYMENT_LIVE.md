@@ -16,7 +16,7 @@
 ✅ Dashboard API RESPONDIENDO
    http://localhost:8080
    
-✅ Listo para conexión de tablet
+Verificado para conexión de tablet local (`.bago/TABLET_DEPLOYMENT_LIVE.md`)
 ```
 
 ---
@@ -340,12 +340,12 @@ Si quieres acceder directamente desde curl o scripts:
 
 - [x] Monitor Service iniciado
 - [x] Puerto 8080 escuchando
-- [x] API respondiendo
+- [x] API respondiendo (`.bago/TABLET_MONITORING_GUIDE.md`)
 - [x] Dashboard HTML embebido
 - [x] Documentación completa
 - [x] ADB Helper disponible
 - [x] Ejemplos visuales creados
-- [x] Listo para tablet
+- [x] Listo para tablet (`.bago/TABLET_DEPLOYMENT_LIVE.md`)
 
 ---
 

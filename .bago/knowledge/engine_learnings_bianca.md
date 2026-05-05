@@ -45,7 +45,7 @@ Comentarios `// Sprint NNN` verificados en archivos `.ts`:
 
 ## 🔇 GAP CRÍTICO: AudioManager SFX sin conectar
 
-El `AudioManager` tiene **9 funciones SFX completamente implementadas pero NUNCA llamadas** desde ninguna escena:
+El `AudioManager` tenía 9 funciones SFX implementadas que no estaban conectadas desde escenas en la revisión documentada:
 
 | Función | Cuándo debería llamarse |
 |---------|------------------------|

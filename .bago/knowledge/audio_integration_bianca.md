@@ -274,8 +274,8 @@ import { audioManager } from '../engine/AudioManager';
 // PASO 3: Insertar la llamada
 audioManager.playNombreDelMetodo();
 
-// PASO 4: Build verde
-// npm run build → debe pasar sin errores
+// PASO 4: Build de verificación
+// npm run build → objetivo esperado; guardar log si falla
 // Bundle size: esperar incremento <1 KB (solo una línea de código)
 ```
 

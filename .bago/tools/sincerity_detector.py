@@ -49,7 +49,7 @@ SEV_INFO = "INFO"
 DEFAULT_EXCLUDE_DIRS = {
     ".git", "node_modules", ".venv", "venv", "__pycache__",
     "dist", "build", "RELEASE", "cleanversion", "sandbox",
-    ".bago/state/sessions", ".bago/state/changes", ".bago/state/evidences",
+    ".bago/state", ".bago/state/sessions", ".bago/state/changes", ".bago/state/evidences",
 }
 
 # ── Léxicos (ES/EN mezclados, case-insensitive) ───────────────────────────────
@@ -96,7 +96,7 @@ STRONG_CLAIMS = [
 ]
 
 EVIDENCE_HINTS = [
-    r"\.json\b", r"\.md\b", r"\.py\b", r"\.ts\b", r"\.log\b",
+    r"\.json\b", r"\.md\b", r"\.py\b", r"\.ps1\b", r"\.ts\b", r"\.log\b",
     r"\bevidenc", r"\btest", r"\bexit[_ ]?code\b", r"\bsha\b",
     r"\bchecksums?\b", r"\bruntime\b", r"\bcommit\b",
     r"https?://", r"#L\d+", r"\[.+?\]\(.+?\)",
@@ -235,6 +235,8 @@ def scan_success_washing(path: Path, text: str) -> list[Finding]:
     for m in find_all(lexicon["success_washing"], text):
         ln = line_of(text, m.start())
         lt = line_text(text, ln)
+        if re.search(r"\?|not[_ -]?ready|no\s+listo|conditional|condiciones", lt, re.IGNORECASE):
+            continue
         if any(re.search(e, lt, re.IGNORECASE) for e in lexicon["evidence_hints"]):
             continue
         out.append(Finding(

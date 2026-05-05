@@ -16,21 +16,24 @@
     "sessions": 1,
     "changes": 0,
     "evidences": 0,
-    "commits": 4,
-    "last_commit_sha": "7b57893",
-    "last_commit_date": "2026-05-04T20:11:00+02:00",
-    "last_commit_msg": "feat(knowledge): inicializar knowledge base + 40 tools nuevos"
+    "commits": 33,
+    "last_commit_sha": "96b8d56",
+    "last_commit_date": "2026-05-05T09:47:43+02:00",
+    "last_commit_msg": "fix(validate_pack): saltar archivos no-UTF-8 (captures UTF-16 de pktmon)",
+    "session_closes": 5
   },
   "last_validation": {
-    "date": "2026-05-04T23:22:00Z",
+    "date": "2026-05-05T08:20:28Z",
     "validate_manifest": "GO",
     "validate_state": "GO",
     "validate_pack": "GO",
     "purity_check": "OK",
     "stale_detector": "OK",
-    "sincerity": "0 errors / 0 warnings",
-    "stability": "OK — CHG-002 completed",
-    "tool_guardian": "100% health — 0 errors / 0 warnings"
+    "health": "100/100",
+    "integration_tests": "PASS — 40/41 checks passed, 1 skipped",
+    "sincerity": "PASS — 0 errors / 0 warnings",
+    "stability": "GO — gates requeridos en verde; sandbox opcional no disponible",
+    "tool_guardian": "PASS — 7/7 self-tests"
   },
   "guardian_findings": {
     "health_pct": 100,
@@ -58,8 +61,8 @@
       "tools_reference"
     ]
   },
-  "notes": "CHG-002 completado 2026-05-04: --test flag en 103 tools, 97 registros integration_tests, COMMANDS_MAIN en bago script, 9 docstrings. Guardian: 0%→100%, 112/112 tools OK. Pendiente menor: dead_ref intent_router legacy-fix.",
-  "updated_at": "2026-05-04T23:22:00+02:00",
+  "notes": "2026-05-05: reparación total del core: bago status funciona, integration_tests no referencia funciones/tools ausentes, COMMANDS operativos salen de tool_registry, sincerity queda estricto en 0/0 y stability distingue sandbox opcional como SKIP.",
+  "updated_at": "2026-05-05T08:20:28Z",
   "bago_knowledge": {
     "sequences_catalog": ".bago/knowledge/sequences_catalog.md",
     "sequences_count": 10,

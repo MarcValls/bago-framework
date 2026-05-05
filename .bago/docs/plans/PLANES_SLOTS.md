@@ -98,7 +98,7 @@ python bago task --done  # genera .bago/state/session_close_*.md
 **Pasos:**
 1. Crear/extender `stability_summary.py` con `summarize()` que lee los últimos resultados de cada subsistema.
 2. Formatear salida: tabla de 3 filas (smoke/VM/soak) con estado y timestamp.
-3. Devolver código de salida 0 si todo verde, 1 si alguno falla.
+3. Devolver código de salida 0 si los checks requeridos pasan, 1 si alguno falla.
 4. Registrar `feat[stability_cmd] = True`.
 
 **Validación mínima:**

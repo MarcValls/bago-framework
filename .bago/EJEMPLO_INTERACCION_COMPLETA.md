@@ -427,7 +427,7 @@ Ruta del proyecto (ej: ..\typing-course\src): ..\typing-course\src
 │    (Vuelve al paso 4 con código mejorado)                      │
 │    ↓                                                             │
 │ 12. VEREDICTO MEJORA → READY o CONDITIONAL                     │
-│    ✓ Listo para producción                                      │
+│    ✓ Veredicto de ejemplo para producción condicionada           │
 └─────────────────────────────────────────────────────────────────┘
 ```
 

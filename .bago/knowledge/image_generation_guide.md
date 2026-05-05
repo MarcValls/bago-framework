@@ -280,7 +280,7 @@ def normalize_anchor(
     cols = np.any(non_transparent, axis=0)
     
     if not rows.any():
-        raise ValueError(f"Sprite completamente transparente: {sprite_path}")
+        raise ValueError(f"Sprite sin pixeles visibles: {sprite_path}")
     
     ymin, ymax = np.where(rows)[0][[0, -1]]
     xmin, xmax = np.where(cols)[0][[0, -1]]

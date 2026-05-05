@@ -171,7 +171,7 @@ bago code-quality . --format json
 bago rules
 ```
 
-**Criterio de salida:** Sin hallazgos críticos de naming/types/deps. `code-quality` sin errores de agente.  
+**Criterio de salida:** No quedan hallazgos críticos de naming/types/deps; `code-quality` debe registrarse con salida revisada.  
 **Nota de campo (CESAR_WOODS):** Esta secuencia es la que usaba la baseline v2.2.1 para validaciones de referencia. Solo lectura, sin modificar código.
 
 ---

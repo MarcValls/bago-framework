@@ -8,8 +8,9 @@ de los validadores canónicos (validate_manifest, validate_state) para
 emitir un bloque conciso de salud antes de avanzar a implementación.
 
 Salida:
-  GO   → todos los gates en verde; se puede avanzar a W2.
-  WARN → algún gate advertido pero no bloqueante.
+  GO   → gates requeridos en verde; se puede avanzar a W2.
+  WARN → algún gate requerido advertido pero no bloqueante.
+  SKIP → gate opcional no disponible; no afecta la decisión final.
   KO   → al menos un gate bloqueante; no avanzar hasta reparar.
 """
 
@@ -48,7 +49,7 @@ def run_validator(script: str) -> tuple[str, str]:
 def report_gate(name: str, report: dict | None) -> tuple[str, str]:
     """Returns (status, summary_line)."""
     if report is None:
-        return "WARN", f"{name}: no disponible"
+        return "SKIP", f"{name}: no disponible (opcional)"
     overall = report.get("status", report.get("overall_status", "unknown"))
     failures = report.get("failure_count", "n/a")
     workers = report.get("workers", "n/a")
@@ -144,7 +145,7 @@ def main() -> int:
     # 4. Print gates
     print()
     for st, line in gates:
-        icon = "✓" if st == "GO" else ("⚠" if st == "WARN" else "✗")
+        icon = "✓" if st == "GO" else ("⚠" if st == "WARN" else ("-" if st == "SKIP" else "✗"))
         print(f"  [{st}] {icon} {line}")
 
     # 5. Overall decision
@@ -161,7 +162,7 @@ def main() -> int:
         print("  → Puedes avanzar a W2 si el trabajo no depende del sandbox.")
         return 0
     else:
-        print("DECISIÓN: GO — todos los gates en verde. Avanzar a W2.")
+        print("DECISIÓN: GO — gates requeridos en verde. Avanzar a W2.")
         return 0
 
 

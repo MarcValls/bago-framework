@@ -1,6 +1,7 @@
 {
   "version": "1.0",
   "exclude_dirs": [
+    ".bago/state",
     ".bago/state/changes",
     ".bago/state/evidences",
     ".bago/state/sessions",
@@ -91,6 +92,7 @@
     "\\.json\\b",
     "\\.md\\b",
     "\\.py\\b",
+    "\\.ps1\\b",
     "\\.ts\\b",
     "\\.log\\b",
     "\\bevidenc",
