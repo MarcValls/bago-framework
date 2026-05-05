@@ -46,6 +46,9 @@ from pathlib import Path
 BAGO_ROOT = Path(__file__).resolve().parent / ".bago"
 TOOLS     = BAGO_ROOT / "tools"
 
+_USE_COLOR = sys.stdout.isatty()
+def GREEN(t):  return f"\033[1;32m{t}\033[0m" if _USE_COLOR else t
+
 
 # ── Tool registry — single source of truth ────────────────────────────────────
 
@@ -235,6 +238,9 @@ COMMANDS_MAIN = {
     "why": ["python3", str(TOOLS / "why.py")],
     "db": ["python3", str(TOOLS / "bago_db.py")],
     "hello": ["python3", str(TOOLS / "bago_hello.py")],
+    "next": ["python3", str(TOOLS / "bago_next.py")],
+    "status": ["python3", str(TOOLS / "flow.py"), "status"],
+    "done": ["python3", str(TOOLS / "show_task.py"), "--done"],
     "workflow-navigator": ["python3", str(TOOLS / "workflow_navigator.py")],
     "workflow-selector": ["python3", str(TOOLS / "workflow_selector.py")],
 }
@@ -584,10 +590,18 @@ def main():
         # result == "banner" → continúa al banner normal
 
     if not args:
-        subprocess.run(
-            ["python3", str(TOOLS / "bago_banner.py")],
-            cwd=str(BAGO_ROOT.parent)
-        )
+        if sys.stdin.isatty():
+            # Menú interactivo con flechas
+            result = subprocess.run(
+                ["python3", str(TOOLS / "bago_menu.py")],
+                cwd=str(BAGO_ROOT.parent)
+            )
+            sys.exit(result.returncode)
+        else:
+            subprocess.run(
+                ["python3", str(TOOLS / "bago_banner.py")],
+                cwd=str(BAGO_ROOT.parent)
+            )
         return
 
     cmd = args[0].lower()
@@ -630,8 +644,14 @@ def main():
             print(f"    bago {k}")
         print()
     else:
+        import difflib
+        all_cmds = list(COMMANDS.keys()) + ["setup", "extensions", "versions", "registry", "last", "history", "help"]
+        suggestions = difflib.get_close_matches(cmd, all_cmds, n=1, cutoff=0.5)
         print(f"  Comando desconocido: '{cmd}'")
-        print("  Usa: bago help")
+        if suggestions:
+            print(f"  ¿Quisiste decir: {GREEN(suggestions[0])}?  →  bago {suggestions[0]}")
+        else:
+            print("  Usa: bago help")
         sys.exit(1)
 
 

@@ -131,6 +131,9 @@ def main() -> int:
         print("  ✅ Tarea marcada como completada.")
         _generate_close_artifact(task)
         _display(task)
+        print()
+        print("  → Siguiente ciclo:  bago next")
+        print()
         return 0
 
     _display(task)

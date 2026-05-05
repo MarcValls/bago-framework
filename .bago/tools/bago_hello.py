@@ -275,6 +275,21 @@ def _show_tour() -> None:
     print()
 
 
+def _is_first_run() -> bool:
+    """True si no hay ningún guardian run registrado en bago.db."""
+    try:
+        sys.path.insert(0, str(TOOLS))
+        from bago_db import _connect, DB_PATH
+        if not DB_PATH.exists():
+            return True
+        conn = _connect()
+        row  = conn.execute("SELECT COUNT(*) FROM guardian_runs").fetchone()
+        conn.close()
+        return (row[0] if row else 0) == 0
+    except Exception:
+        return False
+
+
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -284,7 +299,13 @@ def main() -> None:
     elif "--quick" in args:
         _show_quick()
     else:
-        _show_full()
+        if _is_first_run() and sys.stdin.isatty() and "--no-tour" not in args:
+            print()
+            print(f"{INDENT}{CYAN(BOLD('👋  Primera vez con BAGO'))} — iniciando tour guiado...")
+            print()
+            _show_tour()
+        else:
+            _show_full()
 
 
 if __name__ == "__main__":

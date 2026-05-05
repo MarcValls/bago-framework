@@ -285,6 +285,21 @@ REGISTRY: dict[str, ToolEntry] = {
         description="Guía de inicio para nuevos usuarios y recordatorio de comandos esenciales",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_hello.py"))],
     ),
+    "next": ToolEntry(
+        cmd="next", module="bago_next",
+        description="Meta-comando de ciclo mínimo: elige idea + acepta + inicia flujo en un paso",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_next.py"))],
+    ),
+    "done": ToolEntry(
+        cmd="done", module="show_task",
+        description="Cierra la tarea actual y muestra el siguiente paso sugerido",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "show_task.py"))],
+    ),
+    "status": ToolEntry(
+        cmd="status", module="flow",
+        description="Estado actual: flujo activo, tarea pendiente y salud del sistema",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "flow.py"))],
+    ),
 }
 
 
@@ -293,12 +308,19 @@ REGISTRY: dict[str, ToolEntry] = {
 def get_commands() -> dict[str, list[str]]:
     """Returns COMMANDS-compatible dict for the bago script.
 
-    Format: {"cmd": ["python3", "/path/to/module.py"]}
+    Format: {"cmd": ["python3", "/path/to/module.py", ...extra_args]}
     """
-    return {
-        name: ["python3", str(TOOLS_DIR / f"{entry.module}.py")]
-        for name, entry in REGISTRY.items()
+    _extra_args: dict[str, list[str]] = {
+        "done":   ["--done"],
+        "status": ["status"],
     }
+    result = {}
+    for name, entry in REGISTRY.items():
+        cmd = ["python3", str(TOOLS_DIR / f"{entry.module}.py")]
+        if name in _extra_args:
+            cmd += _extra_args[name]
+        result[name] = cmd
+    return result
 
 
 def get_cmd_names() -> list[str]:

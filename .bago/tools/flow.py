@@ -275,10 +275,21 @@ def _active_workflow() -> dict | None:
 
 
 def cmd_start(argv: list) -> int:
-    """flow start W2 [título...]"""
+    """flow start W2 [título...] — o modo interactivo sin args."""
     if not argv:
-        print("  Uso: bago flow start <W2> [título de la tarea]")
-        return 1
+        # Modo interactivo: listar workflows disponibles y pedir título
+        wf_files = _find_workflow_files()
+        codes = list(wf_files.keys()) if wf_files else ["W2", "W3", "W4"]
+        print(f"\n  Workflows disponibles: {', '.join(codes)}")
+        try:
+            wf_code = input("  Código de workflow [W2]: ").strip().upper() or "W2"
+            title   = input(f"  Título de la tarea: ").strip()
+        except (KeyboardInterrupt, EOFError):
+            print("\n  Cancelado.")
+            return 0
+        if not title:
+            title = f"Trabajo en {wf_code}"
+        argv = [wf_code, title]
 
     wf_code = argv[0].upper()
     title   = " ".join(argv[1:]) if len(argv) > 1 else f"Trabajo en {wf_code}"
