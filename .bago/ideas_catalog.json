@@ -1,5 +1,43 @@
 {
   "_comment": "Catálogo de ideas BAGO. Edita este archivo para modificar o añadir ideas sin tocar código Python.",
+  "_guide": {
+    "cómo_añadir_un_slot_nuevo": [
+      "1. Elige un número de slot libre (verifica en db_init.py _SLOT_CONDITIONS los ya usados).",
+      "2. Añade la condición en db_init.py _SLOT_CONDITIONS: ('N', gen): {requires, blocks, extra_cond}.",
+      "3. Añade la entrada en detect_implemented_features() en emit_ideas.py para el bloqueo.",
+      "4. Crea la entrada en la sección 'slots' de este archivo con el formato siguiente.",
+      "5. Ejecuta: python bago db reset-ideas   para sembrar el nuevo slot en bago.db."
+    ],
+    "formato_de_slot": {
+      "N": {
+        "generations": [
+          {
+            "id": "feature_flag_name",
+            "generation": 1,
+            "condition": "feat.REQUIRES and not feat.BLOCKS",
+            "priority": 70,
+            "section": "contextuales",
+            "risk": "low",
+            "title": "Título corto de la idea",
+            "summary": "Descripción de una línea de qué aporta.",
+            "detail": [
+              "Entrada: estado actual del sistema.",
+              "Salida: resultado observable tras implementar.",
+              "Ventaja: por qué vale la pena implementarlo."
+            ],
+            "metric": "Criterio de éxito medible y verificable.",
+            "w2": "Siguiente paso concreto. Incluir sentinel # FEATURE_IMPLEMENTED si aplica."
+          }
+        ]
+      }
+    },
+    "convenciones": {
+      "ids": "Usar el nombre del feature flag como id (ej: 'velocity_in_dashboard').",
+      "sentinels": "Si la feature se detecta via cadena en código, añadir # FEATURE_NAME_IMPLEMENTED como comentario en el archivo modificado.",
+      "risk": "low = cambio seguro sin romper flujos; medium = requiere validación; high = toca flujos críticos.",
+      "generaciones": "Gen 1 = idea inicial. Gen 2+ = mejoras que requieren gen anterior implementada."
+    }
+  },
   "_schema": {
     "id": "Identificador único de la idea (snake_case)",
     "slot": "Slot al que pertenece (1-16). Ideas del mismo slot compiten entre sí según condiciones.",

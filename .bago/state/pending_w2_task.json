@@ -1,9 +1,9 @@
 {
   "idea_index": 1,
-  "idea_title": "Cierre registra idea como implementada",
-  "priority": 100,
+  "idea_title": "Guía de catálogo de ideas",
+  "priority": 84,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-  "objetivo": "Al cerrar una sesión con `bago task --done`, registrar automáticamente la idea en implemented_ideas.json para que el selector evolucione y no repita trabajo ya hecho.",
+  "objetivo": "Añadir sección _guide en ideas_catalog.json con instrucciones para añadir ideas nuevas sin tocar código.",
   "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
@@ -11,12 +11,12 @@
   ],
   "validacion_minima": [
     "La salida debe explicar el cambio, los archivos y la verificación mínima.",
-    "Métrica objetivo: Después de `bago task --done`, la idea aparece en implemented_ideas.json y el selector ya no la repite."
+    "Métrica objetivo: ideas_catalog.json tiene clave _guide con instrucciones claras."
   ],
-  "siguiente_paso": "Añadir en session_close_generator.py escritura a implemented_ideas.json al final del generate().",
-  "metric": "Después de `bago task --done`, la idea aparece en implemented_ideas.json y el selector ya no la repite.",
+  "siguiente_paso": "Añadir clave _guide a ideas_catalog.json explicando el formato de slots y generations.",
+  "metric": "ideas_catalog.json tiene clave _guide con instrucciones claras.",
   "contexto": [],
   "status": "done",
-  "accepted_at": "2026-05-05T09:10:58.173502+00:00",
-  "done_at": "2026-05-05T09:12:12.698362+00:00"
+  "accepted_at": "2026-05-05T09:18:44.967211+00:00",
+  "done_at": "2026-05-05T09:20:12.501867+00:00"
 }

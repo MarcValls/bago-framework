@@ -31,18 +31,28 @@
       "title": "Cierre registra idea como implementada",
       "slot": null,
       "done_at": "2026-05-05T09:12:12.703616+00:00"
+    },
+    {
+      "title": "Ranking contextual por estado",
+      "slot": null,
+      "done_at": "2026-05-05T09:16:18.599842+00:00"
+    },
+    {
+      "title": "Guía de catálogo de ideas",
+      "slot": null,
+      "done_at": "2026-05-05T09:20:12.509576+00:00"
     }
   ],
-  "updated_at": "2026-05-05T09:12:12.703616+00:00",
+  "updated_at": "2026-05-05T09:20:12.509576+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "Cierre registra idea como implementada",
-      "date": "2026-05-05T09:12:12.744977+00:00",
-      "session_close": "SESSION_CLOSE_20260505_091212.md",
+      "title": "Guía de catálogo de ideas",
+      "date": "2026-05-05T09:20:12.544147+00:00",
+      "session_close": "SESSION_CLOSE_20260505_092012.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "Al cerrar una sesión con `bago task --done`, registrar automáticamente la idea en implemented_ideas.json para que el selector evolucione y no repita trabajo ya hecho."
+      "objetivo": "Añadir sección _guide en ideas_catalog.json con instrucciones para añadir ideas nuevas sin tocar código."
     }
   ],
-  "last_updated": "2026-05-05T09:12:12.745004+00:00"
+  "last_updated": "2026-05-05T09:20:12.544174+00:00"
 }

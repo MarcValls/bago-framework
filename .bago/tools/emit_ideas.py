@@ -151,6 +151,13 @@ def _apply_dynamic_score(ideas: list[dict]) -> list[dict]:
       -5  si system_health == 'red' (estabilizar antes de añadir features)
       -3  si sessions == 0 y la idea no es de section 'mantenimiento'
            (sin historial aún, priorizar mantenimiento primero)
+
+    Señales contextuales de workflow activo (# SCORING_CONTEXT_IMPLEMENTED):
+      W2 (implementación): +3 si idea tiene keywords de implementación
+      W4 (debug): +3 si idea tiene keywords de diagnóstico/arreglo
+      W8 (exploración): +3 si idea tiene keywords exploratorias
+      health_pct >= 80: +2 (base sana para nuevas features)
+      health_pct < 50:  -3 (inestabilidad, priorizar arreglos)
     """
     # ── señal de tarea activa (status != done) ────────────────────────────────
     task_file = ROOT / ".bago" / "state" / "pending_w2_task.json"
@@ -168,6 +175,19 @@ def _apply_dynamic_score(ideas: list[dict]) -> list[dict]:
     # Usar session_closes (artefactos .md) como proxy de historial; 'sessions' lo gestiona el validador
     session_closes = int(gs.get("inventory", {}).get("session_closes", 0))
 
+    # Workflow activo y health_pct numérico
+    active_workflow = str(gs.get("sprint_status", {}).get("active_workflow") or "").upper()
+    try:
+        health_pct = int(gs.get("guardian_findings", {}).get("health_pct") or 0)
+    except (TypeError, ValueError):
+        health_pct = 0
+
+    _WF_KEYWORDS: dict[str, set[str]] = {
+        "W2": {"implement", "mejora", "añadir", "registr", "cierre", "generar", "crea", "auto"},
+        "W4": {"debug", "error", "fix", "bug", "arregl", "fallo", "problem", "correg"},
+        "W8": {"explora", "investig", "analiz", "research", "diseño", "estudi", "plan"},
+    }
+
     # ── palabras clave de ideas ya implementadas ──────────────────────────────
     impl_titles = load_implemented_titles()  # ya normalizadas con _norm()
     impl_keywords: set[str] = set()
@@ -179,6 +199,7 @@ def _apply_dynamic_score(ideas: list[dict]) -> list[dict]:
         risk    = str(idea.get("risk", "")).lower()
         section = str(idea.get("section", "")).lower()
         title   = str(idea.get("title", ""))
+        title_norm = _norm(title)
 
         # Reglas base de tarea activa
         if not has_active_task:
@@ -192,7 +213,7 @@ def _apply_dynamic_score(ideas: list[dict]) -> list[dict]:
 
         # Scoring dinámico por registro
         if impl_keywords:
-            idea_words = {w for w in _norm(title).split() if len(w) > 4}
+            idea_words = {w for w in title_norm.split() if len(w) > 4}
             overlap = idea_words & impl_keywords
             if not overlap:
                 delta += 4                   # trabajo genuinamente nuevo
@@ -209,6 +230,19 @@ def _apply_dynamic_score(ideas: list[dict]) -> list[dict]:
             delta += 2                       # señales históricas disponibles
         elif session_closes == 0 and section != "mantenimiento":
             delta -= 3                       # sin historial: priorizar mantenimiento
+
+        # Señales contextuales de workflow activo
+        if active_workflow in _WF_KEYWORDS:
+            wf_kw = _WF_KEYWORDS[active_workflow]
+            title_words = set(title_norm.split())
+            if any(any(w.startswith(kw) for w in title_words) for kw in wf_kw):
+                delta += 3                   # alineado con el workflow activo
+
+        # Health numérico
+        if health_pct >= 80:
+            delta += 2                       # base sana, momento de avanzar
+        elif health_pct < 50 and health_pct > 0:
+            delta -= 3                       # inestabilidad: priorizar estabilización
 
         idea["priority"] = int(idea.get("priority", 0)) + delta
 
@@ -517,7 +551,7 @@ def detect_implemented_features() -> dict[str, bool]:
         # Slot 3 gen 3+: Scoring dinámico por registro
         "scoring_dynamic":            "_apply_dynamic_score" in Path(__file__).read_text(encoding="utf-8"),
         # Slot 3 gen 4: Ranking contextual por estado — not yet implemented
-        "scoring_context":            False,
+        "scoring_context":            "# SCORING_CONTEXT_IMPLEMENTED" in Path(__file__).read_text(encoding="utf-8"),
         # Slot 4+: repo with at least one commit
         "repo_not_empty":             (ROOT / ".git" / "COMMIT_EDITMSG").exists(),
         # Slot 4 gen 2: README enlaza ideas con W2 — README mentions W2 handoff
