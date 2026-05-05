@@ -286,6 +286,9 @@ def load_fallback_from_db() -> list[dict]:
             idea = dict(row)  # sqlite3.Row → dict so .get() works
             if idea["title"] in implemented_db:
                 continue
+            requires = json.loads(idea.get("requires") or "[]")
+            if not all(feat.get(r) for r in requires):
+                continue
             blocks = json.loads(idea.get("blocks") or "[]")
             if any(feat.get(b) for b in blocks):
                 continue
@@ -325,6 +328,7 @@ FALLBACK_IDEAS: list[dict[str, object]] = [
         "priority": 64,
         "section": "respaldo",
         "risk": "low",
+        "blocks": ["selector_range_enforced"],
         "metric": "El selector siempre publica el rango 5-20 sin desviaciones.",
         "title": "Reforzar rango del selector",
         "summary": "Hacer explicito el limite de 5 a 20 ideas en la salida del selector.",
@@ -339,6 +343,7 @@ FALLBACK_IDEAS: list[dict[str, object]] = [
         "priority": 62,
         "section": "respaldo",
         "risk": "low",
+        "blocks": ["compact_recommendation"],
         "metric": "La recomendacion final queda en una sola accion explícita.",
         "title": "Compactar recomendacion final",
         "summary": "Reducir la friccion del final del selector con una recomendacion mas directa.",
