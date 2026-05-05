@@ -17,7 +17,7 @@
     }
   },
   "inventory": {
-    "sessions": 1,
+    "sessions": 0,
     "changes": 0,
     "evidences": 0,
     "commits": 33,
@@ -66,7 +66,7 @@
     ]
   },
   "notes": "2026-05-05: reparación total del core: bago status funciona, integration_tests no referencia funciones/tools ausentes, COMMANDS operativos salen de tool_registry, sincerity queda estricto en 0/0 y stability distingue sandbox opcional como SKIP.",
-  "updated_at": "2026-05-05T09:29:33.812420+00:00",
+  "updated_at": "2026-05-05T12:53:59.623768+00:00",
   "bago_knowledge": {
     "sequences_catalog": ".bago/knowledge/sequences_catalog.md",
     "sequences_count": 10,
