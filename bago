@@ -240,6 +240,7 @@ _LEGACY_COMMANDS_MAIN = {
     "db": ["python3", str(TOOLS / "bago_db.py")],
     "hello": ["python3", str(TOOLS / "bago_hello.py")],
     "next": ["python3", str(TOOLS / "bago_next.py")],
+    "diff": ["python3", str(TOOLS / "bago_diff.py")],
     "status": ["python3", str(TOOLS / "flow.py"), "status"],
     "done": ["python3", str(TOOLS / "show_task.py"), "--done"],
     "workflow-navigator": ["python3", str(TOOLS / "workflow_navigator.py")],

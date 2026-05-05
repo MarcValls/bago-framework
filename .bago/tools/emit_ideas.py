@@ -622,6 +622,9 @@ def detect_implemented_features() -> dict[str, bool]:
         "dry_run_next":               "# DRY_RUN_NEXT_IMPLEMENTED" in (
             (tools / "bago_next.py").read_text(encoding="utf-8")
             if (tools / "bago_next.py").exists() else ""),
+        "bago_diff_sessions":         "# BAGO_DIFF_SESSIONS_IMPLEMENTED" in (
+            (tools / "bago_diff.py").read_text(encoding="utf-8")
+            if (tools / "bago_diff.py").exists() else ""),
     }
 
 

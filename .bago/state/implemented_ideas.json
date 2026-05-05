@@ -101,18 +101,23 @@
       "title": "bago next --dry: simular siguiente idea sin aceptar",
       "slot": null,
       "done_at": "2026-05-05T10:13:08.248957+00:00"
+    },
+    {
+      "title": "bago diff: mostrar cambios entre sesiones",
+      "slot": null,
+      "done_at": "2026-05-05T10:15:08.666820+00:00"
     }
   ],
-  "updated_at": "2026-05-05T10:13:08.248957+00:00",
+  "updated_at": "2026-05-05T10:15:08.666820+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "bago next --dry: simular siguiente idea sin aceptar",
-      "date": "2026-05-05T10:13:08.277572+00:00",
-      "session_close": "SESSION_CLOSE_20260505_101308.md",
+      "title": "bago diff: mostrar cambios entre sesiones",
+      "date": "2026-05-05T10:15:08.700121+00:00",
+      "session_close": "SESSION_CLOSE_20260505_101508.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "bago next --dry muestra qué idea se aceptaría sin escribir pending_w2_task.json."
+      "objetivo": "bago diff muestra qué ficheros cambiaron entre la sesión anterior y la actual."
     }
   ],
-  "last_updated": "2026-05-05T10:13:08.277608+00:00"
+  "last_updated": "2026-05-05T10:15:08.700146+00:00"
 }

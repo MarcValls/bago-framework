@@ -305,6 +305,11 @@ REGISTRY: dict[str, ToolEntry] = {
         description="Meta-comando de ciclo mínimo: elige idea + acepta + inicia flujo en un paso",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_next.py"))],
     ),
+    "diff": ToolEntry(
+        cmd="diff", module="bago_diff",
+        description="Muestra ficheros modificados entre las últimas sesiones BAGO",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_diff.py"))],
+    ),
     "done": ToolEntry(
         cmd="done", module="show_task",
         description="Cierra la tarea actual y muestra el siguiente paso sugerido",
