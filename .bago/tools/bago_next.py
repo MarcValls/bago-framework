@@ -13,6 +13,7 @@ Tras completar la implementación: bago done
 Uso:
   bago next           → ciclo interactivo completo
   bago next --auto    → acepta la idea #1 sin preguntar (para scripts/Codex)
+  bago next --dry     → muestra la próxima idea sin aceptarla ni escribir nada
 """
 
 import json
@@ -140,6 +141,7 @@ def _run_code_quality() -> None:
 
 def main() -> int:
     auto = "--auto" in sys.argv
+    dry  = "--dry"  in sys.argv  # # DRY_RUN_NEXT_IMPLEMENTED
 
     print()
     print(f"  {CYAN(BOLD('▶  bago next'))} — ciclo de trabajo\n")
@@ -162,6 +164,11 @@ def main() -> int:
     if next_step:
         print(f"  {BOLD('Primer paso:')} {next_step}")
         print()
+
+    # Modo --dry: sólo muestra, no acepta
+    if dry:
+        print(f"  {DIM('(--dry: simulación — nada ha sido aceptado)')}\n")
+        return 0
 
     # Confirmación
     if not auto:

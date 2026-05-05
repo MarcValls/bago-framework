@@ -1,9 +1,9 @@
 {
   "idea_index": 1,
-  "idea_title": "Filtrar ideas por intención al seleccionar",
-  "priority": 81,
+  "idea_title": "bago next --dry: simular siguiente idea sin aceptar",
+  "priority": 88,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-  "objetivo": "Añadir flag --intent a bago ideas para filtrar por tipo: implementar, depurar, cerrar.",
+  "objetivo": "bago next --dry muestra qué idea se aceptaría sin escribir pending_w2_task.json.",
   "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
@@ -11,14 +11,16 @@
   ],
   "validacion_minima": [
     "La salida debe explicar el cambio, los archivos y la verificación mínima.",
-    "Métrica objetivo: Añadir flag --intent a bago ideas para filtrar por tipo: implementar, depurar, cerrar."
+    "Métrica objetivo: Permite revisar la cola antes de comprometerse con una tarea."
   ],
-  "siguiente_paso": "Implementar flag --intent en emit_ideas.py",
-  "metric": "Añadir flag --intent a bago ideas para filtrar por tipo: implementar, depurar, cerrar.",
+  "siguiente_paso": "Añadir flag --dry en bago_next.py que imprime la idea elegida y sale.",
+  "metric": "Permite revisar la cola antes de comprometerse con una tarea.",
   "contexto": [
-    "Añadir parámetro --intent a emit_ideas.py y filtrar resultados."
+    "Entrada: ideas DB + feature gates.",
+    "Salida: título e índice de la próxima idea sin side-effects.",
+    "Ventaja: mayor control sobre el ciclo de aceptación."
   ],
   "status": "done",
-  "accepted_at": "2026-05-05T10:05:21.577910+00:00",
-  "done_at": "2026-05-05T10:11:32.386300+00:00"
+  "accepted_at": "2026-05-05T10:12:19.045326+00:00",
+  "done_at": "2026-05-05T10:13:08.240707+00:00"
 }

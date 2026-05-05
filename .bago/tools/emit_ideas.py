@@ -619,6 +619,9 @@ def detect_implemented_features() -> dict[str, bool]:
             if (tools / "bago_hello.py").exists() else ""),
         "intent_filter_ideas":        "# INTENT_FILTER_IMPLEMENTED" in (
             Path(__file__).read_text(encoding="utf-8")),
+        "dry_run_next":               "# DRY_RUN_NEXT_IMPLEMENTED" in (
+            (tools / "bago_next.py").read_text(encoding="utf-8")
+            if (tools / "bago_next.py").exists() else ""),
     }
 
 

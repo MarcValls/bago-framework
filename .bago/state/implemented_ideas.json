@@ -96,18 +96,23 @@
       "title": "Filtrar ideas por intención al seleccionar",
       "slot": null,
       "done_at": "2026-05-05T10:11:32.396693+00:00"
+    },
+    {
+      "title": "bago next --dry: simular siguiente idea sin aceptar",
+      "slot": null,
+      "done_at": "2026-05-05T10:13:08.248957+00:00"
     }
   ],
-  "updated_at": "2026-05-05T10:11:32.396693+00:00",
+  "updated_at": "2026-05-05T10:13:08.248957+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "Filtrar ideas por intención al seleccionar",
-      "date": "2026-05-05T10:11:32.424575+00:00",
-      "session_close": "SESSION_CLOSE_20260505_101132.md",
+      "title": "bago next --dry: simular siguiente idea sin aceptar",
+      "date": "2026-05-05T10:13:08.277572+00:00",
+      "session_close": "SESSION_CLOSE_20260505_101308.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "Añadir flag --intent a bago ideas para filtrar por tipo: implementar, depurar, cerrar."
+      "objetivo": "bago next --dry muestra qué idea se aceptaría sin escribir pending_w2_task.json."
     }
   ],
-  "last_updated": "2026-05-05T10:11:32.424598+00:00"
+  "last_updated": "2026-05-05T10:13:08.277608+00:00"
 }
