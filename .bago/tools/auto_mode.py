@@ -11,6 +11,7 @@ Uso (via bago script):
   python3 bago auto --json            (salida machine-readable)
   python3 bago auto --loop            (bucle hasta estado estable o límite)
   python3 bago auto --loop --max-loops N  (máximo N iteraciones, por defecto 10)
+  python3 bago auto --loop --infinite     (sin límite — para con Ctrl+C o al estabilizar)
 
 O directo:
   python3 .bago/tools/auto_mode.py --dry-run
@@ -175,6 +176,7 @@ def _parse():
     p.add_argument("--steps",      type=int, default=5)
     p.add_argument("--loop",       action="store_true")
     p.add_argument("--max-loops",  type=int, default=10, dest="max_loops")
+    p.add_argument("--infinite",   action="store_true")
     args, _ = p.parse_known_args()
     return args
 
@@ -381,8 +383,9 @@ def run():
     dry_run   = args.dry_run
     as_json   = args.as_json
     max_steps = args.steps
-    loop_mode = args.loop
-    max_loops = args.max_loops
+    loop_mode = args.loop or args.infinite
+    infinite  = args.infinite
+    max_loops = 0 if infinite else args.max_loops  # 0 = sin límite
 
     # ── Selección de directorio (solo en modo interactivo, no --loop ni --json) ─
     if not as_json and not loop_mode:
@@ -470,87 +473,118 @@ def run():
 # ─── Bucle de evolución ───────────────────────────────────────────────────────
 def _run_loop(gs: dict, max_steps: int, max_loops: int, dry_run: bool) -> None:
     """Repite el ciclo de evaluación+ejecución hasta que el plan no cambie
-    (estado estable) o se alcance max_loops iteraciones."""
+    (estado estable), se alcance max_loops iteraciones (0 = infinito),
+    o el usuario interrumpa con Ctrl+C."""
 
+    infinite = (max_loops == 0)
     SEP = "═" * (W + 4)
+    label = "∞ sin límite — Ctrl+C para detener" if infinite else f"máx {max_loops} iteraciones"
     print()
     print(SEP)
-    print(f"  BAGO · Bucle de evolución  (máx {max_loops} iteraciones)")
+    print(f"  BAGO · Bucle de evolución  ({label})")
     if dry_run:
         print("  ⚠️  DRY-RUN — no se ejecuta nada")
     print(SEP)
 
     prev_fingerprint: str = ""
     stable_since:     int = 0
+    actions_total:    int = 0
+    start_ts = datetime.now(timezone.utc)
 
-    for iteration in range(1, max_loops + 1):
-        print(f"\n{'─'*40}")
-        print(f"  Iteración {iteration}/{max_loops}")
-        print(f"{'─'*40}")
+    def _elapsed() -> str:
+        delta = datetime.now(timezone.utc) - start_ts
+        mins, secs = divmod(int(delta.total_seconds()), 60)
+        return f"{mins}m{secs:02d}s"
 
-        # ── Re-evalúa estado en cada iteración ────────────────────────────────
-        health             = _health_score()
-        verdict, high, low = _detector()
-        pack_ok            = _validate()
-        task               = _pending_task()
-        stale              = _stale_count()
-        steps              = _decide(gs, health, verdict, high, pack_ok, task, stale)[:max_steps]
+    counter = 0
+    try:
+        while True:
+            counter += 1
+            gs = _global_state()  # recarga estado en cada iteración
+            iter_label = f"Iteración {counter}" if infinite else f"Iteración {counter}/{max_loops}"
 
-        fp = _plan_fingerprint(steps)
-        actionable = [s for s in steps if s.get("cmd") not in (None, "dashboard")]
+            print(f"\n{'─'*40}")
+            print(f"  {iter_label}  [{_elapsed()}]")
+            print(f"{'─'*40}")
 
-        # ── Cabecera de iteración ──────────────────────────────────────────────
-        h_icon = _health_icon(health)
-        det_map = {"HARVEST": "🌾 HARVEST", "WATCH": "👁 WATCH", "CLEAN": "✅ CLEAN"}
-        print(f"  Health: {h_icon}  |  Detector: {det_map.get(verdict, verdict)}")
-        print(f"  Pack:   {'✅ GO' if pack_ok else '🔴 FAIL'}  |  Stale: {stale}  |  Fingerprint: {fp}")
-        print()
+            # ── Re-evalúa estado ───────────────────────────────────────────────
+            health             = _health_score()
+            verdict, high, low = _detector()
+            pack_ok            = _validate()
+            task               = _pending_task()
+            stale              = _stale_count()
+            steps              = _decide(gs, health, verdict, high, pack_ok, task, stale)[:max_steps]
 
-        # ── Estabilidad: plan idéntico dos veces consecutivas → parar ─────────
-        if fp == prev_fingerprint:
-            stable_since += 1
-            if stable_since >= 1 or not actionable:
-                print("  ✅ Estado estable — plan sin cambios. Bucle completado.")
-                break
-        else:
-            stable_since = 0
-        prev_fingerprint = fp
+            fp         = _plan_fingerprint(steps)
+            actionable = [s for s in steps if s.get("cmd") not in (None, "dashboard")]
 
-        # ── Si no hay pasos accionables, ya estamos en verde ──────────────────
-        if not actionable:
-            print("  ✅ Sin acciones pendientes — sistema en verde.")
-            _run_step({"cmd": "dashboard"})
-            break
+            det_map = {"HARVEST": "🌾 HARVEST", "WATCH": "👁 WATCH", "CLEAN": "✅ CLEAN"}
+            fp_tag  = "↩ igual" if fp == prev_fingerprint else "→ nuevo"
+            print(f"  Health: {_health_icon(health)}  |  Detector: {det_map.get(verdict, verdict)}")
+            print(f"  Pack:   {'✅ GO' if pack_ok else '🔴 FAIL'}  |  Stale: {stale}")
+            print(f"  Plan:   [{fp}] {fp_tag}  |  Acciones totales: {actions_total}")
+            print()
 
-        # ── Ejecutar pasos no-interactivos ────────────────────────────────────
-        for i, step in enumerate(steps, 1):
-            if step.get("interactive"):
-                # En bucle sin supervisión, un paso interactivo implica parar limpiamente
-                print(f"  ⏸️  Paso [{i}] requiere input humano: {step['label']}")
-                print("      → Bucle pausado. Ejecuta el paso manualmente y reinicia con bago auto --loop.")
-                return
-
-            if not step.get("cmd"):
-                continue  # hints sin cmd (cosecha_hint, etc.)
-
-            print(f"  [{i}] {step['label']}")
-            if not dry_run:
-                ok = _run_step(step)
-                print()
-                if not ok and step.get("blocking"):
-                    print("  ❌ Paso bloqueante falló — deteniendo bucle.")
-                    return
+            # ── Estabilidad: plan idéntico → parar ────────────────────────────
+            if fp == prev_fingerprint:
+                stable_since += 1
+                if stable_since >= 1 or not actionable:
+                    print("  ✅ Estado estable — plan sin cambios. Bucle completado.")
+                    break
             else:
-                print(f"       [dry-run] saltado\n")
+                stable_since = 0
+            prev_fingerprint = fp
 
-    else:
-        print(f"\n  ⚠️  Límite de {max_loops} iteraciones alcanzado sin converger.")
-        print("      Revisa el estado con: bago health && bago audit")
+            # ── Sin acciones → verde ───────────────────────────────────────────
+            if not actionable:
+                print("  ✅ Sin acciones pendientes — sistema en verde.")
+                if not dry_run:
+                    _run_step({"cmd": "dashboard"})
+                break
 
+            # ── Ejecutar pasos no-interactivos ────────────────────────────────
+            for i, step in enumerate(steps, 1):
+                if step.get("interactive"):
+                    print(f"  ⏸️  Paso [{i}] requiere input humano: {step['label']}")
+                    print("      → Bucle pausado. Ejecuta el paso manualmente y reinicia con bago auto --loop.")
+                    _print_loop_summary(counter, actions_total, start_ts, SEP)
+                    return
+
+                if not step.get("cmd"):
+                    continue
+
+                print(f"  [{i}] {step['label']}")
+                if not dry_run:
+                    ok = _run_step(step)
+                    actions_total += 1
+                    print()
+                    if not ok and step.get("blocking"):
+                        print("  ❌ Paso bloqueante falló — deteniendo bucle.")
+                        _print_loop_summary(counter, actions_total, start_ts, SEP)
+                        return
+                else:
+                    print(f"       [dry-run] saltado\n")
+
+            # ── Límite de iteraciones (solo en modo no-infinito) ───────────────
+            if not infinite and counter >= max_loops:
+                print(f"\n  ⚠️  Límite de {max_loops} iteraciones alcanzado sin converger.")
+                print("      Revisa el estado con: bago health && bago audit")
+                break
+
+    except KeyboardInterrupt:
+        print("\n\n  🛑 Interrumpido por el usuario (Ctrl+C)")
+
+    _print_loop_summary(counter, actions_total, start_ts, SEP)
+
+
+def _print_loop_summary(iterations: int, actions: int, start_ts, sep: str) -> None:
+    delta = datetime.now(timezone.utc) - start_ts
+    mins, secs = divmod(int(delta.total_seconds()), 60)
+    elapsed = f"{mins}m{secs:02d}s"
     print()
-    print(SEP)
+    print(sep)
+    print(f"  Resumen: {iterations} iteraciones · {actions} acciones ejecutadas · {elapsed}")
+    print(sep)
     print()
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     run()
