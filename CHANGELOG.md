@@ -5,6 +5,90 @@ Format: `[version] — date · summary · efficiency index`
 
 ---
 
+## [2.6-taxonomy] — 2026-05-06 · Efficiency Index: 100/100
+
+### Summary
+Major organisational release. Introduces a 6-layer taxonomy and a scope axis
+(framework/project/both) across all 80 registered commands. Three command groups
+(health, audit, session) are promoted to explicit routers that absorb 29 deprecated
+direct calls. `bago help` is completely rewritten to display commands grouped by
+layer with visual scope badges. Foundation laid for the future PADRE/SIEMBRA model.
+
+### Architecture: taxonomy + scope
+- `ToolEntry` gains `layer` and `scope` fields (all 80 commands classified)
+- `LAYERS` dict: 6 layers — EJECUCIÓN · CALIDAD · SALUD · ANALÍTICA · VISUAL · AVANZADO
+- `_LAYER_MAP` + `_SCOPE_MAP`: declarative maps injected at registry load time
+- `SCOPE_BADGE`: 🔵 framework · 🟢 project · ⚪ both
+- `get_by_layer()` public API for grouped rendering
+- `scope_detector.py`: static analyzer — detects scope of any Python script by pattern matching
+
+### New Routers (3 activated)
+- `bago health`  → `bago_health_router`  (score|report|stability|efficiency|consistency|sincerity)
+- `bago audit`   → `bago_audit_router`   (full|pack|scan|commit|push|doctor|heal|quality|purity)
+- `bago session` → `bago_session_router` (open|close|harvest|v2)
+  - ⚠️ **Breaking**: `bago session` (no args) now shows menu instead of opening a session
+
+### Deprecations (29 total)
+Commands consolidated into routers with `see_also` migration hints:
+- **health group**: stability, efficiency, sincerity, report, consistency
+- **audit group**: doctor, heal, scan, validate, check, commit, pre-push, code-quality
+- **session group**: cosecha → session harvest · v2 → session v2 · session_close → session close
+- + 13 deprecations from prior session (repo-*, project-*, context-*, detector, map, git, stale)
+
+### `bago help` redesign
+- Dynamic grouped display: 6 layers, each command with scope badge
+- Replaced hardcoded 9-line flat list — now reads live from `tool_registry`
+- Fallback to flat list if registry import fails (safe degradation)
+
+### New Tools (28 added)
+`auto_heal.py` · `bago_bs4_playwright_ref.py` · `bago_context.py` · `bago_hub.py`
+`bago_miniapp_server.py` · `bago_propose_tasks.mjs` · `bago_repo.py`
+`bago_repo_audit.sh` · `bago_telegram_daemon.py` · `bago_wa_daemon.py`
+`bago_web_scraper_ref.py` · `code_review.py` · `dead_code.py` · `debt_ledger.py`
+`findings_engine.py` · `goals.py` · `habit.py` · `image_studio.py` · `insights.py`
+`launch_miniapp.sh` · `notify_bago.py` · `notify_whatsapp.py` · `orchestrator.py`
+`project_memory.py` · `risk_matrix.py` · `scope_detector.py` · `secret_scan.py`
+`smoke_runner.py` · `sprint_manager.py` · `sprite_studio.py` · `workspace_selector.py`
+
+### Memory: sessions migrated to DB
+- 58 historical sessions imported from JSON into `bago.db` (table `sessions`)
+- `cosecha.py` now syncs session rows after every JSON write
+
+### Repo cleanup
+- Removed `adb/platform-tools/` (Android Debug Bridge, ~25 MB, Windows artefact)
+- Removed `eth_capture.*`, `pktmon_eth*` (Windows network captures)
+- Removed `admin_output.txt`, `lenovo_instructions.txt`
+- `.gitignore` extended: state privado, backups (`*.bak`), image_studio dirs
+
+### Idea captured (pending)
+- `fw-padre-siembra` (bago.db slot 3): PADRE/SIEMBRA model — framework parent should
+  not fully replicate into projects. `scope=project` commands are candidates for the seed.
+  **Prerequisite (scope classification) is done. Implementation deferred to 3.0.**
+
+### Fixes
+- Python 3.13 + importlib + dataclasses: `sys.modules["_tr_bago"] = _tr` before `exec_module`
+- `ToolEntry.scope` default `""` (was `"both"`) so `_SCOPE_MAP` injection fires correctly
+- `_print_quick_action` unpacking 3-tuple `active_task` (was assuming 2-tuple)
+- Removed duplicate `doctor` entry (old `doctor.py` silently overridden — now explicit)
+
+### Metrics
+| Metric | Value |
+|---|---|
+| CLI Commands (active) | 51 |
+| CLI Commands (deprecated) | 29 |
+| CLI Commands (total registered) | 80 |
+| Tools (.py) | 177 |
+| Docs (.md) | 278 |
+| Workflows | 8 |
+| tool_registry self-tests | 7/7 |
+| scope_detector tests | 4/4 |
+| Health Score | 100/100 |
+
+> **Provenance note:** metrics captured at release time (`2026-05-06`) by `bago health` and
+> `tool_registry --test` on the build that produced this tag.
+
+---
+
 ## [2.5-stable] — 2026-04-19 · Efficiency Index: 100/100
 
 ### Summary
