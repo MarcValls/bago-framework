@@ -9,15 +9,17 @@ if [ -z "$TOKEN" ]; then
     exit 1
 fi
 
-CONFIG="/Volumes/bago_core/.bago/tools/notify_config.json"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BAGO_ROOT="$(dirname "$(dirname "$SCRIPT_DIR")")"
+CONFIG="$BAGO_ROOT/.bago/tools/notify_config.json"
 
 # Añadir token al config
-python3 - "$TOKEN" << 'PYEOF'
+python3 - "$TOKEN" "$CONFIG" << 'PYEOF'
 import json, sys
 from pathlib import Path
 
-token = sys.argv[1]
-cfg_path = Path("/Volumes/bago_core/.bago/tools/notify_config.json")
+token    = sys.argv[1]
+cfg_path = Path(sys.argv[2])
 cfg = json.loads(cfg_path.read_text()) if cfg_path.exists() else {}
 cfg.setdefault("telegram", {})["bot_token"] = token
 cfg_path.write_text(json.dumps(cfg, indent=2, ensure_ascii=False))

@@ -741,12 +741,12 @@ Este informe compara la fase inicial de corrección y migración con el estado o
 
 ## Fuentes
 
-- [state/metrics/metrics_snapshot.json](/Users/INTELIA_Manager/Documents/INTELIA_Manager_2026/Contabilidad/TPV_Contabilidad%202/.bago/state/metrics/metrics_snapshot.json)
-- [state/global_state.json](/Users/INTELIA_Manager/Documents/INTELIA_Manager_2026/Contabilidad/TPV_Contabilidad%202/.bago/state/global_state.json)
-- [state/sessions/](/Users/INTELIA_Manager/Documents/INTELIA_Manager_2026/Contabilidad/TPV_Contabilidad%202/.bago/state/sessions)
-- [state/changes/](/Users/INTELIA_Manager/Documents/INTELIA_Manager_2026/Contabilidad/TPV_Contabilidad%202/.bago/state/changes)
-- [state/evidences/](/Users/INTELIA_Manager/Documents/INTELIA_Manager_2026/Contabilidad/TPV_Contabilidad%202/.bago/state/evidences)
-- [state/metrics/runs/](/Users/INTELIA_Manager/Documents/INTELIA_Manager_2026/Contabilidad/TPV_Contabilidad%202/.bago/state/metrics/runs)
+- [state/metrics/metrics_snapshot.json]({ROOT / "state/metrics/metrics_snapshot.json"})
+- [state/global_state.json]({ROOT / "state/global_state.json"})
+- [state/sessions/]({ROOT / "state/sessions"})
+- [state/changes/]({ROOT / "state/changes"})
+- [state/evidences/]({ROOT / "state/evidences"})
+- [state/metrics/runs/]({ROOT / "state/metrics/runs"})
 
 ## Lectura ejecutiva
 

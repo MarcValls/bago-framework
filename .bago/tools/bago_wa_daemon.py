@@ -22,6 +22,7 @@ import json
 import sys
 import time
 import subprocess
+import os
 import requests
 from pathlib import Path
 from datetime import datetime
@@ -29,7 +30,8 @@ from datetime import datetime
 # ── Config ──────────────────────────────────────────────────────────────────
 TOOLS_DIR = Path(__file__).parent
 CONFIG_PATH = TOOLS_DIR / "notify_config.json"
-STATE_PATH = Path("/Volumes/bago_core/.bago/state/global_state.json")
+_BAGO_ROOT  = Path(os.environ.get("BAGO_PADRE_PATH") or Path(__file__).parent.parent.parent)
+STATE_PATH  = _BAGO_ROOT / ".bago/state/global_state.json"
 POLL_INTERVAL = 5   # segundos entre polls
 MAX_MSG_AGE   = 60  # ignorar mensajes más viejos que X segundos
 

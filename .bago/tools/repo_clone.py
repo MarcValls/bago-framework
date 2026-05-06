@@ -20,7 +20,7 @@ import shutil
 
 import re
 
-WORKSPACE_ROOT = Path(__file__).resolve().parents[1]  # C:\Marc_max_20gb
+WORKSPACE_ROOT = Path(__file__).resolve().parents[1]  # .bago/ directory
 REPOS_DIR = WORKSPACE_ROOT / "repos"
 WORKSPACE_STATE = WORKSPACE_ROOT / ".bago" / "state" / "workspace.json"
 
@@ -263,9 +263,16 @@ def setup_bago_for_repo(repo_path):
         state_dest = bago_dest / "state"
         state_dest.mkdir(exist_ok=True)
         
-        # Crear global_state.json
+        # Crear global_state.json — version leída del PADRE (bago_core)
+        _padre_state_path = WORKSPACE_ROOT / "state" / "global_state.json"
+        _padre_version = "unknown"
+        if _padre_state_path.exists():
+            try:
+                _padre_version = json.loads(_padre_state_path.read_text()).get("bago_version", "unknown")
+            except Exception:
+                pass
         global_state = {
-            "version": "2.5-stable",
+            "version": _padre_version,
             "repo_name": repo_path.name,
             "workspace_root": str(WORKSPACE_ROOT),
             "mode": "project",

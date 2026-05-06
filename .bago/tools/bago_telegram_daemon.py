@@ -46,10 +46,10 @@ from telegram.ext import (
 # ── Config ───────────────────────────────────────────────────────────────────
 TOOLS_DIR     = Path(__file__).parent
 CONFIG_PATH   = TOOLS_DIR / "notify_config.json"
-STATE_PATH    = Path("/Volumes/bago_core/.bago/state/global_state.json")
-TAREAS_PATH   = Path("/Volumes/bago_core/.bago/state/tareas_telegram.json")
+BAGO_ROOT     = Path(os.environ.get("BAGO_PADRE_PATH") or Path(__file__).parent.parent.parent)
+STATE_PATH    = BAGO_ROOT / ".bago/state/global_state.json"
+TAREAS_PATH   = BAGO_ROOT / ".bago/state/tareas_telegram.json"
 IDENTITY_PATH = TOOLS_DIR / "bago_identity.json"
-BAGO_ROOT     = Path("/Volumes/bago_core")
 NOTIFY_CONFIG = str(CONFIG_PATH)
 
 logging.basicConfig(
@@ -468,7 +468,7 @@ async def cmd_app(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     url = get_miniapp_url()
     if not url:
         await update.message.reply_text(
-            "⚠️ Mini App no activa.\n\n`bash /Volumes/bago_core/.bago/tools/launch_miniapp.sh`",
+            f"⚠️ Mini App no activa.\n\n`bash {BAGO_ROOT}/.bago/tools/launch_miniapp.sh`",
             parse_mode="Markdown"
         )
         return
@@ -483,7 +483,7 @@ async def cmd_ideas(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
         return
     await update.message.reply_text("💡 Consultando ideas BAGO...", parse_mode="Markdown")
     # Primero intenta leer el snapshot (rápido y sin side effects)
-    snapshot = Path("/Volumes/bago_core/.bago/state/ideas_snapshot.md")
+    snapshot = BAGO_ROOT / ".bago/state/ideas_snapshot.md"
     if snapshot.exists():
         txt = snapshot.read_text(encoding="utf-8")
         # Extraer las primeras 5 ideas del snapshot
@@ -612,7 +612,7 @@ async def cmd_reparar(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     # ── Fix 1: Integridad KO → validate_pack legacy refs ──────────────────────
     if "KO" in health_out and ("legacy" in health_out.lower() or "integridad" in health_out.lower()):
         try:
-            vp_path = Path("/Volumes/bago_core/.bago/tools/validate_pack.py")
+            vp_path = BAGO_ROOT / ".bago/tools/validate_pack.py"
             vp_text = vp_path.read_text(encoding="utf-8")
             # Find the excluded_prefixes list and check if our standard fix is already there
             if '"ImageStudio/"' not in vp_text:
@@ -631,9 +631,9 @@ async def cmd_reparar(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     if "stale" in health_out.lower() and "KO" in health_out:
         try:
             result = subprocess.run(
-                [sys.executable, "/Volumes/bago_core/.bago/tools/repo_context_guard.py", "sync"],
+                [sys.executable, str(BAGO_ROOT / ".bago/tools/repo_context_guard.py"), "sync"],
                 capture_output=True, text=True, timeout=20,
-                cwd="/Volumes/bago_core"
+                cwd=str(BAGO_ROOT)
             )
             if result.returncode == 0:
                 fixes_applied.append("✅ estado stale: repo_context_guard sync ejecutado")
@@ -846,7 +846,7 @@ async def on_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
     elif data == "accion:ideas":
         await q.edit_message_text("💡 Consultando ideas...", parse_mode="Markdown")
-        snapshot = Path("/Volumes/bago_core/.bago/state/ideas_snapshot.md")
+        snapshot = BAGO_ROOT / ".bago/state/ideas_snapshot.md"
         if snapshot.exists():
             txt = snapshot.read_text(encoding="utf-8")
             blocks = txt.strip().split("\n## ")

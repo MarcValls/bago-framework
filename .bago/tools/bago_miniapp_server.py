@@ -14,11 +14,11 @@ from pathlib import Path
 from datetime import datetime
 import urllib.parse
 
-STATE_PATH   = Path("/Volumes/bago_core/.bago/state/global_state.json")
-TAREAS_PATH  = Path("/Volumes/bago_core/.bago/state/tareas_telegram.json")
-CHAT_PATH    = Path("/Volumes/bago_core/.bago/state/chat_history.json")
+BAGO_ROOT    = Path(os.environ.get("BAGO_PADRE_PATH") or Path(__file__).parent.parent.parent)
+STATE_PATH   = BAGO_ROOT / ".bago/state/global_state.json"
+TAREAS_PATH  = BAGO_ROOT / ".bago/state/tareas_telegram.json"
+CHAT_PATH    = BAGO_ROOT / ".bago/state/chat_history.json"
 MINIAPP_DIR  = Path(__file__).parent / "miniapp"
-BAGO_ROOT    = Path("/Volumes/bago_core")
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 def read_state() -> dict:
@@ -54,7 +54,7 @@ def run_git(args_list: list, timeout=10) -> str:
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*[mABCDEFGHJKSTfnsuhl]")
 
 def run_bago_cmd(cmd: str, timeout: int = 30) -> str:
-    """Ejecuta `python3 /Volumes/bago_core/bago <cmd>` y retorna stdout limpio."""
+    """Ejecuta `python3 <BAGO_ROOT>/bago <cmd>` y retorna stdout limpio."""
     try:
         r = subprocess.run(
             ["python3", str(BAGO_ROOT / "bago"), cmd],

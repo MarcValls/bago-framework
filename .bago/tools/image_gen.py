@@ -92,7 +92,7 @@ def gen_banner(output: Path, show: bool = False) -> Path:
     ideas_done = state.get("implemented_ideas_count", 89)
     ideas_total = state.get("total_ideas", 109)
     health = state.get("health_score", 100)
-    version = state.get("version", "2.5-stable")
+    version = state.get("bago_version", state.get("version", "unknown"))
     tools_n = _count_tools()
     pct = int(ideas_done / max(ideas_total, 1) * 100)
 
