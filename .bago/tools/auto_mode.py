@@ -509,7 +509,7 @@ def _run_loop(gs: dict, max_steps: int, max_loops: int, dry_run: bool) -> None:
         # ── Estabilidad: plan idéntico dos veces consecutivas → parar ─────────
         if fp == prev_fingerprint:
             stable_since += 1
-            if stable_since >= 2 or not actionable:
+            if stable_since >= 1 or not actionable:
                 print("  ✅ Estado estable — plan sin cambios. Bucle completado.")
                 break
         else:
