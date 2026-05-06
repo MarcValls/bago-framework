@@ -53,3 +53,15 @@ whatsapp_config.json
 notify_config.json
 whatsapp_config.json
 *.secret.json
+
+# State privado (no versionar)
+.bago/state/chat_history.json
+.bago/state/tareas_telegram.json
+
+# Backups y builds
+.bago/tools/*.bak
+.bago/tools/ImageStudio.spec
+.bago/tools/build_exe.bat
+.bago/tools/image_studio/
+.bago/ImageStudio/
+.bago/image_studio/
