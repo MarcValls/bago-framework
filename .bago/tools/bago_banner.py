@@ -9,7 +9,7 @@ Uso:
   python3 .bago/tools/bago_banner.py --plain  (sin colores)
 """
 
-import json, re, subprocess, sys
+import json, os, re, subprocess, sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -27,7 +27,8 @@ TOOLS     = BAGO_ROOT / "tools"
 
 # ─── Colores ANSI ─────────────────────────────────────────────────────────────
 # Auto-plain si no es TTY o se pasa --plain
-USE_COLOR = sys.stdout.isatty() and "--plain" not in sys.argv
+USE_COLOR     = sys.stdout.isatty() and "--plain" not in sys.argv
+USE_TRUECOLOR = USE_COLOR and os.environ.get("COLORTERM", "").lower() in ("truecolor", "24bit")
 
 def _c(code, text):
     if not USE_COLOR:
@@ -41,6 +42,34 @@ RED    = lambda t: _c("1;31", t)
 YELLOW = lambda t: _c("1;33", t)
 BOLD   = lambda t: _c("1",    t)
 DIM    = lambda t: _c("2",    t)
+
+def _rgb(r: int, g: int, b: int, ch: str) -> str:
+    """Truecolor per-character RGB — falls back to CYAN on unsupported terminals."""
+    if not USE_COLOR:
+        return ch
+    if not USE_TRUECOLOR:
+        return f"\033[1;36m{ch}\033[0m"
+    return f"\033[38;2;{r};{g};{b}m{ch}\033[0m"
+
+def _gradient_line(line: str, y: int, height: int) -> str:
+    """
+    Apply per-character RGB gradient matching the BAGO PowerShell logo:
+      R: 45→125  (left→right)
+      G: 180→245 (top→bottom)
+      B: 110→220 (left→right)
+    Spaces are preserved as-is (no escape codes on whitespace).
+    """
+    width = max(1, len(line))
+    out = []
+    for x, ch in enumerate(line):
+        if ch == " ":
+            out.append(" ")
+        else:
+            r = int(45  + (80  * x / width))
+            g = int(180 + (65  * y / height))
+            b = int(110 + (110 * x / width))
+            out.append(_rgb(r, g, b, ch))
+    return "".join(out)
 
 # ─── Logo (sin espacios leading — se añaden fuera del ANSI) ───────────────────
 # Dividido en top (cyan) y bottom (azul)
@@ -298,13 +327,12 @@ def print_banner(mini=False):
     print()
     print(TOP)
 
-    # ── Logo top (cyan) ───────────────────────────────────────────────────────
+    # ── Logo con gradiente RGB ────────────────────────────────────────────────
+    logo_lines = LOGO_TOP + LOGO_BOT
+    total      = len(logo_lines)
     print(_box())
-    for line in LOGO_TOP:
-        print(_box(INDENT + CYAN(line)))
-    # ── Logo bottom (azul) ────────────────────────────────────────────────────
-    for line in LOGO_BOT:
-        print(_box(INDENT + BLUE(line)))
+    for y, line in enumerate(logo_lines):
+        print(_box(INDENT + _gradient_line(line, y, total)))
     print(_box())
 
     # ── Tagline ───────────────────────────────────────────────────────────────
