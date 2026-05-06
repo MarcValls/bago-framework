@@ -246,7 +246,7 @@ Esto genera `.bago/` mínimo en el proyecto y configura `BAGO_PADRE_PATH` en `.b
 
 ## Plan de implementación (v3.0)
 
-> **Prerrequisito:** v2.6.x completamente estable y sin bugs cross-platform ✅
+> **Prerrequisito:** v2.6.x estable (health 100/100, 7/7 tool_guardian tests) y bugs cross-platform corregidos (commit 80ebd27)
 
 ### Fase 1 — Infraestructura (1 sesión)
 - [ ] Crear `.bago/state/siembras.json`
