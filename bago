@@ -53,9 +53,68 @@ if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
 
 BAGO_ROOT = Path(__file__).resolve().parent / ".bago"
 TOOLS     = BAGO_ROOT / "tools"
+CORE      = BAGO_ROOT / "core"
 
 _USE_COLOR = sys.stdout.isatty()
 def GREEN(t):  return f"\033[1;32m{t}\033[0m" if _USE_COLOR else t
+
+# ── Agent Dispatcher (v3.0) — opt-in via BAGO_DISPATCH=1 ─────────────────────
+# When disabled: zero overhead. When enabled: adds BAGO_AGENT to subprocess env
+# and emits dispatch:before / dispatch:after events to events.jsonl.
+_DISPATCH_ENABLED = os.environ.get("BAGO_DISPATCH", "0") == "1"
+_dispatcher_mod   = None   # lazy-loaded below if enabled
+
+def _load_dispatcher():
+    """Lazy-load agent_dispatcher from .bago/core/ when first needed."""
+    global _dispatcher_mod
+    if _dispatcher_mod is not None:
+        return _dispatcher_mod
+    disp_path = CORE / "agent_dispatcher.py"
+    if not disp_path.exists():
+        return None
+    spec = importlib.util.spec_from_file_location("_bago_agent_dispatcher", str(disp_path))
+    if spec is None:
+        return None
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod
+    # agent_dispatcher imports bago_context — ensure it can find it
+    if str(CORE) not in sys.path:
+        sys.path.insert(0, str(CORE))
+    try:
+        spec.loader.exec_module(mod)
+        _dispatcher_mod = mod
+        return mod
+    except Exception:
+        sys.modules.pop(spec.name, None)
+        return None
+
+
+_context_mod = None   # lazy-loaded below if dispatch enabled
+
+def _load_context():
+    """Lazy-load bago_context from .bago/core/ and return a BagoContext singleton."""
+    global _context_mod
+    ctx_path = CORE / "bago_context.py"
+    if not ctx_path.exists():
+        return None
+    if _context_mod is None:
+        spec = importlib.util.spec_from_file_location("_bago_context", str(ctx_path))
+        if spec is None:
+            return None
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = mod
+        if str(CORE) not in sys.path:
+            sys.path.insert(0, str(CORE))
+        try:
+            spec.loader.exec_module(mod)
+            _context_mod = mod
+        except Exception:
+            sys.modules.pop(spec.name, None)
+            return None
+    try:
+        return _context_mod.get_context()
+    except Exception:
+        return None
 
 
 # ── Tool registry — single source of truth ────────────────────────────────────
@@ -338,11 +397,40 @@ def _dispatch(cmd: str, rest: list, preflight_only: bool = False) -> None:
     # 2. Start session log
     session = _start_session(cmd, rest)
 
+    # 2b. Dispatcher: resolve agent + inject BAGO_AGENT into subprocess env (opt-in)
+    _dispatch_ctx   = None
+    _dispatch_disp  = None
+    _dispatch_entry = None
+    dispatch_env: dict = {}
+    if _DISPATCH_ENABLED:
+        reg = _load_registry_mod()
+        if reg and hasattr(reg, "REGISTRY"):
+            _dispatch_entry = reg.REGISTRY.get(cmd)
+        _dispatch_ctx  = _load_context()
+        _dispatch_disp = _load_dispatcher()
+        if _dispatch_disp and _dispatch_entry is not None and _dispatch_ctx is not None:
+            try:
+                dispatch_env = _dispatch_disp.prepare_dispatch(
+                    _dispatch_ctx, cmd, _dispatch_entry
+                )
+            except Exception:
+                dispatch_env = {}
+
     # 3. Execute
+    run_env = {**os.environ, **dispatch_env} if dispatch_env else None
     result = subprocess.run(
         COMMANDS[cmd] + rest,
         cwd=str(BAGO_ROOT.parent),
+        env=run_env,
     )
+
+    # 3b. Dispatcher: finalize (emit dispatch:after event, flush)
+    if _DISPATCH_ENABLED and _dispatch_disp and _dispatch_entry is not None and _dispatch_ctx is not None:
+        _agent_name = getattr(_dispatch_entry, "agent", "") or "ORGANIZADOR"
+        try:
+            _dispatch_disp.finalize_dispatch(_dispatch_ctx, cmd, _agent_name, result.returncode)
+        except Exception:
+            pass
 
     # 4. Log result
     if session:

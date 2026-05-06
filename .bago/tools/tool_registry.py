@@ -62,6 +62,8 @@ class ToolEntry:
     see_also: str = ""                    # Comando grupo preferido
     layer: str = ""                       # Capa taxonómica (ejecución|calidad|salud|analítica|visual|avanzado)
     scope: str = ""                       # Ámbito (framework|project|both) — inyectado desde _SCOPE_MAP
+    agent: str = ""                       # Agente responsable — inyectado desde _AGENT_MAP
+    subscribes: list[str] = field(default_factory=list)  # Eventos del bus a los que reacciona
 
 
 # ── Internal tools — excluded from guardian / manifest / integration_tests ────
@@ -626,12 +628,113 @@ _SCOPE_MAP: dict[str, str] = {
     "project-state": "both", "promote": "both", "learn": "both",
 }
 
-# Inyecta layer + scope en cada entrada del registro
+# ── Agent map — qué agente interno es responsable de cada comando ──────────────
+# Agentes disponibles (ver .bago/roles/):
+#   ANALISTA · ARQUITECTO · GENERADOR · ORGANIZADOR · VALIDADOR (produccion)
+#   AUDITOR_CANONICO · CENTINELA_SINCERIDAD · VERTICE             (supervision)
+#   REVISOR_SEGURIDAD · REVISOR_PERFORMANCE · REVISOR_UX          (especialistas)
+#   INTEGRADOR_REPO                                                (especialistas)
+_AGENT_MAP: dict[str, str] = {
+    # ANALISTA — Análisis estático, detección, métricas, búsqueda
+    "detector":    "ANALISTA",
+    "scope":       "ANALISTA",
+    "efficiency":  "ANALISTA",
+    "stability":   "ANALISTA",
+    "code-quality":"ANALISTA",
+    "naming":      "ANALISTA",
+    "types":       "ANALISTA",
+    "deps":        "ANALISTA",
+    "map":         "ANALISTA",
+    "context":     "ANALISTA",
+    "diff":        "ANALISTA",
+    "why":         "ANALISTA",
+    "research":    "ANALISTA",
+    "scan":        "ANALISTA",
+    "debt":        "ANALISTA",
+    "risk":        "ANALISTA",
+    "find-tool":   "ANALISTA",
+    "insights":    "ANALISTA",
+    "lsp":         "ANALISTA",
+    "habit":       "ANALISTA",
+    "review":      "ANALISTA",
+    # ARQUITECTO — Flujo, automatización, planificación, clonado
+    "auto":           "ARQUITECTO",
+    "flow":           "ARQUITECTO",
+    "cabinet":        "ARQUITECTO",
+    "orchestrate":    "ARQUITECTO",
+    "repo-clone":     "ARQUITECTO",
+    "llm":            "ARQUITECTO",
+    "project-init":   "ARQUITECTO",
+    "project-link":   "ARQUITECTO",
+    "project-unlink": "ARQUITECTO",
+    "next":           "ARQUITECTO",
+    "peer":           "ARQUITECTO",
+    "hub":            "ARQUITECTO",
+    # GENERADOR — Generación de artefactos, reportes, imágenes
+    "cosecha":       "GENERADOR",
+    "image_gen":     "GENERADOR",
+    "report":        "GENERADOR",
+    "banner":        "GENERADOR",
+    "chronicle":     "GENERADOR",
+    "sprite-studio": "GENERADOR",
+    "image-studio":  "GENERADOR",
+    # ORGANIZADOR — Sprint, workflow, sesión, estado, repos, DB
+    "dashboard":     "ORGANIZADOR",
+    "ideas":         "ORGANIZADOR",
+    "workflow":      "ORGANIZADOR",
+    "sprint":        "ORGANIZADOR",
+    "task":          "ORGANIZADOR",
+    "v2":            "ORGANIZADOR",
+    "session":       "ORGANIZADOR",
+    "session_close": "ORGANIZADOR",
+    "reopen":        "ORGANIZADOR",
+    "git":           "ORGANIZADOR",
+    "db":            "ORGANIZADOR",
+    "done":          "ORGANIZADOR",
+    "status":        "ORGANIZADOR",
+    "sync":          "ORGANIZADOR",
+    "repo":          "ORGANIZADOR",
+    "repo-list":     "ORGANIZADOR",
+    "repo-switch":   "ORGANIZADOR",
+    "select":        "ORGANIZADOR",
+    "project-state": "ORGANIZADOR",
+    "promote":       "ORGANIZADOR",
+    "learn":         "ORGANIZADOR",
+    "project":       "ORGANIZADOR",
+    "ask":           "ORGANIZADOR",
+    "goals":         "ORGANIZADOR",
+    # VALIDADOR — Salud, validación, diagnóstico
+    "health":        "VALIDADOR",
+    "audit":         "VALIDADOR",
+    "validate":      "VALIDADOR",
+    "check":         "VALIDADOR",
+    "stale":         "VALIDADOR",
+    "config-check":  "VALIDADOR",
+    "doctor":        "VALIDADOR",
+    "heal":          "VALIDADOR",
+    "consistency":   "VALIDADOR",
+    # CENTINELA_SINCERIDAD — Integridad de commits y sinceridad
+    "commit":        "CENTINELA_SINCERIDAD",
+    "pre-push":      "CENTINELA_SINCERIDAD",
+    "sincerity":     "CENTINELA_SINCERIDAD",
+    # AUDITOR_CANONICO — Reglas y auditoría canónica
+    "rules":         "AUDITOR_CANONICO",
+    # REVISOR_SEGURIDAD — Seguridad y secretos
+    "secrets":       "REVISOR_SEGURIDAD",
+    # VERTICE — Gobierno del sistema, entrada, instalación
+    "hello":         "VERTICE",
+    "install":       "VERTICE",
+    "start":         "VERTICE",
+}
+
+# Inyecta layer + scope + agent en cada entrada del registro
 for _cmd, _entry in REGISTRY.items():
     if not _entry.layer:
         _entry.layer = _LAYER_MAP.get(_cmd, "avanzado")
     if not _entry.scope:
         _entry.scope = _SCOPE_MAP.get(_cmd, "both")
+    if not _entry.agent:
+        _entry.agent = _AGENT_MAP.get(_cmd, "ORGANIZADOR")
 
 # ── Public API ────────────────────────────────────────────────────────────────
 
