@@ -841,13 +841,14 @@ _INTENT_TO_SECTION: dict[str, str] = {
 }
 
 
-def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, bool, str | None, bool]:
+def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, bool, str | None, bool, bool]:
     detail_index = None
     accept = False
     select = False
     baseline = False
     intent: str | None = None
     export = False
+    health = False
     idx = 1
 
     while idx < len(argv):
@@ -855,13 +856,13 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, bool, str | Non
         if arg in {"-h", "--help"}:
             print(
                 "Usage: emit_ideas.py [--detail N] [--accept N] [--select] [--baseline] "
-                "[--intent TYPE] [--export]\n\n"
+                "[--intent TYPE] [--export] [--health]\n\n"
                 "Show 5 to 20 contextual ideas prioritized by stability. Use --detail "
                 "to expand a selected idea, --accept to mark it ready for W2, "
                 "--select for the interactive slot selector, --baseline for "
                 "low-risk ideas only, --intent to filter by type "
-                "(implementar, depurar, cerrar, respaldo), or --export to write "
-                "ideas_snapshot.md to .bago/state/."
+                "(implementar, depurar, cerrar, respaldo), --export to write "
+                "ideas_snapshot.md to .bago/state/, or --health to show catalog stats."
             )
             raise SystemExit(0)
         if arg == "--select":
@@ -870,6 +871,10 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, bool, str | Non
             continue
         if arg == "--baseline":
             baseline = True
+            idx += 1
+            continue
+        if arg == "--health":
+            health = True
             idx += 1
             continue
         if arg == "--intent":
@@ -897,7 +902,80 @@ def parse_args(argv: list[str]) -> tuple[int | None, bool, bool, bool, str | Non
             continue
         raise SystemExit(f"Unknown argument: {arg}")
 
-    return detail_index, accept, select, baseline, intent, export
+    return detail_index, accept, select, baseline, intent, export, health
+
+
+def _show_catalog_health() -> int:
+    """Muestra estadísticas del catálogo de ideas desde bago.db."""
+    if not _db_available():
+        print("  ✗ bago.db no encontrado — sin datos de catálogo.")
+        return 1
+
+    conn = _db_conn()
+    try:
+        # Estadísticas de ideas por status
+        rows = conn.execute("SELECT status, COUNT(*) as n FROM ideas GROUP BY status").fetchall()
+        by_status: dict[str, int] = {r["status"]: r["n"] for r in rows}
+        total_ideas = sum(by_status.values())
+
+        # Ideas implementadas en tabla implemented_ideas
+        try:
+            impl_count = conn.execute("SELECT COUNT(*) FROM implemented_ideas").fetchone()[0]
+        except Exception:
+            impl_count = 0
+
+        # Ideas por sección (solo disponibles)
+        sections = conn.execute(
+            "SELECT section, COUNT(*) as n FROM ideas WHERE status='available' GROUP BY section ORDER BY n DESC"
+        ).fetchall()
+
+        # Guardian runs
+        try:
+            grun = conn.execute(
+                "SELECT health_pct, run_date FROM guardian_runs ORDER BY run_date DESC LIMIT 1"
+            ).fetchone()
+        except Exception:
+            grun = None
+    finally:
+        conn.close()
+
+    available = by_status.get("available", 0)
+    blocked   = by_status.get("blocked", 0)
+    done      = by_status.get("done", 0)
+    other     = total_ideas - available - blocked - done
+
+    bar_avail  = "█" * min(available, 40)
+    bar_done   = "░" * min(impl_count, 40)
+
+    print("📊  bago ideas --health — estado del catálogo")
+    print("=" * 48)
+    print(f"  Total ideas en DB  : {total_ideas}")
+    print(f"  Disponibles        : {available:3d}  {bar_avail}")
+    print(f"  Implementadas      : {impl_count:3d}  {bar_done}")
+    print(f"  Bloqueadas         : {blocked}")
+    if done:
+        print(f"  Marcadas done (DB) : {done}")
+    if other:
+        print(f"  Otros estados      : {other}")
+    print()
+
+    if sections:
+        print("  Disponibles por sección:")
+        for s in sections:
+            print(f"    {s['section']:<20} {s['n']:3d}")
+        print()
+
+    # Rango operativo
+    status_icon = "✅" if available >= MIN_IDEAS else "⚠️ "
+    print(f"  Rango operativo    : {MIN_IDEAS}–{MAX_IDEAS}  →  {status_icon} {available} disponibles")
+    if available < MIN_IDEAS:
+        print(f"  💡 Ejecuta: bago db reset-ideas  para renovar el catálogo")
+
+    if grun:
+        print(f"  Último guardian    : {grun['health_pct']}%  ({grun['run_date']})")
+
+    print()
+    return 0
 
 
 def _build_ideas_hardcoded(
@@ -1073,7 +1151,11 @@ def _export_ideas_snapshot(ideas: list[dict]) -> Path:
 
 
 def main() -> int:
-    detail_index, accept, select, baseline_flag, intent_filter, export_flag = parse_args(sys.argv)  # INTENT_FILTER_IMPLEMENTED
+    detail_index, accept, select, baseline_flag, intent_filter, export_flag, health_flag = parse_args(sys.argv)  # INTENT_FILTER_IMPLEMENTED
+
+    # ── Modo --health: estadísticas del catálogo ─────────────────────────────
+    if health_flag:
+        return _show_catalog_health()
 
     # ── Modo selector interactivo ────────────────────────────────────────────
     if select:

@@ -1,5 +1,5 @@
 # BAGO — Conocimiento del Engine BIANCA
-_Aprendido en sesión 2026-05-04 — Actualizado por agente de soporte BAGO 2026-05-04_
+_Aprendido en sesión 2026-05-04 — Actualizado por agente de soporte BAGO 2026-05-05_
 
 ---
 
@@ -330,5 +330,215 @@ ctx.shadowBlur = 0;
 | `ctx.save/restore` | Para FX con múltiples propiedades modificadas (transform, shadow, composite) |
 | Audio import | `import { audioManager } from '../engine/AudioManager'` — es singleton exportado |
 | Sprint size óptimo | 3-5 KB/sprint es ideal. Gap 248-260: ~0.35 KB/sprint (muy limpio) |
+| Canvas fullscreen pixel art | CSS `width:100vw; height:100vh` + resolución lógica fija. NO refactorizar DPR si `image-rendering:pixelated`. |
+| Verificar nombre propiedad antes de añadir | `grep -n "private nombre"` — duplicar tipo TS2300/TS2717 rompe build |
 
-_Última actualización: 2026-05-04 (sprints 197-260 completos)_
+_Última actualización: 2026-05-05 (sprints 261-292 + cross-learning DERIVA)_
+
+---
+
+## 🆕 FX añadidos — Sprints 261-292 (sesión 2026-05-05)
+
+| Sprint | Escena | FX | Build |
+|--------|--------|----|-------|
+| 288 | — (global) | Canvas CSS fullscreen: `width:100vw; height:100vh`, meta viewport mobile | ✅ 323.29 KB |
+| 289 | SegundoActoScene | **Palabras que se olvidan**: WORLD_WORDS aparece tenue, se borra letra a letra D→I | ✅ 324.72 KB |
+| 290 | CreditsScene | **Lluvia suave de glifos**: símbolos caen verticalmente α 0.03-0.08, como nieve de texto | ✅ 325.50 KB |
+| 291 | TorreBabelScene | **Deriva de tinta**: partículas ascienden del suelo, drift sinusoidal, polvo del mundo borrado | ✅ 326.35 KB |
+| 292 | BosqueInconclusasScene | **Luciérnagas**: puntos bioluminiscentes que parpadean, blink con sin(), fade natural por `life` | ✅ 327.17 KB |
+
+### Patrón: Disolución letra a letra (Sprint 289)
+```typescript
+// letterAlphas: number[] — alpha por letra, se reduce de derecha a izquierda
+interface ForgottenWord {
+  text: string; x: number; y: number;
+  letterAlphas: number[]; dissolveTimer: number; holdTimer: number; appearing: boolean;
+}
+
+// En update(dt) — dissolve derecha→izquierda
+const dissolveIdx = fw.text.length - 1 - Math.floor(fw.dissolveTimer / 0.22);
+for (let li = fw.text.length - 1; li > dissolveIdx; li--) {
+  fw.letterAlphas[li] = Math.max(0, fw.letterAlphas[li] - dt * 1.8);
+}
+
+// En render() — per-letter
+for (let li = 0; li < fw.text.length; li++) {
+  ctx.globalAlpha = Math.max(0, fw.letterAlphas[li]);
+  ctx.fillText(fw.text[li], cursorX, oy);
+  cursorX += ctx.measureText(fw.text[li]).width + 1;
+}
+ctx.globalAlpha = 1; ctx.shadowBlur = 0; // ← SIEMPRE
+```
+
+### Patrón: Punto bioluminiscente parpadeante (Sprint 292)
+```typescript
+// phase → ciclo suave con sin(). life decrementa → fade natural al morir
+interface Luciernaga {
+  x: number; y: number; phase: number; speed: number; driftX: number; life: number;
+}
+
+// blink natural:
+const blink = 0.5 + 0.5 * Math.sin(ff.phase);
+const alpha = 0.04 + blink * 0.12 * Math.min(1, ff.life / 1.5); // fade-out en últimos 1.5s
+
+ctx.shadowBlur = 8 + blink * 6;
+ctx.beginPath();
+ctx.arc(ff.x * W, ff.y * H, 2 + blink, 0, Math.PI * 2);
+ctx.fill();
+ctx.shadowBlur = 0; // ← SIEMPRE
+```
+
+### Arquitectura canvas — BIANCA vs DERIVA
+
+| Aspecto | BIANCA (pixel art) | DERIVA (React) |
+|---------|-------------------|----------------|
+| Resolución | Fija 1920×1080 lógica | Dinámica `clientWidth × dpr` |
+| Fullscreen | CSS `100vw/100vh` | `canvas.width = Math.round(clientWidth * dpr)` |
+| Input coords | `clientX * canvas.width / rect.width` | `clientX / dpr` |
+| Nitidez | `image-rendering: pixelated` | `ctx.setTransform(dpr,0,0,dpr,0,0)` |
+| FD cross-uso | ❌ No copiar DPR refactor de DERIVA | ❌ No copiar CSS approach de BIANCA |
+
+---
+
+## Sistema de Sprites Prerenderizados — Pipeline Codex CLI (2026-05-05)
+
+### Arquitectura: 1 grid → PIL mapea
+
+**Principio:** 1 llamada Codex CLI genera el grid completo. PIL solo post-procesa. No hay Pillow drawing.
+
+```
+Codex CLI (imagen AI)
+  → raw/[char]_raw_grid.png     ← 1 imagen, todas las direcciones/frames
+  → sprite_mapper.py            ← valida, elimina fondo, exporta
+  → public/assets/sprites/      ← PNG listo para engine
+  → .bago/prompts/sprites/[char]_engine_config.json → copiado a public/assets/sprites/
+```
+
+### Contratos del grid
+
+| Personaje | Canvas | Grid | Frame | Direcciones |
+|-----------|--------|------|-------|-------------|
+| BIANCA (principal) | 1024×1536 | 4×8 | 256×192 | E SE S SW W NW N NE |
+| NPC simple | 1024×768  | 4×4 | 256×192 | E S W N |
+
+### Orden canónico (filas = direcciones, columnas = frames)
+
+```
+Row 0 = E   | Row 4 = W
+Row 1 = SE  | Row 5 = NW
+Row 2 = S   | Row 6 = N
+Row 3 = SW  | Row 7 = NE
+
+Col 0 = idle  | Col 1 = step-L | Col 2 = stride | Col 3 = step-R
+```
+
+### Archivos del sistema
+
+```
+.bago/prompts/sprites/
+├── BIANCA_grid.txt           ← prompt Codex CLI para BIANCA
+├── NPC_grid_template.txt     ← plantilla para cualquier NPC
+├── run_sprites.sh            ← runner principal
+├── sprite_mapper.py          ← post-proceso PIL (NO generación)
+├── bianca_engine_config.json ← config lista para AssetManager
+└── raw/                      ← grids crudos generados (no commitear)
+```
+
+### Comando para generar
+
+```bash
+cd .bago/prompts/sprites
+./run_sprites.sh bianca          # Regenera BIANCA completo
+./run_sprites.sh npc KEY f.txt   # Nuevo NPC
+```
+
+### Embedding en el engine
+
+```typescript
+// main.ts / onLoad() — flujo estándar:
+const spriteMeta = await assetManager.loadJSONFile('char_bianca_walk_4x8_meta', '/assets/sprites/char_bianca_walk_4x8.json');
+await assetManager.loadSpriteSheet(spriteMeta.key, {
+  imagePath:   spriteMeta.imagePath,
+  frameWidth:  spriteMeta.grid.frameWidth,   // 256
+  frameHeight: spriteMeta.grid.frameHeight,  // 192
+  columns:     spriteMeta.grid.columns,      // 4
+  rows:        spriteMeta.grid.rows,         // 8
+  anchor:      spriteMeta.anchor             // {x:0.5, y:1.0}
+});
+this.sprite = new AnimatedSprite(spriteMeta.key);
+this.sprite.defineAnimation('walk', [0,1,2,3], 8, true);
+this.sprite.defineAnimation('idle', [0], 0, true);
+this.sprite.setAnimation('idle', Direction.S);
+```
+
+### Reglas críticas Codex CLI (imagen real)
+
+- ❌ NO pipear salida: `| head`, `| grep`, `> file` — mata el proceso
+- ✅ Codex guarda imagen en `~/.codex/generated_images/`
+- ✅ El prompt del grid define el OUTPUT FILE explícitamente (la IA escribe ahí)
+- ✅ PIL (sprite_mapper.py) solo valida dimensiones, quita fondo, exporta
+
+---
+
+## WhatsApp Notifications — BAGO Tool
+
+**Tool:** `/Volumes/bago_core/.bago/tools/notify_whatsapp.py`
+**Provider:** CallMeBot (gratuito, sin servidor, HTTP GET)
+**Número configurado:** +34684798513
+
+### Setup (una sola vez)
+1. Añadir `+34 644 22 03 20` a contactos WhatsApp como "CallMeBot"
+2. Enviar: `I allow callmebot to send me messages`
+3. Recibir API key por WhatsApp
+4. `python3 notify_whatsapp.py --set-key TU_KEY`
+
+### Uso desde cualquier script BAGO
+```python
+import subprocess
+subprocess.run(["python3", "/Volumes/bago_core/.bago/tools/notify_whatsapp.py", "Mensaje"])
+```
+
+### Uso desde shell
+```bash
+python3 /Volumes/bago_core/.bago/tools/notify_whatsapp.py "🎮 Sprites BIANCA listos"
+```
+
+### Integración sugerida
+- Fin de generación de sprites → notificar
+- Build errors → notificar
+- Checkpoint de sesión → notificar
+
+---
+
+## Notificaciones BAGO — notify_bago.py
+
+**Tool:** `/Volumes/bago_core/.bago/tools/notify_bago.py`
+**Config:** `/Volumes/bago_core/.bago/tools/notify_config.json` (gitignored)
+
+### Providers disponibles
+| Provider | Estado | Setup |
+|---|---|---|
+| WhatsApp (Green API) | PENDING — necesita credenciales | console.green-api.com → QR scan |
+| ntfy | ✅ READY | instalar app + suscribir `bago-684798513` |
+| Telegram | pendiente | @BotFather → token + chat_id |
+
+### Uso desde cualquier script BAGO
+```python
+import subprocess
+subprocess.run([
+    "python3", "/Volumes/bago_core/.bago/tools/notify_bago.py",
+    "--title", "Sprites listos",
+    "char_bianca_walk_6x8.png generado ✅"
+])
+```
+
+### Activar WhatsApp (Green API — gratuito)
+1. Registro en https://console.green-api.com
+2. Crear instancia Developer (free)
+3. WhatsApp → Dispositivos vinculados → escanear QR
+4. `python3 notify_bago.py --set-wa-instance ID_INSTANCE API_TOKEN`
+
+### Config tras activación
+```bash
+python3 notify_bago.py --set-wa-instance 1234567890 abcdef1234567890
+```

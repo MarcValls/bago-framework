@@ -402,3 +402,60 @@ FASE 5 — Credibilidad:
 *Auditoría realizada: Apr 23, 2026*
 *Compilado por BAGO MAESTRO · 2026-05-04*
 *CHG-002 activo · CHG-003 a CHG-008 pendientes de apertura*
+
+---
+
+## 🆕 Nuevas trampas detectadas — Mayo 2026 (cross-learning BIANCA)
+
+### TRAMPA #14 — Edit que consume `}` de método
+
+**Detectada en:** BIANCA sprints 289-290 (sesión 2026-05-05)  
+**Severidad:** 🔴 Alta
+
+**Descripción:**
+Cuando `old_str` en una operación `edit` termina exactamente en el `}` de cierre de un
+método TypeScript, ese `}` se reemplaza y el método queda sin cerrar.
+Efecto en cascada: 20+ errores TypeScript en el build siguiente.
+
+```typescript
+// ❌ MAL — old_str que CONSUME el cierre de método:
+old_str: "  update(dt: number) {\n    // ... lógica ...\n  }"
+// El } de cierre desaparece. TypeScript ve el método sin cerrar.
+
+// ✅ BIEN — incluir una línea de contexto DESPUÉS del }:
+old_str: "  update(dt: number) {\n    // ... lógica ...\n  }\n\n  render"
+// El } de cierre se preserva porque hay contexto posterior.
+```
+
+**Remediación:**
+1. Siempre incluir ≥1 línea de contexto después del `}` de cierre en `old_str`.
+2. Ejecutar build (`tsc --noEmit` o `npm run build`) inmediatamente después de todo edit estructural.
+3. Si el build da 20+ errores en cascada → primera sospecha: `}` consumido por edit.
+
+---
+
+### TRAMPA #15 — Nombre de propiedad duplicado en TS
+
+**Detectada en:** BIANCA sprint 292 (BosqueInconclusasScene, sesión 2026-05-05)  
+**Severidad:** 🟡 Media
+
+**Descripción:**
+Declarar una propiedad privada que ya existe en la clase con un shape TypeScript diferente
+produce TS2300 (duplicate identifier) y TS2717 en cascada.
+
+```typescript
+// ❌ MAL — 'fireflies' ya existe en L67 con shape {x,y,vx,vy,phase,speed}:
+private fireflies: Array<{x:number; y:number; life:number}> = [];  // TS2300
+
+// ✅ BIEN — verificar antes de declarar:
+// grep -n "private fireflies" src/scenes/BosqueInconclusasScene.ts → L67 encontrado
+// → Usar nombre semánticamente adecuado:
+private luciernagas: Array<{x:number; y:number; life:number}> = [];  // ✅
+```
+
+**Remediación:**
+Antes de añadir cualquier nueva propiedad privada a una escena grande (>500 líneas):
+```bash
+grep -n "private nombre_planificado" ruta/escena.ts
+# Si sale algún resultado → STOP, elegir nombre alternativo
+```

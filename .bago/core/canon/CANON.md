@@ -90,3 +90,95 @@ BAGO está sano si puede responder con precisión:
 - qué historial es actual y cuál legado,
 - qué roles se activaron y por qué,
 - qué cambió y con qué validación.
+
+---
+
+## Reglas aprendidas en producción (2026-05-05)
+
+Origen: sesión cross-learning BIANCA↔DERIVA — sprints 288-292.
+
+### R-PROD-01 · Frozen decisions deben auditarse contra código real
+
+Una decisión congelada no es verdad hasta que se verifica contra el código del repositorio en el momento de usarla. El estado de `.bago/` puede desfasarse respecto a la realidad del repo.
+
+```
+ANTES de confiar en una FD: grep -n "nombre_propiedad" src/
+# Si el código contradice la FD → auditar antes de proceder
+```
+
+### R-PROD-02 · Build de verificación tras todo edit estructural
+
+Todo edit que modifique la firma de una clase (propiedades, apertura/cierre de método) debe ir seguido de build inmediato. Un build roto en cascada (20+ errores) indica casi siempre un `}` consumido por el edit.
+
+```
+PATRÓN PELIGROSO en old_str: terminar justo en el "}" de cierre de método
+SOLUCIÓN: incluir siempre ≥1 línea de contexto DESPUÉS del "}"
+```
+
+### R-PROD-03 · Cross-learning entre proyectos debe codificarse en knowledge/
+
+Cuando un problema de infraestructura (canvas, audio, routing) se resuelve en un proyecto, la solución debe quedar en `knowledge/` antes de cerrar la sesión, no solo en la memoria del agente. Si no está escrito, no existe para la próxima sesión.
+
+```
+Señal de que aplica: mismo síntoma en dos proyectos → verificar knowledge/ antes de resolver
+Señal de riesgo: solución copiada sin verificar compatibilidad arquitectónica
+```
+
+### R-PROD-04 · knowledge/ es módulo core del sistema
+
+El directorio `knowledge/` tiene el mismo rango que `workflows/`, `canon/` y `agents/`. No es documentación auxiliar — es aprendizaje operativo acumulado del sistema.
+
+| Módulo | Propósito |
+|--------|-----------|
+| `canon/` | Normas del sistema |
+| `workflows/` | Protocolos de ejecución |
+| `agents/` | Roles activables |
+| `knowledge/` | Aprendizaje producido en proyectos reales |
+
+### R-PROD-05 · Señales de modularización — cuándo revisar y cuándo actuar
+
+**Definición:** Un archivo o clase da "señales de modularización" cuando su crecimiento acumulativo supera umbrales que indican que la cohesión está degradándose. BAGO debe detectarlas y registrarlas, pero NO modularizar automáticamente.
+
+#### Umbrales de señal (cualquiera activa revisión)
+
+| Métrica | Señal moderada | Señal fuerte |
+|---------|----------------|--------------|
+| Líneas de archivo | > 800 | > 1500 |
+| Arrays de estado privados | > 8 | > 12 |
+| Timers privados | > 6 | > 10 |
+| Capas FX / responsabilidades acumuladas | > 8 | > 14 |
+| Responsabilidades distintas en update() | > 3 | > 5 |
+
+#### Checklist de viabilidad (antes de modularizar)
+
+```
+□ ¿Cada capa es autocontenida? (no muta estado de otras capas)
+□ ¿Existe una interfaz natural? (ej: update(dt, state) + render(ctx, W, H, state))
+□ ¿El acoplamiento al estado del padre es uniforme entre capas?
+□ ¿El refactor no requiere tocar >30% del archivo?
+□ ¿El build puede verificarse inmediatamente después de cada paso?
+□ ¿El sprint es DEDICADO al refactor? (no mezclar con sprints de contenido)
+```
+
+Si ≥4 cajas son ✅ → modularización viable.
+Si <4 → no modularizar todavía; registrar señal en `pending_review` y continuar.
+
+#### Señal ≠ Acción inmediata
+
+```
+SEÑAL detectada → revisar checklist → viable → sprint dedicado de refactor
+SEÑAL detectada → revisar checklist → no viable → pending_review + continuar
+```
+
+**Anti-patrón:** modularizar en medio de un sprint de contenido.
+**Anti-patrón:** modularizar por tamaño cuando el patrón de crecimiento es homogéneo y estable.
+
+#### Protocolo de sprint de refactor (cuando se decide actuar)
+
+```
+1. Definir la interfaz nueva SIN tocar el código existente
+2. Implementar la interfaz en un archivo nuevo → build
+3. Migrar UNA unidad primero → build → si verde, continuar
+4. Migrar unidad a unidad, build tras cada migración
+5. Solo eliminar código antiguo cuando TODAS las unidades estén migradas y build verde
+```

@@ -48,3 +48,8 @@ desktop.ini
 .idea/
 *.swp
 *.DS_Store
+whatsapp_config.json
+*.secret.json
+notify_config.json
+whatsapp_config.json
+*.secret.json

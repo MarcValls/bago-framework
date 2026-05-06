@@ -1,9 +1,9 @@
 {
   "idea_index": 1,
-  "idea_title": "Sugerir commit tras implementar idea",
-  "priority": 81,
+  "idea_title": "Mostrar estado del catálogo en bago ideas",
+  "priority": 70,
   "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-  "objetivo": "bago done sugiere git add -A && git commit cuando la tarea se cierra limpia.",
+  "objetivo": "bago ideas --health muestra cuántas ideas están implementadas, bloqueadas y disponibles.",
   "alcance": "Materializar la idea seleccionada con el menor cambio suficiente.",
   "no_alcance": "No expandir el alcance fuera de la idea elegida.",
   "archivos_candidatos": [
@@ -11,14 +11,14 @@
   ],
   "validacion_minima": [
     "La salida debe explicar el cambio, los archivos y la verificación mínima.",
-    "Métrica objetivo: bago done sugiere git add -A && git commit cuando la tarea se cierra limpia."
+    "Métrica objetivo: bago ideas --health muestra cuántas ideas están implementadas, bloqueadas y disponibles."
   ],
-  "siguiente_paso": "Añadir sugerencia de commit en bago done",
-  "metric": "bago done sugiere git add -A && git commit cuando la tarea se cierra limpia.",
+  "siguiente_paso": "Implementar flag --health en emit_ideas.py",
+  "metric": "bago ideas --health muestra cuántas ideas están implementadas, bloqueadas y disponibles.",
   "contexto": [
-    "Añadir comprobación de git status en show_task.py --done."
+    "Añadir flag --health a emit_ideas.py que consulte la BD."
   ],
   "status": "done",
-  "accepted_at": "2026-05-05T10:17:49.176690+00:00",
-  "done_at": "2026-05-05T10:18:41.249569+00:00"
+  "accepted_at": "2026-05-05T13:19:50.384891+00:00",
+  "done_at": "2026-05-05T13:20:59.155084+00:00"
 }

@@ -58,6 +58,10 @@ class ToolEntry:
     description: str
     preflight: list[PreflightCheck] = field(default_factory=list)
     schema: dict = field(default_factory=dict)   # Arg schema (future use)
+    deprecated: bool = False              # True → mostrar hint al ejecutar
+    see_also: str = ""                    # Comando grupo preferido
+    layer: str = ""                       # Capa taxonómica (ejecución|calidad|salud|analítica|visual|avanzado)
+    scope: str = ""                       # Ámbito (framework|project|both) — inyectado desde _SCOPE_MAP
 
 
 # ── Internal tools — excluded from guardian / manifest / integration_tests ────
@@ -104,16 +108,19 @@ REGISTRY: dict[str, ToolEntry] = {
         cmd="cosecha", module="cosecha",
         description="Cosecha de artefactos del proyecto",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "cosecha.py"))],
+        deprecated=True, see_also="bago session harvest",
     ),
     "detector": ToolEntry(
         cmd="detector", module="context_detector",
         description="Detector de contexto del repo",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "context_detector.py"))],
+        deprecated=True, see_also="bago context detect",
     ),
     "validate": ToolEntry(
         cmd="validate", module="validate_pack",
         description="Verifica el pack (solo lectura)",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "validate_pack.py"))],
+        deprecated=True, see_also="bago audit pack",
     ),
     "sync": ToolEntry(
         cmd="sync", module="sync_pack_metadata",
@@ -124,16 +131,17 @@ REGISTRY: dict[str, ToolEntry] = {
         cmd="check", module="check_validate_purity",
         description="Chequeo estático de pureza",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "check_validate_purity.py"))],
+        deprecated=True, see_also="bago audit purity",
     ),
     "health": ToolEntry(
-        cmd="health", module="health_score",
-        description="Health score del pack",
-        preflight=[PreflightCheck("file", str(TOOLS_DIR / "health_score.py"))],
+        cmd="health", module="bago_health_router",
+        description="Salud del framework: score | report | stability | efficiency | consistency | sincerity",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_health_router.py"))],
     ),
     "audit": ToolEntry(
-        cmd="audit", module="audit_v2",
-        description="Auditoría completa del framework BAGO",
-        preflight=[PreflightCheck("file", str(TOOLS_DIR / "audit_v2.py"))],
+        cmd="audit", module="bago_audit_router",
+        description="Auditoría y calidad: full | pack | scan | commit | push | doctor | heal | quality | purity",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_audit_router.py"))],
     ),
     "workflow": ToolEntry(
         cmd="workflow", module="workflow_selector",
@@ -144,11 +152,13 @@ REGISTRY: dict[str, ToolEntry] = {
         cmd="stale", module="stale_detector",
         description="Detecta tools obsoletas o sin mantenimiento",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "stale_detector.py"))],
+        deprecated=True, see_also="bago context stale",
     ),
     "v2": ToolEntry(
         cmd="v2", module="v2_close_checklist",
         description="Checklist de cierre v2",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "v2_close_checklist.py"))],
+        deprecated=True, see_also="bago session v2",
     ),
     "task": ToolEntry(
         cmd="task", module="show_task",
@@ -159,21 +169,24 @@ REGISTRY: dict[str, ToolEntry] = {
         cmd="stability", module="stability_summary",
         description="Resumen de estabilidad del pack",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "stability_summary.py"))],
+        deprecated=True, see_also="bago health stability",
     ),
     "session": ToolEntry(
-        cmd="session", module="session_opener",
-        description="Abre sesión W2 con preflight pre-rellenado",
-        preflight=[PreflightCheck("file", str(TOOLS_DIR / "session_opener.py"))],
+        cmd="session", module="bago_session_router",
+        description="Ciclo de sesión: open | close | harvest | v2",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_session_router.py"))],
     ),
     "efficiency": ToolEntry(
         cmd="efficiency", module="efficiency_meter",
         description="Medidor de eficiencia inter-versiones",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "efficiency_meter.py"))],
+        deprecated=True, see_also="bago health efficiency",
     ),
     "sincerity": ToolEntry(
         cmd="sincerity", module="sincerity_detector",
         description="Centinela de sinceridad: detecta sincofancía en docs .md",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "sincerity_detector.py"))],
+        deprecated=True, see_also="bago health sincerity",
     ),
     "cabinet": ToolEntry(
         cmd="cabinet", module="cabinet_orchestrator",
@@ -185,6 +198,7 @@ REGISTRY: dict[str, ToolEntry] = {
         cmd="git", module="git_context",
         description="Contexto git (log/diff/brief) para workflows",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "git_context.py"))],
+        deprecated=True, see_also="bago context git",
     ),
     "deps": ToolEntry(
         cmd="deps", module="dep_audit",
@@ -205,21 +219,19 @@ REGISTRY: dict[str, ToolEntry] = {
         cmd="map", module="context_map",
         description="Mapa de contexto del repositorio",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "context_map.py"))],
-    ),
-    "doctor": ToolEntry(
-        cmd="doctor", module="doctor",
-        description="Diagnóstico general con opción --fix",
-        preflight=[PreflightCheck("file", str(TOOLS_DIR / "doctor.py"))],
+        deprecated=True, see_also="bago context map",
     ),
     "report": ToolEntry(
         cmd="report", module="health_report",
         description="Health report en Markdown",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "health_report.py"))],
+        deprecated=True, see_also="bago health report",
     ),
     "commit": ToolEntry(
         cmd="commit", module="commit_readiness",
         description="Evaluación de preparación para commit",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "commit_readiness.py"))],
+        deprecated=True, see_also="bago audit commit",
     ),
     "flow": ToolEntry(
         cmd="flow", module="flow",
@@ -255,6 +267,7 @@ REGISTRY: dict[str, ToolEntry] = {
         cmd="session_close", module="session_close_generator",
         description="Genera el informe de cierre de sesion BAGO",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "session_close_generator.py"))],
+        deprecated=True, see_also="bago session close",
     ),
     "reopen": ToolEntry(
         cmd="reopen", module="bago_reopen",
@@ -274,11 +287,13 @@ REGISTRY: dict[str, ToolEntry] = {
             PreflightCheck("file", str(BAGO_ROOT / "agents" / "ANALISTA_Contexto.md"),
                            severity="warning", message="Agente ANALISTA_Contexto no encontrado en .bago/agents/"),
         ],
+        deprecated=True, see_also="bago audit quality",
     ),
     "consistency": ToolEntry(
         cmd="consistency", module="bago_consistency_check",
         description="Guard anti-drift: valida CI, preflight, README y badge del framework",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_consistency_check.py"))],
+        deprecated=True, see_also="bago health consistency",
     ),
     "config-check": ToolEntry(
         cmd="config-check", module="config_check",
@@ -334,6 +349,7 @@ REGISTRY: dict[str, ToolEntry] = {
         cmd="doctor", module="bago_doctor",
         description="Diagnóstico completo del entorno BAGO: Python, Git, Ollama, modelo LLM, espacio",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_doctor.py"))],
+        deprecated=True, see_also="bago audit doctor",
     ),
     "research": ToolEntry(
         cmd="research", module="research_orchestrator",
@@ -363,16 +379,24 @@ REGISTRY: dict[str, ToolEntry] = {
         cmd="repo-clone", module="repo_clone",
         description="Clona repositorios GitHub en workspace con auto-BAGO setup",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "repo_clone.py"))],
+        deprecated=True, see_also="bago repo clone",
     ),
     "repo-list": ToolEntry(
         cmd="repo-list", module="repo_list",
         description="Lista repositorios clonados en workspace con estado",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "repo_list.py"))],
+        deprecated=True, see_also="bago repo list",
     ),
     "repo-switch": ToolEntry(
         cmd="repo-switch", module="repo_switch",
         description="Cambia contexto activo entre repositorios del workspace",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "repo_switch.py"))],
+        deprecated=True, see_also="bago repo switch",
+    ),
+    "repo": ToolEntry(
+        cmd="repo", module="bago_repo",
+        description="Gestión de repositorios: clone | list | switch",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_repo.py"))],
     ),
     "select": ToolEntry(
         cmd="select", module="ideas_selector",
@@ -388,11 +412,258 @@ REGISTRY: dict[str, ToolEntry] = {
         cmd="pre-push", module="pre_push_guard",
         description="Gate de sincronizacion remota: bloquea pushes con BAGO roto",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "pre_push_guard.py"))],
+        deprecated=True, see_also="bago audit push",
+    ),
+    "sprite-studio": ToolEntry(
+        cmd="sprite-studio", module="sprite_studio",
+        description="Generador de sprites BIANCA via Codex/HF sin API key, con galería browser",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "sprite_studio.py"))],
+    ),
+    "image-studio": ToolEntry(
+        cmd="image-studio", module="image_studio",
+        description="Generador de assets visuales coherentes (sprites, botones, fondos, iconos, tiles, banners) con perfil de proyecto",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "image_studio.py"))],
+    ),
+    "hub": ToolEntry(
+        cmd="hub", module="bago_hub",
+        description="BAGO Hub — interfaz central Gradio con dashboard, herramientas, Image Studio e ideas",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_hub.py"))],
+    ),
+    "project-init": ToolEntry(
+        cmd="project-init", module="project_memory",
+        description="Inicializa .bago/ local en el directorio del proyecto actual",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "project_memory.py"))],
+        deprecated=True, see_also="bago project init",
+    ),
+    "project-link": ToolEntry(
+        cmd="project-link", module="project_memory",
+        description="Vincula el proyecto al framework (sesiones se guardan en el proyecto)",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "project_memory.py"))],
+        deprecated=True, see_also="bago project link",
+    ),
+    "project-unlink": ToolEntry(
+        cmd="project-unlink", module="project_memory",
+        description="Desvincula el proyecto — sesiones vuelven al framework",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "project_memory.py"))],
+        deprecated=True, see_also="bago project unlink",
+    ),
+    "project-state": ToolEntry(
+        cmd="project-state", module="project_memory",
+        description="Muestra el estado del proyecto actualmente vinculado",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "project_memory.py"))],
+        deprecated=True, see_also="bago project state",
+    ),
+    "promote": ToolEntry(
+        cmd="promote", module="project_memory",
+        description="Promueve un aprendizaje del proyecto al knowledge del framework",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "project_memory.py"))],
+        deprecated=True, see_also="bago project promote",
+    ),
+    "learn": ToolEntry(
+        cmd="learn", module="project_memory",
+        description="Guarda un aprendizaje en learnings.md del proyecto vinculado",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "project_memory.py"))],
+        deprecated=True, see_also="bago project learn",
+    ),
+    "project": ToolEntry(
+        cmd="project", module="project_memory",
+        description="Memoria distribuida por proyecto: init | link | unlink | state | learn | promote",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "project_memory.py"))],
+    ),
+    "context": ToolEntry(
+        cmd="context", module="bago_context",
+        description="Contexto del workspace: detect | map | git | stale",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "bago_context.py"))],
+    ),
+    # ── Migradas desde CAJAFISICA (v3.0) ─────────────────────────────────────
+    "heal": ToolEntry(
+        cmd="heal", module="auto_heal",
+        description="Auto-detecta y repara problemas del framework de forma segura y trazable",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "auto_heal.py"))],
+        deprecated=True, see_also="bago audit heal",
+    ),
+    "auto": ToolEntry(
+        cmd="auto", module="auto_mode",
+        description="Modo automático: evalúa estado y ejecuta pasos coherentes sin intervención",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "auto_mode.py"))],
+    ),
+    "sprint": ToolEntry(
+        cmd="sprint", module="sprint_manager",
+        description="Gestor de sprints BAGO — crear, listar, cerrar sprints de trabajo",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "sprint_manager.py"))],
+    ),
+    "goals": ToolEntry(
+        cmd="goals", module="goals",
+        description="Gestor de objetivos del pack con seguimiento de progreso",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "goals.py"))],
+    ),
+    "habit": ToolEntry(
+        cmd="habit", module="habit",
+        description="Detecta hábitos de trabajo positivos y mejorables desde patrones de sesiones",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "habit.py"))],
+    ),
+    "insights": ToolEntry(
+        cmd="insights", module="insights",
+        description="Análisis de patrones e insights del historial de sesiones BAGO",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "insights.py"))],
+    ),
+    "orchestrate": ToolEntry(
+        cmd="orchestrate", module="orchestrator",
+        description="Orquestador de workflows multi-tool en secuencia con condiciones",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "orchestrator.py"))],
+    ),
+    "scan": ToolEntry(
+        cmd="scan", module="scan",
+        description="Escaneo de calidad de código: hallazgos, severidad, autofixable",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "scan.py"))],
+        deprecated=True, see_also="bago audit scan",
+    ),
+    "review": ToolEntry(
+        cmd="review", module="code_review",
+        description="Code review automatizado — analiza cambios y genera feedback",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "code_review.py"))],
+    ),
+    "debt": ToolEntry(
+        cmd="debt", module="debt_ledger",
+        description="Ledger de deuda técnica — registra, prioriza y hace seguimiento",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "debt_ledger.py"))],
+    ),
+    "risk": ToolEntry(
+        cmd="risk", module="risk_matrix",
+        description="Matriz de riesgo del proyecto — evalúa impacto y probabilidad",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "risk_matrix.py"))],
+    ),
+    "secrets": ToolEntry(
+        cmd="secrets", module="secret_scan",
+        description="Escanea el repositorio buscando secretos y credenciales expuestas",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "secret_scan.py"))],
     ),
 }
 
 
+# ── Taxonomía de capas ────────────────────────────────────────────────────────
+
+LAYERS: dict[str, dict] = {
+    "ejecución": {"icon": "⚡", "label": "EJECUCIÓN",  "desc": "ejecutar y avanzar trabajo activo"},
+    "calidad":   {"icon": "🔍", "label": "CALIDAD",    "desc": "calidad de código del proyecto"},
+    "salud":     {"icon": "💚", "label": "SALUD",      "desc": "salud y mantenimiento del framework"},
+    "analítica": {"icon": "📊", "label": "ANALÍTICA",  "desc": "métricas, insights y patrones"},
+    "visual":    {"icon": "🎨", "label": "VISUAL",     "desc": "generación de assets e interfaces"},
+    "avanzado":  {"icon": "🔧", "label": "AVANZADO",   "desc": "herramientas avanzadas e integraciones"},
+}
+
+_LAYER_MAP: dict[str, str] = {
+    # EJECUCIÓN
+    "start": "ejecución", "next": "ejecución", "ideas": "ejecución",
+    "select": "ejecución", "session": "ejecución", "task": "ejecución",
+    "done": "ejecución", "flow": "ejecución", "sprint": "ejecución",
+    "goals": "ejecución", "workflow": "ejecución", "reopen": "ejecución",
+    "auto": "ejecución", "cosecha": "ejecución", "v2": "ejecución",
+    "session_close": "ejecución",
+    # CALIDAD
+    "scan": "calidad", "review": "calidad", "commit": "calidad",
+    "pre-push": "calidad", "secrets": "calidad", "debt": "calidad",
+    "risk": "calidad", "naming": "calidad", "types": "calidad",
+    "deps": "calidad", "code-quality": "calidad",
+    # SALUD
+    "health": "salud", "audit": "salud", "doctor": "salud", "heal": "salud",
+    "validate": "salud", "sync": "salud", "check": "salud",
+    "consistency": "salud", "config-check": "salud", "context": "salud",
+    "repo": "salud", "project": "salud", "stale": "salud",
+    "detector": "salud", "map": "salud",
+    # ANALÍTICA
+    "insights": "analítica", "habit": "analítica", "chronicle": "analítica",
+    "dashboard": "analítica", "efficiency": "analítica", "stability": "analítica",
+    "report": "analítica", "diff": "analítica", "status": "analítica",
+    # VISUAL
+    "hub": "visual", "image-studio": "visual", "sprite-studio": "visual",
+    "image_gen": "visual", "banner": "visual",
+    # AVANZADO
+    "llm": "avanzado", "lsp": "avanzado", "orchestrate": "avanzado",
+    "cabinet": "avanzado", "rules": "avanzado", "db": "avanzado",
+    "peer": "avanzado", "find-tool": "avanzado", "ask": "avanzado",
+    "why": "avanzado", "research": "avanzado", "install": "avanzado",
+    "hello": "avanzado", "git": "avanzado",
+    "repo-clone": "salud", "repo-list": "salud", "repo-switch": "salud",
+    "project-init": "salud", "project-link": "salud", "project-unlink": "salud",
+    "project-state": "salud", "promote": "salud", "learn": "salud",
+}
+
+_SCOPE_MAP: dict[str, str] = {
+    # framework — opera sobre el propio framework BAGO
+    "health": "framework", "validate": "framework", "sync": "framework",
+    "check": "framework", "consistency": "framework", "config-check": "framework",
+    "stability": "framework", "efficiency": "framework", "sincerity": "framework",
+    "doctor": "framework", "heal": "framework", "auto": "framework",
+    "banner": "framework", "rules": "framework", "db": "framework",
+    "cabinet": "framework", "install": "framework", "hello": "framework",
+    "report": "framework",
+    # project — opera sobre el proyecto activo
+    "scan": "project", "review": "project", "commit": "project",
+    "pre-push": "project", "secrets": "project", "debt": "project",
+    "risk": "project", "naming": "project", "types": "project",
+    "deps": "project", "code-quality": "project",
+    "image-studio": "project", "sprite-studio": "project",
+    "image_gen": "project", "lsp": "project", "git": "project",
+    # both — opera sobre el framework Y/O proyectos
+    "start": "both", "next": "both", "ideas": "both", "select": "both",
+    "session": "both", "task": "both", "done": "both", "flow": "both",
+    "sprint": "both", "goals": "both", "workflow": "both", "reopen": "both",
+    "cosecha": "both", "v2": "both", "session_close": "both",
+    "audit": "both", "context": "both", "repo": "both", "project": "both",
+    "insights": "both", "habit": "both", "chronicle": "both",
+    "dashboard": "both", "diff": "both", "status": "both",
+    "hub": "both", "llm": "both", "orchestrate": "both", "peer": "both",
+    "find-tool": "both", "ask": "both", "why": "both", "research": "both",
+    "detector": "both", "stale": "both", "map": "both",
+    "repo-clone": "both", "repo-list": "both", "repo-switch": "both",
+    "project-init": "both", "project-link": "both", "project-unlink": "both",
+    "project-state": "both", "promote": "both", "learn": "both",
+}
+
+# Inyecta layer + scope en cada entrada del registro
+for _cmd, _entry in REGISTRY.items():
+    if not _entry.layer:
+        _entry.layer = _LAYER_MAP.get(_cmd, "avanzado")
+    if not _entry.scope:
+        _entry.scope = _SCOPE_MAP.get(_cmd, "both")
+
 # ── Public API ────────────────────────────────────────────────────────────────
+
+SCOPE_BADGE: dict[str, str] = {
+    "framework": "🔵",
+    "project":   "🟢",
+    "both":      "⚪",
+}
+
+
+def get_deprecated_map() -> dict[str, str]:
+    """Returns {cmd: see_also} for deprecated commands."""
+    return {
+        name: entry.see_also
+        for name, entry in REGISTRY.items()
+        if entry.deprecated
+    }
+
+
+def get_by_layer(include_deprecated: bool = False) -> dict[str, list[ToolEntry]]:
+    """Returns commands grouped by layer.
+
+    Keys match LAYERS dict order. Only non-deprecated entries unless
+    include_deprecated=True.
+    """
+    result: dict[str, list[ToolEntry]] = {k: [] for k in LAYERS}
+    result[""] = []  # bucket for entries with unknown layer
+    for entry in REGISTRY.values():
+        if not include_deprecated and entry.deprecated:
+            continue
+        bucket = entry.layer if entry.layer in result else ""
+        result[bucket].append(entry)
+    # Sort each layer alphabetically
+    for bucket in result:
+        result[bucket].sort(key=lambda e: e.cmd)
+    return result
+
 
 def get_commands() -> dict[str, list[str]]:
     """Returns COMMANDS-compatible dict for the bago script.
@@ -400,12 +671,18 @@ def get_commands() -> dict[str, list[str]]:
     Format: {"cmd": ["python3", "/path/to/module.py", ...extra_args]}
     """
     _extra_args: dict[str, list[str]] = {
-        "done":   ["--done"],
-        "status": ["status"],
+        "done":           ["--done"],
+        "status":         ["status"],
+        "project-init":   ["project-init"],
+        "project-link":   ["project-link"],
+        "project-unlink": ["project-unlink"],
+        "project-state":  ["project-state"],
+        "promote":        ["promote"],
+        "learn":          ["learn"],
     }
     result = {}
     for name, entry in REGISTRY.items():
-        cmd = ["python3", str(TOOLS_DIR / f"{entry.module}.py")]
+        cmd = [PYTHON, str(TOOLS_DIR / f"{entry.module}.py")]
         if name in _extra_args:
             cmd += _extra_args[name]
         result[name] = cmd
@@ -487,7 +764,7 @@ def _self_tests() -> None:
            "all cmd == key" if not mismatches else f"mismatches: {mismatches}")
 
     # T3: no duplicate modules except explicit public aliases
-    allowed_alias_modules = {"flow", "show_task"}
+    allowed_alias_modules = {"flow", "show_task", "project_memory"}
     modules = [e.module for e in REGISTRY.values()]
     dupes = {m for m in modules if modules.count(m) > 1 and m not in allowed_alias_modules}
     _check("T3:no-duplicate-modules", not dupes,

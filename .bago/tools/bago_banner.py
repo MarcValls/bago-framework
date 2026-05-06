@@ -252,7 +252,7 @@ def _print_quick_action(active_task) -> None:
     """
     label = CYAN("⚡ siguiente paso:")
     if active_task is not None:
-        _, tstatus = active_task
+        _, tstatus, _stale = active_task
         if tstatus != "done":
             hint = (GREEN("bago task") + DIM("  →  revisa los detalles de la tarea activa") +
                     "  |  " + YELLOW("bago task --done") + DIM("  →  ciérrala al terminar"))
@@ -392,22 +392,49 @@ def print_banner(mini=False):
         # ── Entrada rápida: acción sugerida ───────────────────────────────────
         _print_quick_action(active_task)
         print(SEP)
-        # ── Comandos ─────────────────────────────────────────────────────────
-        cmds = [
-            ("bago",            "muestra este cartel"),
-            ("bago dashboard",  "pack_dashboard"),
-            ("bago ideas",      "emit_ideas"),
-            ("bago task",       "tarea W2 pendiente"),
-            ("bago session",    "abre sesión W2 desde handoff"),
-            ("bago stability",  "resumen estabilidad"),
-            ("bago cosecha",    "protocolo W9"),
-            ("bago detector",   "context_detector"),
-            ("bago validate",   "validate_pack"),
-        ]
-        col_w = max(len(c) for c, _ in cmds)
-        for cmd, desc in cmds:
-            padded = cmd + " " * (col_w - len(cmd))
-            print(_box(INDENT + CYAN(padded) + "  " + DIM("→ " + desc)))
+        # ── Comandos agrupados por capa ───────────────────────────────────────
+        try:
+            import importlib.util as _ilu, sys as _sys
+            _spec = _ilu.spec_from_file_location("_tr_bago", TOOLS / "tool_registry.py")
+            _tr = _ilu.module_from_spec(_spec)
+            _sys.modules["_tr_bago"] = _tr  # necesario para Python 3.13 + dataclasses
+            _spec.loader.exec_module(_tr)
+            _by_layer = _tr.get_by_layer(include_deprecated=False)
+            _layers   = _tr.LAYERS
+            _badges   = _tr.SCOPE_BADGE
+            _grouped  = True
+        except Exception:
+            _grouped = False
+
+        if _grouped:
+            for layer_key, layer_info in _layers.items():
+                entries = _by_layer.get(layer_key, [])
+                if not entries:
+                    continue
+                header = layer_info["icon"] + "  " + BOLD(layer_info["label"])
+                print(_box(INDENT + header + "  " + DIM(layer_info["desc"])))
+                for e in entries:
+                    badge = _badges.get(e.scope, "⚪")
+                    cmd_str = f"bago {e.cmd}"
+                    desc_str = e.description[:46]
+                    print(_box(INDENT + "  " + CYAN(f"{cmd_str:<20}") +
+                               badge + "  " + DIM(desc_str)))
+                print(_box())
+            print(_box(INDENT + DIM("🔵=framework  🟢=project  ⚪=ambos")))
+        else:
+            # Fallback: lista plana
+            cmds = [
+                ("bago start",   "entrada al repo: health + ideas"),
+                ("bago session", "ciclo de sesión: open|close|harvest|v2"),
+                ("bago health",  "salud del framework: score|report|stability"),
+                ("bago audit",   "auditoría: full|pack|scan|commit|doctor"),
+                ("bago ideas",   "emite ideas priorizadas"),
+                ("bago next",    "ciclo mínimo: idea + acepta + flujo"),
+            ]
+            col_w = max(len(c) for c, _ in cmds)
+            for cmd, desc in cmds:
+                padded = cmd + " " * (col_w - len(cmd))
+                print(_box(INDENT + CYAN(padded) + "  " + DIM("→ " + desc)))
 
     print(BOT)
     print()

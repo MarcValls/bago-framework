@@ -116,18 +116,23 @@
       "title": "Sugerir commit tras implementar idea",
       "slot": null,
       "done_at": "2026-05-05T10:18:41.335657+00:00"
+    },
+    {
+      "title": "Mostrar estado del catálogo en bago ideas",
+      "slot": null,
+      "done_at": "2026-05-05T13:20:59.175292+00:00"
     }
   ],
-  "updated_at": "2026-05-05T10:18:41.335657+00:00",
+  "updated_at": "2026-05-05T13:20:59.175292+00:00",
   "ideas_completed": [
     {
       "id": null,
-      "title": "Sugerir commit tras implementar idea",
-      "date": "2026-05-05T10:18:41.371146+00:00",
-      "session_close": "SESSION_CLOSE_20260505_101841.md",
+      "title": "Mostrar estado del catálogo en bago ideas",
+      "date": "2026-05-05T13:20:59.275532+00:00",
+      "session_close": "SESSION_CLOSE_20260505_132059.md",
       "workflow": "W2_IMPLEMENTACION_CONTROLADA",
-      "objetivo": "bago done sugiere git add -A && git commit cuando la tarea se cierra limpia."
+      "objetivo": "bago ideas --health muestra cuántas ideas están implementadas, bloqueadas y disponibles."
     }
   ],
-  "last_updated": "2026-05-05T10:18:41.371175+00:00"
+  "last_updated": "2026-05-05T13:20:59.275558+00:00"
 }

@@ -8,7 +8,7 @@ Uso:
   python3 .bago/tools/cosecha.py --dry-run   (muestra lo que crearía sin escribir)
 """
 
-import json, sys
+import json, sqlite3, sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -18,6 +18,38 @@ STATE_DIR  = BAGO_ROOT / "state"
 SESSIONS   = STATE_DIR / "sessions"
 CHANGES    = STATE_DIR / "changes"
 EVIDENCES  = STATE_DIR / "evidences"
+DB_PATH    = STATE_DIR / "bago.db"
+
+
+def _sync_session_to_db(session: dict) -> None:
+    """Inserta o actualiza la sesión en la tabla sessions de bago.db."""
+    try:
+        conn = sqlite3.connect(str(DB_PATH))
+        conn.execute('''
+            INSERT OR REPLACE INTO sessions
+            (session_id, task_type, workflow, roles, user_goal, status,
+             escenario, created_at, updated_at, summary, next_step,
+             linked_commits, source_file)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ''', (
+            session.get("session_id", ""),
+            session.get("task_type", ""),
+            session.get("selected_workflow", ""),
+            json.dumps(session.get("roles_activated", [])),
+            session.get("user_goal", ""),
+            session.get("status", ""),
+            session.get("escenario", ""),
+            session.get("created_at", ""),
+            session.get("updated_at", ""),
+            session.get("summary", ""),
+            session.get("next_step", ""),
+            json.dumps(session.get("linked_commits", [])),
+            session.get("session_id", "") + ".json",
+        ))
+        conn.commit()
+        conn.close()
+    except Exception:
+        pass  # Never block cosecha due to DB sync failure
 
 DRY_RUN = "--dry-run" in sys.argv
 
@@ -310,6 +342,7 @@ def run():
         json.dumps(chg,     indent=2, ensure_ascii=False))
     (EVIDENCES / f"{evd_id}.json").write_text(
         json.dumps(evd,     indent=2, ensure_ascii=False))
+    _sync_session_to_db(session)  # índice analítico en bago.db
 
     # ── Actualizar global_state ───────────────────────────────────────────────
     gs = _read_global_state()

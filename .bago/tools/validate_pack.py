@@ -32,6 +32,8 @@ excluded_prefixes = [
     "state/migrated_changes/",
     "state/migrated_sessions/",
     "docs/V2_PROPUESTA.md",
+    "ImageStudio/",       # vendored third-party app (FastAPI, starlette, etc.)
+    "tools/dist/",        # compiled/distributed artifacts
 ]
 legacy_re = re.compile(r"(?:\b2\.1\.[0-9]+\b|\bV2\.1(?:\.[0-9]+)?\b|\bv2_1\b)", re.IGNORECASE)
 

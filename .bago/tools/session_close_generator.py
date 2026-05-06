@@ -26,6 +26,26 @@ CHANGES_DIR   = STATE_DIR / "changes"
 EVIDENCES_DIR = STATE_DIR / "evidences"
 TASK_FILE     = STATE_DIR / "pending_w2_task.json"
 IDEAS_FILE    = STATE_DIR / "implemented_ideas.json"
+GLOBAL_STATE  = STATE_DIR / "global_state.json"
+
+
+def _resolve_sessions_dir() -> Path:
+    """Devuelve el directorio de sesiones correcto.
+
+    Si hay un proyecto vinculado en global_state.json → guarda en el proyecto.
+    Si no → guarda en el framework (comportamiento clásico).
+    """
+    try:
+        gs = json.loads(GLOBAL_STATE.read_text(encoding="utf-8"))
+        cp = gs.get("current_project", {})
+        root = cp.get("root")
+        if root:
+            project_sessions = Path(root) / ".bago" / "state" / "sessions"
+            project_sessions.mkdir(parents=True, exist_ok=True)
+            return project_sessions
+    except Exception:
+        pass
+    return SESSIONS_DIR
 
 
 def _load_json(path: Path) -> dict | list | None:
@@ -101,7 +121,9 @@ def _register_idea_done(task: dict, session_close_file: str) -> None:
 
 def generate(task: dict | None = None, out_path: Path | None = None) -> Path:
     """Genera el artefacto de cierre y devuelve la ruta del archivo creado."""
-    SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
+    # Project-aware sessions dir
+    sessions_dir = _resolve_sessions_dir()
+    sessions_dir.mkdir(parents=True, exist_ok=True)
 
     now     = datetime.now(timezone.utc)
     ts      = now.strftime("%Y%m%d_%H%M%S")
@@ -170,7 +192,7 @@ _Generado automáticamente por `session_close_generator.py`_
 """
 
     if out_path is None:
-        out_path = SESSIONS_DIR / f"SESSION_CLOSE_{ts}.md"
+        out_path = sessions_dir / f"SESSION_CLOSE_{ts}.md"
 
     out_path.write_text(content, encoding="utf-8")
     _register_idea_done(task, out_path.name)

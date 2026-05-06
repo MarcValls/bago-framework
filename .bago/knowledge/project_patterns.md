@@ -447,3 +447,76 @@ python3 .bago/tools/validate_manifest.py --corpus docs/
 
 *Compilado por BAGO MAESTRO · 2026-05-04*
 *Proyectos fuente: PANDAMIEN, BIANCA, NIGHTFRAME, TEST_BAGO_03, TPV, BAGO Framework*
+
+---
+
+## PATRÓN: CROSS-LEARNING BIDIRECCIONAL ENTRE PROYECTOS
+
+**Origen:** Sesión 2026-05-05 — BIANCA sprint 288 (canvas fullscreen) resuelto con lección de DERIVA
+
+### Regla fundamental
+
+```
+Antes de resolver un problema técnico recurrente, revisar si otro proyecto
+bajo el mismo framework BAGO ya lo resolvió. La solución puede estar a un
+grep de distancia.
+```
+
+### Cuándo activar el cross-learning
+
+```
+SEÑALES de que cross-learning es necesario:
+  - Mismo síntoma que recuerdas haber visto en otro proyecto
+  - Problema de infraestructura (canvas, audio, routing) ≠ lógica de negocio
+  - Llevas >2 intentos sin solución en el proyecto actual
+  - El problema tiene una "firma técnica" reconocible (ej: canvas no ocupa pantalla)
+
+NO activar para:
+  - Lógica específica de dominio (FX de una escena concreta)
+  - Datos o narrativa de proyecto
+  - Decisiones arquitectónicas ya congeladas en el proyecto
+```
+
+### Protocolo
+
+```bash
+# 1. Formular la "firma técnica" del problema
+FIRMA="canvas fullscreen pixel art"
+
+# 2. Buscar en el knowledge base si otro proyecto lo resolvió
+grep -r "$FIRMA" /Volumes/bago_core/.bago/knowledge/
+grep -r "$FIRMA" /path/otro_proyecto/.bago/
+
+# 3. Si hay match → leer la solución completa antes de implementar
+# 4. Adaptar la solución al contexto del proyecto actual
+# 5. Registrar la transferencia en knowledge/
+```
+
+### Caso validado: DERIVE→BIANCA (canvas fullscreen)
+
+```
+PROBLEMA en BIANCA: canvas no ocupaba toda la pantalla; había márgenes blancos.
+INTENTO inicial: refactorizar a DPR-aware (copiando patrón de DERIVA).
+RESULTADO: ❌ Enfoque incorrecto — BIANCA usa pixel art con resolución lógica fija.
+
+CROSS-LEARNING:
+  - DERIVA: canvas dinámico DPR (`canvas.width = clientWidth * dpr`)
+  - BIANCA: resolución lógica fija 1920×1080, fullscreen via CSS puro
+  - Solución correcta BIANCA: `width:100vw; height:100vh; image-rendering:pixelated`
+    Sin tocar canvas.width. Meta viewport para móvil.
+
+LECCIÓN: El mismo síntoma (canvas no fullscreen) tiene soluciones OPUESTAS
+según la arquitectura del proyecto. Cross-learning debe incluir verificación
+de que la arquitectura de origen es compatible con la de destino.
+```
+
+### Verificación de compatibilidad arquitectónica
+
+| Dimensión | BIANCA | DERIVA | Compatible |
+|-----------|--------|--------|-----------|
+| Canvas model | Fixed 1920×1080 | DPR-aware | ❌ NO copiar |
+| Input coords | `clientX * canvas.width / rect.width` | `clientX / dpr` | ❌ NO copiar |
+| CSS approach | `100vw/100vh` + `pixelated` | Sin CSS especial | ❌ NO copiar |
+| FX patterns | `ctx.globalAlpha / shadowBlur` | Mismos contratos | ✅ SÍ copiar |
+| BAGO state | `.bago/state/global_state.json` | `.bago/state/global_state.json` | ✅ SÍ copiar |
+- [2026-05-05] [test_project] Las entidades fantasma deben usar caching de 200ms para evitar flicker

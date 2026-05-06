@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generated_by": "auto_register.py --gen-manifest",
-  "tool_count": 29,
+  "tool_count": 33,
   "tools": {
     "artifact_counter": {
       "file": "artifact_counter.py",
@@ -147,6 +147,34 @@
       "file": "workflow_selector.py",
       "sha256": "1bf9369e95c595b75b245ae06bc09726aeb1379853437a0084ebc2980dee0e70",
       "cmd": "workflow-selector"
+    },
+    "bago_propose_tasks": {
+      "file": "bago_propose_tasks.mjs",
+      "lang": "node",
+      "description": "Auditoría automática de repo: detecta cambios git, TODOs, CI faltante, archivos grandes. Source: PANEL_ORQUESTADOR (MarcValls)",
+      "usage": "node bago_propose_tasks.mjs [--path /repo] [--format json|md] [--output file]",
+      "source": "https://github.com/MarcValls/PANEL_ORQUESTADOR"
+    },
+    "bago_repo_audit": {
+      "file": "bago_repo_audit.sh",
+      "lang": "bash",
+      "description": "Wrapper shell para bago_propose_tasks.mjs — auditoría de repo con un comando",
+      "usage": "bago_repo_audit.sh [--path /repo] [--format json|md]",
+      "source": "BAGO wrapper"
+    },
+    "bago_web_scraper_ref": {
+      "file": "bago_web_scraper_ref.py",
+      "lang": "python",
+      "description": "Referencia arquitectura scraper web (Playwright + BeautifulSoup + ingest BD). Source: Genemaps_Regular_roots_genetics (MarcValls)",
+      "usage": "Referencia — adaptar para scraping personalizado",
+      "source": "https://github.com/MarcValls/Genemaps_Regular_roots_genetics"
+    },
+    "bago_bs4_playwright_ref": {
+      "file": "bago_bs4_playwright_ref.py",
+      "lang": "python",
+      "description": "Motor scraping BeautifulSoup + Playwright con fallback, slugify, normalización URLs. Source: Genemaps seedfinder.py",
+      "usage": "Referencia — cliente HTTP scraping con Playwright fallback",
+      "source": "https://github.com/MarcValls/Genemaps_Regular_roots_genetics"
     }
   }
 }

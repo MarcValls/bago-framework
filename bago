@@ -117,8 +117,20 @@ def _build_commands() -> dict:
         "diff":      ["python3", str(TOOLS / "bago_diff.py")],
     }
 
-
 COMMANDS = _build_commands()
+
+
+def _build_deprecated_map() -> dict[str, str]:
+    mod = _load_registry_mod()
+    if mod and hasattr(mod, "get_deprecated_map"):
+        try:
+            return mod.get_deprecated_map()
+        except Exception:
+            pass
+    return {}
+
+
+_DEPRECATED_MAP = _build_deprecated_map()
 
 # CHG-002 legacy snapshot kept only for historical compatibility.
 # Operational routing is COMMANDS, loaded from tool_registry.get_commands().
@@ -301,6 +313,13 @@ def _start_session(cmd: str, args: list) -> object:
 
 def _dispatch(cmd: str, rest: list, preflight_only: bool = False) -> None:
     """Dispatch a registered command with preflight + session logging + exit propagation."""
+    # 0. Deprecation hint (non-blocking)
+    if cmd in _DEPRECATED_MAP:
+        see = _DEPRECATED_MAP[cmd]
+        hint = f"  ⚠️  '{cmd}' está deprecated → usa: {see}"
+        print(f"\033[33m{hint}\033[0m" if _USE_COLOR else hint)
+        sys.stdout.flush()
+
     # 1. Preflight
     if not _run_preflight(cmd):
         sys.exit(1)

@@ -17,14 +17,16 @@
     }
   },
   "inventory": {
-    "sessions": 1,
+    "sessions": 58,
     "changes": 0,
     "evidences": 0,
-    "commits": 33,
+    "commits": "59",
     "last_commit_sha": "96b8d56",
     "last_commit_date": "2026-05-05T09:47:43+02:00",
     "last_commit_msg": "fix(validate_pack): saltar archivos no-UTF-8 (captures UTF-16 de pktmon)",
-    "session_closes": 3
+    "session_closes": 3,
+    "branch": "main",
+    "last_commit": "bdd9395 fix(quality): address post-review bugs from code quality assessment"
   },
   "last_validation": {
     "date": "2026-05-05T08:20:28Z",
@@ -55,18 +57,22 @@
   },
   "knowledge_base": {
     "initialized": "2026-05-04",
-    "files_count": 5,
-    "last_harvest": "2026-05-04",
+    "files_count": 12,
+    "last_harvest": "2026-05-05",
     "covers": [
       "abril_2026",
       "image_generation",
       "framework_traps",
       "project_patterns",
-      "tools_reference"
+      "tools_reference",
+      "engine_learnings_bianca",
+      "fx_inventory_bianca",
+      "cross_learning_bianca_deriva",
+      "canvas_architecture"
     ]
   },
-  "notes": "2026-05-05: reparación total del core: bago status funciona, integration_tests no referencia funciones/tools ausentes, COMMANDS operativos salen de tool_registry, sincerity queda estricto en 0/0 y stability distingue sandbox opcional como SKIP.",
-  "updated_at": "2026-05-05T09:29:33.812420+00:00",
+  "notes": "2026-05-05: reparación total del core: bago status funciona, integration_tests no referencia funciones/tools ausentes, COMMANDS operativos salen de tool_registry, sincerity queda estricto en 0/0 y stability distingue sandbox opcional como SKIP.\n2026-05-05: cross-learning DERIVA↔BIANCA; sprints 288-292 BIANCA; trampas #14-#15 añadidas; project_patterns cross-learning; engine_learnings actualizado.\n2026-05-05 20:51 [TG]: bago puedes configurar BAGO bot como una miniapp de telegram",
+  "updated_at": "2026-05-05T21:06:32.245162",
   "bago_knowledge": {
     "sequences_catalog": ".bago/knowledge/sequences_catalog.md",
     "sequences_count": 10,
@@ -81,5 +87,155 @@
     "local_synced": true,
     "pendrive_synced": true,
     "sync_date": "2026-05-05"
+  },
+  "tools": {
+    "notify_bago": {
+      "path": ".bago/tools/notify_bago.py",
+      "config_path": ".bago/tools/notify_config.json",
+      "providers": [
+        "whatsapp",
+        "ntfy",
+        "telegram"
+      ],
+      "active_provider": "whatsapp",
+      "whatsapp_provider": "green-api",
+      "whatsapp_status": "AUTHORIZED",
+      "whatsapp_instance": "7107610433",
+      "whatsapp_api_url": "https://7107.api.greenapi.com",
+      "green_api_account": "bagofk7m8m@deltajohnsons.com",
+      "ntfy_topic": "bago-684798513",
+      "ntfy_status": "READY",
+      "phone": "+34684798513",
+      "added": "2026-05-05",
+      "note": "Instancia DEVELOPER creada automáticamente. Pendiente: escanear QR con WhatsApp del usuario",
+      "instance_authorized_at": "2026-05-05T20:14:00+02:00",
+      "provider": "whatsapp",
+      "status": "active"
+    }
+  },
+  "sprites_bianca": {
+    "status": "GENERATED",
+    "grid": "6x8",
+    "frames": 48,
+    "asset": "public/assets/sprites/char_bianca_walk_6x8.png",
+    "config": "public/assets/sprites/char_bianca_walk_6x8.json",
+    "generated": "2026-05-05T19:14:21.806862"
+  },
+  "whatsapp_daemon": {
+    "status": "active",
+    "instance_id": "7107610433",
+    "email": "bagofk7m8m@deltajohnsons.com",
+    "launchd": "com.bago.wa-daemon",
+    "log": "/tmp/bago_wa_daemon.log",
+    "activated_at": "2026-05-05T20:27:55.718334",
+    "commands": [
+      "ping",
+      "estado",
+      "sprint",
+      "nota",
+      "notify",
+      "ayuda"
+    ]
+  },
+  "telegram_bot": {
+    "status": "active",
+    "bot_username": "bago_amtec_bot",
+    "bot_name": "BAGO",
+    "launchd": "com.bago.tg-daemon",
+    "log": "/tmp/bago_telegram.log",
+    "activated_at": "2026-05-05T20:36:41.094770",
+    "commands": 18,
+    "version": "2.0",
+    "features": [
+      "inline_keyboards",
+      "task_management",
+      "intent_detection",
+      "git_operations",
+      "safe_command_execution",
+      "multi_step_interaction",
+      "miniapp_integration"
+    ],
+    "logo": "/Volumes/bago_core/.bago/tools/bago_logo.png",
+    "logo_note": "V-in-circle design (user reference). Apply via @BotFather /setuserpic",
+    "last_restart": "2026-05-05T21:43:06.562710"
+  },
+  "github_repos_scan": {
+    "scanned_at": "2026-05-05T20:45:47.722606",
+    "source": "MarcValls GitHub (30 repos)",
+    "tools_integrated": [
+      {
+        "name": "bago_propose_tasks.mjs",
+        "origin": "MarcValls/PANEL_ORQUESTADOR",
+        "description": "Auditoría auto de repo: git, TODOs, CI, archivos grandes"
+      },
+      {
+        "name": "bago_repo_audit.sh",
+        "origin": "BAGO wrapper",
+        "description": "Shell wrapper para propose-tasks.mjs"
+      },
+      {
+        "name": "bago_web_scraper_ref.py",
+        "origin": "MarcValls/Genemaps_Regular_roots_genetics",
+        "description": "Referencia scraper web (Playwright + BS4 + ingest)"
+      },
+      {
+        "name": "bago_bs4_playwright_ref.py",
+        "origin": "MarcValls/Genemaps_Regular_roots_genetics",
+        "description": "Motor scraping BS4+Playwright, cliente HTTP"
+      }
+    ],
+    "repos_of_interest": {
+      "bago-framework": "Versión pública BAGO v2.5 — 30 tools, 12 workflows, 13 CLI (referencia)",
+      "PANEL_ORQUESTADOR": "Panel orquestación TypeScript/Electron — terminal-agent REST + propose-tasks",
+      "Genemaps_Regular_roots_genetics": "Scraper web completo (BS4+Playwright) + FastAPI backend + SQLite",
+      "INTELIA_Manager_TPV_V0.1.0": "TPV/POS TypeScript — sistema punto de venta",
+      "INTELIA_Manager_TPV": "TPV TypeScript con 6 issues abiertos — activo",
+      "microhorror-mvp": "Godot GDScript — juego terror",
+      "BIANCA_THE_GAME": "HTML game — BIANCA THE GAME"
+    }
+  },
+  "telegram_miniapp": {
+    "version": "2.0",
+    "server_pid": 32932,
+    "port": 8080,
+    "ngrok_url": "https://unmuddled-ashly-endoparasitic.ngrok-free.dev",
+    "features": [
+      "dashboard",
+      "chat",
+      "tareas",
+      "git"
+    ],
+    "chat_engine": "bago_responder_v2",
+    "last_updated": "2026-05-05T21:30:31.218318"
+  },
+  "last_session": {
+    "timestamp": "2026-05-05T21:30:31.218356",
+    "completed": [
+      "miniapp_v2_ui",
+      "miniapp_server_restart",
+      "chat_tabs_ui"
+    ],
+    "status": "done"
+  },
+  "last_sync": "2026-05-05T21:43:15.902897",
+  "health_score": {
+    "score": 75,
+    "max": 100,
+    "color": "yellow",
+    "ko": [
+      "Integridad: legacy 2.1 ref en ImageStudio/_internal/fastapi/applications.py"
+    ],
+    "ok": [
+      "Disciplina workflow 20/20",
+      "Captura decisiones 20/20",
+      "Estado stale 15/15",
+      "Consistencia inv. 20/20"
+    ],
+    "updated_at": "2026-05-05T21:43:15.902876"
+  },
+  "knowledge_index": {
+    "promoted_count": 2,
+    "last_promoted": "2026-05-05",
+    "last_promoted_project": "test_project"
   }
 }
