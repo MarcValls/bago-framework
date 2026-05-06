@@ -75,3 +75,16 @@ whatsapp_config.json
 .bago/state/autonomous.lock
 .bago/state/inbox.json
 .bago/knowledge/auto_patterns.md
+
+# BAGO — runtime state ephemeral (no versionar)
+.bago/state/session_close_*.md
+.bago/state/sprint_summary_*.md
+.bago/state/ideas_report.md
+.bago/state/ideas_snapshot.md
+.bago/state/health.json
+.bago/state/images/
+
+# BAGO — HTML/SVG generados (se regeneran con bago matrix/dashboard)
+bago_matrix*.html
+.bago/docs/analysis/*.html
+.bago/docs/analysis/figures/
