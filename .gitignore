@@ -27,6 +27,8 @@ desktop.ini
 
 # BAGO — runtime
 .bago/state/llm_server.pid
+.bago/state/bago_context.log
+.bago/state/events.jsonl
 
 # BAGO — session data (private)
 .bago/state/sessions/
