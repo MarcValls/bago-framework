@@ -79,6 +79,8 @@ def check_estado_timestamp(gs: dict, issues: list):
 
     try:
         last_updated = datetime.fromisoformat(last_updated_str.replace("Z", "+00:00"))
+        if last_updated.tzinfo is None:
+            last_updated = last_updated.replace(tzinfo=timezone.utc)
     except (ValueError, AttributeError):
         return
 
@@ -97,7 +99,11 @@ def check_estado_timestamp(gs: dict, issues: list):
             raw = m.group(1)
             try:
                 if "T" in raw:
-                    estado_ts = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+                    ts = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+                    # make aware if naive
+                    if ts.tzinfo is None:
+                        ts = ts.replace(tzinfo=timezone.utc)
+                    estado_ts = ts
                 elif " " in raw:
                     estado_ts = datetime.strptime(raw, "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
                 else:

@@ -749,6 +749,10 @@ def main():
         _cmd_session_history()
     elif cmd == "registry":
         _cmd_registry()
+    elif cmd == "autonomous":
+        _cmd_autonomous(rest)
+    elif cmd == "inbox":
+        _cmd_inbox_launcher(rest)
     elif cmd in COMMANDS:
         preflight_only = "--preflight" in rest
         clean_rest = [a for a in rest if a != "--preflight"]
@@ -773,6 +777,63 @@ def main():
         else:
             print("  Usa: bago help")
         sys.exit(1)
+
+
+def _cmd_autonomous(rest: list) -> None:
+    """bago autonomous [--dry-run] [--loop] [--unsafe] [--max-cycles N] [--verbose] [--json]"""
+    import importlib.util, sys as _sys
+    _loop_path = CORE / "autonomous_loop.py"
+    if not _loop_path.exists():
+        print("  ❌ No se encuentra autonomous_loop.py en .bago/core/")
+        return
+    spec = importlib.util.spec_from_file_location("autonomous_loop", str(_loop_path))
+    mod  = importlib.util.module_from_spec(spec)
+    if str(CORE) not in _sys.path:
+        _sys.path.insert(0, str(CORE))
+    spec.loader.exec_module(mod)
+
+    if "--json" in rest:
+        # JSON sense+plan snapshot
+        from io import StringIO
+        import json
+        loop = mod.AutonomousLoop(
+            dry_run    = "--dry-run" in rest,
+            unsafe     = "--unsafe" in rest,
+            max_cycles = int(rest[rest.index("--max-cycles") + 1]) if "--max-cycles" in rest else mod.MAX_CYCLES_DEFAULT,
+            verbose    = "--verbose" in rest,
+        )
+        state = loop.sense()
+        plan  = loop.plan(state)
+        print(json.dumps({
+            "state": {k: v for k, v in state.items() if k != "inbox_tasks"},
+            "inbox_count": len(state.get("inbox_tasks", [])),
+            "plan": [{"goal": g["goal"], "agent": g["agent"], "skip": g.get("skip", False),
+                       "reason": g["reason"]} for g in plan],
+        }, indent=2, ensure_ascii=False))
+        return
+
+    loop = mod.AutonomousLoop(
+        dry_run    = "--dry-run" in rest,
+        unsafe     = "--unsafe" in rest,
+        max_cycles = int(rest[rest.index("--max-cycles") + 1]) if "--max-cycles" in rest else mod.MAX_CYCLES_DEFAULT,
+        verbose    = "--verbose" in rest,
+    )
+    loop.run(loop_mode="--loop" in rest)
+
+
+def _cmd_inbox_launcher(rest: list) -> None:
+    """bago inbox [add <intent>] [list] [clear]"""
+    import importlib.util, sys as _sys
+    _loop_path = CORE / "autonomous_loop.py"
+    if not _loop_path.exists():
+        print("  ❌ No se encuentra autonomous_loop.py en .bago/core/")
+        return
+    spec = importlib.util.spec_from_file_location("autonomous_loop", str(_loop_path))
+    mod  = importlib.util.module_from_spec(spec)
+    if str(CORE) not in _sys.path:
+        _sys.path.insert(0, str(CORE))
+    spec.loader.exec_module(mod)
+    mod.cmd_inbox(rest)
 
 
 if __name__ == "__main__":

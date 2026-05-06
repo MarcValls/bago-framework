@@ -545,6 +545,19 @@ REGISTRY: dict[str, ToolEntry] = {
         description="Escanea el repositorio buscando secretos y credenciales expuestas",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "secret_scan.py"))],
     ),
+    # ── Autonomía real ────────────────────────────────────────────────────────
+    "autonomous": ToolEntry(
+        cmd="autonomous", module="autonomous_loop",
+        description="Loop autónomo BAGO: SENSE→PLAN→ACT→OBSERVE→LEARN→DECIDE [--dry-run] [--loop] [--unsafe]",
+        preflight=[PreflightCheck("file", str(BAGO_ROOT / "core" / "autonomous_loop.py"))],
+        agent="ARQUITECTO",
+    ),
+    "inbox": ToolEntry(
+        cmd="inbox", module="autonomous_loop",
+        description="Inbox de tareas autónomas: add <intent> | list | clear",
+        preflight=[PreflightCheck("file", str(BAGO_ROOT / "core" / "autonomous_loop.py"))],
+        agent="ORGANIZADOR",
+    ),
 }
 
 

@@ -134,8 +134,9 @@ def main():
         rc, out = run_script("health_score.py", ["--score-only"])
         score = 0
         for line in out.splitlines():
-            if line.strip().isdigit():
-                score = int(line.strip())
+            token = line.strip().split()[0] if line.strip() else ""
+            if token.isdigit():
+                score = int(token)
                 break
         ok4 = score >= 80
         results["health"] = ok4
