@@ -21,12 +21,12 @@
     "changes": 0,
     "evidences": 0,
     "commits": "59",
-    "last_commit_sha": "96b8d56",
-    "last_commit_date": "2026-05-05T09:47:43+02:00",
-    "last_commit_msg": "fix(validate_pack): saltar archivos no-UTF-8 (captures UTF-16 de pktmon)",
+    "last_commit_sha": "e3cba7b",
+    "last_commit_date": "2026-05-06T08:15:13+02:00",
+    "last_commit_msg": "feat(banner): gradiente RGB truecolor en logo BAGO",
     "session_closes": 3,
     "branch": "main",
-    "last_commit": "bdd9395 fix(quality): address post-review bugs from code quality assessment"
+    "last_commit": "e3cba7b feat(banner): gradiente RGB truecolor en logo BAGO"
   },
   "last_validation": {
     "date": "2026-05-05T08:20:28Z",
@@ -72,7 +72,7 @@
     ]
   },
   "notes": "2026-05-05: reparación total del core: bago status funciona, integration_tests no referencia funciones/tools ausentes, COMMANDS operativos salen de tool_registry, sincerity queda estricto en 0/0 y stability distingue sandbox opcional como SKIP.\n2026-05-05: cross-learning DERIVA↔BIANCA; sprints 288-292 BIANCA; trampas #14-#15 añadidas; project_patterns cross-learning; engine_learnings actualizado.\n2026-05-05 20:51 [TG]: bago puedes configurar BAGO bot como una miniapp de telegram\n2026-05-06: bump 2.6-taxonomy — 6-layer taxonomy + scope, 3 routers, 29 deprecated, bago help redesigned, scope_detector.py, sessions en BD.",
-  "updated_at": "2026-05-06T04:45:20.012033",
+  "updated_at": "2026-05-06T06:18:41.305174",
   "bago_knowledge": {
     "sequences_catalog": ".bago/knowledge/sequences_catalog.md",
     "sequences_count": 10,
@@ -251,5 +251,7 @@
         "Bug fixes: audit_v2 health parse + stale_detector timezone"
       ]
     }
-  ]
+  ],
+  "mode": "autonomous",
+  "status": "stable"
 }

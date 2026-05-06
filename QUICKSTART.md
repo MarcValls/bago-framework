@@ -1,6 +1,7 @@
-# Manual de usuario · BAGO 2.5-stable
+# Manual de usuario · BAGO v3.1
 
 > Para quien instala BAGO por primera vez y quiere entender cómo usarlo en su día a día.
+> Instalación rápida: ver [INSTALL.md](INSTALL.md).
 
 ---
 
@@ -65,7 +66,7 @@ Con el alias instalado puedes escribir `bago health` en lugar de `python3 bago h
 
 ---
 
-## 3. Los 13 comandos CLI explicados
+## 3. Los 83 comandos CLI — selección de comandos clave
 
 ### Comandos de diagnóstico
 
@@ -395,6 +396,11 @@ python3 bago task         → tarea activa W2
 python3 bago session      → abrir sesión desde handoff
 python3 bago workflow     → inspeccionar workflows
 
+# AUTONOMÍA (nuevo en v3.1)
+python3 bago autonomous   → bucle autónomo SENSE/PLAN/ACT/LEARN
+python3 bago inbox add X  → añadir intent al inbox
+python3 bago inbox list   → ver intents pendientes
+
 # CIERRE
 python3 bago cosecha      → cosechar sesión (W9)
 
@@ -402,8 +408,12 @@ python3 bago cosecha      → cosechar sesión (W9)
 python3 bago dashboard    → vista general
 python3 bago efficiency   → métricas por versión
 python3 bago detector     → detector de drift
+python3 bago banner       → logo con gradiente RGB
+
+# VER TODOS LOS COMANDOS
+python3 bago help
 ```
 
 ---
 
-*BAGO 2.5-stable · Manual de nuevo usuario · Abril 2026*
+*BAGO v3.1 · Autonomy release · Mayo 2026*
