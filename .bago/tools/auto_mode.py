@@ -6,12 +6,15 @@ Evalúa el estado actual y ejecuta los pasos coherentes sin intervención humana
 
 Uso (via bago script):
   python3 bago auto
-  python3 bago auto --dry-run     (muestra el plan sin ejecutar nada)
-  python3 bago auto --steps N     (máximo N pasos, por defecto 5)
-  python3 bago auto --json        (salida machine-readable)
+  python3 bago auto --dry-run         (muestra el plan sin ejecutar nada)
+  python3 bago auto --steps N         (máximo N pasos por iteración, por defecto 5)
+  python3 bago auto --json            (salida machine-readable)
+  python3 bago auto --loop            (bucle hasta estado estable o límite)
+  python3 bago auto --loop --max-loops N  (máximo N iteraciones, por defecto 10)
 
 O directo:
   python3 .bago/tools/auto_mode.py --dry-run
+  python3 .bago/tools/auto_mode.py --loop --dry-run
 """
 
 import hashlib
@@ -36,7 +39,11 @@ TOOLS        = PACK_DIR / "tools"
 sys.path.insert(0, str(TOOLS))
 os.chdir(str(PROJECT_ROOT))   # las herramientas asumen cwd = project root
 
-from target_selector import choose_path
+# target_selector es opcional (no disponible en todas las instalaciones)
+try:
+    from target_selector import choose_path as _choose_path
+except ImportError:
+    _choose_path = None
 
 # ─── Selección dinámica de directorio ────────────────────────────────────────
 
@@ -102,7 +109,9 @@ def _pick_directory() -> "Optional[str]":
             "path": d["path"],
             "reason": f"última marca: {ts}",
         })
-    return choose_path(
+    if _choose_path is None:
+        return None
+    return _choose_path(
         entries,
         title="BAGO · ¿Con qué directorio trabajamos?",
         custom_label="Ruta exacta…",
@@ -161,9 +170,11 @@ def _sync_context(target_path: str) -> bool:
 # ─── Args ─────────────────────────────────────────────────────────────────────
 def _parse():
     p = argparse.ArgumentParser(add_help=False)
-    p.add_argument("--dry-run",  action="store_true")
-    p.add_argument("--json",     action="store_true", dest="as_json")
-    p.add_argument("--steps",    type=int, default=5)
+    p.add_argument("--dry-run",    action="store_true")
+    p.add_argument("--json",       action="store_true", dest="as_json")
+    p.add_argument("--steps",      type=int, default=5)
+    p.add_argument("--loop",       action="store_true")
+    p.add_argument("--max-loops",  type=int, default=10, dest="max_loops")
     args, _ = p.parse_known_args()
     return args
 
@@ -325,6 +336,13 @@ def _run_step(step):
     )
     return result.returncode == 0
 
+def _plan_fingerprint(steps: list) -> str:
+    """Hash compacto del plan activo — excluye dashboard y hints sin cmd.
+    Dos planes idénticos → estado no cambió → loop estable (o atascado)."""
+    actionable = [s["id"] for s in steps if s.get("cmd") not in (None, "dashboard")]
+    raw = ",".join(actionable)
+    return hashlib.md5(raw.encode()).hexdigest()[:8]
+
 # ─── Formato ──────────────────────────────────────────────────────────────────
 W = 56
 TOP = "╔" + "═" * W + "╗"
@@ -363,9 +381,11 @@ def run():
     dry_run   = args.dry_run
     as_json   = args.as_json
     max_steps = args.steps
+    loop_mode = args.loop
+    max_loops = args.max_loops
 
-    # ── Selección de directorio (solo en modo interactivo) ──────────────────
-    if not as_json:
+    # ── Selección de directorio (solo en modo interactivo, no --loop ni --json) ─
+    if not as_json and not loop_mode:
         target_dir = _pick_directory()
         if target_dir is None:
             print("  ↩  Cancelado.")
@@ -378,7 +398,14 @@ def run():
                 return
         print()
 
-    gs                     = _global_state()
+    gs = _global_state()
+
+    # ── Modo bucle ──────────────────────────────────────────────────────────────
+    if loop_mode:
+        _run_loop(gs, max_steps, max_loops, dry_run)
+        return
+
+    # ── Modo normal (un solo pase) ──────────────────────────────────────────────
     health                 = _health_score()
     verdict, high, low     = _detector()
     pack_ok                = _validate()
@@ -437,6 +464,91 @@ def run():
             break
 
     print("  ✅ Auto mode completado.")
+    print()
+
+
+# ─── Bucle de evolución ───────────────────────────────────────────────────────
+def _run_loop(gs: dict, max_steps: int, max_loops: int, dry_run: bool) -> None:
+    """Repite el ciclo de evaluación+ejecución hasta que el plan no cambie
+    (estado estable) o se alcance max_loops iteraciones."""
+
+    SEP = "═" * (W + 4)
+    print()
+    print(SEP)
+    print(f"  BAGO · Bucle de evolución  (máx {max_loops} iteraciones)")
+    if dry_run:
+        print("  ⚠️  DRY-RUN — no se ejecuta nada")
+    print(SEP)
+
+    prev_fingerprint: str = ""
+    stable_since:     int = 0
+
+    for iteration in range(1, max_loops + 1):
+        print(f"\n{'─'*40}")
+        print(f"  Iteración {iteration}/{max_loops}")
+        print(f"{'─'*40}")
+
+        # ── Re-evalúa estado en cada iteración ────────────────────────────────
+        health             = _health_score()
+        verdict, high, low = _detector()
+        pack_ok            = _validate()
+        task               = _pending_task()
+        stale              = _stale_count()
+        steps              = _decide(gs, health, verdict, high, pack_ok, task, stale)[:max_steps]
+
+        fp = _plan_fingerprint(steps)
+        actionable = [s for s in steps if s.get("cmd") not in (None, "dashboard")]
+
+        # ── Cabecera de iteración ──────────────────────────────────────────────
+        h_icon = _health_icon(health)
+        det_map = {"HARVEST": "🌾 HARVEST", "WATCH": "👁 WATCH", "CLEAN": "✅ CLEAN"}
+        print(f"  Health: {h_icon}  |  Detector: {det_map.get(verdict, verdict)}")
+        print(f"  Pack:   {'✅ GO' if pack_ok else '🔴 FAIL'}  |  Stale: {stale}  |  Fingerprint: {fp}")
+        print()
+
+        # ── Estabilidad: plan idéntico dos veces consecutivas → parar ─────────
+        if fp == prev_fingerprint:
+            stable_since += 1
+            if stable_since >= 2 or not actionable:
+                print("  ✅ Estado estable — plan sin cambios. Bucle completado.")
+                break
+        else:
+            stable_since = 0
+        prev_fingerprint = fp
+
+        # ── Si no hay pasos accionables, ya estamos en verde ──────────────────
+        if not actionable:
+            print("  ✅ Sin acciones pendientes — sistema en verde.")
+            _run_step({"cmd": "dashboard"})
+            break
+
+        # ── Ejecutar pasos no-interactivos ────────────────────────────────────
+        for i, step in enumerate(steps, 1):
+            if step.get("interactive"):
+                # En bucle sin supervisión, un paso interactivo implica parar limpiamente
+                print(f"  ⏸️  Paso [{i}] requiere input humano: {step['label']}")
+                print("      → Bucle pausado. Ejecuta el paso manualmente y reinicia con bago auto --loop.")
+                return
+
+            if not step.get("cmd"):
+                continue  # hints sin cmd (cosecha_hint, etc.)
+
+            print(f"  [{i}] {step['label']}")
+            if not dry_run:
+                ok = _run_step(step)
+                print()
+                if not ok and step.get("blocking"):
+                    print("  ❌ Paso bloqueante falló — deteniendo bucle.")
+                    return
+            else:
+                print(f"       [dry-run] saltado\n")
+
+    else:
+        print(f"\n  ⚠️  Límite de {max_loops} iteraciones alcanzado sin converger.")
+        print("      Revisa el estado con: bago health && bago audit")
+
+    print()
+    print(SEP)
     print()
 
 

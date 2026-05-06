@@ -484,7 +484,7 @@ REGISTRY: dict[str, ToolEntry] = {
     ),
     "auto": ToolEntry(
         cmd="auto", module="auto_mode",
-        description="Modo automático: evalúa estado y ejecuta pasos coherentes sin intervención",
+        description="Modo automático: evalúa estado y ejecuta pasos. --loop para bucle de evolución continua",
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "auto_mode.py"))],
     ),
     "sprint": ToolEntry(
