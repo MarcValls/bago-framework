@@ -1,5 +1,5 @@
 {
-  "bago_version": "2.6-taxonomy",
+  "bago_version": "3.1",
   "system_health": "ok",
   "sprint_status": {
     "active_workflow": {
@@ -237,5 +237,19 @@
     "promoted_count": 2,
     "last_promoted": "2026-05-05",
     "last_promoted_project": "test_project"
-  }
+  },
+  "version_history": [
+    {
+      "version": "3.1",
+      "label": "autonomy",
+      "released": "2026-05-06",
+      "commit": "65126b1",
+      "highlights": [
+        "autonomous_loop.py: SENSE/PLAN/ACT/OBSERVE/LEARN/DECIDE",
+        "learning_writer.py: auto-promote patterns (El Aprendiz)",
+        "bago autonomous + bago inbox commands",
+        "Bug fixes: audit_v2 health parse + stale_detector timezone"
+      ]
+    }
+  ]
 }

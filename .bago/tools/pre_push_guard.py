@@ -118,6 +118,20 @@ def main(argv: list[str] | None = None) -> int:
     print("BAGO pre-push guard")
     print("=" * 44)
 
+    # ── Auto-sync README antes del clean-tree check ─────────────────────────
+    try:
+        import importlib.util as _ilu, sys as _sys
+        _rs_path = ROOT / ".bago" / "tools" / "readme_sync.py"
+        if _rs_path.exists():
+            _spec = _ilu.spec_from_file_location("readme_sync", str(_rs_path))
+            _rs   = _ilu.module_from_spec(_spec)
+            if str(_rs_path.parent) not in _sys.path:
+                _sys.path.insert(0, str(_rs_path.parent))
+            _spec.loader.exec_module(_rs)
+            _rs.sync(auto_stage=True, verbose=True)
+    except Exception as _e:
+        print(f"  WARN readme_sync: {_e}")
+
     checks = [
         check_clean_tree(),
         check_remote_state(fetch=args.remote),

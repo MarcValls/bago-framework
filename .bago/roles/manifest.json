@@ -6,7 +6,7 @@
       "file": "gobierno/MAESTRO_BAGO.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.5-stable",
+      "version": "3.1",
       "tools": []
     },
     "role_government_orquestador_central": {
@@ -15,7 +15,7 @@
       "file": "gobierno/ORQUESTADOR_CENTRAL.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.5-stable",
+      "version": "3.1",
       "tools": []
     },
     "role_production_analista": {
@@ -24,7 +24,7 @@
       "file": "produccion/ANALISTA.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.6-taxonomy",
+      "version": "3.1",
       "tools": [
         "code-quality",
         "context",
@@ -55,7 +55,7 @@
       "file": "produccion/ARQUITECTO.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.6-taxonomy",
+      "version": "3.1",
       "tools": [
         "auto",
         "cabinet",
@@ -77,7 +77,7 @@
       "file": "produccion/GENERADOR.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.6-taxonomy",
+      "version": "3.1",
       "tools": [
         "banner",
         "chronicle",
@@ -94,7 +94,7 @@
       "file": "produccion/ORGANIZADOR.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.6-taxonomy",
+      "version": "3.1",
       "tools": [
         "ask",
         "dashboard",
@@ -128,7 +128,7 @@
       "file": "produccion/VALIDADOR.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.6-taxonomy",
+      "version": "3.1",
       "tools": [
         "audit",
         "check",
@@ -147,7 +147,7 @@
       "file": "supervision/AUDITOR_CANONICO.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.5-stable",
+      "version": "3.1",
       "tools": [
         "rules"
       ]
@@ -158,7 +158,7 @@
       "file": "supervision/CENTINELA_SINCERIDAD.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.5-stable",
+      "version": "3.1",
       "tools": [
         "commit",
         "pre-push",
@@ -171,7 +171,7 @@
       "file": "supervision/VERTICE.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.5-stable",
+      "version": "3.1",
       "tools": [
         "hello",
         "install",
@@ -184,7 +184,7 @@
       "file": "especialistas/REVISOR_SEGURIDAD.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.5-stable",
+      "version": "3.1",
       "tools": [
         "secrets"
       ]
@@ -195,7 +195,7 @@
       "file": "especialistas/REVISOR_PERFORMANCE.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.5-stable",
+      "version": "3.1",
       "tools": []
     },
     "role_specialist_ux_reviewer": {
@@ -204,7 +204,7 @@
       "file": "especialistas/REVISOR_UX.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.5-stable",
+      "version": "3.1",
       "tools": []
     },
     "role_specialist_integrator": {
@@ -213,7 +213,7 @@
       "file": "especialistas/INTEGRADOR_REPO.md",
       "created": "2026-04-28T00:00:00Z",
       "status": "active",
-      "version": "2.5-stable",
+      "version": "3.1",
       "tools": []
     }
   },
@@ -224,6 +224,6 @@
     "especialistas": "SPECIALIST — Análisis en dominio específico"
   },
   "created": "2026-04-28T00:00:00Z",
-  "version": "2.0",
-  "description": "Registro de roles BAGO con Tool-Agent Binding v3.0. Cada rol declara sus herramientas responsables."
+  "version": "3.1",
+  "description": "Registro de roles BAGO con Tool-Agent Binding v3.1. Cada rol declara sus herramientas responsables."
 }

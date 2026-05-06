@@ -2,7 +2,7 @@
 
 [![BAGO Code Health](https://github.com/MarcValls/bago-framework/actions/workflows/bago.yml/badge.svg)](https://github.com/MarcValls/bago-framework/actions/workflows/bago.yml)
 
-> **Version 2.5-stable** · 36 CLI commands · 112 tools · 20 operational workflows · Clean-install state: `initializing`
+> **Version 3.1** · 83 CLI commands · 203 tools · 17 operational workflows · Clean-install state: `healthy`
 
 ---
 
@@ -54,12 +54,25 @@ BAGO has been built using BAGO itself. The following data was collected with `py
 |---|:---:|:---:|:---:|:---:|:---:|
 | **2.3-clean** *(baseline)* | 10 | 19 | 68 | 12 | 78.6 |
 | **2.4-v2rc** *(Dynamic BAGO)* | 10 | 27 | 73 | 12 | 89.3 |
-| **2.5-stable** *(current)* | **35** | **111** | **77** | **20** | **100.0** |
+| **2.5-stable** *(historic)* | **35** | **111** | **77** | **20** | **100.0** |
+| **3.1** *(current)* | **83** | **203** | — | **17** | **—** |
 
-**Growth from 2.3 → 2.5: +27.2%** — measured by weighted index (commands ×0.30, tools ×0.35, docs ×0.20, workflows ×0.15).
+**Growth up to 3.1** — measured by weighted index (commands ×0.30, tools ×0.35, docs ×0.20, workflows ×0.15).
 
 > Workflow count in the evolution table (12) includes all files in `.bago/workflows/`: 10 operational workflows + `WORKFLOW_MAESTRO_BAGO.md` + `WORKFLOWS_INDEX.md`.
 > The evolution table is **historical benchmark data** measured at each release date. For current health status, see the CI badge above or run `python3 bago health`. These numbers are not live — they reflect point-in-time snapshots and carry no guarantee about the current state of the codebase.
+
+### New in 3.1
+
+**New CLI commands:** `autonomous`, `inbox`
+
+**New core modules:** `autonomous_loop.py`, `learning_writer.py`
+
+**Architecture:** SENSE/PLAN/ACT/OBSERVE/LEARN/DECIDE loop · El Aprendiz (auto-pattern promotion) · BagoContext singleton · Tool-Agent Binding · Agent Dispatcher
+
+**Bug fixes:** audit_v2 health parse · stale_detector timezone TypeError
+
+---
 
 ### New in 2.5-stable
 
@@ -223,4 +236,4 @@ MIT — see [LICENSE](LICENSE)
 
 ---
 
-*BAGO 2.5-stable · Built with BAGO · April 2026*
+*BAGO 3.1 · Built with BAGO · May 2026*
