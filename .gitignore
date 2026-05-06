@@ -68,3 +68,10 @@ whatsapp_config.json
 .bago/ImageStudio/
 .bago/image_studio/
 
+
+# Autonomous loop runtime state
+.bago/state/auto_learnings.jsonl
+.bago/state/autonomous_state.json
+.bago/state/autonomous.lock
+.bago/state/inbox.json
+.bago/knowledge/auto_patterns.md
