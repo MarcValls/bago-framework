@@ -18,7 +18,10 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT  = Path(__file__).resolve().parent.parent.parent   # C:\Marc_max_20gb
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    sys.stdout.reconfigure(encoding="utf-8")
+
+ROOT  = Path(__file__).resolve().parent.parent.parent   # project root (bago_core/)
 TOOLS = ROOT / ".bago" / "tools"
 
 

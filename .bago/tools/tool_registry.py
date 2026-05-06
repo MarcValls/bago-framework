@@ -188,6 +188,11 @@ REGISTRY: dict[str, ToolEntry] = {
         preflight=[PreflightCheck("file", str(TOOLS_DIR / "sincerity_detector.py"))],
         deprecated=True, see_also="bago health sincerity",
     ),
+    "scope": ToolEntry(
+        cmd="scope", module="scope_detector",
+        description="Detecta scope (framework/project/both) de scripts Python por análisis estático",
+        preflight=[PreflightCheck("file", str(TOOLS_DIR / "scope_detector.py"))],
+    ),
     "cabinet": ToolEntry(
         cmd="cabinet", module="cabinet_orchestrator",
         description="Gabinete BAGO: orquesta agentes en paralelo e informa unificado",
@@ -570,7 +575,7 @@ _LAYER_MAP: dict[str, str] = {
     "validate": "salud", "sync": "salud", "check": "salud",
     "consistency": "salud", "config-check": "salud", "context": "salud",
     "repo": "salud", "project": "salud", "stale": "salud",
-    "detector": "salud", "map": "salud",
+    "detector": "salud", "map": "salud", "scope": "salud",
     # ANALÍTICA
     "insights": "analítica", "habit": "analítica", "chronicle": "analítica",
     "dashboard": "analítica", "efficiency": "analítica", "stability": "analítica",
@@ -597,7 +602,7 @@ _SCOPE_MAP: dict[str, str] = {
     "doctor": "framework", "heal": "framework", "auto": "framework",
     "banner": "framework", "rules": "framework", "db": "framework",
     "cabinet": "framework", "install": "framework", "hello": "framework",
-    "report": "framework",
+    "report": "framework", "scope": "framework",
     # project — opera sobre el proyecto activo
     "scan": "project", "review": "project", "commit": "project",
     "pre-push": "project", "secrets": "project", "debt": "project",

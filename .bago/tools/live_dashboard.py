@@ -7,6 +7,7 @@ import sqlite3
 import subprocess
 import sys
 import threading
+import webbrowser
 from collections import defaultdict
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -448,7 +449,7 @@ def main():
         def _open():
             import time
             time.sleep(0.6)
-            subprocess.run(["start", url], shell=True)
+            webbrowser.open(url)
         threading.Thread(target=_open, daemon=True).start()
 
     try:

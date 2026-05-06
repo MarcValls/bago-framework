@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import webbrowser
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -246,7 +247,7 @@ def main() -> int:
         print()
 
         if open_it:
-            subprocess.run(["start", str(out_file)], shell=True)
+            webbrowser.open(out_file.as_uri())
             print(f"  Abriendo en navegador...")
             print()
 
